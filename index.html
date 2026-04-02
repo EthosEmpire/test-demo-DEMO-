@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethos Empire | Discipline, Self-Mastery, Mindset & Personal Growth</title>
+  <meta name="description" content="Ethos Empire helps you build discipline, confidence, health, mindset, and self-mastery with ebooks and merch designed for personal growth and legacy.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#000000">
+  <link rel="canonical" href="https://ethosempire.org/">
+  <meta name="application-name" content="Ethos Empire">
+  <meta name="apple-mobile-web-app-title" content="Ethos Empire">
+
+  <meta property="og:site_name" content="Ethos Empire">
+  <meta property="og:title" content="Ethos Empire | Discipline, Self-Mastery, Mindset & Personal Growth">
+  <meta property="og:description" content="Ethos Empire helps you build discipline, confidence, health, mindset, and self-mastery with ebooks and merch designed for personal growth and legacy.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ethosempire.org/">
+  <meta property="og:image" content="https://ethosempire.org/images/ethos-empire-logo.webp">
+  <meta property="og:image:secure_url" content="https://ethosempire.org/images/ethos-empire-logo.webp">
+  <meta property="og:image:alt" content="Ethos Empire official logo">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@EthosEmpire_X">
+  <meta name="twitter:creator" content="@EthosEmpire_X">
+  <meta name="twitter:title" content="Ethos Empire | Discipline, Self-Mastery, Mindset & Personal Growth">
+  <meta name="twitter:description" content="Ethos Empire helps you build discipline, confidence, health, mindset, and self-mastery with ebooks and merch designed for personal growth and legacy.">
+  <meta name="twitter:image" content="https://ethosempire.org/images/ethos-empire-logo.webp">
+  <meta name="twitter:image:alt" content="Ethos Empire official logo">
+
+  <link rel="icon" type="image/png" sizes="48x48" href="images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="images/favicon-512x512.png">
+  <link rel="apple-touch-icon" href="images/favicon-192x192.png">
+
+  <link rel="preconnect" href="https://ethosempire.org" crossorigin>
+  <link rel="preload" as="image" href="images/ethos-empire-logo.webp">
+  <link rel="image_src" href="https://ethosempire.org/images/ethos-empire-logo.webp">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Ethos Empire",
+    "url": "https://ethosempire.org/",
+    "logo": "https://ethosempire.org/images/ethos-empire-logo.webp",
+    "image": "https://ethosempire.org/images/ethos-empire-logo.webp",
+    "sameAs": [
+      "https://www.instagram.com/ethosempire.x/",
+      "https://www.tiktok.com/@ethos.empire",
+      "https://www.facebook.com/ethosempire.x",
+      "https://www.youtube.com/@Ethos.Empire.Official",
+      "https://x.com/EthosEmpire_X"
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Ethos Empire?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ethos Empire is a brand built around discipline, self-mastery, and personal growth. It offers ebooks, mindset content, and minimalist merch centered on legacy and improvement."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Who is this for?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "This is for people who want to become more disciplined, confident, healthy, attractive, and focused on long-term growth."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you sell digital products?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Ethos Empire sells ebooks and guides covering confidence, relationships, grooming, health, mindset, and more."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you sell clothing?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Ethos Empire offers premium-style hoodies with a gold logo finish in several colorways."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="flex flex-col items-center">
+  <div id="introOverlay" class="intro-overlay" role="dialog" aria-modal="true" aria-label="Ethos Empire intro screen" tabindex="0">
+    <canvas id="matrixCanvas" class="intro-matrix" aria-hidden="true"></canvas>
+    <div class="intro-vignette" aria-hidden="true"></div>
+
+    <img
+      src="images/ethos-empire-logo.webp"
+      alt=""
+      aria-hidden="true"
+      class="intro-backdrop-logo"
+      width="900"
+      height="900"
+    >
+
+    <div class="intro-glow" aria-hidden="true"></div>
+
+    <div class="intro-content">
+      <img
+        src="images/ethos-empire-logo.webp"
+        alt="Ethos Empire"
+        class="intro-logo"
+        width="240"
+        height="240"
+        loading="eager"
+        decoding="async"
+      >
+
+      <p class="intro-kicker">ETHOS EMPIRE</p>
+
+      <h1 class="intro-title">Ethos Empire</h1>
+
+      <p class="intro-subtitle">
+        Stop Wasting Time.<br>
+        Build Discipline, Confidence, and a Stronger Life.
+      </p>
+
+      <p class="intro-tip">Tap anywhere to enter</p>
+    </div>
+
+    <div class="intro-dust-layer" aria-hidden="true"></div>
+  </div>
+
+  <a href="#content" class="sr-only focus:not-sr-only focus-ring fixed top-4 left-4 z-50 bg-black text-[#FFD700] px-4 py-2 rounded-full border border-[#FFD700]">
+    Skip to content
+  </a>
+
+  <main id="content" class="w-full">
+    <section class="fade-up text-center pt-20 px-6 max-w-4xl mx-auto">
+      <img
+        src="images/ethos-empire-logo.webp"
+        alt="Ethos Empire official logo"
+        width="512"
+        height="512"
+        class="w-40 h-40 md:w-52 md:h-52 rounded-2xl object-cover mx-auto mb-8"
+        style="box-shadow:0 0 60px rgba(255,215,0,0.45)"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      >
+
+      <p class="text-xs md:text-sm tracking-[0.35em] uppercase text-[#C5A55A] mb-4">
+        Discipline • Self-Mastery • Mindset • Legacy
+      </p>
+
+      <h1 class="text-4xl md:text-6xl font-extrabold gold-text leading-snug pb-2">
+        Ethos Empire
+        <span class="block text-2xl md:text-4xl mt-3 text-[#D4AF37] font-semibold">
+          Stop Wasting Time. Build Discipline, Confidence, and a Stronger Life.
+        </span>
+      </h1>
+
+      <div class="w-24 h-0.5 mx-auto my-6" style="background:linear-gradient(to right,transparent,#FFD700,transparent)"></div>
+
+      <p class="text-xl md:text-2xl font-semibold italic text-[#C9952A] max-w-2xl mx-auto">
+        ⚔️ Ethos means character. Empire means legacy.
+      </p>
+
+      <p class="mt-8 text-lg md:text-xl text-[#A07828] max-w-2xl mx-auto leading-relaxed">
+        Time doesn't wait. It watches. What you do with it defines you.
+      </p>
+
+      <p class="mt-4 text-sm font-bold tracking-[0.3em] text-[#C9952A]">
+        — ETHOS EMPIRE
+      </p>
+
+      <div class="mt-10 flex flex-wrap gap-4 justify-center">
+        <a href="#ebooks" class="px-7 py-3 rounded-full font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-200 hover:scale-105 transition inline-block">
+          Explore Ebooks
+        </a>
+        <a href="https://ethos-empire-hub-71dc7e2f.base44.app/" target="_blank" rel="noopener noreferrer"
+           class="px-7 py-3 rounded-full font-bold border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-black transition inline-block">
+          Enter the Empire
+        </a>
+      </div>
+    </section>
+
+    <div class="section-line my-14"></div>
+
+    <section class="px-6 max-w-6xl mx-auto mb-16">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="stat soft-card rounded-2xl p-6 text-center">
+          <p class="text-3xl font-extrabold text-[#FFD700]">11</p>
+          <p class="mt-2 text-[#D4AF37]">Digital guides and ebooks</p>
+        </div>
+        <div class="stat soft-card rounded-2xl p-6 text-center">
+          <p class="text-3xl font-extrabold text-[#FFD700]">5+</p>
+          <p class="mt-2 text-[#D4AF37]">Social platforms connected</p>
+        </div>
+        <div class="stat soft-card rounded-2xl p-6 text-center">
+          <p class="text-3xl font-extrabold text-[#FFD700]">1</p>
+          <p class="mt-2 text-[#D4AF37]">Clear mission: build legacy</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="text-center px-6 max-w-4xl mx-auto mb-16">
+      <h2 class="section-title text-xs md:text-sm tracking-[0.4em] text-[#C5A55A] mb-4">
+        Welcome to Ethos Empire
+      </h2>
+
+      <div class="soft-card rounded-3xl p-8 md:p-10">
+        <p class="text-[#D4AF37] leading-relaxed mb-4 text-lg">
+          Ethos Empire is a personal growth brand built for people who want more from life.
+          The focus is simple: discipline, confidence, health, mindset, and self-mastery.
+        </p>
+
+        <p class="text-[#D4AF37] leading-relaxed mb-4 text-lg">
+          This site brings together practical ebooks and premium merch designed to support your growth.
+          Whether you want to improve your confidence, sharpen your mindset, level up your appearance,
+          or build stronger habits, Ethos Empire is here to help you stay focused and move with purpose.
+        </p>
+
+        <p class="text-[#D4AF37] leading-relaxed mb-4 text-lg">
+          The goal is not just motivation. The goal is transformation through consistent action.
+        </p>
+
+        <p class="text-[#FFD700] font-semibold text-lg">
+          Your transformation starts here.
+        </p>
+      </div>
+    </section>
+
+    <section class="px-6 max-w-6xl mx-auto mb-16">
+      <h2 class="section-title text-center text-xs md:text-sm tracking-[0.4em] mb-4 text-[#C5A55A]">
+        What Ethos Empire Is About
+      </h2>
+
+      <p class="md:hidden text-center text-sm text-[#A07828] mb-5 leading-relaxed">
+        Swipe the bubbles to explore.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6 ethos-bubble-grid">
+        <article class="soft-card rounded-3xl p-8 ethos-bubble-card">
+          <h3 class="text-2xl font-bold text-[#FFD700] mb-4">Discipline that lasts</h3>
+          <p class="text-[#D4AF37] leading-relaxed">
+            Discipline is the foundation of progress. Without discipline, goals stay ideas.
+            Ethos Empire focuses on building systems, routines, and habits that help you stay consistent
+            when motivation disappears. That means learning how to train your mind, control your impulses,
+            and keep moving even when things get hard.
+          </p>
+        </article>
+
+        <article class="soft-card rounded-3xl p-8 ethos-bubble-card">
+          <h3 class="text-2xl font-bold text-[#FFD700] mb-4">Confidence with substance</h3>
+          <p class="text-[#D4AF37] leading-relaxed">
+            Confidence is not about pretending to be perfect. It comes from real progress.
+            When your habits improve, your appearance improves, your communication improves,
+            and your self-respect grows. Ethos Empire gives you tools to become more grounded,
+            more attractive, and more certain in who you are.
+          </p>
+        </article>
+
+        <article class="soft-card rounded-3xl p-8 ethos-bubble-card">
+          <h3 class="text-2xl font-bold text-[#FFD700] mb-4">Health and self-care</h3>
+          <p class="text-[#D4AF37] leading-relaxed">
+            Your body affects your energy, mood, and discipline. That is why health matters.
+            From skincare to hair care to fitness mindset, the brand encourages simple, effective habits
+            that help you look better, feel better, and perform better in daily life.
+          </p>
+        </article>
+
+        <article class="soft-card rounded-3xl p-8 ethos-bubble-card">
+          <h3 class="text-2xl font-bold text-[#FFD700] mb-4">Legacy and personal growth</h3>
+          <p class="text-[#D4AF37] leading-relaxed">
+            A legacy is built through repeated choices. The books and products here are designed to support
+            a bigger vision: becoming the kind of person who leads, grows, and leaves something meaningful behind.
+            That is the Ethos Empire standard.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="ebooks" class="w-full max-w-6xl px-6 mb-16 mx-auto">
+      <h2 class="section-title text-center text-xs md:text-sm tracking-[0.4em] mb-4 text-[#C5A55A]">
+        Empire Knowledge Library
+      </h2>
+
+      <p class="text-center text-sm md:text-base text-[#A07828] mb-8 max-w-3xl mx-auto leading-relaxed">
+        Self-mastery, discipline, confidence, health, grooming, relationships, and personal growth ebooks created to help you build your legacy.
+      </p>
+
+      <div class="ebook-wrapper ebook-carousel soft-card rounded-3xl p-5 md:p-8" id="ebookWrapper" aria-label="Ethos Empire ebook collection">
+        <div class="ebook-track" id="ebookTrack">
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/builtbymoney?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-built-by-money-ebook-cover-320.webp"
+                srcset="images/ethos-empire-built-by-money-ebook-cover-320.webp 320w, images/ethos-empire-built-by-money-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Built by Money ebook cover financial discipline wealth mindset for men"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/builtbymoney?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Built by Money
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/builtbymoney?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/commandtheroom?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-command-the-room-ebook-cover-320.webp"
+                srcset="images/ethos-empire-command-the-room-ebook-cover-320.webp 320w, images/ethos-empire-command-the-room-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Command the Room ebook cover confidence presence social strength"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/commandtheroom?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Command the Room
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/commandtheroom?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/howtobeconfidence?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-confidence-guide-ebook-cover-320.webp"
+                srcset="images/ethos-empire-confidence-guide-ebook-cover-320.webp 320w, images/ethos-empire-confidence-guide-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Confidence Guide ebook cover self belief mindset personal growth"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/howtobeconfidence?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Confidence Guide
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/howtobeconfidence?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/lifelessonsinfaith?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-life-lessons-in-faith-ebook-cover-320.webp"
+                srcset="images/ethos-empire-life-lessons-in-faith-ebook-cover-320.webp 320w, images/ethos-empire-life-lessons-in-faith-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Life Lessons in Faith ebook cover purpose discipline belief"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/lifelessonsinfaith?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Life Lessons in Faith
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/lifelessonsinfaith?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/therelationshipcode?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-relationship-code-ebook-cover-320.webp"
+                srcset="images/ethos-empire-relationship-code-ebook-cover-320.webp 320w, images/ethos-empire-relationship-code-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="The Relationship Code ebook cover communication attraction confidence"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/therelationshipcode?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              The Relationship Code
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/therelationshipcode?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/thearchitechtureofhealth?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-architecture-of-health-ebook-cover-320.webp"
+                srcset="images/ethos-empire-architecture-of-health-ebook-cover-320.webp 320w, images/ethos-empire-architecture-of-health-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="The Architecture of Health ebook cover fitness nutrition wellness habits"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thearchitechtureofhealth?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              The Architecture of Health
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thearchitechtureofhealth?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/thegymmindset?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-gym-mindset-ebook-cover-320.webp"
+                srcset="images/ethos-empire-gym-mindset-ebook-cover-320.webp 320w, images/ethos-empire-gym-mindset-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="The Gym Mindset ebook cover training discipline consistency progress"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thegymmindset?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              The Gym Mindset
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thegymmindset?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/theclearskinguide?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-clear-skin-guide-ebook-cover-320.webp"
+                srcset="images/ethos-empire-clear-skin-guide-ebook-cover-320.webp 320w, images/ethos-empire-clear-skin-guide-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="The Clear Skin Guide ebook cover skincare routine healthy skin habits"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/theclearskinguide?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              The Clear Skin Guide
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/theclearskinguide?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/thehaircareblueprint?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hair-care-blueprint-ebook-cover-320.webp"
+                srcset="images/ethos-empire-hair-care-blueprint-ebook-cover-320.webp 320w, images/ethos-empire-hair-care-blueprint-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="The Hair Care Blueprint ebook cover grooming styling hair health"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thehaircareblueprint?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              The Hair Care Blueprint
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thehaircareblueprint?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempire.gumroad.com/l/thelooksmaxxingguide?layout=profile" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-looksmaxxing-guide-ebook-cover-320.webp"
+                srcset="images/ethos-empire-looksmaxxing-guide-ebook-cover-320.webp 320w, images/ethos-empire-looksmaxxing-guide-ebook-cover-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Looksmaxxing Guide ebook cover style grooming attraction appearance"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thelooksmaxxingguide?layout=profile" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Looksmaxxing Guide
+            </a>
+            <a href="https://ethosempire.gumroad.com/l/thelooksmaxxingguide?layout=profile" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="fade-up text-center px-6 mb-16 max-w-6xl mx-auto">
+      <h2 class="section-title text-xs font-bold tracking-[0.4em] mb-8 text-[#C5A55A]">
+        Follow Us
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-10 text-sm">
+        <a href="https://www.instagram.com/ethosempire.x/" target="_blank" rel="noopener noreferrer" class="social-link">
+          <img src="images/instagram.png" class="social-icon" alt="Instagram" loading="lazy" decoding="async">Instagram
+        </a>
+        <a href="https://www.tiktok.com/@ethos.empire" target="_blank" rel="noopener noreferrer" class="social-link">
+          <img src="images/tiktok.png" class="social-icon" alt="TikTok" loading="lazy" decoding="async">TikTok
+        </a>
+        <a href="https://www.facebook.com/ethosempire.x" target="_blank" rel="noopener noreferrer" class="social-link">
+          <img src="images/facebook.png" class="social-icon" alt="Facebook" loading="lazy" decoding="async">Facebook
+        </a>
+        <a href="https://www.youtube.com/@Ethos.Empire.Official" target="_blank" rel="noopener noreferrer" class="social-link">
+          <img src="images/Youtube.png" class="social-icon" alt="YouTube" loading="lazy" decoding="async">YouTube
+        </a>
+        <a href="https://x.com/EthosEmpire_X" target="_blank" rel="noopener noreferrer" class="social-link">
+          <img src="images/x.png" class="social-icon" alt="X" loading="lazy" decoding="async">X
+        </a>
+      </div>
+    </section>
+
+    <section class="text-center px-6 mb-16 max-w-4xl mx-auto">
+      <div class="soft-card rounded-3xl p-8 md:p-10">
+        <h2 class="text-2xl md:text-3xl font-bold text-[#C9952A] mb-4">
+          Begin Your Legacy
+        </h2>
+
+        <p class="text-[#A07828] max-w-2xl mx-auto mb-8 leading-relaxed">
+          Learn discipline, structure, and purpose. Build your legacy the right way with a brand designed to push you forward.
+        </p>
+
+        <a href="https://ethos-empire-hub-71dc7e2f.base44.app/" target="_blank" rel="noopener noreferrer"
+          class="px-8 py-3 rounded-full font-bold text-black bg-gradient-to-r from-yellow-500 to-yellow-300 hover:scale-105 transition inline-block">
+          Enter the Empire
+        </a>
+      </div>
+    </section>
+
+    <section id="merch" class="w-full max-w-6xl px-6 mb-16 mx-auto">
+      <h2 class="section-title text-center text-xs md:text-sm tracking-[0.4em] mb-4 text-[#C5A55A]">
+        Empire Merch
+      </h2>
+
+      <p class="text-center text-sm md:text-base text-[#A07828] mb-8 max-w-3xl mx-auto leading-relaxed">
+        Minimalist streetwear hoodies by Ethos Empire — premium designs with a gold emblem finish and a clean legacy-inspired look.
+      </p>
+
+      <div class="ebook-wrapper soft-card rounded-3xl p-5 md:p-8" id="merchWrapper" aria-label="Ethos Empire merch collection">
+        <div class="ebook-track" id="merchTrack">
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-black-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-black-gold-logo-400.webp 400w, images/ethos-empire-hoodie-black-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire black hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Black Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-bone-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-bone-gold-logo-400.webp 400w, images/ethos-empire-hoodie-bone-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire bone hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Bone Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-latte-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-latte-gold-logo-400.webp 400w, images/ethos-empire-hoodie-latte-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire latte hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Latte Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-lavender-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-lavender-gold-logo-400.webp 400w, images/ethos-empire-hoodie-lavender-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire lavender hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Lavender Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-navy-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-navy-gold-logo-400.webp 400w, images/ethos-empire-hoodie-navy-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire navy hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Navy Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-oatmeal-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-oatmeal-gold-logo-400.webp 400w, images/ethos-empire-hoodie-oatmeal-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire oatmeal hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Oatmeal Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-vintage-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-vintage-gold-logo-400.webp 400w, images/ethos-empire-hoodie-vintage-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire vintage hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Vintage Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-white-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-white-gold-logo-400.webp 400w, images/ethos-empire-hoodie-white-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire white hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              White Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+
+          <div class="ebook-card">
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark">
+              <img
+                src="images/ethos-empire-hoodie-pink-gold-logo-400.webp"
+                srcset="images/ethos-empire-hoodie-pink-gold-logo-400.webp 400w, images/ethos-empire-hoodie-pink-gold-logo-1200.webp 1200w"
+                sizes="(max-width: 767px) 140px, 160px"
+                alt="Ethos Empire pink hoodie with gold logo minimalist streetwear"
+                width="160"
+                height="226"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              >
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer bookmark" class="mt-3 text-[#FFD700] font-semibold leading-tight hover:text-[#FFE082] transition">
+              Pink Hoodie
+            </a>
+            <a href="https://ethosempireo.printful.me/product/ethos-unisex-hoodie" target="_blank" rel="noopener noreferrer" class="buy-btn">Buy</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 max-w-4xl mx-auto mb-16">
+      <h2 class="section-title text-center text-xs md:text-sm tracking-[0.4em] mb-6 text-[#C5A55A]">
+        Frequently Asked Questions
+      </h2>
+
+      <div class="space-y-4">
+        <details class="soft-card rounded-2xl p-6">
+          <summary class="cursor-pointer font-semibold text-[#FFD700] text-lg">What is Ethos Empire?</summary>
+          <p class="mt-4 text-[#D4AF37] leading-relaxed">
+            Ethos Empire is a brand built around discipline, self-mastery, and personal growth.
+            It offers ebooks, mindset content, and minimalist merch centered on legacy and improvement.
+          </p>
+        </details>
+
+        <details class="soft-card rounded-2xl p-6">
+          <summary class="cursor-pointer font-semibold text-[#FFD700] text-lg">Who is this for?</summary>
+          <p class="mt-4 text-[#D4AF37] leading-relaxed">
+            This is for people who want to become more disciplined, confident, healthy, attractive, and focused on long-term growth.
+          </p>
+        </details>
+
+        <details class="soft-card rounded-2xl p-6">
+          <summary class="cursor-pointer font-semibold text-[#FFD700] text-lg">Do you sell digital products?</summary>
+          <p class="mt-4 text-[#D4AF37] leading-relaxed">
+            Yes. Ethos Empire sells ebooks and guides covering confidence, relationships, grooming, health, mindset, and more.
+          </p>
+        </details>
+
+        <details class="soft-card rounded-2xl p-6">
+          <summary class="cursor-pointer font-semibold text-[#FFD700] text-lg">Do you sell clothing?</summary>
+          <p class="mt-4 text-[#D4AF37] leading-relaxed">
+            Yes. Ethos Empire offers premium-style hoodies with a gold logo finish in several colorways.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <div class="section-line my-12"></div>
+
+    <footer class="pb-8 px-6 text-center text-xs tracking-wider text-[#7A5C1E]">
+      © 2026 Ethos Empire
+    </footer>
+  </main>
+
+  <div id="ebookModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="ebookModalTitle">
+      <button class="modal-close" id="ebookModalClose" aria-label="Close ebook popup">×</button>
+
+      <div class="modal-grid">
+        <div class="modal-cover-wrap">
+          <button class="modal-nav modal-prev" id="ebookPrevBtn" aria-label="Previous ebook">‹</button>
+          <img id="ebookModalCover" class="modal-cover" src="" alt="" loading="lazy" decoding="async">
+          <button class="modal-nav modal-next" id="ebookNextBtn" aria-label="Next ebook">›</button>
+        </div>
+
+        <div class="px-1 md:px-2">
+          <p class="modal-meta mb-3" id="ebookModalMeta">Empire Knowledge Library</p>
+          <h3 id="ebookModalTitle" class="modal-title">Title</h3>
+          <p id="ebookModalDesc" class="modal-desc mt-4">Description</p>
+
+          <div class="modal-actions">
+            <a id="ebookModalPage" href="#" target="_blank" rel="noopener noreferrer bookmark" class="modal-buy" style="background:transparent;color:#FFD700;border:1px solid #FFD700;">
+              View Page
+            </a>
+            <a id="ebookModalBuy" href="https://ethosempire.gumroad.com/" target="_blank" rel="noopener noreferrer" class="modal-buy">
+              Buy Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="merchModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="merchModalTitle">
+      <button class="modal-close" id="merchModalClose" aria-label="Close merch popup">×</button>
+
+      <div class="modal-grid">
+        <div class="modal-cover-wrap">
+          <button class="modal-nav modal-prev" id="merchPrevBtn" aria-label="Previous hoodie">‹</button>
+          <img id="merchModalCover" class="modal-cover" src="" alt="" loading="lazy" decoding="async">
+          <button class="modal-nav modal-next" id="merchNextBtn" aria-label="Next hoodie">›</button>
+        </div>
+
+        <div class="px-1 md:px-2">
+          <p class="modal-meta mb-3">Empire Merch</p>
+          <h3 id="merchModalTitle" class="modal-title">Hoodie Name</h3>
+
+          <div class="modal-actions">
+            <a id="merchModalBuy" href="#" target="_blank" rel="noopener noreferrer" class="modal-buy">
+              Buy Now
+            </a>
+          </div>
+
+          <div class="modal-social">
+            <p class="modal-social-text">Follow us on social media</p>
+            <div class="modal-social-row">
+              <a href="https://www.instagram.com/ethosempire.x/" target="_blank" rel="noopener noreferrer" class="modal-social-link">
+                <img src="images/Instagram-gold.png" alt="Instagram">
+              </a>
+              <a href="https://www.tiktok.com/@ethos.empire" target="_blank" rel="noopener noreferrer" class="modal-social-link">
+                <img src="images/tiktok-gold.png" alt="TikTok">
+              </a>
+              <a href="https://www.youtube.com/@Ethos.Empire.Official" target="_blank" rel="noopener noreferrer" class="modal-social-link">
+                <img src="images/youtube-gold.png" alt="YouTube">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="javascript.js"></script>
+</body>
+</html>
