@@ -507,15 +507,24 @@ function applyCarouselStabilityStyles() {
   const style = document.createElement("style");
   style.id = "carouselStabilityPatch";
   style.textContent = `
-    .ebook-wrapper {
+    #ebookWrapper,
+    #merchWrapper {
       scroll-behavior: auto !important;
       overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
-      touch-action: pan-y pinch-zoom;
       cursor: grab;
     }
 
-    .ebook-wrapper.dragging {
+    #ebookWrapper {
+      touch-action: pan-x pan-y pinch-zoom;
+    }
+
+    #merchWrapper {
+      touch-action: pan-y pinch-zoom;
+    }
+
+    #ebookWrapper.dragging,
+    #merchWrapper.dragging {
       cursor: grabbing;
     }
 
@@ -749,7 +758,8 @@ function setupInfiniteCarousel(config) {
     initialized: false,
     focusRaf: 0,
     resumeTimers: [],
-    isInteracting: false
+    isInteracting: false,
+    lastFrameTime: 0
   };
 
   const clearResumeTimers = () => {
@@ -773,8 +783,11 @@ function setupInfiniteCarousel(config) {
   const prefersLessMotion = () =>
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const hasHoverPointer = () =>
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
   const getActiveSpeed = () => {
-    const base = window.innerWidth < 768 ? controller.speed * 1.28 : controller.speed;
+    const base = window.innerWidth < 768 ? controller.speed * 1.24 : controller.speed;
     return prefersLessMotion() ? base * 0.4 : base;
   };
 
@@ -784,7 +797,14 @@ function setupInfiniteCarousel(config) {
     controller.rafId = 0;
   };
 
-  const step = () => {
+  const step = (now) => {
+    if (!controller.lastFrameTime) {
+      controller.lastFrameTime = now;
+    }
+
+    const delta = Math.min(34, now - controller.lastFrameTime || 16.67);
+    controller.lastFrameTime = now;
+
     if (document.hidden || controller.isInteracting) {
       controller.rafId = requestAnimationFrame(step);
       return;
@@ -794,7 +814,8 @@ function setupInfiniteCarousel(config) {
       refreshCarouselMetrics(controller);
     }
 
-    wrapper.scrollLeft += getActiveSpeed() * controller.direction;
+    const frameDistance = getActiveSpeed() * (delta / 16.67);
+    wrapper.scrollLeft += frameDistance * controller.direction;
     normalizeInfiniteScroll(controller);
     controller.rafId = requestAnimationFrame(step);
   };
@@ -802,19 +823,32 @@ function setupInfiniteCarousel(config) {
   const restartLoop = () => {
     clearResumeTimers();
     refreshAndNormalize();
+    controller.isInteracting = false;
+    controller.lastFrameTime = 0;
     stopLoop();
     controller.rafId = requestAnimationFrame(step);
   };
 
-  const queueMobileResume = () => {
+  const queueMobileResume = (baseDelay = 140) => {
     controller.isInteracting = false;
     clearResumeTimers();
-    const delays = [0, 120, 260, 520];
+
+    const delays = [0, baseDelay, baseDelay + 180];
 
     delays.forEach((delay) => {
       const timer = window.setTimeout(restartLoop, delay);
       controller.resumeTimers.push(timer);
     });
+  };
+
+  const handleInteractionStart = () => {
+    controller.isInteracting = true;
+    clearResumeTimers();
+    stopLoop();
+  };
+
+  const handleInteractionEnd = () => {
+    queueMobileResume();
   };
 
   controller.updateFocus = updateFocus;
@@ -829,29 +863,36 @@ function setupInfiniteCarousel(config) {
     updateFocus();
   }, { passive: true });
 
-  wrapper.addEventListener("touchstart", () => {
-    controller.isInteracting = true;
-    stopLoop();
+  wrapper.addEventListener("touchstart", handleInteractionStart, { passive: true });
+  wrapper.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" || event.pointerType === "touch" || event.pointerType === "pen") {
+      handleInteractionStart();
+    }
   }, { passive: true });
 
-  wrapper.addEventListener("touchend", queueMobileResume, { passive: true });
-  wrapper.addEventListener("touchcancel", queueMobileResume, { passive: true });
-  wrapper.addEventListener("pointerdown", () => {
-    controller.isInteracting = true;
-    stopLoop();
+  window.addEventListener("touchend", handleInteractionEnd, { passive: true });
+  window.addEventListener("touchcancel", handleInteractionEnd, { passive: true });
+  window.addEventListener("pointerup", handleInteractionEnd, { passive: true });
+  window.addEventListener("pointercancel", handleInteractionEnd, { passive: true });
+
+  wrapper.addEventListener("mouseleave", () => {
+    if (hasHoverPointer()) {
+      handleInteractionEnd();
+    }
   }, { passive: true });
-  wrapper.addEventListener("pointerup", queueMobileResume, { passive: true });
-  wrapper.addEventListener("pointercancel", queueMobileResume, { passive: true });
-  wrapper.addEventListener("mouseleave", queueMobileResume, { passive: true });
 
   window.addEventListener("resize", restartLoop);
-  window.addEventListener("orientationchange", queueMobileResume);
+  window.addEventListener("orientationchange", () => {
+    window.setTimeout(restartLoop, 180);
+  });
   window.addEventListener("load", restartLoop);
-  window.addEventListener("pageshow", queueMobileResume);
-  window.addEventListener("focus", queueMobileResume);
+  window.addEventListener("pageshow", () => queueMobileResume(0));
+  window.addEventListener("focus", () => queueMobileResume(0));
 
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) queueMobileResume();
+    if (!document.hidden) {
+      queueMobileResume(0);
+    }
   });
 
   track.querySelectorAll("img").forEach((img) => {
@@ -1083,8 +1124,13 @@ function setupModalControls() {
   });
 }
 
-function setupDragScroll(el) {
+function setupDragScroll(el, options = {}) {
   if (!el) return;
+
+  const settings = {
+    touchEnabled: true,
+    ...options
+  };
 
   const controller = carouselControllers.get(el);
 
@@ -1123,6 +1169,7 @@ function setupDragScroll(el) {
     if (controller) {
       normalizeInfiniteScroll(controller);
       controller.updateFocus?.();
+      controller.restartLoop?.();
     }
   };
 
@@ -1135,18 +1182,21 @@ function setupDragScroll(el) {
   window.addEventListener("mousemove", (e) => move(e.clientX));
   window.addEventListener("mouseup", end);
 
-  el.addEventListener("touchstart", (e) => {
-    if (!e.touches[0]) return;
-    start(e.touches[0].clientX);
-  }, { passive: true });
+  if (settings.touchEnabled) {
+    el.addEventListener("touchstart", (e) => {
+      if (!e.touches[0]) return;
+      start(e.touches[0].clientX);
+    }, { passive: true });
 
-  el.addEventListener("touchmove", (e) => {
-    if (!e.touches[0]) return;
-    move(e.touches[0].clientX);
-  }, { passive: true });
+    el.addEventListener("touchmove", (e) => {
+      if (!e.touches[0]) return;
+      move(e.touches[0].clientX);
+    }, { passive: true });
 
-  el.addEventListener("touchend", end);
-  el.addEventListener("touchcancel", end);
+    el.addEventListener("touchend", end);
+    el.addEventListener("touchcancel", end);
+  }
+
   el.addEventListener("mouseleave", () => {
     if (isDown) end();
   });
@@ -1343,7 +1393,7 @@ window.addEventListener("DOMContentLoaded", () => {
   setupModalControls();
   setupRevealAnimations();
 
-  setupDragScroll($("ebookWrapper"));
+  setupDragScroll($("ebookWrapper"), { touchEnabled: false });
   setupDragScroll($("merchWrapper"));
 
   setupCarouselFocus("ebookWrapper", ".ebook-card");
