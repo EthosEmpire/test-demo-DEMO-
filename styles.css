@@ -1319,125 +1319,314 @@ details[open] summary::after {
 }
 
 /* =========================================
-   Phone ebook endless-scroll compatibility
-   Works with the current JavaScript loop
+   Ethos Empire motion polish patch
+   Added for smoother motion + more stable
+   ebook / merch behavior on desktop + phone
 ========================================= */
 
 :root {
   --ease-smooth: cubic-bezier(0.22, 0.7, 0.2, 1);
   --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 220ms;
+  --dur-med: 360ms;
+  --dur-slow: 860ms;
 }
+
+/* ------------------------------
+   Reveal animations
+------------------------------ */
+
+.fade-up {
+  animation: fadeUpSmooth 980ms var(--ease-smooth) forwards !important;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+
+@keyframes fadeUpSmooth {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+.reveal-group > * {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  filter: blur(7px);
+  transition:
+    transform var(--dur-slow) var(--ease-smooth),
+    opacity var(--dur-slow) var(--ease-smooth),
+    filter 720ms var(--ease-soft) !important;
+  will-change: transform, opacity, filter;
+}
+
+.reveal-group.is-visible > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+}
+
+.reveal-group.is-visible > *:nth-child(1) { transition-delay: 50ms; }
+.reveal-group.is-visible > *:nth-child(2) { transition-delay: 120ms; }
+.reveal-group.is-visible > *:nth-child(3) { transition-delay: 190ms; }
+.reveal-group.is-visible > *:nth-child(4) { transition-delay: 260ms; }
+.reveal-group.is-visible > *:nth-child(5) { transition-delay: 330ms; }
+.reveal-group.is-visible > *:nth-child(6) { transition-delay: 400ms; }
+
+/* ------------------------------
+   Buttons + social
+------------------------------ */
+
+.buy-btn,
+.modal-buy {
+  transition:
+    transform var(--dur-fast) var(--ease-soft),
+    box-shadow var(--dur-fast) ease,
+    filter var(--dur-fast) ease !important;
+  will-change: transform, box-shadow;
+}
+
+.buy-btn:hover,
+.modal-buy:hover {
+  transform: translateY(-1px) scale(1.015) !important;
+}
+
+.social-link {
+  transition:
+    transform 260ms var(--ease-soft),
+    opacity 220ms ease,
+    color 220ms ease !important;
+  will-change: transform;
+}
+
+.social-link:hover {
+  transform: translateY(-2px) !important;
+}
+
+.social-icon,
+.modal-social-link img {
+  transition:
+    transform 260ms var(--ease-soft),
+    filter 260ms ease !important;
+}
+
+.social-link:hover .social-icon,
+.modal-social-link:hover img {
+  transform: translateY(-2px) scale(1.04) !important;
+}
+
+/* ------------------------------
+   Ebook / merch stability
+------------------------------ */
 
 .ebook-wrapper {
   scroll-behavior: auto !important;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y pinch-zoom;
-  backface-visibility: hidden;
 }
 
 .ebook-track {
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-.ebook-card,
-.ebook-card:hover,
-.ebook-card.is-centered,
-.ebook-card.is-tilting {
-  transform: none !important;
+  will-change: transform;
 }
 
 .ebook-card {
-  backface-visibility: hidden;
   transition:
     box-shadow 320ms var(--ease-soft),
     border-color 280ms ease,
     opacity 280ms ease,
     filter 280ms ease !important;
+  will-change: box-shadow, border-color, opacity;
 }
 
-.ebook-card img,
+.ebook-card.is-centered {
+  transform: none !important;
+}
+
+.ebook-card img {
+  transition:
+    box-shadow 320ms var(--ease-soft),
+    filter 320ms ease !important;
+}
+
 .ebook-card:hover img,
 .ebook-card.is-centered img {
+  transform: none !important;
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.22), 0 22px 46px rgba(0, 0, 0, 0.5) !important;
+  filter: brightness(1.02);
+}
+
+.ebook-card:hover .ebook-card-title,
+.ebook-card.is-centered .ebook-card-title {
   transform: none !important;
 }
 
 .card-preview {
+  transform: translateY(8px);
   transition:
     opacity 280ms var(--ease-soft),
     transform 280ms var(--ease-soft) !important;
 }
 
-@media (max-width: 767px) {
-  .ebook-wrapper {
-    scroll-padding-inline: 10px;
-    contain: layout paint style;
-  }
+/* ------------------------------
+   Modal smoothing
+------------------------------ */
 
-  .ebook-track {
-    gap: 14px;
-    padding: 4px 2px 8px;
-    will-change: auto;
-  }
+.modal-overlay {
+  transition:
+    opacity 340ms var(--ease-soft),
+    visibility 340ms var(--ease-soft) !important;
+}
 
-  .ebook-card {
-    width: 146px;
-    min-width: 146px;
-    padding: 12px 12px 15px;
-    transition:
-      box-shadow 240ms var(--ease-soft),
-      border-color 220ms ease,
-      opacity 220ms ease,
-      filter 220ms ease !important;
-  }
+.modal-panel {
+  transform: translateY(14px) scale(0.975);
+  transition:
+    transform 360ms var(--ease-smooth),
+    opacity 320ms var(--ease-soft) !important;
+  will-change: transform, opacity;
+}
 
-  .ebook-card.is-near,
-  .ebook-card.is-centered,
-  .ebook-card:hover {
-    opacity: 1 !important;
-  }
+.modal-overlay.open .modal-panel {
+  transform: translateY(0) scale(1);
+}
 
-  .ebook-card-title,
-  .ebook-card:hover .ebook-card-title,
-  .ebook-card.is-centered .ebook-card-title {
-    transform: none !important;
-  }
+.modal-close,
+.modal-nav {
+  transition:
+    transform 220ms var(--ease-soft),
+    background 220ms ease !important;
+}
 
-  .ethos-bubble-grid {
-    scroll-snap-type: x proximity;
-  }
+.modal-close:hover,
+.modal-nav:hover {
+  transform: scale(1.03) !important;
+}
 
-  .ethos-bubble-card,
-  .ethos-bubble-card:hover,
-  .ethos-bubble-card.is-active,
-  .ethos-bubble-card.is-dim {
-    transform: none !important;
-    opacity: 1 !important;
-    box-shadow:
-      0 20px 55px rgba(0, 0, 0, 0.44),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  }
+.modal-cover {
+  animation: modalPopSmooth 420ms var(--ease-smooth) forwards !important;
+}
 
-  .ethos-bubble-card h3,
-  .ethos-bubble-card:hover h3,
-  .ethos-bubble-card.is-active h3,
-  .ethos-bubble-card p,
-  .ethos-bubble-card:hover p,
-  .ethos-bubble-card.is-active p {
-    transform: none !important;
-    opacity: 1 !important;
+@keyframes modalPopSmooth {
+  from {
+    transform: translateY(10px) scale(0.92);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
   }
 }
 
+.modal-overlay.open .modal-panel.modal-animate .modal-meta,
+.modal-overlay.open .modal-panel.modal-animate .modal-title,
+.modal-overlay.open .modal-panel.modal-animate .modal-desc,
+.modal-overlay.open .modal-panel.modal-animate .modal-actions,
+.modal-overlay.open .modal-panel.modal-animate .modal-social {
+  animation: modalTextRiseSmooth 700ms var(--ease-smooth) forwards !important;
+}
+
+@keyframes modalTextRiseSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* ------------------------------
+   Bubble cards + FAQ
+------------------------------ */
+
+.ethos-bubble-card {
+  transition:
+    transform 340ms var(--ease-smooth),
+    border-color 280ms ease,
+    box-shadow 300ms ease,
+    opacity 280ms ease !important;
+}
+
+.ethos-bubble-card:hover,
+.ethos-bubble-card.is-active {
+  transform: translateY(-4px) scale(1.01) !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.42) !important;
+}
+
+.ethos-bubble-card h3,
+.ethos-bubble-card p {
+  transition:
+    transform 300ms var(--ease-soft),
+    opacity 300ms ease !important;
+}
+
+.ethos-bubble-card:hover h3,
+.ethos-bubble-card.is-active h3 {
+  transform: translateY(-1px) !important;
+}
+
+details.soft-card {
+  transition:
+    border-color 260ms ease,
+    transform 260ms var(--ease-soft),
+    box-shadow 260ms ease !important;
+}
+
+/* ------------------------------
+   Mobile polish
+------------------------------ */
+
+@media (max-width: 767px) {
+  .ebook-card {
+    transition:
+      box-shadow 280ms var(--ease-soft),
+      border-color 240ms ease,
+      opacity 240ms ease,
+      filter 240ms ease !important;
+  }
+
+  .ethos-bubble-card.is-active {
+    transform: translateY(-4px) scale(1.01) !important;
+  }
+}
+
+/* ------------------------------
+   Reduced motion
+------------------------------ */
+
 @media (prefers-reduced-motion: reduce) {
-  .ebook-wrapper,
-  .ebook-track,
+  .fade-up {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  .reveal-group > * {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .buy-btn,
+  .modal-buy,
+  .social-link,
+  .social-icon,
+  .modal-close,
+  .modal-nav,
+  .modal-cover,
   .ebook-card,
-  .ebook-card img,
   .ethos-bubble-card,
-  .ethos-bubble-card h3,
-  .ethos-bubble-card p {
+  .soft-card {
     transition: none !important;
     animation: none !important;
     transform: none !important;
