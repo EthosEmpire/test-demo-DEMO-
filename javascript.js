@@ -325,86 +325,60 @@ const ebookData = [
     title: "Looksmaxxing Guide",
     page: "https://ethosempire.gumroad.com/l/looksmaxxingguide?layout=profile",
     link: "https://ethosempire.gumroad.com/l/looksmaxxingguide?layout=profile",
-    desc: "Level up your appearance with a sharper approach to style, grooming, confidence, and self-presentation.",
-    preview: "Style • grooming • confidence",
+    desc: "Improve how you present yourself with practical tips on grooming, style, confidence, and appearance.",
+    preview: "Style • grooming • attraction",
     image320: "images/ethos-empire-looksmaxxing-guide-ebook-cover-320.webp",
     image1200: "images/ethos-empire-looksmaxxing-guide-ebook-cover-1200.webp",
     alt: "Looksmaxxing Guide ebook cover style grooming attraction appearance"
+  },
+  {
+    title: "The Communication Formula",
+    page: "https://ethosempire.gumroad.com/l/thecommunicationformula?layout=profile",
+    link: "https://ethosempire.gumroad.com/l/thecommunicationformula?layout=profile",
+    desc: "Say things more clearly, speak with more confidence, and improve the way you connect with other people.",
+    preview: "Clarity • confidence • connection",
+    image320: "images/ethos-empire-communication-formula-ebook-cover-320.webp",
+    image1200: "images/ethos-empire-communication-formula-ebook-cover-1200.webp",
+    alt: "The Communication Formula ebook cover clarity confidence communication"
   }
 ];
 
 const merchData = [
   {
-    title: "Black Hoodie",
-    image: "images/ethos-empire-hoodie-black-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-black-gold-logo-1200.webp",
-    alt: "Ethos Empire black hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Minimal look • gold emblem • daily wear"
+    title: "Black Gold Hoodie",
+    link: "https://ethosempire.gumroad.com/l/ethosempirehoodieblack?layout=profile",
+    desc: "A clean black hoodie with a gold Ethos Empire logo, made for a bold and minimal look.",
+    preview: "Premium black • gold logo • legacy fit",
+    image: "images/ethos-empire-black-hoodie-400.webp",
+    imageLarge: "images/ethos-empire-black-hoodie-1200.webp",
+    alt: "Ethos Empire black hoodie with gold logo"
   },
   {
-    title: "Bone Hoodie",
-    image: "images/ethos-empire-hoodie-bone-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-bone-gold-logo-1200.webp",
-    alt: "Ethos Empire bone hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Soft tone • clean fit • legacy style"
+    title: "Red Gold Hoodie",
+    link: "https://ethosempire.gumroad.com/l/redgoldhoodie?layout=profile",
+    desc: "A red hoodie with the signature gold Ethos Empire mark for a more standout statement.",
+    preview: "Bold red • gold logo • standout look",
+    image: "images/ethos-empire-red-hoodie-400.webp",
+    imageLarge: "images/ethos-empire-red-hoodie-1200.webp",
+    alt: "Ethos Empire red hoodie with gold logo"
   },
   {
-    title: "Latte Hoodie",
-    image: "images/ethos-empire-hoodie-latte-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-latte-gold-logo-1200.webp",
-    alt: "Ethos Empire latte hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Warm neutral • premium feel • clean finish"
+    title: "Pink Gold Hoodie",
+    link: "https://ethosempire.gumroad.com/l/pinkgoldhoodie?layout=profile",
+    desc: "A soft pink hoodie with a gold logo finish that keeps the style clean and unique.",
+    preview: "Soft pink • gold logo • clean style",
+    image: "images/ethos-empire-pink-hoodie-400.webp",
+    imageLarge: "images/ethos-empire-pink-hoodie-1200.webp",
+    alt: "Ethos Empire pink hoodie with gold logo"
   },
   {
-    title: "Lavender Hoodie",
-    image: "images/ethos-empire-hoodie-lavender-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-lavender-gold-logo-1200.webp",
-    alt: "Ethos Empire lavender hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Bold color • soft edge • standout piece"
-  },
-  {
-    title: "Navy Hoodie",
-    image: "images/ethos-empire-hoodie-navy-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-navy-gold-logo-1200.webp",
-    alt: "Ethos Empire navy hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Dark tone • sharp contrast • versatile"
-  },
-  {
-    title: "Oatmeal Hoodie",
-    image: "images/ethos-empire-hoodie-oatmeal-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-oatmeal-gold-logo-1200.webp",
-    alt: "Ethos Empire oatmeal hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Neutral color • easy fit • everyday piece"
-  },
-  {
-    title: "Vintage Hoodie",
-    image: "images/ethos-empire-hoodie-vintage-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-vintage-gold-logo-1200.webp",
-    alt: "Ethos Empire vintage hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Classic tone • old-school feel • clean logo"
-  },
-  {
-    title: "White Hoodie",
-    image: "images/ethos-empire-hoodie-white-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-white-gold-logo-1200.webp",
-    alt: "Ethos Empire white hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Bright color • crisp look • gold detail"
-  },
-  {
-    title: "Pink Hoodie",
-    image: "images/ethos-empire-hoodie-pink-gold-logo-400.webp",
-    imageLarge: "images/ethos-empire-hoodie-pink-gold-logo-1200.webp",
-    alt: "Ethos Empire pink hoodie with gold logo minimalist streetwear",
-    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
-    preview: "Soft color • bold contrast • fresh style"
+    title: "White Gold Hoodie",
+    link: "https://ethosempire.gumroad.com/l/whitegoldhoodie?layout=profile",
+    desc: "A white hoodie with a gold logo for a bright premium look that still feels minimal.",
+    preview: "White hoodie • gold logo • premium feel",
+    image: "images/ethos-empire-white-hoodie-400.webp",
+    imageLarge: "images/ethos-empire-white-hoodie-1200.webp",
+    alt: "Ethos Empire white hoodie with gold logo"
   }
 ];
 
@@ -420,7 +394,7 @@ function ensureScrollProgress() {
   const update = () => {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const progress = max <= 0 ? 0 : window.scrollY / max;
-    bar.style.transform = `scaleX(${progress})`;
+    bar.style.transform = `scaleX(${clamp(progress, 0, 1)})`;
   };
 
   update();
@@ -429,28 +403,19 @@ function ensureScrollProgress() {
 }
 
 function setupRevealAnimations() {
-  const nodes = document.querySelectorAll(".reveal-group > *");
-  if (nodes.length === 0) return;
-
-  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-    nodes.forEach((node) => node.classList.add("fade-up"));
-    return;
-  }
-
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("fade-up");
-        observer.unobserve(entry.target);
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.16 }
   );
 
-  nodes.forEach((node, index) => {
-    node.style.animationDelay = `${index * 80}ms`;
-    observer.observe(node);
+  document.querySelectorAll(".fade-up, .soft-card, .section-title").forEach((el) => {
+    observer.observe(el);
   });
 }
 
@@ -462,10 +427,6 @@ function setupPointerGlow(selector) {
       const rect = card.getBoundingClientRect();
       const x = ((event.clientX - rect.left) / rect.width) * 100;
       const y = ((event.clientY - rect.top) / rect.height) * 100;
-      card.style.setProperty("--glow-x", `${x}%`);
-      card.style.setProperty("--glow-y", `${y}%`);
-      card.style.setProperty("--shine-x", `${x}%`);
-      card.style.setProperty("--shine-y", `${y}%`);
       card.style.setProperty("--card-glow-x", `${x}%`);
       card.style.setProperty("--card-glow-y", `${y}%`);
     });
@@ -473,27 +434,27 @@ function setupPointerGlow(selector) {
 }
 
 function setupTilt(selector) {
-  if (prefersReducedMotion) return;
-
   const cards = document.querySelectorAll(selector);
 
   cards.forEach((card) => {
-    const maxRotate = 5.5;
+    if (card.classList.contains("ethos-bubble-card")) return;
 
     const reset = () => {
-      card.classList.remove("is-tilting");
       card.style.transform = "";
+      card.classList.remove("is-tilting");
     };
 
     card.addEventListener("pointermove", (event) => {
       if (window.innerWidth < 768) return;
+
       const rect = card.getBoundingClientRect();
       const px = (event.clientX - rect.left) / rect.width;
       const py = (event.clientY - rect.top) / rect.height;
-      const rotateY = (px - 0.5) * maxRotate * 2;
-      const rotateX = (0.5 - py) * maxRotate * 2;
+      const rx = (0.5 - py) * 6;
+      const ry = (px - 0.5) * 8;
+
       card.classList.add("is-tilting");
-      card.style.transform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+      card.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
     });
 
     card.addEventListener("pointerleave", reset);
@@ -507,24 +468,15 @@ function applyCarouselStabilityStyles() {
   const style = document.createElement("style");
   style.id = "carouselStabilityPatch";
   style.textContent = `
-    #ebookWrapper,
-    #merchWrapper {
+    .ebook-wrapper {
       scroll-behavior: auto !important;
       overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
+      touch-action: pan-y pinch-zoom;
       cursor: grab;
     }
 
-    #ebookWrapper {
-      touch-action: pan-x pan-y pinch-zoom;
-    }
-
-    #merchWrapper {
-      touch-action: pan-y pinch-zoom;
-    }
-
-    #ebookWrapper.dragging,
-    #merchWrapper.dragging {
+    .ebook-wrapper.dragging {
       cursor: grabbing;
     }
 
@@ -718,23 +670,27 @@ function refreshCarouselMetrics(controller) {
 function normalizeInfiniteScroll(controller) {
   if (!controller?.wrapper || !controller.setWidth) return;
 
-  const min = controller.setWidth * 0.5;
-  const max = controller.setWidth * 1.5;
+  const min = controller.setWidth * 0.35;
+  const max = controller.setWidth * 1.65;
+  const current = controller.wrapper.scrollLeft;
 
-  if (controller.wrapper.scrollLeft < min) {
-    controller.wrapper.scrollLeft += controller.setWidth;
-  } else if (controller.wrapper.scrollLeft > max) {
-    controller.wrapper.scrollLeft -= controller.setWidth;
+  if (current < min) {
+    controller.wrapper.scrollLeft = current + controller.setWidth;
+  } else if (current > max) {
+    controller.wrapper.scrollLeft = current - controller.setWidth;
   }
 }
 
-function pauseCarousel(controller) {
+function pauseCarousel(controller, clearResumeTimer = true) {
   if (!controller) return;
   controller.isPaused = true;
-  controller.resumeAt = 0;
+
+  if (clearResumeTimer) {
+    controller.resumeAt = 0;
+  }
 }
 
-function scheduleCarouselResume(controller, delay = 1000) {
+function scheduleCarouselResume(controller, delay = 1200) {
   if (!controller) return;
   controller.isPaused = false;
   controller.resumeAt = performance.now() + delay;
@@ -757,14 +713,9 @@ function setupInfiniteCarousel(config) {
     setWidth: 0,
     initialized: false,
     focusRaf: 0,
-    resumeTimers: [],
-    isInteracting: false,
-    lastFrameTime: 0
-  };
-
-  const clearResumeTimers = () => {
-    controller.resumeTimers.forEach((timer) => window.clearTimeout(timer));
-    controller.resumeTimers = [];
+    isPaused: false,
+    resumeAt: 0,
+    isInteracting: false
   };
 
   const updateFocus = () => {
@@ -780,33 +731,9 @@ function setupInfiniteCarousel(config) {
     updateFocus();
   };
 
-  const prefersLessMotion = () =>
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const hasHoverPointer = () =>
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
-  const getActiveSpeed = () => {
-    const base = window.innerWidth < 768 ? controller.speed * 1.24 : controller.speed;
-    return prefersLessMotion() ? base * 0.4 : base;
-  };
-
-  const stopLoop = () => {
-    if (!controller.rafId) return;
-    cancelAnimationFrame(controller.rafId);
-    controller.rafId = 0;
-  };
-
-  const step = (now) => {
-    if (!controller.lastFrameTime) {
-      controller.lastFrameTime = now;
-    }
-
-    const delta = Math.min(34, now - controller.lastFrameTime || 16.67);
-    controller.lastFrameTime = now;
-
-    if (document.hidden || controller.isInteracting) {
-      controller.rafId = requestAnimationFrame(step);
+  const step = (now = performance.now()) => {
+    if (prefersReducedMotion) {
+      controller.rafId = 0;
       return;
     }
 
@@ -814,41 +741,36 @@ function setupInfiniteCarousel(config) {
       refreshCarouselMetrics(controller);
     }
 
-    const frameDistance = getActiveSpeed() * (delta / 16.67);
-    wrapper.scrollLeft += frameDistance * controller.direction;
+    if (!controller.setWidth) {
+      controller.rafId = requestAnimationFrame(step);
+      return;
+    }
+
+    if (
+      controller.isInteracting ||
+      controller.isPaused ||
+      now < controller.resumeAt
+    ) {
+      controller.rafId = requestAnimationFrame(step);
+      return;
+    }
+
+    wrapper.scrollLeft += controller.speed * controller.direction;
     normalizeInfiniteScroll(controller);
     controller.rafId = requestAnimationFrame(step);
   };
 
   const restartLoop = () => {
-    clearResumeTimers();
+    if (prefersReducedMotion) return;
+
     refreshAndNormalize();
-    controller.isInteracting = false;
-    controller.lastFrameTime = 0;
-    stopLoop();
+
+    if (controller.rafId) {
+      cancelAnimationFrame(controller.rafId);
+      controller.rafId = 0;
+    }
+
     controller.rafId = requestAnimationFrame(step);
-  };
-
-  const queueMobileResume = (baseDelay = 140) => {
-    controller.isInteracting = false;
-    clearResumeTimers();
-
-    const delays = [0, baseDelay, baseDelay + 180];
-
-    delays.forEach((delay) => {
-      const timer = window.setTimeout(restartLoop, delay);
-      controller.resumeTimers.push(timer);
-    });
-  };
-
-  const handleInteractionStart = () => {
-    controller.isInteracting = true;
-    clearResumeTimers();
-    stopLoop();
-  };
-
-  const handleInteractionEnd = () => {
-    queueMobileResume();
   };
 
   controller.updateFocus = updateFocus;
@@ -863,36 +785,13 @@ function setupInfiniteCarousel(config) {
     updateFocus();
   }, { passive: true });
 
-  wrapper.addEventListener("touchstart", handleInteractionStart, { passive: true });
-  wrapper.addEventListener("pointerdown", (event) => {
-    if (event.pointerType === "mouse" || event.pointerType === "touch" || event.pointerType === "pen") {
-      handleInteractionStart();
-    }
-  }, { passive: true });
-
-  window.addEventListener("touchend", handleInteractionEnd, { passive: true });
-  window.addEventListener("touchcancel", handleInteractionEnd, { passive: true });
-  window.addEventListener("pointerup", handleInteractionEnd, { passive: true });
-  window.addEventListener("pointercancel", handleInteractionEnd, { passive: true });
-
-  wrapper.addEventListener("mouseleave", () => {
-    if (hasHoverPointer()) {
-      handleInteractionEnd();
-    }
-  }, { passive: true });
-
   window.addEventListener("resize", restartLoop);
-  window.addEventListener("orientationchange", () => {
-    window.setTimeout(restartLoop, 180);
-  });
+  window.addEventListener("orientationchange", restartLoop);
   window.addEventListener("load", restartLoop);
-  window.addEventListener("pageshow", () => queueMobileResume(0));
-  window.addEventListener("focus", () => queueMobileResume(0));
+  window.addEventListener("pageshow", restartLoop);
 
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-      queueMobileResume(0);
-    }
+    if (!document.hidden) restartLoop();
   });
 
   track.querySelectorAll("img").forEach((img) => {
@@ -956,27 +855,59 @@ function renderMerchCards() {
   bindCarouselCardEvents(track, "[data-merch-index]", openMerchModal);
 }
 
-function animateModalCopy(modalId) {
-  const modal = $(modalId);
-  const panel = modal?.querySelector(".modal-panel");
-  if (!panel) return;
+function animateModalCopy(id) {
+  const modal = $(id);
+  if (!modal) return;
 
-  panel.classList.remove("modal-animate");
-  void panel.offsetWidth;
-  panel.classList.add("modal-animate");
+  modal.querySelectorAll("[data-copy-fade]").forEach((node) => {
+    node.classList.remove("copy-visible");
+    void node.offsetWidth;
+    node.classList.add("copy-visible");
+  });
 }
 
-function setEbookModal(index) {
+function openModal(id) {
+  const modal = $(id);
+  if (!modal) return;
+
+  activeModal = id;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  const firstFocusable = modal.querySelector(
+    'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+  );
+
+  window.setTimeout(() => firstFocusable?.focus(), 40);
+}
+
+function closeModal(id) {
+  const modal = $(id);
+  if (!modal) return;
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+
+  if (activeModal === id) {
+    activeModal = null;
+  }
+}
+
+function openEbookModal(index) {
   const item = ebookData[index];
   if (!item) return;
 
   currentEbookIndex = index;
 
   const modalCover = $("ebookModalCover");
-  modalCover.src = item.image1200 || item.image320;
-  modalCover.srcset = `${item.image320} 320w, ${item.image1200} 1200w`;
-  modalCover.sizes = "(max-width: 767px) 90vw, 280px";
-  modalCover.alt = item.alt;
+  if (modalCover) {
+    modalCover.src = item.image1200 || item.image320;
+    modalCover.alt = item.alt;
+    modalCover.width = 420;
+    modalCover.height = 594;
+  }
 
   $("ebookModalTitle").textContent = item.title;
   $("ebookModalDesc").textContent = item.desc;
@@ -984,57 +915,6 @@ function setEbookModal(index) {
   $("ebookModalBuy").href = item.link;
 
   animateModalCopy("ebookModal");
-}
-
-function setMerchModal(index) {
-  const item = merchData[index];
-  if (!item) return;
-
-  currentMerchIndex = index;
-
-  const modalCover = $("merchModalCover");
-  modalCover.src = item.imageLarge || item.image;
-  modalCover.srcset = `${item.image} 400w, ${item.imageLarge} 1200w`;
-  modalCover.sizes = "(max-width: 767px) 90vw, 280px";
-  modalCover.alt = item.alt;
-
-  $("merchModalTitle").textContent = item.title;
-  $("merchModalBuy").href = item.link;
-
-  animateModalCopy("merchModal");
-}
-
-function openModal(modalId) {
-  const modal = $(modalId);
-  if (!modal) return;
-
-  activeModal = modalId;
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-
-  const focusTarget = modal.querySelector(".modal-close");
-  focusTarget?.focus({ preventScroll: true });
-}
-
-function closeModal(modalId) {
-  const modal = $(modalId);
-  if (!modal) return;
-
-  modal.classList.remove("open");
-  modal.setAttribute("aria-hidden", "true");
-
-  if (activeModal === modalId) {
-    activeModal = null;
-  }
-
-  if (!document.querySelector(".modal-overlay.open")) {
-    document.body.style.overflow = "";
-  }
-}
-
-function openEbookModal(index) {
-  setEbookModal(index);
   openModal("ebookModal");
 }
 
@@ -1042,8 +922,30 @@ function closeEbookModal() {
   closeModal("ebookModal");
 }
 
+function nextEbook(delta) {
+  currentEbookIndex = (currentEbookIndex + delta + ebookData.length) % ebookData.length;
+  openEbookModal(currentEbookIndex);
+}
+
 function openMerchModal(index) {
-  setMerchModal(index);
+  const item = merchData[index];
+  if (!item) return;
+
+  currentMerchIndex = index;
+
+  const modalCover = $("merchModalCover");
+  if (modalCover) {
+    modalCover.src = item.imageLarge || item.image;
+    modalCover.alt = item.alt;
+    modalCover.width = 420;
+    modalCover.height = 594;
+  }
+
+  $("merchModalTitle").textContent = item.title;
+  $("merchModalDesc").textContent = item.desc;
+  $("merchModalBuy").href = item.link;
+
+  animateModalCopy("merchModal");
   openModal("merchModal");
 }
 
@@ -1051,14 +953,9 @@ function closeMerchModal() {
   closeModal("merchModal");
 }
 
-function nextEbook(delta) {
-  currentEbookIndex = (currentEbookIndex + delta + ebookData.length) % ebookData.length;
-  setEbookModal(currentEbookIndex);
-}
-
 function nextMerch(delta) {
   currentMerchIndex = (currentMerchIndex + delta + merchData.length) % merchData.length;
-  setMerchModal(currentMerchIndex);
+  openMerchModal(currentMerchIndex);
 }
 
 function trapModalFocus(event) {
@@ -1124,36 +1021,73 @@ function setupModalControls() {
   });
 }
 
-function setupDragScroll(el, options = {}) {
+function setupDragScroll(el) {
   if (!el) return;
-
-  const settings = {
-    touchEnabled: true,
-    ...options
-  };
 
   const controller = carouselControllers.get(el);
 
   let isDown = false;
   let lastClientX = 0;
+  let startClientX = 0;
+  let startClientY = 0;
   let moved = false;
+  let dragIntent = null;
 
-  const start = (clientX) => {
+  const beginInteraction = () => {
+    if (!controller) return;
+    controller.isInteracting = true;
+    pauseCarousel(controller);
+  };
+
+  const finishInteraction = (delay = 1200) => {
+    if (!controller) return;
+    controller.isInteracting = false;
+    normalizeInfiniteScroll(controller);
+    controller.updateFocus?.();
+    scheduleCarouselResume(controller, delay);
+  };
+
+  const start = (clientX, clientY = 0, kind = "mouse") => {
     isDown = true;
     moved = false;
     lastClientX = clientX;
+    startClientX = clientX;
+    startClientY = clientY;
+    dragIntent = kind === "touch" ? null : "horizontal";
     el.classList.add("dragging");
+    beginInteraction();
   };
 
-  const move = (clientX) => {
+  const move = (clientX, clientY = 0, originalEvent = null, kind = "mouse") => {
     if (!isDown) return;
+
+    const totalDeltaX = clientX - startClientX;
+    const totalDeltaY = clientY - startClientY;
+
+    if (kind === "touch" && dragIntent === null) {
+      if (Math.abs(totalDeltaX) < 8 && Math.abs(totalDeltaY) < 8) return;
+      dragIntent =
+        Math.abs(totalDeltaX) > Math.abs(totalDeltaY)
+          ? "horizontal"
+          : "vertical";
+    }
+
+    if (dragIntent === "vertical") {
+      return;
+    }
 
     const deltaX = clientX - lastClientX;
     lastClientX = clientX;
 
-    if (Math.abs(deltaX) > 1) moved = true;
+    if (Math.abs(deltaX) > 1) {
+      moved = true;
+    }
 
-    el.scrollLeft -= deltaX * (window.innerWidth < 768 ? 1.1 : 0.95);
+    if (kind === "touch" && originalEvent?.cancelable) {
+      originalEvent.preventDefault();
+    }
+
+    el.scrollLeft -= deltaX * (window.innerWidth < 768 ? 1.08 : 0.95);
 
     if (controller) {
       normalizeInfiniteScroll(controller);
@@ -1163,40 +1097,40 @@ function setupDragScroll(el, options = {}) {
 
   const end = () => {
     if (!isDown) return;
+
+    const wasHorizontalDrag = dragIntent !== "vertical" && moved;
+
     isDown = false;
+    dragIntent = null;
     el.classList.remove("dragging");
 
     if (controller) {
-      normalizeInfiniteScroll(controller);
-      controller.updateFocus?.();
-      controller.restartLoop?.();
+      finishInteraction(wasHorizontalDrag ? 1400 : 500);
     }
   };
 
   el.addEventListener("mousedown", (e) => {
     if (e.button !== 0) return;
-    start(e.clientX);
+    start(e.clientX, e.clientY, "mouse");
     e.preventDefault();
   });
 
-  window.addEventListener("mousemove", (e) => move(e.clientX));
+  window.addEventListener("mousemove", (e) => move(e.clientX, e.clientY, e, "mouse"));
   window.addEventListener("mouseup", end);
+  window.addEventListener("blur", end);
 
-  if (settings.touchEnabled) {
-    el.addEventListener("touchstart", (e) => {
-      if (!e.touches[0]) return;
-      start(e.touches[0].clientX);
-    }, { passive: true });
+  el.addEventListener("touchstart", (e) => {
+    if (!e.touches[0]) return;
+    start(e.touches[0].clientX, e.touches[0].clientY, "touch");
+  }, { passive: true });
 
-    el.addEventListener("touchmove", (e) => {
-      if (!e.touches[0]) return;
-      move(e.touches[0].clientX);
-    }, { passive: true });
+  el.addEventListener("touchmove", (e) => {
+    if (!e.touches[0]) return;
+    move(e.touches[0].clientX, e.touches[0].clientY, e, "touch");
+  }, { passive: false });
 
-    el.addEventListener("touchend", end);
-    el.addEventListener("touchcancel", end);
-  }
-
+  el.addEventListener("touchend", end, { passive: true });
+  el.addEventListener("touchcancel", end, { passive: true });
   el.addEventListener("mouseleave", () => {
     if (isDown) end();
   });
@@ -1378,7 +1312,7 @@ window.addEventListener("DOMContentLoaded", () => {
     wrapperId: "ebookWrapper",
     trackId: "ebookTrack",
     items: ebookData,
-    speed: 0.58,
+    speed: 0.55,
     direction: 1
   });
 
@@ -1393,7 +1327,7 @@ window.addEventListener("DOMContentLoaded", () => {
   setupModalControls();
   setupRevealAnimations();
 
-  setupDragScroll($("ebookWrapper"), { touchEnabled: false });
+  setupDragScroll($("ebookWrapper"));
   setupDragScroll($("merchWrapper"));
 
   setupCarouselFocus("ebookWrapper", ".ebook-card");
