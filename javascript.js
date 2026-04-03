@@ -764,6 +764,18 @@ function setupInfiniteCarousel(config) {
 
   let restartTimer = 0;
 
+  const shouldRunAutoplay = () => {
+    const isPhoneLike =
+      window.matchMedia("(max-width: 767px)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+
+    if (!prefersReducedMotion) {
+      return true;
+    }
+
+    return Boolean(config.enableMobileAutoplay && isPhoneLike);
+  };
+
   const updateFocus = () => {
     cancelAnimationFrame(controller.focusRaf);
     controller.focusRaf = requestAnimationFrame(() => {
@@ -778,7 +790,7 @@ function setupInfiniteCarousel(config) {
   };
 
   const step = (now = performance.now()) => {
-    if (prefersReducedMotion) {
+    if (!shouldRunAutoplay()) {
       controller.rafId = 0;
       return;
     }
@@ -807,7 +819,6 @@ function setupInfiniteCarousel(config) {
   };
 
   const restartLoop = () => {
-    if (prefersReducedMotion) return;
     refreshAndNormalize();
 
     if (controller.rafId) {
@@ -815,11 +826,14 @@ function setupInfiniteCarousel(config) {
       controller.rafId = 0;
     }
 
+    if (!shouldRunAutoplay()) {
+      return;
+    }
+
     controller.rafId = requestAnimationFrame(step);
   };
 
   const requestRestart = (delay = 80) => {
-    if (prefersReducedMotion) return;
     window.clearTimeout(restartTimer);
     restartTimer = window.setTimeout(() => {
       restartLoop();
@@ -1401,7 +1415,8 @@ window.addEventListener("DOMContentLoaded", () => {
     trackId: "ebookTrack",
     items: ebookData,
     speed: 0.55,
-    direction: 1
+    direction: 1,
+    enableMobileAutoplay: true
   });
 
   setupInfiniteCarousel({
@@ -1409,7 +1424,8 @@ window.addEventListener("DOMContentLoaded", () => {
     trackId: "merchTrack",
     items: merchData,
     speed: 0.55,
-    direction: -1
+    direction: -1,
+    enableMobileAutoplay: true
   });
 
   setupModalControls();
