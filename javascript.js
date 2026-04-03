@@ -262,6 +262,16 @@ const ebookData = [
     alt: "Confidence Guide ebook cover self belief mindset personal growth"
   },
   {
+    title: "The Philosophy of Becoming",
+    page: "https://ethosempire.gumroad.com/l/thephilosophyofbecoming?layout=profile",
+    link: "https://ethosempire.gumroad.com/l/thephilosophyofbecoming?layout=profile",
+    desc: "Explore the mindset, discipline, and personal standards needed to become stronger, sharper, and more intentional in how you live.",
+    preview: "Mindset • discipline • becoming",
+    image320: "images/ethos-empire-philosophy-of-becoming-ebook-cover-320.webp",
+    image1200: "images/ethos-empire-philosophy-of-becoming-ebook-cover-1200.webp",
+    alt: "The Philosophy of Becoming ebook cover mindset discipline personal growth"
+  },
+  {
     title: "Life Lessons in Faith",
     page: "https://ethosempire.gumroad.com/l/lifelessonsinfaith?layout=profile",
     link: "https://ethosempire.gumroad.com/l/lifelessonsinfaith?layout=profile",
@@ -283,8 +293,8 @@ const ebookData = [
   },
   {
     title: "The Architecture of Health",
-    page: "https://ethosempire.gumroad.com/l/architectureofhealth?layout=profile",
-    link: "https://ethosempire.gumroad.com/l/architectureofhealth?layout=profile",
+    page: "https://ethosempire.gumroad.com/l/thearchitechtureofhealth?layout=profile",
+    link: "https://ethosempire.gumroad.com/l/thearchitechtureofhealth?layout=profile",
     desc: "Build a better body and clearer mind through habits that support energy, training, nutrition, and long-term health.",
     preview: "Training • nutrition • energy",
     image320: "images/ethos-empire-architecture-of-health-ebook-cover-320.webp",
@@ -312,6 +322,16 @@ const ebookData = [
     alt: "The Clear Skin Guide ebook cover skincare routine healthy skin habits"
   },
   {
+    title: "Looksmaxxing Guide",
+    page: "https://ethosempire.gumroad.com/l/thelooksmaxxingguide?layout=profile",
+    link: "https://ethosempire.gumroad.com/l/thelooksmaxxingguide?layout=profile",
+    desc: "Level up your appearance with a sharper approach to style, grooming, confidence, and self-presentation.",
+    preview: "Style • grooming • confidence",
+    image320: "images/ethos-empire-looksmaxxing-guide-ebook-cover-320.webp",
+    image1200: "images/ethos-empire-looksmaxxing-guide-ebook-cover-1200.webp",
+    alt: "Looksmaxxing Guide ebook cover style grooming attraction appearance"
+  },
+  {
     title: "The Hair Care Blueprint",
     page: "https://ethosempire.gumroad.com/l/thehaircareblueprint?layout=profile",
     link: "https://ethosempire.gumroad.com/l/thehaircareblueprint?layout=profile",
@@ -320,26 +340,6 @@ const ebookData = [
     image320: "images/ethos-empire-hair-care-blueprint-ebook-cover-320.webp",
     image1200: "images/ethos-empire-hair-care-blueprint-ebook-cover-1200.webp",
     alt: "The Hair Care Blueprint ebook cover grooming styling hair health"
-  },
-  {
-    title: "Looksmaxxing Guide",
-    page: "https://ethosempire.gumroad.com/l/looksmaxxingguide?layout=profile",
-    link: "https://ethosempire.gumroad.com/l/looksmaxxingguide?layout=profile",
-    desc: "Improve how you present yourself with practical tips on grooming, style, confidence, and appearance.",
-    preview: "Style • grooming • attraction",
-    image320: "images/ethos-empire-looksmaxxing-guide-ebook-cover-320.webp",
-    image1200: "images/ethos-empire-looksmaxxing-guide-ebook-cover-1200.webp",
-    alt: "Looksmaxxing Guide ebook cover style grooming attraction appearance"
-  },
-  {
-    title: "The Communication Formula",
-    page: "https://ethosempire.gumroad.com/l/thecommunicationformula?layout=profile",
-    link: "https://ethosempire.gumroad.com/l/thecommunicationformula?layout=profile",
-    desc: "Say things more clearly, speak with more confidence, and improve the way you connect with other people.",
-    preview: "Clarity • confidence • connection",
-    image320: "images/ethos-empire-communication-formula-ebook-cover-320.webp",
-    image1200: "images/ethos-empire-communication-formula-ebook-cover-1200.webp",
-    alt: "The Communication Formula ebook cover clarity confidence communication"
   }
 ];
 
@@ -667,6 +667,14 @@ function bindCarouselCardEvents(track, selector, openModalCallback) {
     const open = () => openModalCallback(Number(card.dataset.loopIndex));
 
     card.addEventListener("click", (e) => {
+      const wrapper = card.closest(".ebook-wrapper");
+      const suppressUntil = Number(wrapper?.dataset.suppressClickUntil || 0);
+
+      if (performance.now() < suppressUntil) {
+        e.preventDefault();
+        return;
+      }
+
       if (e.target.closest("a")) return;
       open();
     });
@@ -754,6 +762,8 @@ function setupInfiniteCarousel(config) {
     isInteracting: false
   };
 
+  let restartTimer = 0;
+
   const updateFocus = () => {
     cancelAnimationFrame(controller.focusRaf);
     controller.focusRaf = requestAnimationFrame(() => {
@@ -798,7 +808,6 @@ function setupInfiniteCarousel(config) {
 
   const restartLoop = () => {
     if (prefersReducedMotion) return;
-
     refreshAndNormalize();
 
     if (controller.rafId) {
@@ -807,6 +816,14 @@ function setupInfiniteCarousel(config) {
     }
 
     controller.rafId = requestAnimationFrame(step);
+  };
+
+  const requestRestart = (delay = 80) => {
+    if (prefersReducedMotion) return;
+    window.clearTimeout(restartTimer);
+    restartTimer = window.setTimeout(() => {
+      restartLoop();
+    }, delay);
   };
 
   controller.updateFocus = updateFocus;
@@ -821,19 +838,21 @@ function setupInfiniteCarousel(config) {
     updateFocus();
   }, { passive: true });
 
-  window.addEventListener("resize", restartLoop);
-  window.addEventListener("orientationchange", restartLoop);
-  window.addEventListener("load", restartLoop);
-  window.addEventListener("pageshow", restartLoop);
+  window.addEventListener("resize", () => requestRestart(90));
+  window.addEventListener("orientationchange", () => requestRestart(120));
+  window.addEventListener("load", () => requestRestart(120));
+  window.addEventListener("pageshow", () => requestRestart(80));
 
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) restartLoop();
+    if (!document.hidden) {
+      requestRestart(80);
+    }
   });
 
   track.querySelectorAll("img").forEach((img) => {
     if (!img.complete) {
-      img.addEventListener("load", restartLoop);
-      img.addEventListener("error", restartLoop);
+      img.addEventListener("load", () => requestRestart(40), { once: true });
+      img.addEventListener("error", () => requestRestart(40), { once: true });
     }
   });
 
@@ -1068,6 +1087,7 @@ function setupDragScroll(el) {
   let startClientY = 0;
   let moved = false;
   let dragIntent = null;
+  let suppressClickUntil = 0;
 
   const beginInteraction = () => {
     if (!controller) return;
@@ -1091,6 +1111,7 @@ function setupDragScroll(el) {
     startClientY = clientY;
     dragIntent = kind === "touch" ? null : "horizontal";
     el.classList.add("dragging");
+    el.dataset.suppressClickUntil = "0";
     beginInteraction();
   };
 
@@ -1140,6 +1161,16 @@ function setupDragScroll(el) {
     dragIntent = null;
     el.classList.remove("dragging");
 
+    if (wasHorizontalDrag) {
+      suppressClickUntil = performance.now() + 280;
+      el.dataset.suppressClickUntil = String(suppressClickUntil);
+    } else {
+      suppressClickUntil = 0;
+      el.dataset.suppressClickUntil = "0";
+    }
+
+    moved = false;
+
     if (controller) {
       finishInteraction(wasHorizontalDrag ? 1400 : 500);
     }
@@ -1173,9 +1204,8 @@ function setupDragScroll(el) {
 
   el.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", (e) => {
-      if (moved) {
+      if (performance.now() < suppressClickUntil) {
         e.preventDefault();
-        moved = false;
       }
     });
   });
