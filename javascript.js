@@ -345,40 +345,76 @@ const ebookData = [
 
 const merchData = [
   {
-    title: "Black Gold Hoodie",
-    link: "https://ethosempire.gumroad.com/l/ethosempirehoodieblack?layout=profile",
-    desc: "A clean black hoodie with a gold Ethos Empire logo, made for a bold and minimal look.",
-    preview: "Premium black • gold logo • legacy fit",
-    image: "images/ethos-empire-black-hoodie-400.webp",
-    imageLarge: "images/ethos-empire-black-hoodie-1200.webp",
-    alt: "Ethos Empire black hoodie with gold logo"
+    title: "Black Hoodie",
+    image: "images/ethos-empire-hoodie-black-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-black-gold-logo-1200.webp",
+    alt: "Ethos Empire black hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Minimal look • gold emblem • daily wear"
   },
   {
-    title: "Red Gold Hoodie",
-    link: "https://ethosempire.gumroad.com/l/redgoldhoodie?layout=profile",
-    desc: "A red hoodie with the signature gold Ethos Empire mark for a more standout statement.",
-    preview: "Bold red • gold logo • standout look",
-    image: "images/ethos-empire-red-hoodie-400.webp",
-    imageLarge: "images/ethos-empire-red-hoodie-1200.webp",
-    alt: "Ethos Empire red hoodie with gold logo"
+    title: "Bone Hoodie",
+    image: "images/ethos-empire-hoodie-bone-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-bone-gold-logo-1200.webp",
+    alt: "Ethos Empire bone hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Soft tone • clean fit • legacy style"
   },
   {
-    title: "Pink Gold Hoodie",
-    link: "https://ethosempire.gumroad.com/l/pinkgoldhoodie?layout=profile",
-    desc: "A soft pink hoodie with a gold logo finish that keeps the style clean and unique.",
-    preview: "Soft pink • gold logo • clean style",
-    image: "images/ethos-empire-pink-hoodie-400.webp",
-    imageLarge: "images/ethos-empire-pink-hoodie-1200.webp",
-    alt: "Ethos Empire pink hoodie with gold logo"
+    title: "Latte Hoodie",
+    image: "images/ethos-empire-hoodie-latte-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-latte-gold-logo-1200.webp",
+    alt: "Ethos Empire latte hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Warm neutral • premium feel • clean finish"
   },
   {
-    title: "White Gold Hoodie",
-    link: "https://ethosempire.gumroad.com/l/whitegoldhoodie?layout=profile",
-    desc: "A white hoodie with a gold logo for a bright premium look that still feels minimal.",
-    preview: "White hoodie • gold logo • premium feel",
-    image: "images/ethos-empire-white-hoodie-400.webp",
-    imageLarge: "images/ethos-empire-white-hoodie-1200.webp",
-    alt: "Ethos Empire white hoodie with gold logo"
+    title: "Lavender Hoodie",
+    image: "images/ethos-empire-hoodie-lavender-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-lavender-gold-logo-1200.webp",
+    alt: "Ethos Empire lavender hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Bold color • soft edge • standout piece"
+  },
+  {
+    title: "Navy Hoodie",
+    image: "images/ethos-empire-hoodie-navy-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-navy-gold-logo-1200.webp",
+    alt: "Ethos Empire navy hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Dark tone • sharp contrast • versatile"
+  },
+  {
+    title: "Oatmeal Hoodie",
+    image: "images/ethos-empire-hoodie-oatmeal-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-oatmeal-gold-logo-1200.webp",
+    alt: "Ethos Empire oatmeal hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Neutral color • easy fit • everyday piece"
+  },
+  {
+    title: "Vintage Hoodie",
+    image: "images/ethos-empire-hoodie-vintage-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-vintage-gold-logo-1200.webp",
+    alt: "Ethos Empire vintage hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Classic tone • old-school feel • clean logo"
+  },
+  {
+    title: "White Hoodie",
+    image: "images/ethos-empire-hoodie-white-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-white-gold-logo-1200.webp",
+    alt: "Ethos Empire white hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Bright color • crisp look • gold detail"
+  },
+  {
+    title: "Pink Hoodie",
+    image: "images/ethos-empire-hoodie-pink-gold-logo-400.webp",
+    imageLarge: "images/ethos-empire-hoodie-pink-gold-logo-1200.webp",
+    alt: "Ethos Empire pink hoodie with gold logo minimalist streetwear",
+    link: "https://ethosempireo.printful.me/product/ethos-unisex-hoodie",
+    preview: "Soft color • bold contrast • fresh style"
   }
 ];
 
@@ -472,7 +508,7 @@ function applyCarouselStabilityStyles() {
       scroll-behavior: auto !important;
       overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
-      touch-action: pan-y pinch-zoom;
+      touch-action: auto;
       cursor: grab;
     }
 
