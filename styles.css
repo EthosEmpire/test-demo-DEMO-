@@ -719,9 +719,7 @@ summary:focus-visible {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition:
-    opacity 340ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 340ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
 .modal-overlay.open {
@@ -741,12 +739,9 @@ summary:focus-visible {
     linear-gradient(180deg, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.78)),
     radial-gradient(circle at top, rgba(255, 215, 0, 0.08), transparent 36%);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-  transform: translateY(14px) scale(0.975);
+  transform: translateY(16px) scale(0.92);
   opacity: 0;
-  transition:
-    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1) !important;
-  will-change: transform, opacity;
+  transition: transform 0.28s ease, opacity 0.28s ease;
   padding: 20px;
 }
 
@@ -783,13 +778,11 @@ summary:focus-visible {
   justify-content: center;
   cursor: pointer;
   z-index: 3;
-  transition:
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    background 220ms ease !important;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .modal-close:hover {
-  transform: scale(1.03) !important;
+  transform: scale(1.05);
   background: rgba(0, 0, 0, 0.75);
 }
 
@@ -830,20 +823,15 @@ summary:focus-visible {
   border-radius: 18px;
   box-shadow: 0 20px 55px rgba(0, 0, 0, 0.65);
   border: 1px solid rgba(255, 215, 0, 0.12);
-  animation: modalPopSmooth 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+  transform: scale(0.96);
+  animation: modalPop 0.3s ease forwards;
   -webkit-user-drag: none;
   user-drag: none;
 }
 
-@keyframes modalPopSmooth {
-  from {
-    transform: translateY(10px) scale(0.92);
-    opacity: 0.4;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+@keyframes modalPop {
+  from { transform: scale(0.88); opacity: 0.35; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .modal-nav {
@@ -860,16 +848,14 @@ summary:focus-visible {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
   z-index: 2;
   font-size: 20px;
   user-select: none;
-  transition:
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    background 220ms ease !important;
 }
 
 .modal-nav:hover {
-  transform: translateY(-10%) scale(1.03) !important;
+  transform: translateY(-10%) scale(1.06);
   background: rgba(0, 0, 0, 0.75);
 }
 
@@ -886,7 +872,6 @@ summary:focus-visible {
   filter: blur(7px);
 }
 
-/* Fallback so the right-side content still shows even if modal-animate misses */
 .modal-overlay.open .modal-panel .modal-meta,
 .modal-overlay.open .modal-panel .modal-title,
 .modal-overlay.open .modal-panel .modal-desc,
@@ -901,13 +886,12 @@ summary:focus-visible {
     filter 260ms ease;
 }
 
-/* Keep the animation when modal-animate is present */
 .modal-overlay.open .modal-panel.modal-animate .modal-meta,
 .modal-overlay.open .modal-panel.modal-animate .modal-title,
 .modal-overlay.open .modal-panel.modal-animate .modal-desc,
 .modal-overlay.open .modal-panel.modal-animate .modal-actions,
 .modal-overlay.open .modal-panel.modal-animate .modal-social {
-  animation: modalTextRiseSmooth 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+  animation: modalTextRise 620ms cubic-bezier(0.2, 0.75, 0.2, 1) forwards;
 }
 
 .modal-overlay.open .modal-panel.modal-animate .modal-title { animation-delay: 70ms; }
@@ -915,7 +899,7 @@ summary:focus-visible {
 .modal-overlay.open .modal-panel.modal-animate .modal-actions { animation-delay: 230ms; }
 .modal-overlay.open .modal-panel.modal-animate .modal-social { animation-delay: 310ms; }
 
-@keyframes modalTextRiseSmooth {
+@keyframes modalTextRise {
   from {
     opacity: 0;
     transform: translateY(18px);
@@ -1020,12 +1004,136 @@ summary:focus-visible {
 
 .modal-meta {
   color: #a78b42;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.24em;
-  margin-bottom: 10px;
+  font-size: 0.8rem;
   text-align: center;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
+
+/* ---------------------------------
+   Bubble section
+--------------------------------- */
+
+.ethos-bubble-grid {
+  display: grid;
+}
+
+.ethos-bubble-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  --shine-x: 50%;
+  --shine-y: 30%;
+  transition:
+    transform 360ms cubic-bezier(0.2, 0.75, 0.2, 1),
+    border-color 280ms ease,
+    box-shadow 280ms ease,
+    opacity 280ms ease;
+}
+
+.ethos-bubble-card::before,
+.ethos-bubble-card::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+
+.ethos-bubble-card::before {
+  width: 120px;
+  height: 120px;
+  top: -40px;
+  left: -30px;
+  background: radial-gradient(circle at var(--shine-x) var(--shine-y), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
+  mix-blend-mode: screen;
+}
+
+.ethos-bubble-card::after {
+  width: 180px;
+  height: 180px;
+  right: -45px;
+  bottom: -60px;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 215, 0, 0.14), rgba(255, 215, 0, 0) 70%);
+  filter: blur(2px);
+}
+
+.ethos-bubble-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ethos-bubble-card:hover,
+.ethos-bubble-card.is-active {
+  transform: translateY(-7px) scale(1.015);
+  border-color: rgba(255, 215, 0, 0.28);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.46);
+}
+
+.ethos-bubble-card.is-dim {
+  opacity: 0.82;
+}
+
+.ethos-bubble-card h3,
+.ethos-bubble-card p {
+  transition: transform 0.28s ease, opacity 0.28s ease;
+}
+
+.ethos-bubble-card:hover h3,
+.ethos-bubble-card.is-active h3 {
+  transform: translateY(-2px);
+}
+
+.ethos-bubble-card:hover p,
+.ethos-bubble-card.is-active p {
+  opacity: 1;
+}
+
+/* ---------------------------------
+   FAQ
+--------------------------------- */
+
+details.soft-card {
+  transition:
+    border-color 240ms ease,
+    transform 240ms ease,
+    box-shadow 240ms ease;
+}
+
+details.soft-card[open] {
+  border-color: rgba(255, 215, 0, 0.28);
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.4);
+}
+
+details summary {
+  list-style: none;
+  position: relative;
+  padding-right: 34px;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary::after {
+  content: "+";
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #ffd700;
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: transform 0.24s ease;
+}
+
+details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+/* ---------------------------------
+   Desktop layout
+--------------------------------- */
 
 @media (min-width: 768px) {
   .modal-grid {
@@ -1054,40 +1162,487 @@ summary:focus-visible {
   .modal-cover-wrap {
     padding-top: 0;
   }
+
+  .ebook-wrapper {
+    scroll-padding-inline: 28px;
+  }
 }
 
+/* ---------------------------------
+   Mobile
+--------------------------------- */
+
 @media (max-width: 767px) {
+  .ebook-track {
+    gap: 14px;
+  }
+
+  .ebook-card {
+    width: 146px;
+    padding: 12px 12px 15px;
+  }
+
+  .ebook-card-title {
+    min-height: 3.1em;
+    font-size: 0.92rem;
+  }
+
+  .ebook-card img {
+    width: 122px;
+    margin-inline: auto;
+  }
+
+  .card-eyebrow {
+    top: 10px;
+    left: 10px;
+    font-size: 0.56rem;
+    letter-spacing: 0.16em;
+    padding: 5px 8px;
+  }
+
+  .card-preview {
+    inset: auto 10px 66px;
+    font-size: 0.69rem;
+    line-height: 1.38;
+    padding: 8px 10px;
+    border-radius: 14px;
+  }
+
+  .buy-btn {
+    font-size: 11px;
+    padding: 7px 14px;
+    margin-top: 8px;
+    box-shadow: 0 14px 24px rgba(201, 149, 42, 0.22);
+  }
+
   .modal-panel {
     width: min(96vw, 720px);
-    padding: 18px;
   }
 
-  .modal-grid {
+  .ethos-bubble-grid {
+    display: flex;
     gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    margin-left: -6px;
+    margin-right: -6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    perspective: 1200px;
+    scroll-padding-inline: 6px;
   }
 
-  .modal-cover-wrap {
-    padding-top: 22px;
+  .ethos-bubble-grid::-webkit-scrollbar {
+    display: none;
   }
 
-  .modal-title {
+  .ethos-bubble-card {
+    flex: 0 0 86%;
+    min-height: 240px;
+    border-radius: 34px;
+    padding: 24px 20px 22px;
+    scroll-snap-align: center;
+    background:
+      linear-gradient(180deg, rgba(18, 18, 18, 0.82), rgba(255, 255, 255, 0.05)),
+      radial-gradient(circle at var(--shine-x) var(--shine-y), rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 45%);
+    border: 1px solid rgba(255, 215, 0, 0.16);
+    box-shadow:
+      0 20px 55px rgba(0, 0, 0, 0.44),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transform: translateZ(0);
+  }
+
+  .ethos-bubble-card.is-active {
+    transform: translateY(-8px) scale(1.018);
+  }
+
+  .ethos-bubble-card h3 {
+    color: #ffd700;
     font-size: 1.3rem;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    margin-bottom: 14px;
   }
 
-  .modal-desc,
-  .modal-meta {
-    text-align: center;
+  .ethos-bubble-card p {
+    color: #f7e7b3;
+    font-size: 1rem;
+    line-height: 1.72;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
   }
 
-  .modal-actions {
-    justify-content: center;
+  .ethos-bubble-card::before {
+    width: 112px;
+    height: 112px;
+    top: -24px;
+    left: -12px;
   }
 
-  .modal-social {
-    text-align: center;
+  .ethos-bubble-card::after {
+    width: 160px;
+    height: 160px;
+    right: -26px;
+    bottom: -34px;
+  }
+}
+
+/* ---------------------------------
+   Reduced motion
+--------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 
-  .modal-social-row {
-    justify-content: center;
+  .fade-up {
+    animation: none;
+    opacity: 1;
+  }
+
+  .reveal-group > * {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .soft-card,
+  .ebook-card,
+  .buy-btn,
+  .modal-panel,
+  .modal-overlay,
+  .modal-cover,
+  .social-link,
+  .social-icon,
+  .modal-nav,
+  .modal-close {
+    transition: none;
+    animation: none;
+    transform: none !important;
+  }
+
+  .scroll-progress {
+    transition: none;
+  }
+}
+
+/* =========================================
+   Ethos Empire motion polish patch
+   Added for smoother motion + more stable
+   ebook / merch behavior on desktop + phone
+========================================= */
+
+:root {
+  --ease-smooth: cubic-bezier(0.22, 0.7, 0.2, 1);
+  --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 220ms;
+  --dur-med: 360ms;
+  --dur-slow: 860ms;
+}
+
+/* ------------------------------
+   Reveal animations
+------------------------------ */
+
+.fade-up {
+  animation: fadeUpSmooth 980ms var(--ease-smooth) forwards !important;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+
+@keyframes fadeUpSmooth {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+.reveal-group > * {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  filter: blur(7px);
+  transition:
+    transform var(--dur-slow) var(--ease-smooth),
+    opacity var(--dur-slow) var(--ease-smooth),
+    filter 720ms var(--ease-soft) !important;
+  will-change: transform, opacity, filter;
+}
+
+.reveal-group.is-visible > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+}
+
+.reveal-group.is-visible > *:nth-child(1) { transition-delay: 50ms; }
+.reveal-group.is-visible > *:nth-child(2) { transition-delay: 120ms; }
+.reveal-group.is-visible > *:nth-child(3) { transition-delay: 190ms; }
+.reveal-group.is-visible > *:nth-child(4) { transition-delay: 260ms; }
+.reveal-group.is-visible > *:nth-child(5) { transition-delay: 330ms; }
+.reveal-group.is-visible > *:nth-child(6) { transition-delay: 400ms; }
+
+/* ------------------------------
+   Buttons + social
+------------------------------ */
+
+.buy-btn,
+.modal-buy {
+  transition:
+    transform var(--dur-fast) var(--ease-soft),
+    box-shadow var(--dur-fast) ease,
+    filter var(--dur-fast) ease !important;
+  will-change: transform, box-shadow;
+}
+
+.buy-btn:hover,
+.modal-buy:hover {
+  transform: translateY(-1px) scale(1.015) !important;
+}
+
+.social-link {
+  transition:
+    transform 260ms var(--ease-soft),
+    opacity 220ms ease,
+    color 220ms ease !important;
+  will-change: transform;
+}
+
+.social-link:hover {
+  transform: translateY(-2px) !important;
+}
+
+.social-icon,
+.modal-social-link img {
+  transition:
+    transform 260ms var(--ease-soft),
+    filter 260ms ease !important;
+}
+
+.social-link:hover .social-icon,
+.modal-social-link:hover img {
+  transform: translateY(-2px) scale(1.04) !important;
+}
+
+/* ------------------------------
+   Ebook / merch stability
+------------------------------ */
+
+.ebook-wrapper {
+  scroll-behavior: auto !important;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pinch-zoom;
+}
+
+.ebook-track {
+  will-change: transform;
+}
+
+.ebook-card {
+  transition:
+    box-shadow 320ms var(--ease-soft),
+    border-color 280ms ease,
+    opacity 280ms ease,
+    filter 280ms ease !important;
+  will-change: box-shadow, border-color, opacity;
+}
+
+.ebook-card.is-centered {
+  transform: none !important;
+}
+
+.ebook-card img {
+  transition:
+    box-shadow 320ms var(--ease-soft),
+    filter 320ms ease !important;
+}
+
+.ebook-card:hover img,
+.ebook-card.is-centered img {
+  transform: none !important;
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.22), 0 22px 46px rgba(0, 0, 0, 0.5) !important;
+  filter: brightness(1.02);
+}
+
+.ebook-card:hover .ebook-card-title,
+.ebook-card.is-centered .ebook-card-title {
+  transform: none !important;
+}
+
+.card-preview {
+  transform: translateY(8px);
+  transition:
+    opacity 280ms var(--ease-soft),
+    transform 280ms var(--ease-soft) !important;
+}
+
+/* ------------------------------
+   Modal smoothing
+------------------------------ */
+
+.modal-overlay {
+  transition:
+    opacity 340ms var(--ease-soft),
+    visibility 340ms var(--ease-soft) !important;
+}
+
+.modal-panel {
+  transform: translateY(14px) scale(0.975);
+  transition:
+    transform 360ms var(--ease-smooth),
+    opacity 320ms var(--ease-soft) !important;
+  will-change: transform, opacity;
+}
+
+.modal-overlay.open .modal-panel {
+  transform: translateY(0) scale(1);
+}
+
+.modal-close,
+.modal-nav {
+  transition:
+    transform 220ms var(--ease-soft),
+    background 220ms ease !important;
+}
+
+.modal-close:hover,
+.modal-nav:hover {
+  transform: scale(1.03) !important;
+}
+
+.modal-cover {
+  animation: modalPopSmooth 420ms var(--ease-smooth) forwards !important;
+}
+
+@keyframes modalPopSmooth {
+  from {
+    transform: translateY(10px) scale(0.92);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-overlay.open .modal-panel.modal-animate .modal-meta,
+.modal-overlay.open .modal-panel.modal-animate .modal-title,
+.modal-overlay.open .modal-panel.modal-animate .modal-desc,
+.modal-overlay.open .modal-panel.modal-animate .modal-actions,
+.modal-overlay.open .modal-panel.modal-animate .modal-social {
+  animation: modalTextRiseSmooth 700ms var(--ease-smooth) forwards !important;
+}
+
+@keyframes modalTextRiseSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* ------------------------------
+   Bubble cards + FAQ
+------------------------------ */
+
+.ethos-bubble-card {
+  transition:
+    transform 340ms var(--ease-smooth),
+    border-color 280ms ease,
+    box-shadow 300ms ease,
+    opacity 280ms ease !important;
+}
+
+.ethos-bubble-card:hover,
+.ethos-bubble-card.is-active {
+  transform: translateY(-4px) scale(1.01) !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.42) !important;
+}
+
+.ethos-bubble-card h3,
+.ethos-bubble-card p {
+  transition:
+    transform 300ms var(--ease-soft),
+    opacity 300ms ease !important;
+}
+
+.ethos-bubble-card:hover h3,
+.ethos-bubble-card.is-active h3 {
+  transform: translateY(-1px) !important;
+}
+
+details.soft-card {
+  transition:
+    border-color 260ms ease,
+    transform 260ms var(--ease-soft),
+    box-shadow 260ms ease !important;
+}
+
+/* ------------------------------
+   Mobile polish
+------------------------------ */
+
+@media (max-width: 767px) {
+  .ebook-card {
+    transition:
+      box-shadow 280ms var(--ease-soft),
+      border-color 240ms ease,
+      opacity 240ms ease,
+      filter 240ms ease !important;
+  }
+
+  .ethos-bubble-card.is-active {
+    transform: translateY(-4px) scale(1.01) !important;
+  }
+}
+
+/* ------------------------------
+   Reduced motion
+------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  .reveal-group > * {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .buy-btn,
+  .modal-buy,
+  .social-link,
+  .social-icon,
+  .modal-close,
+  .modal-nav,
+  .modal-cover,
+  .ebook-card,
+  .ethos-bubble-card,
+  .soft-card {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
   }
 }

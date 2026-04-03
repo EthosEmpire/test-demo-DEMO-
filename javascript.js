@@ -912,13 +912,12 @@ function renderMerchCards() {
 
 function animateModalCopy(id) {
   const modal = $(id);
-  if (!modal) return;
+  const panel = modal?.querySelector(".modal-panel");
+  if (!panel) return;
 
-  modal.querySelectorAll("[data-copy-fade]").forEach((node) => {
-    node.classList.remove("copy-visible");
-    void node.offsetWidth;
-    node.classList.add("copy-visible");
-  });
+  panel.classList.remove("modal-animate");
+  void panel.offsetWidth;
+  panel.classList.add("modal-animate");
 }
 
 function openModal(id) {
@@ -929,6 +928,10 @@ function openModal(id) {
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
+
+  requestAnimationFrame(() => {
+    animateModalCopy(id);
+  });
 
   const firstFocusable = modal.querySelector(
     'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
@@ -943,6 +946,10 @@ function closeModal(id) {
 
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
+
+  const panel = modal.querySelector(".modal-panel");
+  panel?.classList.remove("modal-animate");
+
   document.body.style.overflow = "";
 
   if (activeModal === id) {
@@ -959,17 +966,23 @@ function openEbookModal(index) {
   const modalCover = $("ebookModalCover");
   if (modalCover) {
     modalCover.src = item.image1200 || item.image320;
+    modalCover.srcset = `${item.image320} 320w, ${item.image1200} 1200w`;
+    modalCover.sizes = "(max-width: 767px) 90vw, 280px";
     modalCover.alt = item.alt;
     modalCover.width = 420;
     modalCover.height = 594;
   }
 
-  $("ebookModalTitle").textContent = item.title;
-  $("ebookModalDesc").textContent = item.desc;
-  $("ebookModalPage").href = item.page;
-  $("ebookModalBuy").href = item.link;
+  const title = $("ebookModalTitle");
+  const desc = $("ebookModalDesc");
+  const page = $("ebookModalPage");
+  const buy = $("ebookModalBuy");
 
-  animateModalCopy("ebookModal");
+  if (title) title.textContent = item.title;
+  if (desc) desc.textContent = item.desc;
+  if (page) page.href = item.page || item.link;
+  if (buy) buy.href = item.link;
+
   openModal("ebookModal");
 }
 
@@ -991,16 +1004,25 @@ function openMerchModal(index) {
   const modalCover = $("merchModalCover");
   if (modalCover) {
     modalCover.src = item.imageLarge || item.image;
+    modalCover.srcset = `${item.image} 400w, ${item.imageLarge} 1200w`;
+    modalCover.sizes = "(max-width: 767px) 90vw, 280px";
     modalCover.alt = item.alt;
     modalCover.width = 420;
     modalCover.height = 594;
   }
 
-  $("merchModalTitle").textContent = item.title;
-  $("merchModalDesc").textContent = item.desc;
-  $("merchModalBuy").href = item.link;
+  const title = $("merchModalTitle");
+  const buy = $("merchModalBuy");
+  const social = $("merchModal")?.querySelector(".modal-social");
+  const socialText = $("merchModal")?.querySelector(".modal-social-text");
+  const socialRow = $("merchModal")?.querySelector(".modal-social-row");
 
-  animateModalCopy("merchModal");
+  if (title) title.textContent = item.title;
+  if (buy) buy.href = item.link;
+  if (social) social.style.display = "block";
+  if (socialText) socialText.style.display = "block";
+  if (socialRow) socialRow.style.display = "flex";
+
   openModal("merchModal");
 }
 
