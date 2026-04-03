@@ -1410,11 +1410,15 @@ window.addEventListener("DOMContentLoaded", () => {
   renderEbookCards();
   renderMerchCards();
 
-  setupInfiniteCarousel({
+  const isPhoneLike =
+    window.matchMedia("(max-width: 767px)").matches ||
+    window.matchMedia("(pointer: coarse)").matches;
+
+  const ebookCarousel = setupInfiniteCarousel({
     wrapperId: "ebookWrapper",
     trackId: "ebookTrack",
     items: ebookData,
-    speed: 0.55,
+    speed: isPhoneLike ? 0.62 : 0.55,
     direction: 1,
     enableMobileAutoplay: true
   });
@@ -1427,6 +1431,30 @@ window.addEventListener("DOMContentLoaded", () => {
     direction: -1,
     enableMobileAutoplay: true
   });
+
+  const nudgeEbookAutoplay = () => {
+    if (!ebookCarousel) return;
+    ebookCarousel.isPaused = false;
+    ebookCarousel.resumeAt = 0;
+    ebookCarousel.isInteracting = false;
+    ebookCarousel.restartLoop?.();
+  };
+
+  if (isPhoneLike) {
+    window.setTimeout(nudgeEbookAutoplay, 180);
+    window.setTimeout(nudgeEbookAutoplay, 700);
+    window.setTimeout(nudgeEbookAutoplay, 1400);
+
+    window.addEventListener("pageshow", () => {
+      window.setTimeout(nudgeEbookAutoplay, 120);
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        window.setTimeout(nudgeEbookAutoplay, 120);
+      }
+    });
+  }
 
   setupModalControls();
   setupRevealAnimations();
