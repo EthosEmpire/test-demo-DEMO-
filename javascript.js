@@ -754,6 +754,7 @@ function setupInfiniteCarousel(config) {
     dots: createCarouselDots(wrapper, config.items.length),
     itemSelector: ".ebook-card",
     rafId: 0,
+    timerId: 0,
     setWidth: 0,
     initialized: false,
     focusRaf: 0,
@@ -764,16 +765,31 @@ function setupInfiniteCarousel(config) {
 
   let restartTimer = 0;
 
-  const shouldRunAutoplay = () => {
-    const isPhoneLike =
-      window.matchMedia("(max-width: 767px)").matches ||
-      window.matchMedia("(pointer: coarse)").matches;
+  const isPhoneLike = () =>
+    window.matchMedia("(max-width: 767px)").matches ||
+    window.matchMedia("(pointer: coarse)").matches;
 
+  const shouldRunAutoplay = () => {
     if (!prefersReducedMotion) {
       return true;
     }
 
-    return Boolean(config.enableMobileAutoplay && isPhoneLike);
+    return Boolean(config.enableMobileAutoplay && isPhoneLike());
+  };
+
+  const shouldUsePhoneTimer = () =>
+    Boolean(config.usePhoneTimerFallback && isPhoneLike());
+
+  const clearMotion = () => {
+    if (controller.rafId) {
+      cancelAnimationFrame(controller.rafId);
+      controller.rafId = 0;
+    }
+
+    if (controller.timerId) {
+      window.clearInterval(controller.timerId);
+      controller.timerId = 0;
+    }
   };
 
   const updateFocus = () => {
@@ -789,44 +805,61 @@ function setupInfiniteCarousel(config) {
     updateFocus();
   };
 
-  const step = (now = performance.now()) => {
-    if (!shouldRunAutoplay()) {
-      controller.rafId = 0;
-      return;
-    }
-
+  const moveFrame = () => {
     if (!controller.setWidth) {
       refreshCarouselMetrics(controller);
     }
 
     if (!controller.setWidth) {
-      controller.rafId = requestAnimationFrame(step);
       return;
     }
 
     if (
       controller.isInteracting ||
       controller.isPaused ||
-      now < controller.resumeAt
+      performance.now() < controller.resumeAt
     ) {
-      controller.rafId = requestAnimationFrame(step);
       return;
     }
 
     wrapper.scrollLeft += controller.speed * controller.direction;
     normalizeInfiniteScroll(controller);
+  };
+
+  const step = () => {
+    if (!shouldRunAutoplay() || shouldUsePhoneTimer()) {
+      controller.rafId = 0;
+      return;
+    }
+
+    moveFrame();
     controller.rafId = requestAnimationFrame(step);
+  };
+
+  const startPhoneTimer = () => {
+    if (!shouldRunAutoplay() || !shouldUsePhoneTimer()) {
+      return;
+    }
+
+    if (controller.timerId) {
+      window.clearInterval(controller.timerId);
+    }
+
+    controller.timerId = window.setInterval(() => {
+      moveFrame();
+    }, 16);
   };
 
   const restartLoop = () => {
     refreshAndNormalize();
-
-    if (controller.rafId) {
-      cancelAnimationFrame(controller.rafId);
-      controller.rafId = 0;
-    }
+    clearMotion();
 
     if (!shouldRunAutoplay()) {
+      return;
+    }
+
+    if (shouldUsePhoneTimer()) {
+      startPhoneTimer();
       return;
     }
 
@@ -1420,7 +1453,8 @@ window.addEventListener("DOMContentLoaded", () => {
     items: ebookData,
     speed: isPhoneLike ? 0.62 : 0.55,
     direction: 1,
-    enableMobileAutoplay: true
+    enableMobileAutoplay: true,
+    usePhoneTimerFallback: true
   });
 
   setupInfiniteCarousel({
