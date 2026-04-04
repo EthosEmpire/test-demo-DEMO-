@@ -46,6 +46,39 @@ body.intro-locked {
   touch-action: none;
 }
 
+.matrix-page-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.page-matrix-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.18;
+}
+
+.page-matrix-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.page-matrix-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.08), transparent 30%),
+    radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.06), transparent 28%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.42));
+}
+
+.page-matrix-content {
+  position: relative;
+  z-index: 1;
+}
+
 img {
   max-width: 100%;
   display: block;
