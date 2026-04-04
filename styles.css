@@ -46,39 +46,6 @@ body.intro-locked {
   touch-action: none;
 }
 
-.matrix-page-shell {
-  position: relative;
-  isolation: isolate;
-}
-
-.page-matrix-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.18;
-}
-
-.page-matrix-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.page-matrix-vignette {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.08), transparent 30%),
-    radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.06), transparent 28%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.42));
-}
-
-.page-matrix-content {
-  position: relative;
-  z-index: 1;
-}
-
 img {
   max-width: 100%;
   display: block;
@@ -905,20 +872,6 @@ summary:focus-visible {
   filter: blur(7px);
 }
 
-.modal-overlay.open .modal-panel .modal-meta,
-.modal-overlay.open .modal-panel .modal-title,
-.modal-overlay.open .modal-panel .modal-desc,
-.modal-overlay.open .modal-panel .modal-actions,
-.modal-overlay.open .modal-panel .modal-social {
-  opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
-  transition:
-    opacity 260ms ease,
-    transform 260ms ease,
-    filter 260ms ease;
-}
-
 .modal-overlay.open .modal-panel.modal-animate .modal-meta,
 .modal-overlay.open .modal-panel.modal-animate .modal-title,
 .modal-overlay.open .modal-panel.modal-animate .modal-desc,
@@ -1476,7 +1429,7 @@ details[open] summary::after {
   scroll-behavior: auto !important;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x pinch-zoom;
+  touch-action: pan-y pinch-zoom;
 }
 
 .ebook-track {
@@ -1679,89 +1632,45 @@ details.soft-card {
     transform: none !important;
   }
 }
+
+
 /* ==============================
-   MATRIX + CAROUSEL PHONE FIXES
+   ROOT MATRIX LAYER PATCH
    ============================== */
 
-/* Brighter main-page matrix */
-.page-matrix-layer {
-  opacity: 0.48 !important;
-}
-
-.page-matrix-canvas {
-  filter: brightness(1.75) contrast(1.28);
-}
-
-.page-matrix-vignette {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.14), transparent 32%),
-    radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.10), transparent 30%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.22)) !important;
-}
-
-/* Remove the dots under ebook + merch */
-.carousel-progress,
-.carousel-dot {
-  display: none !important;
-}
-
-/* Better phone drag feel */
-.ebook-wrapper {
-  touch-action: pan-x pinch-zoom !important;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-}
-
-/* Slightly cleaner movement on mobile */
-@media (max-width: 767px) {
-  .ebook-wrapper {
-    scroll-behavior: auto !important;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .ebook-track {
-    gap: 14px;
-  }
-
-  .ebook-card {
-    scroll-snap-align: center;
-  }
-}
-/* ==============================
-   FIXED MATRIX BACKGROUND PATCH
-   ============================== */
-
-/* Lock the root page dark so iPhone overscroll never shows white */
 html,
 body {
   background: #050505 !important;
   min-height: 100%;
 }
 
-/* Keep the page shell stable */
+body {
+  position: relative;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 .matrix-page-shell {
   position: relative;
+  z-index: 1;
   isolation: isolate;
   background: transparent !important;
 }
 
-/* Make the matrix behave like a true viewport background */
 .page-matrix-layer {
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
   pointer-events: none !important;
-  z-index: 0 !important;
   overflow: hidden !important;
+  z-index: 0 !important;
   opacity: 0.42 !important;
-  will-change: transform, opacity;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
-/* Keep the canvas pinned to the screen */
 .page-matrix-canvas {
   position: absolute !important;
   inset: 0 !important;
@@ -1773,7 +1682,6 @@ body {
   -webkit-transform: translateZ(0);
 }
 
-/* Softer dark wash so matrix is visible but still readable */
 .page-matrix-vignette {
   position: absolute !important;
   inset: 0 !important;
@@ -1784,20 +1692,12 @@ body {
     linear-gradient(180deg, rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.18)) !important;
 }
 
-/* Keep all real page content above the matrix */
 .page-matrix-content,
-.matrix-page-shell > *:not(.page-matrix-layer) {
+.matrix-page-shell > * {
   position: relative;
   z-index: 1;
 }
 
-/* Extra iPhone protection */
-body {
-  overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Optional: hide the carousel dots if you still do not want them */
 .carousel-progress,
 .carousel-dot {
   display: none !important;
