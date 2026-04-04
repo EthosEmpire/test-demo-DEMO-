@@ -1679,3 +1679,52 @@ details.soft-card {
     transform: none !important;
   }
 }
+/* ==============================
+   MATRIX + CAROUSEL PHONE FIXES
+   ============================== */
+
+/* Brighter main-page matrix */
+.page-matrix-layer {
+  opacity: 0.48 !important;
+}
+
+.page-matrix-canvas {
+  filter: brightness(1.75) contrast(1.28);
+}
+
+.page-matrix-vignette {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.14), transparent 32%),
+    radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.10), transparent 30%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.22)) !important;
+}
+
+/* Remove the dots under ebook + merch */
+.carousel-progress,
+.carousel-dot {
+  display: none !important;
+}
+
+/* Better phone drag feel */
+.ebook-wrapper {
+  touch-action: pan-x pinch-zoom !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Slightly cleaner movement on mobile */
+@media (max-width: 767px) {
+  .ebook-wrapper {
+    scroll-behavior: auto !important;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .ebook-track {
+    gap: 14px;
+  }
+
+  .ebook-card {
+    scroll-snap-align: center;
+  }
+}

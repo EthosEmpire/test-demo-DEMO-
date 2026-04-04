@@ -115,11 +115,11 @@ function drawPageMatrixLayer(width, height, delta) {
       if (i === 0) {
         pageMatrixCtx.shadowColor = "rgba(185, 255, 220, 0.18)";
         pageMatrixCtx.shadowBlur = 8;
-        pageMatrixCtx.fillStyle = "rgba(235, 255, 244, 0.18)";
+        pageMatrixCtx.fillStyle = "rgba(235, 255, 244, 0.39)";
       } else {
         pageMatrixCtx.shadowColor = "rgba(90, 255, 150, 0.08)";
         pageMatrixCtx.shadowBlur = 4;
-        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${0.12 * trailStrength})`;
+        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${0.25 * trailStrength})`;
       }
 
       pageMatrixCtx.fillText(col.glyphs[i], col.x, y);
