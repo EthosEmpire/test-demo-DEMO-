@@ -1877,3 +1877,74 @@ body {
     scroll-behavior: auto !important;
   }
 }
+/* =========================================
+   TOUCH DEVICE STATIC MATRIX BACKGROUND FIX
+   ========================================= */
+
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
+  html,
+  body {
+    background: #050505 !important;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* keep the background layer stable */
+  .page-matrix-layer {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    opacity: 0.42 !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+    contain: paint;
+  }
+
+  /* stop the animated canvas on touch devices */
+  .page-matrix-canvas {
+    display: none !important;
+  }
+
+  /* replace it with a static matrix-style background */
+  .page-matrix-layer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.08), transparent 30%),
+      radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.08), transparent 28%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.00), rgba(0, 0, 0, 0.18)),
+      repeating-linear-gradient(
+        90deg,
+        rgba(90, 255, 150, 0.03) 0 1px,
+        transparent 1px 28px
+      ),
+      repeating-linear-gradient(
+        180deg,
+        rgba(90, 255, 150, 0.025) 0 1px,
+        transparent 1px 24px
+      );
+    opacity: 1;
+  }
+
+  .page-matrix-vignette {
+    position: absolute !important;
+    inset: 0 !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.06), transparent 32%),
+      radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.05), transparent 30%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.12)) !important;
+  }
+
+  .matrix-page-shell,
+  .page-matrix-content,
+  .matrix-page-shell > * {
+    position: relative;
+    z-index: 1;
+  }
+}
