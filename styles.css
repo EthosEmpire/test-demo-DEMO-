@@ -1728,3 +1728,77 @@ details.soft-card {
     scroll-snap-align: center;
   }
 }
+/* ==============================
+   FIXED MATRIX BACKGROUND PATCH
+   ============================== */
+
+/* Lock the root page dark so iPhone overscroll never shows white */
+html,
+body {
+  background: #050505 !important;
+  min-height: 100%;
+}
+
+/* Keep the page shell stable */
+.matrix-page-shell {
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+/* Make the matrix behave like a true viewport background */
+.page-matrix-layer {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
+  opacity: 0.42 !important;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Keep the canvas pinned to the screen */
+.page-matrix-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  filter: brightness(1.8) contrast(1.28);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Softer dark wash so matrix is visible but still readable */
+.page-matrix-vignette {
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.10), transparent 32%),
+    radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.10), transparent 30%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.18)) !important;
+}
+
+/* Keep all real page content above the matrix */
+.page-matrix-content,
+.matrix-page-shell > *:not(.page-matrix-layer) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Extra iPhone protection */
+body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optional: hide the carousel dots if you still do not want them */
+.carousel-progress,
+.carousel-dot {
+  display: none !important;
+}
