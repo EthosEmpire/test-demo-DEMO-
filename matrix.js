@@ -16,27 +16,37 @@ let introFontSize = 16;
 let introColumns = [];
 let introParticles = [];
 let introLastFrameTime = 0;
+let introEventsBound = false;
 
 let pageMatrixFontSize = 14;
 let pageMatrixColumns = [];
 let pageMatrixLastFrameTime = 0;
 let pageMatrixAnimationFrame = 0;
+let pageMatrixEventsBound = false;
 
 function randomMatrixChar() {
   return MATRIX_CHARSET[Math.floor(Math.random() * MATRIX_CHARSET.length)];
 }
 
+function isMobileMatrixDevice() {
+  return (
+    window.matchMedia("(hover: none)").matches ||
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.innerWidth <= 1024
+  );
+}
+
 function resizeIntroCanvas() {
   if (!introCanvas || !introCtx) return;
 
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const width = window.innerWidth;
   const height = window.innerHeight;
 
   introCanvas.width = Math.floor(width * dpr);
   introCanvas.height = Math.floor(height * dpr);
-  introCanvas.style.width = "100%";
-  introCanvas.style.height = "100%";
+  introCanvas.style.width = `${width}px`;
+  introCanvas.style.height = `${height}px`;
 
   introCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -57,25 +67,29 @@ function resizeIntroCanvas() {
 function resizePageMatrixCanvas() {
   if (!pageMatrixCanvas || !pageMatrixCtx) return;
 
-  const dpr = window.devicePixelRatio || 1;
+  const isMobile = isMobileMatrixDevice();
+  const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
   const width = window.innerWidth;
   const height = window.innerHeight;
 
   pageMatrixCanvas.width = Math.floor(width * dpr);
   pageMatrixCanvas.height = Math.floor(height * dpr);
-  pageMatrixCanvas.style.width = "100%";
-  pageMatrixCanvas.style.height = "100%";
+  pageMatrixCanvas.style.width = `${width}px`;
+  pageMatrixCanvas.style.height = `${height}px`;
 
   pageMatrixCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  pageMatrixFontSize = Math.max(12, Math.min(15, width / 120));
-  const cols = Math.ceil(width / pageMatrixFontSize) + 10;
+  pageMatrixFontSize = isMobile
+    ? Math.max(10, Math.min(12, width / 95))
+    : Math.max(12, Math.min(15, width / 120));
+
+  const cols = Math.ceil(width / pageMatrixFontSize) + (isMobile ? 6 : 10);
 
   pageMatrixColumns = Array.from({ length: cols }, (_, i) => ({
     x: i * pageMatrixFontSize,
     y: Math.random() * (height + 180) - 180,
-    speed: 26 + Math.random() * 18,
-    length: 10 + Math.floor(Math.random() * 8),
+    speed: isMobile ? 14 + Math.random() * 10 : 26 + Math.random() * 18,
+    length: isMobile ? 7 + Math.floor(Math.random() * 5) : 10 + Math.floor(Math.random() * 8),
     glyphs: Array.from({ length: 24 }, randomMatrixChar)
   }));
 
@@ -85,8 +99,14 @@ function resizePageMatrixCanvas() {
 function drawPageMatrixLayer(width, height, delta) {
   if (!pageMatrixCtx) return;
 
+  const isMobile = isMobileMatrixDevice();
+  const headAlpha = isMobile ? 0.13 : 0.18;
+  const trailAlpha = isMobile ? 0.085 : 0.12;
+  const shadowHead = isMobile ? 5 : 8;
+  const shadowTrail = isMobile ? 2 : 4;
+
   pageMatrixCtx.clearRect(0, 0, width, height);
-  pageMatrixCtx.fillStyle = "rgba(0, 0, 0, 0.02)";
+  pageMatrixCtx.fillStyle = isMobile ? "rgba(0, 0, 0, 0.03)" : "rgba(0, 0, 0, 0.02)";
   pageMatrixCtx.fillRect(0, 0, width, height);
 
   pageMatrixCtx.font = `600 ${pageMatrixFontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
@@ -104,13 +124,13 @@ function drawPageMatrixLayer(width, height, delta) {
       const trailStrength = 1 - i / col.length;
 
       if (i === 0) {
-        pageMatrixCtx.shadowColor = "rgba(185, 255, 220, 0.18)";
-        pageMatrixCtx.shadowBlur = 8;
-        pageMatrixCtx.fillStyle = "rgba(235, 255, 244, 0.18)";
+        pageMatrixCtx.shadowColor = "rgba(185, 255, 220, 0.16)";
+        pageMatrixCtx.shadowBlur = shadowHead;
+        pageMatrixCtx.fillStyle = `rgba(235, 255, 244, ${headAlpha})`;
       } else {
-        pageMatrixCtx.shadowColor = "rgba(90, 255, 150, 0.08)";
-        pageMatrixCtx.shadowBlur = 4;
-        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${0.12 * trailStrength})`;
+        pageMatrixCtx.shadowColor = "rgba(90, 255, 150, 0.06)";
+        pageMatrixCtx.shadowBlur = shadowTrail;
+        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${trailAlpha * trailStrength})`;
       }
 
       pageMatrixCtx.fillText(col.glyphs[i], col.x, y);
@@ -120,7 +140,9 @@ function drawPageMatrixLayer(width, height, delta) {
 
     if (col.y - col.length * pageMatrixFontSize * 1.14 > height + 60) {
       col.y = -Math.random() * 120;
-      col.length = 10 + Math.floor(Math.random() * 8);
+      col.length = isMobileMatrixDevice()
+        ? 7 + Math.floor(Math.random() * 5)
+        : 10 + Math.floor(Math.random() * 8);
     }
   }
 }
@@ -137,33 +159,55 @@ function animatePageMatrix(now) {
   pageMatrixAnimationFrame = requestAnimationFrame(animatePageMatrix);
 }
 
-function setupPageMatrix() {
-  if (!pageMatrixCanvas || !pageMatrixCtx) return;
-
-  const isTouchDevice =
-    window.matchMedia("(hover: none)").matches ||
-    window.matchMedia("(pointer: coarse)").matches ||
-    window.innerWidth <= 1024;
-
-  if (isTouchDevice) {
-    if (pageMatrixAnimationFrame) {
-      cancelAnimationFrame(pageMatrixAnimationFrame);
-      pageMatrixAnimationFrame = 0;
-    }
-
-    pageMatrixCanvas.style.display = "none";
-    return;
+function stopPageMatrix() {
+  if (pageMatrixAnimationFrame) {
+    cancelAnimationFrame(pageMatrixAnimationFrame);
+    pageMatrixAnimationFrame = 0;
   }
+}
+
+function startPageMatrix() {
+  if (!pageMatrixCanvas || !pageMatrixCtx) return;
 
   pageMatrixCanvas.style.display = "block";
   resizePageMatrixCanvas();
-
-  if (pageMatrixAnimationFrame) {
-    cancelAnimationFrame(pageMatrixAnimationFrame);
-  }
-
+  stopPageMatrix();
   pageMatrixAnimationFrame = requestAnimationFrame(animatePageMatrix);
+}
+
+function setupPageMatrix() {
+  if (!pageMatrixCanvas || !pageMatrixCtx) return;
+
+  startPageMatrix();
+
+  if (pageMatrixEventsBound) return;
+  pageMatrixEventsBound = true;
+
   window.addEventListener("resize", resizePageMatrixCanvas);
+  window.addEventListener("orientationchange", () => {
+    window.setTimeout(() => {
+      resizePageMatrixCanvas();
+    }, 120);
+  });
+
+  window.addEventListener("pageshow", () => {
+    resizePageMatrixCanvas();
+    if (!pageMatrixAnimationFrame) {
+      pageMatrixAnimationFrame = requestAnimationFrame(animatePageMatrix);
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopPageMatrix();
+      return;
+    }
+
+    resizePageMatrixCanvas();
+    if (!pageMatrixAnimationFrame) {
+      pageMatrixAnimationFrame = requestAnimationFrame(animatePageMatrix);
+    }
+  });
 }
 
 function drawMatrixLayer(width, height, visibility, delta) {
@@ -318,6 +362,9 @@ function setupIntroOverlay() {
 
   resizeIntroCanvas();
   introAnimationFrame = requestAnimationFrame(animateIntro);
+
+  if (introEventsBound) return;
+  introEventsBound = true;
 
   const dismiss = (e) => {
     e?.preventDefault?.();
