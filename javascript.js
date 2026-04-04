@@ -95,7 +95,7 @@ function drawPageMatrixLayer(width, height, delta) {
   if (!pageMatrixCtx) return;
 
   pageMatrixCtx.clearRect(0, 0, width, height);
-  pageMatrixCtx.fillStyle = "rgba(0, 0, 0, 0.05)";
+  pageMatrixCtx.fillStyle = "rgba(0, 0, 0, 0.02)";
   pageMatrixCtx.fillRect(0, 0, width, height);
 
   pageMatrixCtx.font = `600 ${pageMatrixFontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
@@ -115,11 +115,11 @@ function drawPageMatrixLayer(width, height, delta) {
       if (i === 0) {
         pageMatrixCtx.shadowColor = "rgba(185, 255, 220, 0.18)";
         pageMatrixCtx.shadowBlur = 8;
-        pageMatrixCtx.fillStyle = "rgba(235, 255, 244, 0.18)";
+        pageMatrixCtx.fillStyle = "rgba(235, 255, 244, 0.34)";
       } else {
         pageMatrixCtx.shadowColor = "rgba(90, 255, 150, 0.08)";
         pageMatrixCtx.shadowBlur = 4;
-        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${0.12 * trailStrength})`;
+        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${0.22 * trailStrength})`;
       }
 
       pageMatrixCtx.fillText(col.glyphs[i], col.x, y);
@@ -1589,18 +1589,31 @@ window.addEventListener("DOMContentLoaded", () => {
     ebookCarousel.restartLoop?.();
   };
 
+  const merchCarousel = carouselControllers.get($("merchWrapper"));
+
+  const nudgeMerchAutoplay = () => {
+    if (!merchCarousel) return;
+    merchCarousel.isPaused = false;
+    merchCarousel.resumeAt = 0;
+    merchCarousel.isInteracting = false;
+    merchCarousel.restartLoop?.();
+  };
+
   if (isPhoneLike) {
-    window.setTimeout(nudgeEbookAutoplay, 180);
-    window.setTimeout(nudgeEbookAutoplay, 700);
-    window.setTimeout(nudgeEbookAutoplay, 1400);
+    [180, 700, 1400].forEach((delay) => {
+      window.setTimeout(nudgeEbookAutoplay, delay);
+      window.setTimeout(nudgeMerchAutoplay, delay);
+    });
 
     window.addEventListener("pageshow", () => {
       window.setTimeout(nudgeEbookAutoplay, 120);
+      window.setTimeout(nudgeMerchAutoplay, 120);
     });
 
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         window.setTimeout(nudgeEbookAutoplay, 120);
+        window.setTimeout(nudgeMerchAutoplay, 120);
       }
     });
   }
