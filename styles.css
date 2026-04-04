@@ -1785,3 +1785,95 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+
+
+/* ==============================
+   iPHONE MATRIX + CAROUSEL FIX
+   ============================== */
+
+html,
+body {
+  background: #050505 !important;
+  min-height: 100%;
+}
+
+body {
+  position: relative;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.matrix-page-shell {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.page-matrix-content,
+.matrix-page-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page-matrix-layer {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  opacity: 0.34 !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  will-change: auto !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  contain: paint;
+}
+
+.page-matrix-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  filter: brightness(1.35) contrast(1.12) !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  will-change: auto !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.page-matrix-vignette {
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.08), transparent 32%),
+    radial-gradient(circle at 20% 0%, rgba(0, 255, 140, 0.07), transparent 30%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.12)) !important;
+}
+
+.carousel-progress,
+.carousel-dot {
+  display: none !important;
+}
+
+.ebook-wrapper {
+  touch-action: pan-x pinch-zoom !important;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .ebook-wrapper {
+    scroll-behavior: auto !important;
+  }
+}
