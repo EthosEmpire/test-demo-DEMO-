@@ -115,11 +115,11 @@ function drawPageMatrixLayer(width, height, delta) {
       if (i === 0) {
         pageMatrixCtx.shadowColor = "rgba(185, 255, 220, 0.18)";
         pageMatrixCtx.shadowBlur = 8;
-        pageMatrixCtx.fillStyle = "rgba(235, 255, 244, 0.39)";
+        pageMatrixCtx.fillStyle = "rgba(235, 255, 244, 0.18)";
       } else {
         pageMatrixCtx.shadowColor = "rgba(90, 255, 150, 0.08)";
         pageMatrixCtx.shadowBlur = 4;
-        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${0.25 * trailStrength})`;
+        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${0.12 * trailStrength})`;
       }
 
       pageMatrixCtx.fillText(col.glyphs[i], col.x, y);
@@ -610,7 +610,7 @@ function applyCarouselStabilityStyles() {
       scroll-behavior: auto !important;
       overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
-      touch-action: auto;
+      touch-action: pan-x pinch-zoom;
       cursor: grab;
     }
 
@@ -1272,6 +1272,17 @@ function setupDragScroll(el) {
     normalizeInfiniteScroll(controller);
     controller.updateFocus?.();
     scheduleCarouselResume(controller, delay);
+
+    const restartAfterRelease = () => {
+      controller.isPaused = false;
+      controller.resumeAt = 0;
+      controller.restartLoop?.();
+    };
+
+    if (window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768) {
+      window.setTimeout(restartAfterRelease, Math.min(delay, 220));
+      window.setTimeout(restartAfterRelease, 600);
+    }
   };
 
   const start = (clientX, clientY = 0, kind = "mouse") => {
@@ -1343,7 +1354,7 @@ function setupDragScroll(el) {
     moved = false;
 
     if (controller) {
-      finishInteraction(wasHorizontalDrag ? 1400 : 500);
+      finishInteraction(wasHorizontalDrag ? 900 : 260);
     }
   };
 
@@ -1564,9 +1575,10 @@ window.addEventListener("DOMContentLoaded", () => {
     wrapperId: "merchWrapper",
     trackId: "merchTrack",
     items: merchData,
-    speed: 0.55,
+    speed: isPhoneLike ? 0.58 : 0.55,
     direction: -1,
-    enableMobileAutoplay: true
+    enableMobileAutoplay: true,
+    usePhoneTimerFallback: true
   });
 
   const nudgeEbookAutoplay = () => {
