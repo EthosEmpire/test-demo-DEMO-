@@ -509,10 +509,15 @@ summary:focus-visible {
 --------------------------------- */
 
 .ebook-wrapper {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
   cursor: grab;
   user-select: none;
   position: relative;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-padding-inline: 18px;
 }
 
 .ebook-wrapper::-webkit-scrollbar {
@@ -1427,7 +1432,9 @@ details[open] summary::after {
 ------------------------------ */
 
 .ebook-wrapper {
-  overflow: hidden !important;
+  scroll-behavior: auto !important;
+  overscroll-behavior-x: contain;
+  touch-action: pan-y;
 }
 
 .ebook-track {
