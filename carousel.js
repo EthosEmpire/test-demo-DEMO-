@@ -571,7 +571,7 @@ function setupDragScroll(el) {
       originalEvent.preventDefault();
     }
 
-    el.scrollLeft -= deltaX * (window.innerWidth < 768 ? 1.08 : 0.95);
+    el.scrollLeft -= deltaX * (window.innerWidth < 768 ? 0.96 : 0.92);
 
     if (controller) {
       normalizeInfiniteScroll(controller);

@@ -23,6 +23,7 @@ let pageMatrixColumns = [];
 let pageMatrixLastFrameTime = 0;
 let pageMatrixAnimationFrame = 0;
 let pageMatrixEventsBound = false;
+let pageMatrixTime = 0;
 
 function randomMatrixChar() {
   return MATRIX_CHARSET[Math.floor(Math.random() * MATRIX_CHARSET.length)];
@@ -64,6 +65,42 @@ function resizeIntroCanvas() {
   introLastFrameTime = performance.now();
 }
 
+function createPageColumn(x, height, isMobile) {
+  const depthRoll = Math.random();
+  const depth = depthRoll > 0.74 ? 2 : depthRoll > 0.36 ? 1 : 0;
+
+  const sizeScale = depth === 2 ? 1.16 : depth === 1 ? 1 : 0.84;
+  const speedBase = isMobile
+    ? (depth === 2 ? 12 : depth === 1 ? 9.5 : 7.2)
+    : (depth === 2 ? 19 : depth === 1 ? 14.5 : 11.5);
+  const speedRange = isMobile
+    ? (depth === 2 ? 4 : depth === 1 ? 3.2 : 2.6)
+    : (depth === 2 ? 5.5 : depth === 1 ? 4.5 : 3.4);
+  const lengthBase = isMobile
+    ? (depth === 2 ? 8 : depth === 1 ? 7 : 6)
+    : (depth === 2 ? 11 : depth === 1 ? 9 : 7);
+  const lengthRange = isMobile
+    ? (depth === 2 ? 4 : depth === 1 ? 3 : 2)
+    : (depth === 2 ? 5 : depth === 1 ? 4 : 3);
+
+  return {
+    x,
+    baseX: x,
+    y: Math.random() * (height + 220) - 220,
+    speed: speedBase + Math.random() * speedRange,
+    length: lengthBase + Math.floor(Math.random() * lengthRange),
+    glyphs: Array.from({ length: 26 }, randomMatrixChar),
+    depth,
+    sizeScale,
+    headBoost: depth === 2 ? 1.12 : depth === 1 ? 1 : 0.84,
+    trailBoost: depth === 2 ? 1.05 : depth === 1 ? 0.88 : 0.72,
+    blur: depth === 2 ? 4 : depth === 1 ? 2.2 : 0.8,
+    drift: depth === 2 ? 3.8 : depth === 1 ? 2 : 0.9,
+    phase: Math.random() * Math.PI * 2,
+    swaySpeed: depth === 2 ? 0.38 : depth === 1 ? 0.27 : 0.18
+  };
+}
+
 function resizePageMatrixCanvas() {
   if (!pageMatrixCanvas || !pageMatrixCtx) return;
 
@@ -80,19 +117,16 @@ function resizePageMatrixCanvas() {
   pageMatrixCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   pageMatrixFontSize = isMobile
-    ? Math.max(10, Math.min(12, width / 95))
-    : Math.max(12, Math.min(15, width / 120));
+    ? Math.max(10, Math.min(12, width / 104))
+    : Math.max(12, Math.min(15, width / 132));
 
-  const cols = Math.ceil(width / pageMatrixFontSize) + (isMobile ? 6 : 10);
+  const cols = Math.ceil(width / pageMatrixFontSize) + (isMobile ? 5 : 8);
 
-  pageMatrixColumns = Array.from({ length: cols }, (_, i) => ({
-    x: i * pageMatrixFontSize,
-    y: Math.random() * (height + 180) - 180,
-    speed: isMobile ? 14 + Math.random() * 10 : 26 + Math.random() * 18,
-    length: isMobile ? 7 + Math.floor(Math.random() * 5) : 10 + Math.floor(Math.random() * 8),
-    glyphs: Array.from({ length: 24 }, randomMatrixChar)
-  }));
+  pageMatrixColumns = Array.from({ length: cols }, (_, i) =>
+    createPageColumn(i * pageMatrixFontSize, height, isMobile)
+  );
 
+  pageMatrixTime = 0;
   pageMatrixLastFrameTime = performance.now();
 }
 
@@ -100,49 +134,63 @@ function drawPageMatrixLayer(width, height, delta) {
   if (!pageMatrixCtx) return;
 
   const isMobile = isMobileMatrixDevice();
-  const headAlpha = isMobile ? 0.13 : 0.18;
-  const trailAlpha = isMobile ? 0.085 : 0.12;
-  const shadowHead = isMobile ? 5 : 8;
-  const shadowTrail = isMobile ? 2 : 4;
+  pageMatrixTime += delta;
+
+  const headAlphaBase = isMobile ? 0.085 : 0.115;
+  const trailAlphaBase = isMobile ? 0.04 : 0.058;
+  const fadeFill = isMobile ? 0.08 : 0.06;
 
   pageMatrixCtx.clearRect(0, 0, width, height);
-  pageMatrixCtx.fillStyle = isMobile ? "rgba(0, 0, 0, 0.03)" : "rgba(0, 0, 0, 0.02)";
+  pageMatrixCtx.fillStyle = `rgba(0, 0, 0, ${fadeFill})`;
   pageMatrixCtx.fillRect(0, 0, width, height);
-
-  pageMatrixCtx.font = `600 ${pageMatrixFontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
   pageMatrixCtx.textBaseline = "top";
 
   for (const col of pageMatrixColumns) {
+    const fontSize = pageMatrixFontSize * col.sizeScale;
+    const step = fontSize * 1.16;
+    const x = col.baseX + Math.sin(pageMatrixTime * col.swaySpeed + col.phase) * col.drift;
+
+    pageMatrixCtx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+
     for (let i = 0; i < col.length; i += 1) {
-      const y = col.y - i * pageMatrixFontSize * 1.14;
+      const y = col.y - i * step;
       if (y < -40 || y > height + 40) continue;
 
-      if (Math.random() > 0.98) {
+      if (Math.random() > 0.986) {
         col.glyphs[i] = randomMatrixChar();
       }
 
       const trailStrength = 1 - i / col.length;
 
       if (i === 0) {
-        pageMatrixCtx.shadowColor = "rgba(185, 255, 220, 0.16)";
-        pageMatrixCtx.shadowBlur = shadowHead;
-        pageMatrixCtx.fillStyle = `rgba(235, 255, 244, ${headAlpha})`;
+        pageMatrixCtx.shadowColor = `rgba(110, 170, 134, ${0.09 * col.headBoost})`;
+        pageMatrixCtx.shadowBlur = col.blur;
+        pageMatrixCtx.fillStyle = `rgba(220, 234, 226, ${headAlphaBase * col.headBoost})`;
       } else {
-        pageMatrixCtx.shadowColor = "rgba(90, 255, 150, 0.06)";
-        pageMatrixCtx.shadowBlur = shadowTrail;
-        pageMatrixCtx.fillStyle = `rgba(110, 255, 165, ${trailAlpha * trailStrength})`;
+        pageMatrixCtx.shadowColor = `rgba(50, 95, 72, ${0.045 * col.trailBoost})`;
+        pageMatrixCtx.shadowBlur = Math.max(0.4, col.blur * 0.5);
+        pageMatrixCtx.fillStyle = `rgba(72, 128, 97, ${trailAlphaBase * trailStrength * col.trailBoost})`;
       }
 
-      pageMatrixCtx.fillText(col.glyphs[i], col.x, y);
+      pageMatrixCtx.fillText(col.glyphs[i], x, y);
     }
 
     col.y += col.speed * delta;
 
-    if (col.y - col.length * pageMatrixFontSize * 1.14 > height + 60) {
-      col.y = -Math.random() * 120;
-      col.length = isMobileMatrixDevice()
-        ? 7 + Math.floor(Math.random() * 5)
-        : 10 + Math.floor(Math.random() * 8);
+    if (col.y - col.length * step > height + 80) {
+      const reset = createPageColumn(col.baseX, height, isMobile);
+      col.y = -Math.random() * 180;
+      col.speed = reset.speed;
+      col.length = reset.length;
+      col.glyphs = reset.glyphs;
+      col.depth = reset.depth;
+      col.sizeScale = reset.sizeScale;
+      col.headBoost = reset.headBoost;
+      col.trailBoost = reset.trailBoost;
+      col.blur = reset.blur;
+      col.drift = reset.drift;
+      col.phase = reset.phase;
+      col.swaySpeed = reset.swaySpeed;
     }
   }
 }
