@@ -67,37 +67,37 @@ function resizeIntroCanvas() {
 
 function createPageColumn(x, height, isMobile) {
   const depthRoll = Math.random();
-  const depth = depthRoll > 0.74 ? 2 : depthRoll > 0.36 ? 1 : 0;
+  const depth = depthRoll > 0.7 ? 2 : depthRoll > 0.32 ? 1 : 0;
 
-  const sizeScale = depth === 2 ? 1.16 : depth === 1 ? 1 : 0.84;
+  const sizeScale = depth === 2 ? 1.28 : depth === 1 ? 0.95 : 0.65;
   const speedBase = isMobile
-    ? (depth === 2 ? 12 : depth === 1 ? 9.5 : 7.2)
-    : (depth === 2 ? 19 : depth === 1 ? 14.5 : 11.5);
+    ? (depth === 2 ? 20 : depth === 1 ? 13 : 7.5)
+    : (depth === 2 ? 30 : depth === 1 ? 20 : 12);
   const speedRange = isMobile
-    ? (depth === 2 ? 4 : depth === 1 ? 3.2 : 2.6)
-    : (depth === 2 ? 5.5 : depth === 1 ? 4.5 : 3.4);
+    ? (depth === 2 ? 6 : depth === 1 ? 4 : 2.5)
+    : (depth === 2 ? 9 : depth === 1 ? 6 : 3.5);
   const lengthBase = isMobile
-    ? (depth === 2 ? 8 : depth === 1 ? 7 : 6)
-    : (depth === 2 ? 11 : depth === 1 ? 9 : 7);
+    ? (depth === 2 ? 20 : depth === 1 ? 14 : 9)
+    : (depth === 2 ? 28 : depth === 1 ? 20 : 12);
   const lengthRange = isMobile
-    ? (depth === 2 ? 4 : depth === 1 ? 3 : 2)
-    : (depth === 2 ? 5 : depth === 1 ? 4 : 3);
+    ? (depth === 2 ? 8 : depth === 1 ? 6 : 4)
+    : (depth === 2 ? 12 : depth === 1 ? 8 : 5);
 
   return {
     x,
     baseX: x,
-    y: Math.random() * (height + 220) - 220,
+    y: Math.random() * (height + 400) - 400,
     speed: speedBase + Math.random() * speedRange,
     length: lengthBase + Math.floor(Math.random() * lengthRange),
-    glyphs: Array.from({ length: 26 }, randomMatrixChar),
+    glyphs: Array.from({ length: 48 }, randomMatrixChar),
     depth,
     sizeScale,
-    headBoost: depth === 2 ? 1.12 : depth === 1 ? 1 : 0.84,
-    trailBoost: depth === 2 ? 1.05 : depth === 1 ? 0.88 : 0.72,
-    blur: depth === 2 ? 4 : depth === 1 ? 2.2 : 0.8,
-    drift: depth === 2 ? 3.8 : depth === 1 ? 2 : 0.9,
+    headBoost: depth === 2 ? 1.25 : depth === 1 ? 1 : 0.65,
+    trailBoost: depth === 2 ? 1.15 : depth === 1 ? 0.88 : 0.5,
+    blur: depth === 2 ? 10 : depth === 1 ? 4 : 0.8,
+    drift: depth === 2 ? 4 : depth === 1 ? 2 : 0.6,
     phase: Math.random() * Math.PI * 2,
-    swaySpeed: depth === 2 ? 0.38 : depth === 1 ? 0.27 : 0.18
+    swaySpeed: depth === 2 ? 0.35 : depth === 1 ? 0.24 : 0.15
   };
 }
 
@@ -117,13 +117,14 @@ function resizePageMatrixCanvas() {
   pageMatrixCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   pageMatrixFontSize = isMobile
-    ? Math.max(10, Math.min(12, width / 104))
-    : Math.max(12, Math.min(15, width / 132));
+    ? Math.max(10, Math.min(13, width / 92))
+    : Math.max(13, Math.min(16, width / 112));
 
-  const cols = Math.ceil(width / pageMatrixFontSize) + (isMobile ? 5 : 8);
+  const spacing = pageMatrixFontSize * 0.78;
+  const cols = Math.ceil(width / spacing) + (isMobile ? 6 : 12);
 
   pageMatrixColumns = Array.from({ length: cols }, (_, i) =>
-    createPageColumn(i * pageMatrixFontSize, height, isMobile)
+    createPageColumn(i * spacing, height, isMobile)
   );
 
   pageMatrixTime = 0;
@@ -136,9 +137,9 @@ function drawPageMatrixLayer(width, height, delta) {
   const isMobile = isMobileMatrixDevice();
   pageMatrixTime += delta;
 
-  const headAlphaBase = isMobile ? 0.085 : 0.115;
-  const trailAlphaBase = isMobile ? 0.04 : 0.058;
-  const fadeFill = isMobile ? 0.08 : 0.06;
+  const headAlphaBase = isMobile ? 0.42 : 0.52;
+  const trailAlphaBase = isMobile ? 0.18 : 0.24;
+  const fadeFill = isMobile ? 0.06 : 0.045;
 
   pageMatrixCtx.clearRect(0, 0, width, height);
   pageMatrixCtx.fillStyle = `rgba(0, 0, 0, ${fadeFill})`;
@@ -147,39 +148,44 @@ function drawPageMatrixLayer(width, height, delta) {
 
   for (const col of pageMatrixColumns) {
     const fontSize = pageMatrixFontSize * col.sizeScale;
-    const step = fontSize * 1.16;
+    const step = fontSize * 1.06;
     const x = col.baseX + Math.sin(pageMatrixTime * col.swaySpeed + col.phase) * col.drift;
 
-    pageMatrixCtx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+    pageMatrixCtx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
 
     for (let i = 0; i < col.length; i += 1) {
       const y = col.y - i * step;
-      if (y < -40 || y > height + 40) continue;
+      if (y < -60 || y > height + 60) continue;
 
-      if (Math.random() > 0.986) {
-        col.glyphs[i] = randomMatrixChar();
+      if (Math.random() > 0.968) {
+        col.glyphs[i % col.glyphs.length] = randomMatrixChar();
       }
 
       const trailStrength = 1 - i / col.length;
 
       if (i === 0) {
-        pageMatrixCtx.shadowColor = `rgba(110, 170, 134, ${0.09 * col.headBoost})`;
-        pageMatrixCtx.shadowBlur = col.blur;
-        pageMatrixCtx.fillStyle = `rgba(220, 234, 226, ${headAlphaBase * col.headBoost})`;
+        pageMatrixCtx.shadowColor = `rgba(200, 255, 220, ${0.3 * col.headBoost})`;
+        pageMatrixCtx.shadowBlur = col.blur * 2;
+        pageMatrixCtx.fillStyle = `rgba(235, 255, 242, ${headAlphaBase * col.headBoost})`;
+      } else if (i <= 2) {
+        const subFade = i === 1 ? 0.65 : 0.42;
+        pageMatrixCtx.shadowColor = `rgba(150, 255, 185, ${0.16 * col.headBoost * subFade})`;
+        pageMatrixCtx.shadowBlur = col.blur * 1.2 * subFade;
+        pageMatrixCtx.fillStyle = `rgba(190, 255, 210, ${(headAlphaBase * subFade) * col.headBoost})`;
       } else {
-        pageMatrixCtx.shadowColor = `rgba(50, 95, 72, ${0.045 * col.trailBoost})`;
-        pageMatrixCtx.shadowBlur = Math.max(0.4, col.blur * 0.5);
-        pageMatrixCtx.fillStyle = `rgba(72, 128, 97, ${trailAlphaBase * trailStrength * col.trailBoost})`;
+        pageMatrixCtx.shadowColor = `rgba(80, 200, 130, ${0.08 * col.trailBoost * trailStrength})`;
+        pageMatrixCtx.shadowBlur = Math.max(0.5, col.blur * 0.5);
+        pageMatrixCtx.fillStyle = `rgba(100, 220, 150, ${trailAlphaBase * trailStrength * col.trailBoost})`;
       }
 
-      pageMatrixCtx.fillText(col.glyphs[i], x, y);
+      pageMatrixCtx.fillText(col.glyphs[i % col.glyphs.length], x, y);
     }
 
     col.y += col.speed * delta;
 
-    if (col.y - col.length * step > height + 80) {
+    if (col.y - col.length * step > height + 100) {
       const reset = createPageColumn(col.baseX, height, isMobile);
-      col.y = -Math.random() * 180;
+      col.y = -Math.random() * 350;
       col.speed = reset.speed;
       col.length = reset.length;
       col.glyphs = reset.glyphs;
