@@ -37,19 +37,18 @@
     .page-matrix-layer {
       position: fixed; inset: 0; z-index: 0;
       pointer-events: none; overflow: hidden;
-      perspective: 600px;
     }
     .page-matrix-canvas {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      z-index: 0; opacity: 0.5;
-      transform: rotateX(8deg) scaleY(1.08);
-      transform-origin: center top;
+      z-index: 0;
+      filter: hue-rotate(30deg) saturate(1.2) brightness(0.85) sepia(0.5);
+      opacity: 0.9;
     }
     .page-matrix-vignette {
       position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;
       background:
-        radial-gradient(circle at center, transparent 30%, rgba(10,5,1,0.65) 100%),
-        linear-gradient(180deg, rgba(40,20,3,0.08), rgba(10,4,1,0.25));
+        radial-gradient(circle at center, transparent 40%, rgba(18, 2, 2, 0.42) 100%),
+        linear-gradient(180deg, rgba(60, 30, 5, 0.08), rgba(20, 8, 2, 0.192));
     }
 
     .matrix-page-shell { position: relative; z-index: 2; min-height: 100vh; }
@@ -309,6 +308,82 @@
 
     /* === CTA === */
     .cta-section { text-align: center; }
+
+    .ebook-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .ebook-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 20px 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(117,103,22,0.5);
+      background:
+        linear-gradient(180deg, rgba(14,10,6,0.94), rgba(8,6,4,0.9)),
+        radial-gradient(circle at 20% 0%, rgba(180,120,30,0.1), transparent 50%);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.42);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.28s cubic-bezier(0.2,0.75,0.2,1), border-color 0.24s;
+      position: relative;
+      overflow: hidden;
+    }
+    .ebook-card::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit;
+      background: radial-gradient(circle at 20% 0%, rgba(255,255,255,0.06), transparent 30%);
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .ebook-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,215,0,0.35);
+      box-shadow: 0 20px 52px rgba(0,0,0,0.5);
+    }
+    .ebook-card:hover::before { opacity: 1; }
+
+    .ebook-cover {
+      width: 140px; height: auto;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      margin-bottom: 16px;
+      transition: transform 0.28s ease;
+    }
+    .ebook-card:hover .ebook-cover { transform: scale(1.04); }
+
+    .ebook-name {
+      font-size: 1rem; font-weight: 700; color: #fff1b8;
+      margin: 0 0 6px; text-align: center;
+      transition: color 0.2s;
+    }
+    .ebook-card:hover .ebook-name { color: #ffe082; }
+
+    .ebook-desc {
+      font-size: 0.8rem; color: #bfa86e; line-height: 1.5;
+      text-align: center; margin: 0 0 14px;
+    }
+
+    .ebook-buy {
+      display: inline-block;
+      padding: 10px 28px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(255,215,0,0.22), rgba(255,215,0,0.1));
+      border: 1px solid rgba(255,215,0,0.3);
+      color: #ffe082;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-top: auto;
+      transition: all 0.25s;
+    }
+    .ebook-card:hover .ebook-buy {
+      background: linear-gradient(135deg, rgba(255,215,0,0.35), rgba(255,215,0,0.18));
+      border-color: rgba(255,215,0,0.55);
+      box-shadow: 0 6px 18px rgba(201,149,42,0.15);
+    }
     .cta-text { color: #f3df9a; font-size: 0.95rem; margin: 0 0 20px; }
     .cta-button {
       display: inline-block; padding: 16px 40px; border-radius: 14px;
@@ -321,6 +396,74 @@
       background: linear-gradient(135deg, rgba(201,149,42,0.35), rgba(201,149,42,0.18));
       border-color: rgba(255,215,0,0.5); transform: translateY(-2px);
       box-shadow: 0 12px 32px rgba(201,149,42,0.15);
+    }
+
+    /* === MERCH CAROUSEL === */
+    .merch-section { text-align: center; }
+
+    .merch-carousel {
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(117,103,22,0.35);
+      background: linear-gradient(180deg, rgba(14,10,6,0.92), rgba(8,6,4,0.88));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+      padding: 24px 0;
+      margin-top: 24px;
+      cursor: grab;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: pan-y;
+      -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+      mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    }
+    .merch-carousel.is-dragging { cursor: grabbing; }
+
+    .merch-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      will-change: transform;
+    }
+
+    .merch-item {
+      flex-shrink: 0;
+      width: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      transition: transform 0.25s;
+    }
+    .merch-item:hover { transform: translateY(-4px); }
+    .merch-carousel.is-dragging .merch-item { pointer-events: none; }
+
+    .merch-item img {
+      width: 140px; height: 140px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid rgba(117,103,22,0.35);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      margin-bottom: 10px;
+      transition: border-color 0.25s;
+    }
+    .merch-item:hover img { border-color: rgba(255,215,0,0.3); }
+
+    .merch-name {
+      color: #fff1b8; font-size: 0.85rem; font-weight: 700;
+      margin-bottom: 6px; transition: color 0.2s;
+    }
+    .merch-item:hover .merch-name { color: #ffe082; }
+
+    .merch-buy {
+      display: inline-block; padding: 6px 18px; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.08));
+      border: 1px solid rgba(255,215,0,0.25);
+      color: #ffe082; font-size: 0.75rem; font-weight: 700;
+      transition: all 0.25s;
+    }
+    .merch-item:hover .merch-buy {
+      background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,215,0,0.15));
+      border-color: rgba(255,215,0,0.5);
     }
 
     /* === SOCIAL === */
@@ -363,6 +506,28 @@
     }
     .back-link:hover { color: #FFD700; }
 
+    .back-box {
+      display: inline-block;
+      padding: 16px 44px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #ffe082;
+      text-decoration: none;
+      border: 1px solid rgba(255,215,0,0.35);
+      background: linear-gradient(135deg, rgba(201,149,42,0.15), rgba(201,149,42,0.06));
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      transition: all 0.28s ease;
+    }
+    .back-box:hover {
+      background: linear-gradient(135deg, rgba(201,149,42,0.3), rgba(201,149,42,0.14));
+      border-color: rgba(255,215,0,0.55);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(201,149,42,0.18);
+      color: #FFD700;
+    }
+
     .page-footer {
       padding: 36px 24px; text-align: center;
       font-size: 0.72rem; letter-spacing: 0.15em; color: #7A5C1E;
@@ -376,6 +541,7 @@
       .card-grid { grid-template-columns: 1fr; }
       .detail-row { grid-template-columns: 1fr; }
       .face-grid { grid-template-columns: 1fr 1fr; }
+      .ebook-row { grid-template-columns: 1fr; max-width: 280px; margin-left: auto; margin-right: auto; }
       .standard-pillars { flex-direction: column; gap: 6px; }
       .step-item { padding: 22px 18px; gap: 14px; }
       .step-badge { width: 36px; height: 36px; font-size: 0.72rem; }
@@ -693,10 +859,35 @@
       <p class="closing-tagline">Ethos Empire — Build the Man.</p>
     </section>
 
-    <!-- CTA -->
+    <!-- CTA / Ebooks -->
     <section class="content-section cta-section">
-      <p class="cta-text">Want to go deeper into grooming, confidence, and discipline?</p>
-      <a href="../../ebooks/" class="cta-button">Explore Our Ebooks →</a>
+      <h2 class="section-title">Go Deeper</h2>
+      <p class="section-intro">Want the full guide? These ebooks cover everything in this course and more.</p>
+
+      <div class="ebook-row">
+        <a href="https://ethosempire.gumroad.com/l/thehaircareblueprint?layout=profile" target="_blank" rel="noopener noreferrer" class="ebook-card">
+          <img src="../../images/ethos-empire-hair-care-blueprint-ebook-cover-320.webp" alt="The Hair Care Blueprint ebook" class="ebook-cover" loading="lazy">
+          <h3 class="ebook-name">The Hair Care Blueprint</h3>
+          <p class="ebook-desc">The complete hair grooming, styling, and maintenance guide.</p>
+          <span class="ebook-buy">Buy Now →</span>
+        </a>
+
+        <a href="https://ethosempire.gumroad.com/l/thelooksmaxxingguide?layout=profile" target="_blank" rel="noopener noreferrer" class="ebook-card">
+          <img src="../../images/ethos-empire-looksmaxxing-guide-ebook-cover-320.webp" alt="Looksmaxxing Guide ebook" class="ebook-cover" loading="lazy">
+          <h3 class="ebook-name">Looksmaxxing Guide</h3>
+          <p class="ebook-desc">Level up your appearance — style, grooming, and self-presentation.</p>
+          <span class="ebook-buy">Buy Now →</span>
+        </a>
+
+        <a href="https://ethosempire.gumroad.com/l/theclearskinguide?layout=profile" target="_blank" rel="noopener noreferrer" class="ebook-card">
+          <img src="../../images/ethos-empire-clear-skin-guide-ebook-cover-320.webp" alt="The Clear Skin Guide ebook" class="ebook-cover" loading="lazy">
+          <h3 class="ebook-name">The Clear Skin Guide</h3>
+          <p class="ebook-desc">Practical skincare steps for healthier skin and better daily habits.</p>
+          <span class="ebook-buy">Buy Now →</span>
+        </a>
+      </div>
+
+      <a href="https://ethosempire.gumroad.com/" target="_blank" rel="noopener noreferrer" class="cta-button" style="margin-top:32px;">View All Ebooks →</a>
     </section>
 
     <!-- Connect With Icons -->
@@ -719,8 +910,22 @@
       </div>
     </section>
 
+    <!-- Merch -->
+    <section class="content-section merch-section">
+      <h2 class="section-title">Empire Merch</h2>
+      <p class="section-intro">Premium hoodies with gold emblem finish. Minimalist streetwear by Ethos Empire.</p>
+
+      <div class="merch-carousel" id="merchCarousel">
+        <div class="merch-track" id="merchTrack"></div>
+      </div>
+    </section>
+
+    <div style="text-align:center;margin-top:28px;">
+      <a href="https://ethosempireo.printful.me/" target="_blank" rel="noopener noreferrer" class="cta-button">Explore All Merch →</a>
+    </div>
+
     <div class="bottom-nav">
-      <a href="../" class="back-link">← Back to Course</a>
+      <a href="../" class="back-box">← Back to Course</a>
     </div>
 
   </main>
@@ -729,64 +934,167 @@
 
   </div>
 
-  <!-- 3D Slow Brown Matrix -->
+  <script src="../../matrix.js"></script>
   <script>
+  /* === MERCH CAROUSEL: auto-scroll + drag/swipe + infinite loop === */
   (function () {
-    const canvas = document.getElementById("pageMatrixCanvas");
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let w, h, cols, drops, speeds;
-    const fs = 15;
-    const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+    const carousel = document.getElementById("merchCarousel");
+    const track = document.getElementById("merchTrack");
+    if (!carousel || !track) return;
 
-    function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-      cols = Math.floor(w / fs);
-      drops = Array.from({ length: cols }, () => Math.random() * -80);
-      speeds = Array.from({ length: cols }, () => 0.18 + Math.random() * 0.35);
+    const hoodies = [
+      { name: "Black", img: "ethos-empire-hoodie-black-gold-logo-400.webp" },
+      { name: "Bone", img: "ethos-empire-hoodie-bone-gold-logo-400.webp" },
+      { name: "Latte", img: "ethos-empire-hoodie-latte-gold-logo-400.webp" },
+      { name: "Lavender", img: "ethos-empire-hoodie-lavender-gold-logo-400.webp" },
+      { name: "Navy", img: "ethos-empire-hoodie-navy-gold-logo-400.webp" },
+      { name: "Oatmeal", img: "ethos-empire-hoodie-oatmeal-gold-logo-400.webp" },
+      { name: "Vintage", img: "ethos-empire-hoodie-vintage-gold-logo-400.webp" },
+      { name: "White", img: "ethos-empire-hoodie-white-gold-logo-400.webp" },
+      { name: "Pink", img: "ethos-empire-hoodie-pink-gold-logo-400.webp" }
+    ];
+    const url = "https://ethosempireo.printful.me/product/ethos-unisex-hoodie";
+    const itemW = 170; // 150 width + 20 gap
+    const setW = hoodies.length * itemW;
+
+    // Build 3 sets for infinite wrap
+    for (let s = 0; s < 3; s++) {
+      hoodies.forEach(function (h) {
+        var a = document.createElement("a");
+        a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+        a.className = "merch-item"; a.draggable = false;
+        a.innerHTML =
+          '<img src="../../images/' + h.img + '" alt="' + h.name + ' Hoodie" loading="lazy" draggable="false">' +
+          '<span class="merch-name">' + h.name + '</span>' +
+          '<span class="merch-buy">Buy →</span>';
+        track.appendChild(a);
+      });
     }
 
-    let last = 0;
-    function draw(ts) {
-      requestAnimationFrame(draw);
-      if (ts - last < 50) return; // ~20fps for slower feel
-      last = ts;
+    // State
+    var pos = 0;
+    var autoSpeed = 0.4;
+    var isDragging = false;
+    var didDrag = false;
+    var startX = 0;
+    var dragStartPos = 0;
+    var velocity = 0;
+    var lastX = 0;
+    var lastTime = 0;
+    var momentumV = 0;
+    var resumeTimer = null;
+    var autoActive = true;
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0.045)";
-      ctx.fillRect(0, 0, w, h);
+    // Wrap position into the middle set so it never runs out
+    function wrap(p) {
+      while (p > 0) p -= setW;
+      while (p < -setW * 2) p += setW;
+      return p;
+    }
 
-      for (let i = 0; i < cols; i++) {
-        const char = chars[Math.floor(Math.random() * chars.length)];
-        const x = i * fs;
-        const y = drops[i] * fs;
+    function render() {
+      track.style.transform = "translateX(" + pos + "px)";
+    }
 
-        // Depth-based sizing and brightness
-        const depth = speeds[i]; // 0.18–0.53
-        const depthNorm = (depth - 0.18) / 0.35; // 0–1
-        const size = fs * (0.7 + depthNorm * 0.5); // smaller = far, larger = near
-        const alpha = 0.08 + depthNorm * 0.38;
-
-        // Brown spectrum
-        const r = 130 + Math.floor(depthNorm * 90);
-        const g = 70 + Math.floor(depthNorm * 65);
-        const b = 10 + Math.floor(depthNorm * 25);
-
-        ctx.font = size + "px monospace";
-        ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
-        ctx.fillText(char, x, y);
-
-        if (y > h && Math.random() > 0.985) {
-          drops[i] = 0;
-          speeds[i] = 0.18 + Math.random() * 0.35;
+    // --- MAIN LOOP ---
+    function tick() {
+      if (!isDragging) {
+        if (Math.abs(momentumV) > 0.3) {
+          // Momentum from drag release
+          pos += momentumV;
+          momentumV *= 0.95;
+        } else {
+          momentumV = 0;
+          if (autoActive) {
+            pos -= autoSpeed;
+          }
         }
-        drops[i] += speeds[i];
+        pos = wrap(pos);
       }
+      render();
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    // --- Prevent link clicks only after real drag ---
+    carousel.addEventListener("click", function (e) {
+      if (didDrag) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    // --- MOUSE ---
+    carousel.addEventListener("mousedown", function (e) {
+      beginDrag(e.clientX);
+    });
+    window.addEventListener("mousemove", function (e) {
+      if (isDragging) {
+        e.preventDefault();
+        doDrag(e.clientX);
+      }
+    });
+    window.addEventListener("mouseup", function () {
+      if (isDragging) endDrag();
+    });
+
+    // --- TOUCH ---
+    carousel.addEventListener("touchstart", function (e) {
+      beginDrag(e.touches[0].clientX);
+    }, { passive: true });
+    carousel.addEventListener("touchmove", function (e) {
+      if (!isDragging) return;
+      doDrag(e.touches[0].clientX);
+      if (Math.abs(lastX - startX) > 10) e.preventDefault();
+    }, { passive: false });
+    carousel.addEventListener("touchend", function () {
+      if (isDragging) endDrag();
+    });
+
+    function beginDrag(x) {
+      isDragging = true;
+      didDrag = false;
+      startX = x;
+      lastX = x;
+      dragStartPos = pos;
+      momentumV = 0;
+      velocity = 0;
+      lastTime = Date.now();
+      clearTimeout(resumeTimer);
+      autoActive = false;
     }
 
-    resize();
-    window.addEventListener("resize", resize);
-    requestAnimationFrame(draw);
+    function doDrag(x) {
+      var delta = x - startX;
+      if (Math.abs(delta) > 10) {
+        didDrag = true;
+        carousel.classList.add("is-dragging");
+      }
+
+      var now = Date.now();
+      var dt = now - lastTime;
+      if (dt > 0) {
+        velocity = (x - lastX) / dt;
+        lastX = x;
+        lastTime = now;
+      }
+
+      pos = wrap(dragStartPos + delta);
+      render();
+    }
+
+    function endDrag() {
+      isDragging = false;
+      carousel.classList.remove("is-dragging");
+
+      // Flick momentum
+      momentumV = velocity * 120;
+
+      // Resume auto-scroll after 2.5s of no interaction
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function () {
+        autoActive = true;
+      }, 2500);
+
+      setTimeout(function () { didDrag = false; }, 20);
+    }
   })();
   </script>
 </body>
