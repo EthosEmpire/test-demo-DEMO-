@@ -328,6 +328,24 @@
 
     /* === BOTTOM === */
     .bottom-nav { text-align: center; margin-top: 52px; padding-top: 28px; border-top: 1px solid rgba(117,103,22,0.2); }
+
+    .course-nav-row {
+      display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+
+    .course-nav-btn {
+      display: inline-block; padding: 14px 28px; border-radius: 14px;
+      font-size: 0.88rem; font-weight: 700; letter-spacing: 0.02em;
+      color: #d4af37; text-decoration: none;
+      border: 1px solid rgba(255,215,0,0.2);
+      background: linear-gradient(135deg, rgba(201,149,42,0.08), rgba(201,149,42,0.03));
+      transition: all 0.28s;
+    }
+    .course-nav-btn:hover {
+      border-color: rgba(255,215,0,0.4); color: #ffe082;
+      background: linear-gradient(135deg, rgba(201,149,42,0.18), rgba(201,149,42,0.08));
+      transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,149,42,0.12);
+    }
     .back-box {
       display: inline-block; padding: 16px 44px; border-radius: 14px;
       font-size: 1rem; font-weight: 700; letter-spacing: 0.03em;
@@ -358,6 +376,8 @@
       .hero-image-row { flex-direction: column; align-items: center; }
       .hero-img { width: 100%; max-width: 300px; height: 280px; }
       .social-row { gap: 24px; }
+      .course-nav-row { flex-direction: column; gap: 12px; }
+      .course-nav-btn { width: 100%; text-align: center; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -631,7 +651,11 @@
     </div>
 
     <div class="bottom-nav">
-      <a href="../" class="back-box">← Back to Course</a>
+      <div class="course-nav-row">
+        <a href="../hair-mastery/" class="course-nav-btn">← Hair Mastery</a>
+        <a href="../" class="back-box">Back to Course</a>
+        <a href="../finacial-discipline/" class="course-nav-btn">Financial Discipline →</a>
+      </div>
     </div>
 
   </main>
