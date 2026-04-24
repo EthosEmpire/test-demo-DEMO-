@@ -410,8 +410,8 @@ body.snap-ready {
 
 .pillar-headline {
   font-size: clamp(2.8rem, 7.5vw, 7.5rem);
-  font-weight: 900; line-height: 0.91;
-  letter-spacing: -0.025em; margin: 0 0 22px; color: #fff;
+  font-weight: 900; line-height: 0.95;
+  letter-spacing: -0.025em; margin: 0 0 22px; padding-bottom: 0.20em; color: #fff;
 }
 .pillar-headline .line-gold {
   display: block;
