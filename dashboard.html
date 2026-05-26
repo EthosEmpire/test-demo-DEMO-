@@ -217,9 +217,253 @@
     /* ── Empty state ── */
     .empty-state { text-align:center; padding:40px 24px; color:rgba(255,255,255,0.3); font-size:0.88rem; }
     .empty-state-icon { font-size:2.2rem; margin-bottom:10px; }
+
+    /* ── Timeline (My Plan) ── */
+    @keyframes tlIn { from { opacity:0; transform:translateX(-18px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes nowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.45);} 60%{box-shadow:0 0 0 10px rgba(255,215,0,0);} }
+    .tl-wrap { position:relative; padding-left:32px; }
+    .tl-wrap::before { content:''; position:absolute; left:9px; top:8px; bottom:8px; width:2px; background:linear-gradient(to bottom,var(--gold-1),rgba(255,215,0,0.06)); border-radius:2px; }
+    .tl-item { position:relative; padding:12px 0 12px 18px; animation:tlIn 0.4s ease both; }
+    .tl-dot { position:absolute; left:-23px; top:17px; width:10px; height:10px; border-radius:50%; background:rgba(255,215,0,0.25); border:2px solid rgba(255,215,0,0.35); flex-shrink:0; }
+    .tl-item.tl-now .tl-dot { background:var(--gold-2); border-color:var(--gold-3); animation:nowPulse 2s infinite; }
+    .tl-item.tl-next .tl-dot { background:rgba(255,215,0,0.5); border-color:var(--gold-2); }
+    .tl-item.tl-work .tl-dot { background:#4d96ff44; border-color:#4d96ff; }
+    .tl-time { font-size:0.68rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.06em; margin-bottom:3px; }
+    .tl-item.tl-now .tl-time { color:var(--gold-3); }
+    .tl-item.tl-next .tl-time { color:var(--gold-2); }
+    .tl-item.tl-work .tl-time { color:#74c0fc; }
+    .tl-title { font-size:0.9rem; font-weight:700; color:rgba(255,255,255,0.75); line-height:1.3; }
+    .tl-item.tl-now .tl-title { color:#fff; }
+    .tl-desc { font-size:0.76rem; color:rgba(255,255,255,0.35); line-height:1.5; margin-top:3px; }
+    .tl-badge { display:inline-block; font-size:0.58rem; font-weight:900; letter-spacing:0.14em; padding:2px 8px; border-radius:20px; margin-left:7px; vertical-align:middle; }
+    .tl-badge-now { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
+    .tl-badge-next { background:rgba(255,215,0,0.12); color:var(--gold-3); border:1px solid rgba(255,215,0,0.28); }
+    .tl-badge-work { background:rgba(77,150,255,0.15); color:#74c0fc; border:1px solid rgba(77,150,255,0.3); }
+    .tl-section-divider { font-size:0.62rem; font-weight:900; letter-spacing:0.22em; color:rgba(255,255,255,0.18); padding:16px 0 6px; display:flex; align-items:center; gap:10px; }
+    .tl-section-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+    .tl-upnext-banner { display:flex; align-items:center; gap:12px; background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.18); border-radius:14px; padding:14px 18px; margin-bottom:22px; }
+    .tl-upnext-icon { font-size:1.4rem; flex-shrink:0; }
+    .tl-upnext-label { font-size:0.62rem; font-weight:900; letter-spacing:0.2em; color:var(--gold-2); margin-bottom:3px; }
+    .tl-upnext-task { font-size:0.92rem; font-weight:800; color:#fff; }
+    .tl-upnext-time { font-size:0.74rem; color:rgba(255,255,255,0.4); margin-top:2px; }
+
+    /* ── Schedule Builder Modal ── */
+    .sched-modal { position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(8px); }
+    .sched-modal.hidden { display:none; }
+    .sched-card { background:#0d0d0d; border:1px solid rgba(255,215,0,0.2); border-radius:24px; padding:32px 28px; width:100%; max-width:500px; max-height:88vh; overflow-y:auto; }
+    .sched-step { display:none; } .sched-step.active { display:block; }
+    .sched-title { font-size:1.2rem; font-weight:900; color:#fff; margin-bottom:6px; }
+    .sched-sub { font-size:0.82rem; color:rgba(255,255,255,0.4); margin-bottom:22px; line-height:1.6; }
+    .sched-opts { display:grid; gap:8px; }
+    .sched-opt { display:flex; align-items:center; gap:12px; padding:13px 16px; border:1px solid rgba(255,255,255,0.1); border-radius:12px; background:rgba(255,255,255,0.03); cursor:pointer; transition:all 0.18s; }
+    .sched-opt:hover,.sched-opt.on { border-color:var(--gold-2); background:rgba(255,215,0,0.06); }
+    .sched-opt-icon { font-size:1.3rem; flex-shrink:0; }
+    .sched-opt-label { font-size:0.87rem; font-weight:700; color:rgba(255,255,255,0.75); }
+    .sched-opt.on .sched-opt-label { color:var(--gold-3); }
+    .sched-days { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:8px; }
+    .sched-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:10px; font-size:0.7rem; font-weight:800; letter-spacing:0.04em; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.35); cursor:pointer; transition:all 0.15s; }
+    .sched-day.on { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; border-color:transparent; }
+    .sched-time-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    .sched-field label { display:block; font-size:0.68rem; font-weight:800; letter-spacing:0.12em; color:rgba(255,255,255,0.35); margin-bottom:6px; }
+    .sched-field input[type=time], .sched-field select { width:100%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:10px 12px; color:#fff; font-size:0.88rem; font-family:inherit; outline:none; }
+    .sched-field input[type=time] { color-scheme:dark; }
+    .sched-progress { display:flex; gap:5px; margin-bottom:24px; }
+    .sched-prog-dot { flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,0.1); transition:background 0.3s; }
+    .sched-prog-dot.done { background:var(--gold-2); }
+    .sched-btn { width:100%; padding:13px; border:none; border-radius:12px; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; font-size:0.86rem; font-weight:900; letter-spacing:0.1em; cursor:pointer; font-family:inherit; margin-top:20px; transition:opacity 0.2s; }
+    .sched-btn:hover { opacity:0.88; }
+    .sched-btn-ghost { width:100%; padding:11px; border:1px solid rgba(255,255,255,0.1); border-radius:12px; background:transparent; color:rgba(255,255,255,0.35); font-size:0.8rem; font-weight:700; cursor:pointer; font-family:inherit; margin-top:8px; transition:all 0.2s; }
+    .sched-btn-ghost:hover { border-color:var(--gold-3); color:var(--gold-3); }
+
+    /* ── Monthly check-in Modal ── */
+    .month-modal { position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:1800; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(6px); }
+    .month-modal.hidden { display:none; }
+    .month-card { background:#0d0d0d; border:1px solid rgba(255,215,0,0.2); border-radius:22px; padding:32px 26px; max-width:420px; width:100%; text-align:center; }
+    .month-icon { font-size:2.4rem; margin-bottom:14px; }
+    .month-title { font-size:1.15rem; font-weight:900; color:#fff; margin-bottom:8px; }
+    .month-sub { font-size:0.83rem; color:rgba(255,255,255,0.45); margin-bottom:24px; line-height:1.65; }
+    .month-btns { display:flex; flex-direction:column; gap:10px; }
+
+    /* ── Library Tab ── */
+    .lib-intro { margin-bottom:28px; }
+    .lib-intro-title { font-size:1.35rem; font-weight:900; color:#fff; margin-bottom:6px; }
+    .lib-intro-sub { font-size:0.85rem; color:rgba(255,255,255,0.4); line-height:1.6; }
+    .lib-cats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:32px; }
+    .lib-cat-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px 14px; cursor:pointer; transition:all 0.2s; text-align:center; }
+    .lib-cat-card:hover { border-color:rgba(255,215,0,0.3); background:rgba(255,215,0,0.04); transform:translateY(-2px); }
+    .lib-cat-icon { font-size:1.8rem; margin-bottom:10px; }
+    .lib-cat-name { font-size:0.82rem; font-weight:800; color:#fff; margin-bottom:4px; }
+    .lib-cat-count { font-size:0.68rem; color:rgba(255,255,255,0.32); letter-spacing:0.08em; }
+    .lib-article-view { display:none; }
+    .lib-back-btn { display:inline-flex; align-items:center; gap:7px; background:transparent; border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:7px 16px; color:rgba(255,255,255,0.45); font-size:0.78rem; font-weight:700; cursor:pointer; font-family:inherit; margin-bottom:22px; transition:all 0.2s; }
+    .lib-back-btn:hover { border-color:var(--gold-3); color:var(--gold-3); }
+    .lib-cat-header { display:flex; align-items:center; gap:14px; margin-bottom:24px; padding:20px; background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.1); border-radius:16px; }
+    .lib-cat-header-icon { font-size:2rem; flex-shrink:0; }
+    .lib-cat-header-title { font-size:1.1rem; font-weight:900; color:#fff; margin-bottom:3px; }
+    .lib-cat-header-desc { font-size:0.8rem; color:rgba(255,255,255,0.4); line-height:1.5; }
+    .lib-chapter { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; margin-bottom:10px; overflow:hidden; }
+    .lib-chapter-hdr { display:flex; align-items:center; justify-content:space-between; padding:16px 18px; cursor:pointer; transition:background 0.15s; gap:12px; }
+    .lib-chapter-hdr:hover { background:rgba(255,255,255,0.03); }
+    .lib-chapter-num { font-size:0.62rem; font-weight:900; color:var(--gold-2); letter-spacing:0.16em; margin-bottom:3px; }
+    .lib-chapter-title { font-size:0.92rem; font-weight:800; color:#fff; }
+    .lib-chapter-arrow { color:rgba(255,255,255,0.25); font-size:0.8rem; transition:transform 0.25s; flex-shrink:0; }
+    .lib-chapter.open .lib-chapter-arrow { transform:rotate(90deg); }
+    .lib-chapter-body { display:none; padding:0 18px 18px; border-top:1px solid rgba(255,255,255,0.05); }
+    .lib-chapter.open .lib-chapter-body { display:block; }
+    .lib-chapter-body p { font-size:0.86rem; color:rgba(255,255,255,0.65); line-height:1.75; margin:14px 0; }
+    .lib-chapter-body strong { color:var(--gold-4); }
+    .lib-chapter-body h4 { font-size:0.78rem; font-weight:800; letter-spacing:0.14em; color:var(--gold-3); margin:18px 0 8px; }
+    .lib-chapter-body ul { list-style:none; padding:0; margin:0 0 14px; }
+    .lib-chapter-body ul li { font-size:0.85rem; color:rgba(255,255,255,0.6); padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; gap:9px; line-height:1.55; }
+    .lib-chapter-body ul li:last-child { border-bottom:none; }
+    .lib-chapter-body ul li::before { content:'→'; color:var(--gold-2); font-weight:700; flex-shrink:0; }
+    .lib-takeaway { background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.15); border-radius:10px; padding:13px 16px; margin-top:14px; font-size:0.82rem; color:var(--gold-4); line-height:1.6; }
+    .lib-takeaway strong { display:block; font-size:0.65rem; letter-spacing:0.18em; color:var(--gold-2); margin-bottom:5px; }
+    .lib-links { margin-top:14px; }
+    .lib-links-label { font-size:0.65rem; font-weight:800; letter-spacing:0.16em; color:rgba(255,255,255,0.25); margin-bottom:8px; }
+    .lib-link { display:inline-flex; align-items:center; gap:5px; font-size:0.78rem; color:rgba(255,215,0,0.6); text-decoration:none; background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.15); border-radius:20px; padding:4px 12px; margin:3px 3px 3px 0; transition:all 0.15s; }
+    .lib-link:hover { color:var(--gold-3); background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3); }
+
+    /* ── Social CTA ── */
+    .social-cta { background:linear-gradient(135deg,rgba(139,105,20,0.12),rgba(201,149,42,0.04)); border:1px solid rgba(255,215,0,0.14); border-radius:18px; padding:28px 24px; margin-bottom:16px; text-align:center; }
+    .social-cta-title { font-size:1rem; font-weight:900; color:#fff; margin-bottom:6px; }
+    .social-cta-sub { font-size:0.82rem; color:rgba(255,255,255,0.4); margin-bottom:20px; line-height:1.6; }
+    .social-links { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+    .social-link { display:flex; align-items:center; gap:7px; padding:10px 18px; border-radius:30px; font-size:0.8rem; font-weight:800; letter-spacing:0.06em; text-decoration:none; transition:all 0.2s; border:1px solid; }
+    .social-link-ig { color:#e1306c; border-color:rgba(225,48,108,0.3); background:rgba(225,48,108,0.06); }
+    .social-link-ig:hover { background:rgba(225,48,108,0.14); }
+    .social-link-tt { color:#69c9d0; border-color:rgba(105,201,208,0.3); background:rgba(105,201,208,0.06); }
+    .social-link-tt:hover { background:rgba(105,201,208,0.14); }
+    .social-link-yt { color:#ff4444; border-color:rgba(255,68,68,0.3); background:rgba(255,68,68,0.06); }
+    .social-link-yt:hover { background:rgba(255,68,68,0.14); }
+    .social-link-x { color:rgba(255,255,255,0.7); border-color:rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); }
+    .social-link-x:hover { background:rgba(255,255,255,0.1); }
+
+    /* ── Ebook CTA ── */
+    .ebook-section { margin-bottom:20px; }
+    .ebook-title { font-size:1rem; font-weight:900; color:#fff; margin-bottom:16px; }
+    .ebook-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+    .ebook-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,215,0,0.12); border-radius:14px; padding:18px 16px; display:flex; flex-direction:column; gap:10px; }
+    .ebook-cover { width:100%; aspect-ratio:3/4; background:linear-gradient(135deg,var(--gold-1),rgba(201,149,42,0.3)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:2.4rem; }
+    .ebook-name { font-size:0.88rem; font-weight:800; color:#fff; line-height:1.3; }
+    .ebook-desc { font-size:0.75rem; color:rgba(255,255,255,0.38); line-height:1.5; flex:1; }
+    .ebook-price { font-size:0.82rem; font-weight:900; color:var(--gold-3); }
+    .ebook-btn { padding:9px; border:none; border-radius:9px; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; font-size:0.76rem; font-weight:900; letter-spacing:0.08em; cursor:pointer; font-family:inherit; transition:opacity 0.2s; }
+    .ebook-btn:hover { opacity:0.85; }
   </style>
 </head>
 <body>
+
+  <!-- Schedule Builder Modal -->
+  <div class="sched-modal hidden" id="schedModal">
+    <div class="sched-card">
+      <div style="font-size:0.65rem;font-weight:900;letter-spacing:0.22em;color:var(--gold-2);margin-bottom:16px;">SCHEDULE SETUP</div>
+      <div class="sched-progress" id="schedProgress"></div>
+
+      <!-- Step 1: Situation -->
+      <div class="sched-step active" id="sched1">
+        <div class="sched-title">What's your situation?</div>
+        <div class="sched-sub">This shapes your entire daily plan.</div>
+        <div class="sched-opts" id="schedSituationOpts">
+          <div class="sched-opt" data-v="fulltime"><span class="sched-opt-icon">💼</span><span class="sched-opt-label">Full-Time Employee (9–5 or fixed hours)</span></div>
+          <div class="sched-opt" data-v="parttime"><span class="sched-opt-icon">⏱️</span><span class="sched-opt-label">Part-Time Employee</span></div>
+          <div class="sched-opt" data-v="selfemployed"><span class="sched-opt-icon">🚀</span><span class="sched-opt-label">Self-Employed / Freelancer</span></div>
+          <div class="sched-opt" data-v="student"><span class="sched-opt-icon">📚</span><span class="sched-opt-label">Student</span></div>
+          <div class="sched-opt" data-v="none"><span class="sched-opt-icon">🏠</span><span class="sched-opt-label">Not Currently Working</span></div>
+        </div>
+        <button class="sched-btn" id="schedNext1">Continue →</button>
+      </div>
+
+      <!-- Step 2: Work Days -->
+      <div class="sched-step" id="sched2">
+        <div class="sched-title">Which days do you work?</div>
+        <div class="sched-sub">Tap to toggle your work days on or off.</div>
+        <div class="sched-days" id="schedDaysBtns">
+          <div class="sched-day" data-d="mon">MON</div>
+          <div class="sched-day" data-d="tue">TUE</div>
+          <div class="sched-day" data-d="wed">WED</div>
+          <div class="sched-day" data-d="thu">THU</div>
+          <div class="sched-day" data-d="fri">FRI</div>
+          <div class="sched-day" data-d="sat">SAT</div>
+          <div class="sched-day" data-d="sun">SUN</div>
+        </div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.3);margin:8px 0 0;text-align:center;">Your days off get a recovery + personal development plan.</div>
+        <button class="sched-btn" id="schedNext2">Continue →</button>
+        <button class="sched-btn-ghost" id="schedBack2">← Back</button>
+      </div>
+
+      <!-- Step 3: Work Hours -->
+      <div class="sched-step" id="sched3">
+        <div class="sched-title">What are your work hours?</div>
+        <div class="sched-sub">We'll build your day around these.</div>
+        <div class="sched-time-row">
+          <div class="sched-field">
+            <label>WORK / SCHOOL STARTS</label>
+            <input type="time" id="schedStart" value="09:00">
+          </div>
+          <div class="sched-field">
+            <label>WORK / SCHOOL ENDS</label>
+            <input type="time" id="schedEnd" value="17:00">
+          </div>
+        </div>
+        <div class="sched-field" style="margin-bottom:0;">
+          <label>COMMUTE TIME (EACH WAY)</label>
+          <select id="schedCommute">
+            <option value="0">No commute (work from home)</option>
+            <option value="15">Under 15 minutes</option>
+            <option value="30" selected>15–30 minutes</option>
+            <option value="45">30–45 minutes</option>
+            <option value="60">45–60 minutes</option>
+            <option value="90">Over 60 minutes</option>
+          </select>
+        </div>
+        <button class="sched-btn" id="schedNext3">Continue →</button>
+        <button class="sched-btn-ghost" id="schedBack3">← Back</button>
+      </div>
+
+      <!-- Step 4: Wake/Sleep -->
+      <div class="sched-step" id="sched4">
+        <div class="sched-title">Morning & evening preferences</div>
+        <div class="sched-sub">We'll design your routine around your natural rhythm and goals.</div>
+        <div class="sched-time-row">
+          <div class="sched-field">
+            <label>WAKE UP TIME</label>
+            <input type="time" id="schedWake" value="05:30">
+          </div>
+          <div class="sched-field">
+            <label>SLEEP TIME</label>
+            <input type="time" id="schedSleep" value="22:00">
+          </div>
+        </div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.32);margin-top:4px;line-height:1.6;">Aim for 7–8 hours between sleep and wake. Your morning window before work is your most powerful time.</div>
+        <button class="sched-btn" id="schedNext4">Build My Schedule →</button>
+        <button class="sched-btn-ghost" id="schedBack4">← Back</button>
+      </div>
+
+      <!-- Step 5: Done -->
+      <div class="sched-step" id="sched5">
+        <div style="text-align:center;padding:20px 0;">
+          <div style="font-size:2.8rem;margin-bottom:16px;">✅</div>
+          <div class="sched-title" style="text-align:center;">Your schedule is ready</div>
+          <div class="sched-sub" style="text-align:center;">Your personalized monthly plan has been built. Head to My Plan to see your full timeline — updated every day.</div>
+        </div>
+        <button class="sched-btn" id="schedDone">View My Plan →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Check-in Modal -->
+  <div class="month-modal hidden" id="monthModal">
+    <div class="month-card">
+      <div class="month-icon">🗓️</div>
+      <div class="month-title">New month — new chapter</div>
+      <div class="month-sub">It's a new month. Has anything changed in your schedule or goals? Let's make sure your plan is still built for <em>your</em> life right now.</div>
+      <div class="month-btns">
+        <button class="sched-btn" id="monthUpdate">Update My Schedule</button>
+        <button class="sched-btn-ghost" id="monthKeep">Same schedule — keep going</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Auth loading overlay -->
   <div id="authOverlay" style="position:fixed;inset:0;background:#050505;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
@@ -267,7 +511,7 @@
     <button class="db-tab active" data-tab="today" role="tab">Today</button>
     <button class="db-tab" data-tab="myplan" role="tab">📋 My Plan</button>
     <button class="db-tab" data-tab="planner" role="tab">📅 Planner</button>
-    <button class="db-tab" data-tab="content" role="tab">⭐ Content</button>
+    <button class="db-tab" data-tab="library" role="tab">📖 Library</button>
     <button class="db-tab" data-tab="settings" role="tab">⚙️ Settings</button>
   </nav>
 
@@ -335,18 +579,74 @@
     <div id="dayBlocks"></div>
   </div>
 
-  <!-- CONTENT -->
-  <div class="db-panel" id="tab-content">
-    <div style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:6px;">Premium Content</div>
-    <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-bottom:24px;">Exclusive insights, challenges, and frameworks — updated monthly.</div>
-    <div class="content-category-bar">
-      <button class="content-cat-btn active" data-content="all">All</button>
-      <button class="content-cat-btn" data-content="discipline">Discipline</button>
-      <button class="content-cat-btn" data-content="mindset">Mindset</button>
-      <button class="content-cat-btn" data-content="finance">Finance</button>
-      <button class="content-cat-btn" data-content="health">Health</button>
+  <!-- LIBRARY -->
+  <div class="db-panel" id="tab-library">
+    <!-- Category Grid View -->
+    <div id="libGrid">
+      <div class="lib-intro">
+        <div class="lib-intro-title">Empire Knowledge Library</div>
+        <div class="lib-intro-sub">Your complete self-development resource. 11 categories · 55+ chapters · practical guides you can apply today.</div>
+      </div>
+      <div class="lib-cats-grid">
+        <div class="lib-cat-card" data-cat="glowup"><div class="lib-cat-icon">✨</div><div class="lib-cat-name">Glow Up</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="hair"><div class="lib-cat-icon">💇</div><div class="lib-cat-name">Hair Care</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="skin"><div class="lib-cat-icon">🌿</div><div class="lib-cat-name">Skin Care</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="health"><div class="lib-cat-icon">🫀</div><div class="lib-cat-name">Health & Wellness</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="fitness"><div class="lib-cat-icon">💪</div><div class="lib-cat-name">Fitness</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="hygiene"><div class="lib-cat-icon">🪥</div><div class="lib-cat-name">Hygiene</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="relationships"><div class="lib-cat-icon">🤝</div><div class="lib-cat-name">Relationships</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="faith"><div class="lib-cat-icon">🙏</div><div class="lib-cat-name">Faith & Spirituality</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="philosophy"><div class="lib-cat-icon">🧠</div><div class="lib-cat-name">Philosophy</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="money"><div class="lib-cat-icon">💰</div><div class="lib-cat-name">Money & Finance</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+        <div class="lib-cat-card" data-cat="knowledge"><div class="lib-cat-icon">📚</div><div class="lib-cat-name">Knowledge & Learning</div><div class="lib-cat-count">5 CHAPTERS</div></div>
+      </div>
+
+      <!-- Ebooks -->
+      <div class="ebook-section">
+        <div class="ebook-title">📕 Ethos Empire Ebooks</div>
+        <div class="ebook-grid">
+          <div class="ebook-card">
+            <div class="ebook-cover">🔥</div>
+            <div class="ebook-name">The Empire Builder Playbook</div>
+            <div class="ebook-desc">90 days to discipline, fitness, wealth and confidence — the complete glow-up blueprint.</div>
+            <div class="ebook-price">Coming Soon</div>
+            <button class="ebook-btn" onclick="window.location.href='plan.html'">Get Early Access</button>
+          </div>
+          <div class="ebook-card">
+            <div class="ebook-cover">💰</div>
+            <div class="ebook-name">Money Before 30</div>
+            <div class="ebook-desc">Build your first emergency fund, pay off debt, and start investing — step by step.</div>
+            <div class="ebook-price">Coming Soon</div>
+            <button class="ebook-btn" onclick="window.location.href='plan.html'">Get Early Access</button>
+          </div>
+          <div class="ebook-card">
+            <div class="ebook-cover">✨</div>
+            <div class="ebook-name">The Ultimate Glow Up Guide</div>
+            <div class="ebook-desc">Skin, hair, hygiene, style and confidence — everything in one complete guide.</div>
+            <div class="ebook-price">Coming Soon</div>
+            <button class="ebook-btn" onclick="window.location.href='plan.html'">Get Early Access</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social CTA -->
+      <div class="social-cta">
+        <div class="social-cta-title">Join the Empire Community</div>
+        <div class="social-cta-sub">Daily motivation, tips, and accountability — follow us on all platforms.</div>
+        <div class="social-links">
+          <a href="https://instagram.com/ethosempire" target="_blank" rel="noopener" class="social-link social-link-ig">📸 Instagram</a>
+          <a href="https://tiktok.com/@ethosempire" target="_blank" rel="noopener" class="social-link social-link-tt">🎵 TikTok</a>
+          <a href="https://youtube.com/@ethosempire" target="_blank" rel="noopener" class="social-link social-link-yt">▶ YouTube</a>
+          <a href="https://x.com/ethosempire" target="_blank" rel="noopener" class="social-link social-link-x">✕ Twitter / X</a>
+        </div>
+      </div>
     </div>
-    <div id="contentCards"></div>
+
+    <!-- Article View (hidden by default) -->
+    <div class="lib-article-view" id="libArticleView">
+      <button class="lib-back-btn" id="libBackBtn">← Back to Library</button>
+      <div id="libArticleContent"></div>
+    </div>
   </div>
 
   <!-- SETTINGS -->
@@ -424,6 +724,13 @@
       <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-bottom:14px;">Your goals shape your entire personalized plan. Select all that apply.</div>
       <div id="settingsGoals" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;"></div>
       <button class="btn-add" id="saveGoalsBtn" style="width:100%;">Update Goals &amp; Rebuild Plan</button>
+    </div>
+
+    <!-- Schedule -->
+    <div class="db-card">
+      <div class="card-label">WORK SCHEDULE</div>
+      <div style="font-size:0.82rem;color:rgba(255,255,255,0.4);margin-bottom:14px;" id="settingsSchedSummary">No schedule set. Building one personalises your entire daily plan.</div>
+      <button class="btn-add" id="settingsEditSched" style="width:100%;">Edit My Schedule</button>
     </div>
 
     <!-- Sign out -->
@@ -661,8 +968,8 @@
       if (btn.dataset.tab === 'today')    renderToday();
       if (btn.dataset.tab === 'myplan')   renderMyPlan(window.EE_PLAN_PROFILE);
       if (btn.dataset.tab === 'planner')  { renderCalendar(); renderDayBlocks(); }
-      if (btn.dataset.tab === 'content')  renderContent(document.querySelector('.content-cat-btn.active')?.dataset.content || 'all');
-      if (btn.dataset.tab === 'settings') renderSettingsGoals((window.EE_PLAN_PROFILE || {}).goals || []);
+      if (btn.dataset.tab === 'library')  renderLibraryGrid();
+      if (btn.dataset.tab === 'settings') { renderSettingsGoals((window.EE_PLAN_PROFILE || {}).goals || []); renderSchedSummary(); }
     });
   });
 
@@ -741,7 +1048,29 @@
   /* ─ My Plan renderer ─ */
   window.renderMyPlan = function(pp) {
     const el = document.getElementById('myPlanContent');
-    if (el) el.innerHTML = buildFullPlan(pp);
+    if (!el) return;
+    const ws = pp && pp.workSchedule;
+    let html = '';
+    // Prompt to set schedule if missing
+    if (!ws) {
+      html += `<div class="db-card db-card-gold" style="text-align:center;padding:28px;">
+        <div style="font-size:2rem;margin-bottom:10px;">📅</div>
+        <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:6px;">Set Your Schedule First</div>
+        <div style="font-size:0.83rem;color:rgba(255,255,255,0.45);margin-bottom:18px;line-height:1.6;">Tell us when you work so we can build a daily timeline around your real life — not a generic template.</div>
+        <button class="btn-add" onclick="openSchedModal()" style="margin:0 auto;">Build My Schedule →</button>
+      </div>`;
+    } else {
+      // Timeline for today
+      html += `<div style="margin-bottom:22px;"><div style="font-size:0.65rem;font-weight:900;letter-spacing:0.22em;color:var(--gold-2);margin-bottom:6px;">TODAY'S TIMELINE</div>
+        <div style="font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:4px;">Your Personalized Daily Plan</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+      </div>`;
+      html += buildTimeline(pp);
+      html += `<div style="margin-top:28px;"></div>`;
+    }
+    // Full static plan always shown below
+    html += buildFullPlan(pp);
+    el.innerHTML = html;
   };
 
   function buildFullPlan(pp) {
@@ -1294,7 +1623,190 @@
     }
   });
 
-  /* ─ CONTENT tab ─ */
+  /* ─ Schedule Builder ─ */
+  let schedData = {};
+  let schedStep = 1;
+  const SCHED_STEPS = 5;
+
+  function openSchedModal() {
+    schedData = {};
+    schedStep = 1;
+    document.querySelectorAll('.sched-step').forEach((s,i) => s.classList.toggle('active', i===0));
+    document.querySelectorAll('#schedSituationOpts .sched-opt').forEach(o => o.classList.remove('on'));
+    document.querySelectorAll('#schedDaysBtns .sched-day').forEach(d => d.classList.remove('on'));
+    updateSchedProgress();
+    document.getElementById('schedModal').classList.remove('hidden');
+  }
+  function closeSchedModal() { document.getElementById('schedModal').classList.add('hidden'); }
+  function updateSchedProgress() {
+    const el = document.getElementById('schedProgress');
+    el.innerHTML = Array.from({length:SCHED_STEPS-1},(_,i)=>`<div class="sched-prog-dot${i<schedStep-1?' done':''}"></div>`).join('');
+  }
+  function goSchedStep(n) {
+    document.querySelectorAll('.sched-step').forEach((s,i) => s.classList.toggle('active', i===n-1));
+    schedStep = n; updateSchedProgress();
+  }
+
+  document.querySelectorAll('#schedSituationOpts .sched-opt').forEach(opt => {
+    opt.onclick = () => { document.querySelectorAll('#schedSituationOpts .sched-opt').forEach(o=>o.classList.remove('on')); opt.classList.add('on'); schedData.type = opt.dataset.v; };
+  });
+  document.querySelectorAll('#schedDaysBtns .sched-day').forEach(d => {
+    d.onclick = () => { d.classList.toggle('on'); };
+  });
+
+  document.getElementById('schedNext1').onclick = () => {
+    if (!schedData.type) return;
+    if (schedData.type === 'none') { goSchedStep(4); return; }
+    goSchedStep(2);
+  };
+  document.getElementById('schedNext2').onclick = () => {
+    schedData.days = Array.from(document.querySelectorAll('#schedDaysBtns .sched-day.on')).map(d=>d.dataset.d);
+    goSchedStep(3);
+  };
+  document.getElementById('schedBack2').onclick = () => goSchedStep(1);
+  document.getElementById('schedNext3').onclick = () => {
+    schedData.start = document.getElementById('schedStart').value || '09:00';
+    schedData.end   = document.getElementById('schedEnd').value   || '17:00';
+    schedData.commute = parseInt(document.getElementById('schedCommute').value) || 0;
+    goSchedStep(4);
+  };
+  document.getElementById('schedBack3').onclick = () => goSchedStep(2);
+  document.getElementById('schedNext4').onclick = async () => {
+    schedData.wake  = document.getElementById('schedWake').value  || '05:30';
+    schedData.sleep = document.getElementById('schedSleep').value || '22:00';
+    schedData.month = new Date().toISOString().slice(0,7);
+    if (window.EE_SAVE_PROFILE) {
+      const pp = { ...(window.EE_PLAN_PROFILE||{}), workSchedule: schedData };
+      await window.EE_SAVE_PROFILE({ planProfile: pp });
+      window.EE_PLAN_PROFILE = pp;
+    }
+    goSchedStep(5);
+  };
+  document.getElementById('schedBack4').onclick = () => { if(schedData.type==='none') goSchedStep(1); else goSchedStep(3); };
+  document.getElementById('schedDone').onclick = () => {
+    closeSchedModal();
+    document.querySelector('[data-tab="myplan"]').click();
+  };
+  document.getElementById('settingsEditSched').addEventListener('click', openSchedModal);
+
+  function renderSchedSummary() {
+    const ws = (window.EE_PLAN_PROFILE||{}).workSchedule;
+    const el = document.getElementById('settingsSchedSummary');
+    if (!el) return;
+    if (!ws) { el.textContent = 'No schedule set. Building one personalises your entire daily plan.'; return; }
+    const typeLabel = {fulltime:'Full-time',parttime:'Part-time',selfemployed:'Self-employed',student:'Student',none:'Not working'}[ws.type]||ws.type;
+    const days = (ws.days||[]).map(d=>d[0].toUpperCase()+d.slice(1)).join(', ') || 'No set days';
+    el.textContent = `${typeLabel} · ${ws.start||'–'}–${ws.end||'–'} · ${days}`;
+  }
+
+  /* ─ Monthly Check-in ─ */
+  function checkMonthlyCheckin() {
+    const ws = (window.EE_PLAN_PROFILE||{}).workSchedule;
+    if (!ws) return;
+    const savedMonth = ws.month || '';
+    const thisMonth = new Date().toISOString().slice(0,7);
+    if (savedMonth && savedMonth !== thisMonth) {
+      document.getElementById('monthModal').classList.remove('hidden');
+    }
+  }
+  document.getElementById('monthUpdate').onclick = () => { document.getElementById('monthModal').classList.add('hidden'); openSchedModal(); };
+  document.getElementById('monthKeep').onclick = async () => {
+    document.getElementById('monthModal').classList.add('hidden');
+    const pp = { ...(window.EE_PLAN_PROFILE||{}), workSchedule: { ...(window.EE_PLAN_PROFILE.workSchedule||{}), month: new Date().toISOString().slice(0,7) } };
+    if (window.EE_SAVE_PROFILE) await window.EE_SAVE_PROFILE({ planProfile: pp });
+    window.EE_PLAN_PROFILE = pp;
+  };
+
+  /* ─ Timeline builder (My Plan) ─ */
+  function buildTimeline(pp) {
+    const ws = pp && pp.workSchedule;
+    const has = g => (pp&&pp.goals||[]).includes(g);
+    const nowMins = new Date().getHours()*60 + new Date().getMinutes();
+
+    function toMins(t) { if(!t) return 0; const [h,m]=t.split(':').map(Number); return h*60+m; }
+    function fmtTime(mins) {
+      const h=Math.floor(mins/60)%24, m=mins%60;
+      const ap=h<12?'AM':'PM'; const dh=h>12?h-12:h===0?12:h;
+      return `${dh}:${String(m).padStart(2,'0')} ${ap}`;
+    }
+    function tlItem(mins,title,desc,type,delay) {
+      const diff = mins - nowMins;
+      let cls = 'tl-item';
+      let badge = '';
+      if (type==='work') { cls+=' tl-work'; badge=`<span class="tl-badge tl-badge-work">WORK</span>`; }
+      else if (diff >= -15 && diff < 30) { cls+=' tl-now'; badge=`<span class="tl-badge tl-badge-now">NOW ▶</span>`; }
+      else if (diff >= 30 && diff < 90 && !badge) { cls+=' tl-next'; badge=`<span class="tl-badge tl-badge-next">UP NEXT</span>`; }
+      return `<div class="${cls}" style="animation-delay:${delay}ms"><div class="tl-dot"></div><div class="tl-time">${fmtTime(mins)}</div><div class="tl-title">${title}${badge}</div>${desc?`<div class="tl-desc">${desc}</div>`:''}</div>`;
+    }
+
+    let blocks = [];
+    const wake  = ws ? toMins(ws.wake)  : 5*60+30;
+    const sleep = ws ? toMins(ws.sleep) : 22*60;
+    const wstart = ws ? toMins(ws.start) : 9*60;
+    const wend   = ws ? toMins(ws.end)   : 17*60;
+    const commute = ws ? (ws.commute||0) : 0;
+    const hasWork = ws && ws.type !== 'none';
+    const isWorkDay = !ws || !ws.days || ws.days.length === 0 || (() => {
+      const d = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
+      return ws.days.includes(d);
+    })();
+
+    blocks.push({ m:wake,       title:'Wake Up', desc:'First rep of discipline: stand up the moment the alarm fires. No snooze.' });
+    blocks.push({ m:wake+5,     title:'Hydrate — 500ml Water', desc:'Before coffee, before phone. Your body is dehydrated after sleep.' });
+
+    if (has('fitness')||has('weight')) {
+      blocks.push({ m:wake+15,  title:'Morning Training Session', desc:'Follow your split. Consistency beats intensity every time.' });
+      blocks.push({ m:wake+75,  title:'Cold Shower', desc:'30–60 seconds cold at the end. Mental toughness one rep at a time.' });
+      blocks.push({ m:wake+90,  title:'High-Protein Breakfast', desc:'Eggs, Greek yogurt, or protein shake. Eat within 60 min of training.' });
+    } else {
+      blocks.push({ m:wake+15,  title:'Morning Movement', desc:'20-minute walk or stretch. Movement creates mental momentum.' });
+      blocks.push({ m:wake+40,  title:'Cold Shower', desc:'30–60 seconds cold at the end. Builds mental toughness daily.' });
+      blocks.push({ m:wake+55,  title:'Breakfast', desc:'High-protein, low-sugar. Sets the tone for the day.' });
+    }
+    blocks.push({ m:wake+100,   title:'3-2-1 Morning Journal', desc:'3 gratitudes, 2 priorities today, 1 non-negotiable. Write it down.' });
+
+    if (hasWork && isWorkDay) {
+      if (commute > 0) blocks.push({ m:wstart-commute, title:'Commute', desc:`${commute} min to work. Listen to a podcast or audiobook — no dead time.`, type:'work' });
+      blocks.push({ m:wstart, title:'Work Begins', desc:'Lock in. First hour is your most productive at work.', type:'work' });
+      const lunch = Math.floor((wstart+wend)/2/30)*30;
+      blocks.push({ m:lunch,  title:'Lunch + 10-Min Walk', desc:'Step outside. Sunlight and movement reset your afternoon focus.', type:'work' });
+      blocks.push({ m:wend,   title:'Work Ends', desc:'Close all tabs. Mental transition out of work mode starts now.', type:'work' });
+      if (commute > 0) blocks.push({ m:wend+commute, title:'Home', desc:'Decompress. The commute back is recovery time — not scroll time.' });
+      blocks.push({ m:wend+commute+30, title:'Exercise / Movement', desc: has('fitness')||has('weight') ? 'Evening training or active recovery walk.' : '20–30 min walk or mobility work.' });
+    } else {
+      blocks.push({ m:wake+120, title:'Deep Work Block', desc:'First 90 minutes = your most important task. Phone off.' });
+      blocks.push({ m:wake+210, title:'Break + Movement', desc:'10-min walk. Energy reset before your next block.' });
+      if (has('career')) blocks.push({ m:wake+225, title:'Skill Development', desc:'60–90 minutes on your high-value skill. Treat it like a class.' });
+    }
+
+    const eve = hasWork && isWorkDay ? wend + commute + 90 : wake + 300;
+    if (has('finance')) blocks.push({ m:Math.max(eve, 18*60), title:'Daily Finance Review', desc:"Log expenses, check progress. What gets tracked gets managed." });
+    blocks.push({ m:Math.max(eve+30, 19*60), title:'Dinner + Wind Down', desc:'Eat. Relax intentionally — not scrolling. Conversation or quiet.' });
+    blocks.push({ m:Math.max(eve+60, 20*60), title:'Reading Session', desc:'30 pages minimum. Books only. This is non-negotiable.' });
+    blocks.push({ m:Math.max(eve+110, 21*60+30), title:'Evening Journal', desc:"3 wins today. 1 thing to improve. Tomorrow's top 3 priorities." });
+    blocks.push({ m:sleep, title:'Lights Out', desc:'7–8 hours of sleep is when your body and brain rebuild. Protect it.' });
+
+    blocks.sort((a,b)=>a.m-b.m);
+
+    // Find "up next" block
+    const nextBlock = blocks.find(b=>b.m - nowMins >= 5 && b.type !== 'work');
+
+    let html = '';
+    if (nextBlock) {
+      html += `<div class="tl-upnext-banner"><div class="tl-upnext-icon">⏭️</div><div><div class="tl-upnext-label">UP NEXT</div><div class="tl-upnext-task">${nextBlock.title}</div><div class="tl-upnext-time">at ${fmtTime(nextBlock.m)}</div></div></div>`;
+    }
+    html += `<div class="tl-wrap">`;
+    let lastSection = '';
+    blocks.forEach((b, i) => {
+      const section = b.m < 12*60 ? '🌅 MORNING' : b.m < 17*60 ? '☀️ AFTERNOON' : '🌙 EVENING';
+      if (section !== lastSection) { html += `<div class="tl-section-divider">${section}</div>`; lastSection = section; }
+      html += tlItem(b.m, b.title, b.desc, b.type, i*40);
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  /* ─ CONTENT tab (legacy small set, kept for transition) ─ */
   const CONTENT = [
     { cat:'discipline', tag:'DAILY CHALLENGE', title:'The 1% Rule: Improve One Thing Every Day', body:`<p>Most people overestimate what they can do in a week and underestimate what they can do in a year. The 1% rule: get <strong>1% better at one thing</strong> per day.</p><p>This week's challenge: Pick one area — fitness, finance, relationships, or skill — and commit to one tiny improvement every day. Log it in your Planner.</p>` },
     { cat:'mindset', tag:'MINDSET', title:'Stop Waiting for Motivation — Build Systems Instead', body:`<p>Motivation is unreliable. It shows up when things are exciting and vanishes when things get hard. <strong>Systems carry you when motivation is gone.</strong></p><p>A system runs on autopilot. You don't decide whether to work out — it's Tuesday, and Tuesday is gym day. Build one system this month: pick a habit, assign it a time, and run it for 30 days straight.</p>` },
@@ -1308,28 +1820,143 @@
     { cat:'mindset', tag:'MINDSET', title:'The Gap Between Input and Output', body:`<p>Most people consume far more than they produce. They read books but don't apply them. They watch motivation videos but don't act. <strong>Close the gap.</strong></p><p>For every piece of content you consume this week — write one action it suggests and put it in your Planner. Information without action is just entertainment.</p>` },
   ];
 
-  function renderContent(filter) {
-    const filtered = filter === 'all' ? CONTENT : CONTENT.filter(c => c.cat === filter);
-    document.getElementById('contentCards').innerHTML = filtered.map(c => `
-      <div class="content-card">
-        <div class="content-tag">${c.tag}</div>
-        <div class="content-card-title">${c.title}</div>
-        <div class="content-card-body">${c.body}</div>
-      </div>`).join('');
+  /* ─ Library ─ */
+  const LIB_CATS = {
+    glowup:{ icon:'✨', name:'Glow Up', desc:'Transform your body, mindset, and presence from the inside out.', chapters:[
+      { title:'What a Real Glow Up Actually Means', body:`<p>A glow up is not a filter. It's not a new haircut or a viral transformation video. A real glow up is the slow, compounding result of <strong>hundreds of small daily decisions</strong> made consistently over months and years.</p><p>It starts internally — your mindset, your self-discipline, how you treat your body and your time. The external changes (the physique, the skin, the style) are just the visible output of internal work that was already done.</p><h4>THE 3 LAYERS OF A REAL GLOW UP</h4><ul><li><strong>Physical:</strong> Sleep, nutrition, movement, hydration, grooming</li><li><strong>Mental:</strong> Discipline, confidence, emotional regulation, identity</li><li><strong>Social:</strong> Communication, energy, how you carry yourself in a room</li></ul><p>Most people only work on the surface layer and wonder why it doesn't stick. Start from the inside and the outside will follow — every time.</p>`,takeaway:`Your glow up is not a destination. It's a direction. Pick one layer today and take one action. Just one.`,links:[{t:'Psychology of Self-Improvement',u:'https://www.psychologytoday.com/us/basics/self-improvement'},{t:'Atomic Habits — James Clear',u:'https://jamesclear.com/atomic-habits'}]},
+      { title:'The Foundation: Sleep, Water, Movement', body:`<p>Before any skincare routine, supplement stack, or workout program — these three things must be non-negotiable. No glow up has ever been built on a foundation of 5-hour nights and chronic dehydration.</p><h4>SLEEP (7–9 HOURS)</h4><ul><li>Your skin repairs itself during deep sleep. Less sleep = more visible aging, duller skin, worse inflammation</li><li>Cognitive function, willpower, and discipline all collapse below 7 hours — you cannot glow up while running on empty</li><li>Set a hard bedtime and protect it like a meeting you can't miss</li></ul><h4>WATER (2.5–3.5L DAILY)</h4><ul><li>Dehydration shows up on your face first — puffiness, dull skin, dark circles</li><li>Drink 500ml immediately on waking before anything else</li><li>Carry a 1L bottle — when it's visible you drink it</li></ul><h4>MOVEMENT (DAILY)</h4><ul><li>Even a 20-minute walk daily improves skin blood flow, mood, and body composition</li><li>You don't need a gym to start. You just need to not sit still</li></ul>`,takeaway:`Tonight: set a bedtime alarm. Tomorrow morning: drink 500ml of water before your phone. This week: walk 20 minutes daily. These three changes alone will visibly change you in 30 days.`,links:[{t:'Sleep Foundation',u:'https://www.sleepfoundation.org'},{t:'Hydration Science',u:'https://www.healthline.com/nutrition/7-health-benefits-of-water'}]},
+      { title:'Upgrading Your Style', body:`<p>Style is not about money. It's about intentionality. People who dress well don't necessarily spend more — they spend better, and they know what works for them.</p><h4>THE RULES THAT ACTUALLY MATTER</h4><ul><li><strong>Fit is everything.</strong> A $20 shirt that fits perfectly looks better than a $200 shirt that doesn't. Get basics tailored.</li><li><strong>Build a capsule wardrobe.</strong> 10–15 versatile, high-quality basics that work together. Quality over quantity.</li><li><strong>Neutrals first.</strong> Black, white, navy, grey, cream. These mix with everything. Build on them.</li><li><strong>Shoes matter more than people think.</strong> Clean shoes elevate any outfit. Dirty shoes ruin any outfit.</li><li><strong>Grooming completes the look.</strong> The best outfit is undermined by ungroomed hair, skin, or nails.</li></ul><p>Start with one upgrade: find your best-fitting pair of jeans, one clean white shirt, and one pair of clean sneakers. Wear that combination with confidence. Then build from there.</p>`,takeaway:`This week: go through your wardrobe and remove anything that doesn't fit or doesn't make you feel good. Donate it. What remains is your starting capsule.`,links:[{t:'r/malefashionadvice',u:'https://reddit.com/r/malefashionadvice'},{t:'r/femalefashionadvice',u:'https://reddit.com/r/femalefashionadvice'}]},
+      { title:'Confidence From the Inside Out', body:`<p>Confidence is not a personality trait. It's a <strong>skill built through evidence.</strong> Every time you do what you said you'd do, keep a commitment to yourself, or do something uncomfortable — you deposit into your confidence account.</p><h4>HOW TO BUILD REAL CONFIDENCE</h4><ul><li><strong>Keep micro-promises to yourself.</strong> Say you'll wake at 6AM. Do it. Say you'll work out. Do it. These small wins compound.</li><li><strong>Do one uncomfortable thing daily.</strong> Cold shower, hard conversation, new environment. Discomfort is the training ground.</li><li><strong>Work on your body.</strong> Not for looks — for the identity shift. When you train your body you prove to yourself you can do hard things.</li><li><strong>Reduce negative self-talk actively.</strong> When you catch yourself saying "I can't" — add "yet." Language shapes belief.</li><li><strong>Make eye contact.</strong> Look people in the eye when you speak. This single habit changes how people perceive and respond to you.</li></ul>`,takeaway:`For the next 7 days: do one uncomfortable thing each morning before 9AM. Write what it was in your Planner. By day 7 you'll feel a measurable shift.`,links:[{t:'The Confidence Gap — Russ Harris',u:'https://thehappinesstrap.com'},{t:'Amy Cuddy on Confidence',u:'https://www.ted.com/talks/amy_cuddy_your_body_language_may_shape_who_you_are'}]},
+      { title:'The 90-Day Glow Up Challenge', body:`<p>90 days is the minimum unit for real transformation. Not because change takes exactly 90 days — but because that's long enough for habits to become automatic, for physical changes to become visible, and for your identity to actually shift.</p><h4>MONTH 1: FOUNDATION</h4><ul><li>Lock in sleep (10PM bedtime), water (3L/day), movement (daily)</li><li>Start skincare routine (cleanser, moisturiser, SPF)</li><li>Remove one bad habit from your environment</li><li>Read 20 pages every night</li></ul><h4>MONTH 2: BUILD</h4><ul><li>Add structured training 4x/week</li><li>Upgrade your wardrobe with 3 quality basics</li><li>Start a journaling habit — 5 minutes each morning</li><li>Do one social thing outside your comfort zone per week</li></ul><h4>MONTH 3: LOCK IN</h4><ul><li>All habits from months 1 and 2 are now automatic</li><li>Set your next 90-day goals — they should be bigger</li><li>Photograph your progress (physical, financial, mental)</li><li>Teach someone else what you've learned — it cements it</li></ul>`,takeaway:`Start today: write today's date. 90 days from now, who do you want to be? Write it down. Be specific. Put it somewhere you see daily.`,links:[{t:'Habit Tracking Tools',u:'https://habitica.com'},{t:'90-Day Goal Framework',u:'https://www.90daygoal.com'}]}
+    ]},
+    hair:{ icon:'💇', name:'Hair Care', desc:'Grow it, protect it, and keep it healthy for every hair type.', chapters:[
+      { title:'Know Your Hair Type', body:`<p>The biggest mistake people make with hair care is copying routines designed for a different hair type. What works for Type 1A (pin straight) actively damages Type 4C (tightly coiled). Know your hair first.</p><h4>THE HAIR TYPE SYSTEM</h4><ul><li><strong>Type 1 (Straight):</strong> No curl pattern. Prone to oiliness. Needs clarifying shampoo and lightweight products.</li><li><strong>Type 2 (Wavy):</strong> S-wave pattern. Can be fine or coarse. Benefits from mousse and diffusing.</li><li><strong>Type 3 (Curly):</strong> Defined curls, 3A-3C. Prone to frizz and dryness. Needs moisture and curl creams.</li><li><strong>Type 4 (Coily/Kinky):</strong> Tight coils to z-pattern. Most prone to dryness and breakage. Needs deep conditioning, protective styles, and minimal heat.</li></ul><p>Also consider porosity (how well hair absorbs moisture), density, and thickness — these affect which products work for you.</p>`,takeaway:`Look up your hair type today. Then search "hair care routine for [your type]" and compare what you're currently doing to what's recommended.`,links:[{t:'Hair Type Chart — NaturallyCurly',u:'https://www.naturallycurly.com/hair-types'},{t:'Hair Porosity Test',u:'https://www.healthline.com/health/beauty-skin-care/hair-porosity'}]},
+      { title:'The Perfect Wash Routine', body:`<p>Over-washing strips natural oils. Under-washing causes buildup and scalp issues. The right frequency depends on your hair type, scalp, and lifestyle.</p><h4>WASH FREQUENCY BY TYPE</h4><ul><li><strong>Type 1 (Straight):</strong> Every 1–3 days. Scalp gets oily fastest.</li><li><strong>Type 2 (Wavy):</strong> Every 2–4 days. Co-wash (conditioner only) between washes.</li><li><strong>Type 3 (Curly):</strong> Every 4–7 days. Moisture retention is the priority.</li><li><strong>Type 4 (Coily):</strong> Every 7–14 days. Minimize washing to preserve natural oils.</li></ul><h4>THE WASH ORDER</h4><ul><li>Pre-poo (optional for dry hair types): apply oil to dry hair 30 min before washing</li><li>Shampoo the scalp, not the ends — the ends get cleaned as you rinse</li><li>Conditioner on mid-lengths to ends — avoid the scalp</li><li>Deep condition (1x/week for curly/coily hair)</li><li>Rinse with cool water to seal the cuticle</li></ul>`,takeaway:`This weekend: try switching to lukewarm then cool water for your final rinse. Check the difference in shine and frizz within one wash.`,links:[{t:'CurlyGirl Method Guide',u:'https://www.naturallycurly.com/curlreading/curl-products/curly-girl-method'},{t:'Healthline Hair Washing Guide',u:'https://www.healthline.com/health/how-often-should-you-wash-your-hair'}]},
+      { title:'Deep Conditioning & Moisture', body:`<p>Moisture is the foundation of healthy hair — especially for Type 3 and 4. Dryness leads to breakage, frizz, and slow growth. Deep conditioning is not optional for these hair types; it's essential maintenance.</p><h4>THE LOC/LCO METHOD</h4><ul><li><strong>LOC (Liquid, Oil, Cream):</strong> Best for high-porosity hair. Apply water/leave-in first, then seal with oil, then cream.</li><li><strong>LCO (Liquid, Cream, Oil):</strong> Best for low-porosity hair. Cream before oil allows better product penetration.</li></ul><h4>DEEP CONDITIONING STEPS</h4><ul><li>Apply to freshly washed, damp hair</li><li>Work through in sections — full coverage</li><li>Apply heat (hooded dryer, steam, or shower cap + warmth) for 20–30 min</li><li>Rinse thoroughly with cool water</li><li>Do this weekly for dry/damaged hair, bi-weekly for healthy hair</li></ul>`,takeaway:`Buy one deep conditioner matched to your hair type this week. Commit to using it every wash day for 4 weeks. Track the difference in breakage and softness.`,links:[{t:'Best Deep Conditioners 2024',u:'https://www.allure.com/gallery/best-deep-conditioners'},{t:'LOC Method Tutorial',u:'https://www.naturallycurly.com/curlreading/curl-products/loc-method'}]},
+      { title:'Protective Styles & Growth', body:`<p>Hair grows approximately 0.5 inches (1.2 cm) per month from the scalp. Most people's hair doesn't "grow slowly" — it breaks faster than it grows. Protective styling is how you retain length.</p><h4>BEST PROTECTIVE STYLES</h4><ul><li>Braids and twists (low manipulation, low tension)</li><li>Buns and updos (keep ends tucked away)</li><li>Wigs and weaves (allow your natural hair to rest)</li><li>Twist-outs and braid-outs (low heat, defined style)</li></ul><h4>GROWTH RETENTION RULES</h4><ul><li><strong>Moisture retention:</strong> Seal your ends — this is where breakage starts</li><li><strong>Low manipulation:</strong> The less you touch and style, the less breakage</li><li><strong>Satin pillowcase or bonnet:</strong> Cotton absorbs moisture and causes friction overnight</li><li><strong>Scalp health:</strong> Massage your scalp 4–5 min daily to stimulate blood flow</li><li><strong>Nutrition:</strong> Biotin, iron, zinc, and protein are all critical for hair growth</li></ul>`,takeaway:`Tonight: switch to a satin pillowcase or sleep with a satin bonnet. This single change reduces breakage and moisture loss overnight significantly.`,links:[{t:'Hair Growth Science',u:'https://www.healthline.com/health/hair-growth'},{t:'Best Protective Styles',u:'https://www.byrdie.com/protective-hairstyles'}]},
+      { title:'Products That Actually Work', body:`<p>The hair care industry sells confusion. Thousands of products, most of them unnecessary. Here's what actually matters.</p><h4>THE CORE PRODUCTS YOU NEED</h4><ul><li><strong>Clarifying shampoo:</strong> Use 1x/month to remove buildup. Sulfate-free for curly/coily types.</li><li><strong>Moisturising shampoo:</strong> Your regular wash. Look for glycerin, aloe vera, shea butter.</li><li><strong>Conditioner:</strong> Every wash. Look for slip and hydration.</li><li><strong>Deep conditioner / hair mask:</strong> Weekly or bi-weekly. This is the biggest upgrade most people skip.</li><li><strong>Leave-in conditioner:</strong> Applied to damp hair after washing. Foundation of moisture.</li><li><strong>Sealing oil:</strong> Seals in moisture. Coconut, jojoba, or argan based on your hair type.</li></ul><h4>INGREDIENTS TO AVOID</h4><ul><li>Sulfates (for curly/coily hair) — strips natural oils</li><li>Mineral oil and petroleum — coat without moisturising</li><li>High alcohol content — drying (look for fatty alcohols which are fine)</li></ul>`,takeaway:`Check your current shampoo and conditioner ingredients. Identify one thing that shouldn't be there. Replace it with a product built for your hair type.`,links:[{t:'INCI Decoder — Ingredient Checker',u:'https://incidecoder.com'},{t:'Curl Chemistry',u:'https://www.naturallycurly.com/ingredients'}]}
+    ]},
+    skin:{ icon:'🌿', name:'Skin Care', desc:'Clear, healthy, glowing skin — the science without the overwhelm.', chapters:[
+      { title:'Understanding Your Skin Type', body:`<p>Using the wrong products for your skin type is the most common reason skincare doesn't work. You need to know what you're working with before you build a routine.</p><h4>THE 5 SKIN TYPES</h4><ul><li><strong>Normal:</strong> Balanced oil/water, minimal breakouts or tightness. Lucky. Keep it simple.</li><li><strong>Oily:</strong> Shiny T-zone or all over, prone to enlarged pores and acne. Needs lightweight, non-comedogenic products.</li><li><strong>Dry:</strong> Tight, flaky, or rough. Needs rich moisturisers and gentle cleansers. Avoid actives on broken skin.</li><li><strong>Combination:</strong> Oily T-zone (forehead/nose/chin), dry or normal elsewhere. Most common type. Treat each zone differently.</li><li><strong>Sensitive:</strong> Easily irritated, redness, reacts to products. Needs fragrance-free, minimal-ingredient formulas.</li></ul><h4>THE QUICK TEST</h4><p>Wash your face. Wait 1 hour without products. Check: Is it shiny all over (oily)? Tight and flaky (dry)? Shiny in T-zone, normal elsewhere (combination)? No issues (normal)?</p>`,takeaway:`Do the bare-face test today. Identify your type. Then look at every product you currently use and ask: was this designed for my skin type?`,links:[{t:'Skin Type Guide — Paula\'s Choice',u:'https://www.paulaschoice.com/expert-advice/skincare-advice/skin-types'},{t:'American Academy of Dermatology',u:'https://www.aad.org/public/everyday-care/skin-care-basics/dry/identify-skin-type'}]},
+      { title:'The 3-Step Daily Routine', body:`<p>You do not need a 10-step routine. You need a consistent 3-step routine done twice a day. That's it. Complexity is the enemy of consistency.</p><h4>MORNING ROUTINE</h4><ul><li><strong>Step 1 — Cleanse:</strong> Gentle face wash. Removes overnight oil and sweat.</li><li><strong>Step 2 — Moisturise:</strong> Lightweight moisturiser. Keeps skin barrier healthy.</li><li><strong>Step 3 — SPF 30+:</strong> The single highest-impact skincare product. Non-negotiable every morning, rain or shine.</li></ul><h4>EVENING ROUTINE</h4><ul><li><strong>Step 1 — Cleanse:</strong> Remove the day — sunscreen, pollution, oil, makeup. Double cleanse if wearing makeup.</li><li><strong>Step 2 — Treatment (optional):</strong> Retinol, niacinamide, or Vitamin C depending on goals. Add one at a time.</li><li><strong>Step 3 — Moisturise:</strong> Richer than morning formula. Your skin repairs itself overnight — give it support.</li></ul>`,takeaway:`If you do nothing else: cleanser + SPF every morning. That's it. Just those two for 30 days and your skin will improve more than 10 products would.`,links:[{t:'Skincare Routine Guide — Healthline',u:'https://www.healthline.com/health/skin-care-routine'},{t:'Paula\'s Choice Skincare Education',u:'https://www.paulaschoice.com/expert-advice'}]},
+      { title:'The Big 4 Actives: SPF, Vitamin C, Retinol, Niacinamide', body:`<p>Out of every skincare ingredient marketed to you, these four have the most evidence behind them. If you understand these four, you understand 80% of what actually works.</p><h4>SPF — THE MOST IMPORTANT ONE</h4><ul><li>UV radiation causes 80% of visible aging — wrinkles, dark spots, texture</li><li>SPF 30 minimum daily. SPF 50 if outdoors. Chemical or mineral — both work.</li><li>Reapply every 2 hours in direct sun</li></ul><h4>VITAMIN C — MORNING</h4><ul><li>Brightens dark spots and hyperpigmentation</li><li>Antioxidant protection from daily UV/pollution damage</li><li>Use in the morning before SPF. L-Ascorbic acid is most effective (10–20%)</li></ul><h4>RETINOL — EVENING</h4><ul><li>The gold standard for anti-aging and acne</li><li>Speeds cell turnover, reduces fine lines and acne</li><li>Start 2x/week at 0.025%, build up slowly. Always follow with moisturiser.</li></ul><h4>NIACINAMIDE — ANY TIME</h4><ul><li>Reduces pores, redness, and oil production</li><li>Brightens skin, strengthens barrier</li><li>Works for all skin types. Very well-tolerated. Great for beginners.</li></ul>`,takeaway:`Add one active at a time. Start with niacinamide if you're new — it's the most gentle and has the broadest benefits. Use for 4 weeks before adding anything else.`,links:[{t:'The Ordinary — Ingredient Guide',u:'https://theordinary.com/en-gb/regimens/'},{t:'Reddit r/SkincareAddiction',u:'https://reddit.com/r/SkincareAddiction/wiki/index'}]},
+      { title:'Diet & Skin Connection', body:`<p>Your skin is a reflection of what happens inside your body. No topical product fixes a poor diet, chronic stress, or dehydration over the long term.</p><h4>WHAT HELPS YOUR SKIN</h4><ul><li><strong>Water (2.5–3L/day):</strong> The most underrated skincare product. Dehydration shows on the face immediately.</li><li><strong>Omega-3 fatty acids:</strong> Salmon, sardines, walnuts, flaxseed. Reduces inflammation and keeps skin plump.</li><li><strong>Vitamin A (retinol precursor):</strong> Sweet potato, carrots, leafy greens.</li><li><strong>Zinc:</strong> Critical for acne control. Pumpkin seeds, beef, chickpeas.</li><li><strong>Antioxidants:</strong> Berries, green tea, dark chocolate. Fight oxidative stress that ages skin.</li></ul><h4>WHAT HURTS YOUR SKIN</h4><ul><li><strong>Sugar and refined carbs:</strong> Triggers insulin spike → increases sebum → clogs pores</li><li><strong>Dairy (for some):</strong> Linked to acne in some people — worth eliminating for 4 weeks to test</li><li><strong>Alcohol:</strong> Dehydrates, dilates blood vessels, disrupts sleep (which ruins skin)</li><li><strong>Chronic stress:</strong> Cortisol increases sebum production and triggers inflammation</li></ul>`,takeaway:`For the next 2 weeks: cut sugar and alcohol. Drink 3L of water daily. Take photos day 1 and day 14. The difference will be visible.`,links:[{t:'Skin & Diet Research',u:'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6115838/'},{t:'Foods for Healthy Skin',u:'https://www.healthline.com/nutrition/12-foods-for-healthy-skin'}]},
+      { title:'Fixing Common Skin Problems', body:`<p>Most skin problems have a clear cause and a clear solution. Here's the playbook for the most common ones.</p><h4>ACNE</h4><ul><li>Causes: excess sebum, bacteria, dead skin buildup, hormones, diet</li><li>Solution: salicylic acid cleanser (2%), niacinamide, retinol (build slowly), don't pick</li><li>If severe: see a dermatologist — prescription retinoids or antibiotics work fast</li></ul><h4>HYPERPIGMENTATION / DARK SPOTS</h4><ul><li>Causes: sun damage, post-inflammatory marks from acne</li><li>Solution: SPF daily (prevents new spots), Vitamin C (fades existing), alpha arbutin</li><li>Timeline: 8–12 weeks minimum for visible improvement</li></ul><h4>DRYNESS & FLAKING</h4><ul><li>Causes: harsh cleansers, over-exfoliation, low humidity, not moisturising</li><li>Solution: switch to gentle creamy cleanser, add hyaluronic acid serum, barrier repair cream</li></ul><h4>OILINESS & LARGE PORES</h4><ul><li>Causes: genetics, humidity, over-cleansing (triggers more oil)</li><li>Solution: niacinamide (tightens pores), lightweight gel moisturiser, clay mask 1x/week</li><li>Note: pore size cannot be permanently changed — only appearance can be minimised</li></ul>`,takeaway:`Pick your one main skin concern. Research the 1-2 ingredients specifically proven for it. Add just those. Give it 8 weeks before judging.`,links:[{t:'Acne Guide — AAD',u:'https://www.aad.org/public/diseases/acne'},{t:'Hyperpigmentation Treatment',u:'https://www.healthline.com/health/hyperpigmentation'}]}
+    ]},
+    health:{ icon:'🫀', name:'Health & Wellness', desc:'The science of physical and mental health — clear, practical, and evidence-based.', chapters:[
+      { title:'The Pillars of Physical Health', body:`<p>Physical health is not complicated. It becomes complicated when people try to optimize before they've built the foundation. The foundation is exactly four things.</p><h4>THE 4 PILLARS</h4><ul><li><strong>Sleep (7–9 hours):</strong> Every system in your body repairs during sleep. Immune function, hormone regulation, muscle recovery, memory consolidation — all sleep-dependent.</li><li><strong>Nutrition:</strong> Mostly whole foods. Adequate protein. Enough calories. The rest is detail.</li><li><strong>Movement:</strong> 150 min/week moderate cardio minimum. Strength training 2x/week minimum. Daily steps.</li><li><strong>Stress Management:</strong> Chronic stress is a chronic disease risk. Not optional to manage.</li></ul><p>Every health intervention — supplements, biohacking, specialised diets — operates on top of these four. If any one of the pillars is broken, everything else is compromised. Fix the basics first, always.</p>`,takeaway:`Rate each pillar 1–10 right now. Your lowest score is your highest priority. Not your favourite to work on — your most important.`,links:[{t:'WHO Physical Activity Guidelines',u:'https://www.who.int/news-room/fact-sheets/detail/physical-activity'},{t:'Harvard Health — Healthy Living',u:'https://www.health.harvard.edu/topics/healthy-living'}]},
+      { title:'Nutrition Fundamentals', body:`<p>Nutrition has been made unnecessarily confusing. Here are the principles that actually matter and have evidence behind them.</p><h4>PROTEIN — THE MOST IMPORTANT MACRO</h4><ul><li>Aim for 1.6–2.2g per kg of bodyweight daily</li><li>Keeps you full, preserves muscle, supports every cell in your body</li><li>Best sources: chicken, fish, eggs, Greek yogurt, legumes, lean beef</li></ul><h4>CARBOHYDRATES</h4><ul><li>Not the enemy. Your brain's preferred fuel source.</li><li>Prioritise complex carbs: oats, rice, sweet potato, whole grains, fruit</li><li>Limit refined carbs and added sugars — these cause energy crashes and inflammation</li></ul><h4>FATS</h4><ul><li>Essential for hormone production, brain health, and vitamin absorption</li><li>Best sources: avocado, olive oil, nuts, fatty fish</li><li>Limit saturated fats; avoid trans fats entirely</li></ul><h4>THE SIMPLE RULE</h4><ul><li>Fill half your plate with vegetables and fruit</li><li>One quarter protein</li><li>One quarter complex carbs</li><li>This alone puts you ahead of 90% of people</li></ul>`,takeaway:`For one week: track what you eat using an app (Cronometer or MyFitnessPal). Just observe — no changes yet. Knowledge first.`,links:[{t:'Nutrition.gov',u:'https://www.nutrition.gov'},{t:'Examine.com — Evidence-Based Nutrition',u:'https://examine.com'}]},
+      { title:'The Science of Sleep', body:`<p>Sleep is not rest. Sleep is active biological maintenance — and there's no substitute for it.</p><h4>WHAT HAPPENS DURING SLEEP</h4><ul><li><strong>Deep sleep (NREM):</strong> Physical repair — muscle recovery, immune function, growth hormone release</li><li><strong>REM sleep:</strong> Mental repair — memory consolidation, emotional processing, creativity</li><li>You cycle through these 4–6 times per night. Cutting sleep short cuts REM — your memory and mood suffer most.</li></ul><h4>HOW TO OPTIMISE YOUR SLEEP</h4><ul><li><strong>Consistency:</strong> Same sleep and wake time every day — including weekends. This is the #1 factor.</li><li><strong>Temperature:</strong> Room at 65–68°F (18–20°C). Core body temperature must drop to initiate sleep.</li><li><strong>Light:</strong> Morning sunlight within 30 min of waking (regulates circadian rhythm). No bright light after 9PM.</li><li><strong>Avoid:</strong> Caffeine after 2PM. Alcohol before bed (it destroys REM). Screens 30 min before sleep.</li><li><strong>Magnesium glycinate:</strong> One of the few supplements with sleep evidence. 200–400mg before bed.</li></ul>`,takeaway:`Tonight: put your phone in another room. Set one consistent bedtime. Tomorrow morning: get outside for 5 minutes of sunlight within 30 minutes of waking. Do this for 7 days.`,links:[{t:'Why We Sleep — Matthew Walker',u:'https://www.sleepfoundation.org'},{t:'Andrew Huberman Sleep Protocol',u:'https://www.hubermanlab.com/newsletter/sleep-toolkit-tools-for-optimizing-sleep-and-sleep-wake-timing'}]},
+      { title:'Stress Management', body:`<p>Chronic stress is not a personality trait or a sign of ambition. It's a physiological state that slowly damages your cardiovascular system, immune function, and brain — while destroying your sleep and relationships.</p><h4>WHAT STRESS ACTUALLY DOES</h4><ul><li>Raises cortisol → breaks down muscle, stores fat, elevates blood pressure</li><li>Suppresses immune function — you get sick more when chronically stressed</li><li>Disrupts sleep even when you're exhausted</li><li>Impairs prefrontal cortex (decision-making, impulse control)</li></ul><h4>EVIDENCE-BASED MANAGEMENT</h4><ul><li><strong>Exercise:</strong> Burns off cortisol. Best acute stress reliever.</li><li><strong>Physiological sigh:</strong> Double inhale through nose, long exhale through mouth. Activates parasympathetic system in 60 seconds.</li><li><strong>Cold exposure:</strong> Cold showers build stress tolerance over time — trains your system to stay calm under pressure.</li><li><strong>Journaling:</strong> 10 min of expressive writing reduces cortisol measurably.</li><li><strong>Boundaries:</strong> Most chronic stress is from commitments you cannot fulfil. Say no more. Protect your energy.</li></ul>`,takeaway:`Learn the physiological sigh right now. Try it: two sharp inhales through your nose, then one long exhale through your mouth. Do that 3 times when stressed.`,links:[{t:'Huberman Lab — Stress Management',u:'https://www.hubermanlab.com/newsletter/the-science-of-setting-and-achieving-goals'},{t:'American Psychological Association',u:'https://www.apa.org/topics/stress'}]},
+      { title:'Mental Health & Emotional Fitness', body:`<p>Mental health is not about being happy all the time. It's about having the tools to process difficulty without being destroyed by it. Emotional fitness is a skill — and it can be trained.</p><h4>THE DAILY MENTAL HEALTH STACK</h4><ul><li><strong>Movement:</strong> 30+ min daily is as effective as antidepressants for mild-moderate depression</li><li><strong>Social connection:</strong> Isolation is as damaging as smoking. Prioritise real-world connection.</li><li><strong>Journaling:</strong> Write 3 things you're grateful for each morning. Changes brain pattern over 21 days.</li><li><strong>Sunlight:</strong> 10–20 min of morning sunlight raises serotonin. Non-negotiable.</li><li><strong>Purpose:</strong> Working toward something meaningful is protective against depression and anxiety</li></ul><h4>WHEN TO SEEK HELP</h4><ul><li>Persistent low mood for 2+ weeks</li><li>Inability to function in daily life</li><li>Thoughts of self-harm</li><li>Anxiety that prevents normal activity</li></ul><p>Therapy is not weakness. It's the most direct route to faster mental growth. If you can afford it, do it.</p>`,takeaway:`Tomorrow morning: write 3 things you're genuinely grateful for. Not generic — specific. "The sun coming through my window" beats "family." Do this every day for 21 days.`,links:[{t:'Psychology Today Therapist Finder',u:'https://www.psychologytoday.com/us/therapists'},{t:'Mental Health Foundation',u:'https://www.mentalhealth.org.uk'}]}
+    ]},
+    fitness:{ icon:'💪', name:'Fitness', desc:'Build muscle, lose fat, and move better — the truth without the myths.', chapters:[
+      { title:'Building Your Foundation', body:`<p>Most people fail at fitness not because they chose the wrong program — but because they never built the foundation that makes any program work.</p><h4>THE 3 FOUNDATION PRINCIPLES</h4><ul><li><strong>Consistency over intensity:</strong> Showing up 3x/week for a year beats one heroic month followed by nothing. Every time.</li><li><strong>Progressive overload:</strong> You must get harder over time. More reps, more weight, less rest. Without this principle, you plateau in weeks.</li><li><strong>Recovery is the work:</strong> You don't grow in the gym. You grow during sleep and rest. Training is just the stimulus.</li></ul><h4>GETTING STARTED</h4><ul><li>3 days/week full-body training is enough to see significant results as a beginner</li><li>Learn the 5 movement patterns: squat, hinge (deadlift), push, pull, carry</li><li>Master form before adding weight — bad form under heavy load causes injuries that set you back months</li><li>Track your workouts. If it isn't written down, you won't remember to progress.</li></ul>`,takeaway:`If you're not currently training: commit to 3 days this week. 30 minutes each. Bodyweight if you have no equipment. Just start. Don't wait for the perfect program.`,links:[{t:'r/Fitness Basic Beginner Routine',u:'https://reddit.com/r/Fitness/wiki/basic_beginner_routine'},{t:'StrengthLevel — Standards',u:'https://strengthlevel.com'}]},
+      { title:'Muscle Building Fundamentals', body:`<p>Building muscle is simple. Not easy — but simple. The science is settled on what works.</p><h4>THE NON-NEGOTIABLES</h4><ul><li><strong>Protein:</strong> 1.6–2.2g/kg bodyweight. This is the ceiling for muscle protein synthesis. More doesn't help.</li><li><strong>Caloric surplus:</strong> You cannot build significant muscle in a deficit. Small surplus of 200–300 cal/day.</li><li><strong>Progressive overload:</strong> Every session: try to do more than last time. More weight, more reps, or better form.</li><li><strong>Volume:</strong> 10–20 working sets per muscle group per week. Spread across 2+ sessions.</li><li><strong>Sleep:</strong> Growth hormone peaks during deep sleep. 7–9 hours is non-negotiable for muscle growth.</li></ul><h4>THE BEST MOVEMENTS FOR MASS</h4><ul><li><strong>Legs:</strong> Squat, Romanian deadlift, leg press, lunges</li><li><strong>Back:</strong> Deadlift, barbell row, pull-up, lat pulldown</li><li><strong>Chest:</strong> Bench press, dumbbell fly, cable crossover</li><li><strong>Shoulders:</strong> Overhead press, lateral raise, rear delt fly</li><li><strong>Arms:</strong> Barbell curl, hammer curl, tricep pushdown, dips</li></ul>`,takeaway:`This week: track every set and rep. Write it down. Next session: beat at least one number. That's progressive overload in practice.`,links:[{t:'Stronger by Science',u:'https://www.strongerbyscience.com'},{t:'Jeff Nippard YouTube',u:'https://www.youtube.com/@JeffNippard'}]},
+      { title:'Fat Loss: The Science (No Myths)', body:`<p>Fat loss comes down to one principle: a sustained caloric deficit over time. Every diet that has ever worked has worked because of this — regardless of what it claims is the mechanism.</p><h4>THE TRUTH ABOUT FAT LOSS</h4><ul><li><strong>Deficit is king:</strong> 3,500 cal deficit = approximately 1 lb fat loss. Target 500 cal/day deficit for ~1 lb/week.</li><li><strong>Protein protects muscle:</strong> In a deficit, your body also burns muscle. High protein (2g/kg) preserves it.</li><li><strong>Cardio helps but isn't required:</strong> Cardio increases deficit size, improving rate. Lifting while cutting preserves muscle.</li><li><strong>Tracking works:</strong> People consistently underestimate calories by 20–40%. If you're not losing, you're eating more than you think.</li></ul><h4>WHAT DOESN'T WORK</h4><ul><li>Spot reduction (you can't choose where fat comes from)</li><li>Fat-burning supplements (marketing, not science)</li><li>Excessive cardio without protein intake (burns muscle)</li><li>Starving yourself (metabolic adaptation slows fat loss and causes muscle loss)</li></ul>`,takeaway:`Calculate your TDEE (Total Daily Energy Expenditure) today using any online calculator. Subtract 400-500 calories. That's your fat loss target. Simple as that.`,links:[{t:'TDEE Calculator',u:'https://tdeecalculator.net'},{t:'Lyle McDonald — Fat Loss Research',u:'https://bodyrecomposition.com'}]},
+      { title:'Cardio: What Actually Works', body:`<p>Cardio has been both demonized (it kills your gains) and over-glorified (just run and you'll be lean). The truth is evidence-based and practical.</p><h4>TYPES OF CARDIO AND THEIR USES</h4><ul><li><strong>Zone 2 (Low intensity, 60-70% max HR):</strong> 30–60 min, sustainable pace where you can hold a conversation. Best for health, fat oxidation, and cardiovascular development. Walking, easy cycling, light jogging. Do this 3–5x/week.</li><li><strong>HIIT (High Intensity Interval Training):</strong> 20–30 min, alternating max effort with recovery. Burns more calories in less time. Do this 2x/week max — it's hard to recover from.</li><li><strong>LISS (Low Intensity Steady State):</strong> Long, moderate-paced cardio. Walking, jogging. Good for active recovery days.</li></ul><h4>THE PROTOCOL</h4><ul><li>7,000–10,000 steps daily (minimum baseline)</li><li>2–3 sessions of Zone 2 cardio/week</li><li>1–2 sessions of HIIT/week if your recovery allows</li><li>Do cardio after lifting, not before — unless it's a separate session</li></ul>`,takeaway:`Start with 8,000 steps/day as a non-negotiable baseline. Track it with your phone. Walking is the most underrated fitness tool — it costs nothing and the research is overwhelming.`,links:[{t:'Zone 2 Training Guide',u:'https://www.inigo-san-millan.com'},{t:'American Heart Association Cardio Guidelines',u:'https://www.heart.org/en/healthy-living/fitness/fitness-basics/aha-recs-for-physical-activity-in-adults'}]},
+      { title:'Recovery & Injury Prevention', body:`<p>Recovery is not the absence of training. It's an active process — and neglecting it is the most common reason people plateau, get injured, or burn out.</p><h4>THE RECOVERY HIERARCHY</h4><ul><li><strong>Sleep (most important):</strong> 7–9 hours. Muscle repair is primarily a sleep event. No supplement replaces this.</li><li><strong>Nutrition:</strong> Post-workout protein within 2 hours. Carbohydrates refuel glycogen. Adequate total calories.</li><li><strong>Active recovery:</strong> Light walking, swimming, or stretching on rest days. Promotes blood flow without adding stress.</li><li><strong>Mobility work:</strong> 10–15 min stretching or foam rolling 3x/week. Maintains range of motion and reduces injury risk.</li></ul><h4>INJURY PREVENTION RULES</h4><ul><li>Warm up properly: 5–10 min light cardio + dynamic stretching before lifting</li><li>Never ego-lift: form breaks before weight maxes out — that's when injuries happen</li><li>Deload every 4–6 weeks: one week at 50–60% volume and intensity</li><li>Listen to pain: soreness is normal, sharp/joint pain is a signal to stop</li></ul>`,takeaway:`Add one 10-minute foam rolling or stretching session this week after any workout. Focus on your tightest areas. Consistency here prevents months of setbacks.`,links:[{t:'Foam Rolling Guide',u:'https://www.nasm.org/resources/foam-rolling-guide'},{t:'Mobility WOD',u:'https://www.thereadystate.com'}]}
+    ]},
+    hygiene:{ icon:'🪥', name:'Hygiene', desc:'Build the daily hygiene habits that make you look and feel your best.', chapters:[
+      { title:'The Daily Hygiene Stack', body:`<p>Hygiene is the baseline. It's not impressive when you have it — but it's immediately obvious when you don't. Building a consistent daily stack takes 20 minutes and changes how people perceive you and how you feel about yourself.</p><h4>THE MORNING STACK</h4><ul><li>Brush teeth (2 min, electric toothbrush if possible)</li><li>Floss or use a water flosser</li><li>Face wash (matched to skin type)</li><li>Moisturise + SPF</li><li>Deodorant / antiperspirant</li><li>Hair styled or managed</li><li>Fresh clothes — pressed or at minimum wrinkle-free</li></ul><h4>THE EVENING STACK</h4><ul><li>Shower (wash hair on schedule, body daily)</li><li>Face wash + skincare</li><li>Brush teeth + floss</li><li>Nail check weekly (filed, clean)</li></ul><p>None of this is complicated. The difference between someone who looks put-together and someone who doesn't is almost always just consistency in these basics.</p>`,takeaway:`Time your current morning routine. Then identify what you're missing. Add one new step tomorrow morning and do it for 2 weeks until it's automatic before adding another.`,links:[{t:'CDC Hygiene Guidelines',u:'https://www.cdc.gov/hygiene'},{t:'Personal Hygiene Tips',u:'https://www.healthline.com/health/personal-hygiene'}]},
+      { title:'Dental Health: The #1 Overlooked Upgrade', body:`<p>Your mouth is directly connected to your heart health, your confidence in conversation, and your first impression. Dental health is the highest-ROI hygiene upgrade most people ignore.</p><h4>THE DENTAL PROTOCOL</h4><ul><li><strong>Brush 2x daily, 2 min each:</strong> Electric toothbrushes are significantly more effective. Worth the investment.</li><li><strong>Floss daily:</strong> 35% of tooth surfaces are between teeth — brushing doesn't reach them. This is non-negotiable.</li><li><strong>Water flosser (Waterpik):</strong> Excellent complement or replacement to string floss. Reduces gum disease measurably.</li><li><strong>Tongue scraper:</strong> Removes bacteria that causes bad breath. $5 and 10 seconds per day.</li><li><strong>Mouthwash (alcohol-free):</strong> After brushing at night — don't rinse after.</li><li><strong>Dentist every 6 months:</strong> Prevention is dramatically cheaper than repair.</li></ul><h4>WHITENING</h4><ul><li>Limit coffee, tea, and red wine exposure (drink through a straw)</li><li>Whitening toothpaste (low abrasion) for maintenance</li><li>Professional whitening strips (Crest 3D or dentist) for significant change</li></ul>`,takeaway:`Buy a tongue scraper today. Use it every morning for one week. Notice the difference in breath and taste. Then build from there.`,links:[{t:'American Dental Association',u:'https://www.ada.org/resources/research/science-and-research-institute/oral-health-topics/home-dental-care'},{t:'Best Electric Toothbrushes',u:'https://www.nytimes.com/wirecutter/reviews/best-electric-toothbrush/'}]},
+      { title:'Body Odor & Sweat Management', body:`<p>Body odor is bacteria metabolising sweat. Understanding this changes how you approach it — it's not about more product, it's about targeting the root cause.</p><h4>THE SCIENCE</h4><ul><li>Sweat itself is odorless. Bacteria on skin breaks it down into odorous compounds.</li><li>Apocrine glands (underarms, groin) produce the sweat that bacteria love most.</li><li>Deodorant masks odor. Antiperspirant blocks sweating. Most people need antiperspirant for high-activity days.</li></ul><h4>THE PROTOCOL</h4><ul><li>Shower daily, or at minimum wash underarms and groin daily</li><li>Apply antiperspirant at night on dry skin (not after showering) — this is when it works best, confirmed by dermatologists</li><li>Dry the underarm area fully after showering before applying product</li><li>Wear natural fabrics (cotton, linen) — synthetics trap bacteria</li><li>Change clothes daily minimum. Wash gym clothes immediately after use.</li><li>Trim underarm hair — it dramatically reduces odor by reducing surface area for bacteria</li></ul>`,takeaway:`Switch to applying your antiperspirant at night instead of morning. Do this for 5 days and observe the difference in effectiveness.`,links:[{t:'How Deodorant Works — Healthline',u:'https://www.healthline.com/health/how-does-deodorant-work'},{t:'Best Antiperspirants',u:'https://www.nytimes.com/wirecutter/reviews/the-best-deodorant/'}]},
+      { title:'Grooming for Men & Women', body:`<p>Grooming is personal care taken seriously. It's what separates someone who looks like they care about themselves from someone who doesn't — regardless of features or genetics.</p><h4>MEN'S GROOMING ESSENTIALS</h4><ul><li><strong>Haircut every 3–4 weeks:</strong> Even modest cuts stay sharp. Find one barber and build a relationship.</li><li><strong>Beard:</strong> Either fully grown and maintained, or fully clean shaven. The in-between is consistently the worst option.</li><li><strong>Nose/ear hair:</strong> Trimmer, use it. This single thing ages you visibly if left unmanaged.</li><li><strong>Eyebrows:</strong> Clean up the area between brows and the strays above/below. Not shaping — just maintenance.</li><li><strong>Nails:</strong> Filed, clean, no jagged edges.</li></ul><h4>WOMEN'S GROOMING ESSENTIALS</h4><ul><li><strong>Brows:</strong> Well-maintained brows frame the face more than almost any other feature.</li><li><strong>Nails:</strong> Consistent length and clean. Nail polish optional but neat.</li><li><strong>Body hair:</strong> Personal preference — but whatever your choice, do it deliberately and consistently.</li><li><strong>Scent:</strong> Light fragrance, not overpowering. Applied to pulse points.</li></ul>`,takeaway:`Book a haircut or brow appointment this week if you don't have one. Grooming at regular intervals is what separates put-together from not.`,links:[{t:'Men\'s Grooming Guide — GQ',u:'https://www.gq.com/story/the-complete-grooming-guide'},{t:'Brow Shaping Guide',u:'https://www.allure.com/story/how-to-shape-your-eyebrows'}]},
+      { title:'Fragrance Fundamentals', body:`<p>Scent is one of the most powerful levers in how you're perceived and remembered. People will remember how you smelled long after they've forgotten what you said. It's worth understanding.</p><h4>FRAGRANCE FAMILIES</h4><ul><li><strong>Fresh/Aquatic:</strong> Clean, light, universally liked. Good for day and casual use.</li><li><strong>Citrus:</strong> Bright and energetic. Best in summer and morning.</li><li><strong>Woody/Earthy:</strong> Warm and grounding. Excellent for evening and autumn/winter.</li><li><strong>Oriental/Spicy:</strong> Bold and seductive. Evening and colder months.</li><li><strong>Floral:</strong> Classic, versatile, feminine-leaning but worn by all genders.</li></ul><h4>HOW TO WEAR FRAGRANCE CORRECTLY</h4><ul><li>Apply to pulse points: neck, wrists, inside elbows. These are warm and diffuse scent.</li><li>Don't rub wrists together — breaks down the scent molecules</li><li>Apply after showering on moisturised skin — lasts longer</li><li>2–3 sprays maximum. You should only smell it close up, not announce your arrival.</li><li>Rotate: don't wear the same fragrance every day — you become nose-blind to it</li></ul>`,takeaway:`Visit a fragrance counter or Sephora and test 3 new scents this week. Don't buy the first day — let them develop on your skin for 4–6 hours before deciding.`,links:[{t:'r/fragrance — Beginner Guide',u:'https://reddit.com/r/fragrance/wiki/index'},{t:'Fragrantica — Scent Reviews',u:'https://www.fragrantica.com'}]}
+    ]},
+    relationships:{ icon:'🤝', name:'Relationships', desc:'Build deeper connections, set boundaries, and attract quality people.', chapters:[
+      { title:'Mastering Communication', body:`<p>Communication is the most high-leverage social skill you can develop. Everything in your relationships — professional and personal — runs through it.</p><h4>THE CORE SKILLS</h4><ul><li><strong>Active listening:</strong> Most people listen to respond, not to understand. Put the phone down. Make eye contact. Don't formulate your response while they're still speaking.</li><li><strong>Asking questions:</strong> The best conversationalists ask better questions, not give better answers. Ask follow-up questions. Show genuine curiosity.</li><li><strong>Clarity:</strong> Say what you mean. Vagueness and hinting create resentment. Be direct and kind — they're not mutually exclusive.</li><li><strong>Tone awareness:</strong> How you say something matters more than what you say. Calm, confident tone disarms conflict.</li><li><strong>Non-verbal:</strong> Eye contact, open body language, mirroring — these communicate more than words.</li></ul><h4>THE MOST COMMON MISTAKES</h4><ul><li>Interrupting before someone finishes</li><li>Making conversations about yourself immediately</li><li>Giving advice when someone needs to be heard</li><li>Passive-aggressive communication instead of direct honesty</li></ul>`,takeaway:`In your next conversation: wait 2 full seconds before responding. Don't interrupt. Ask one follow-up question. Notice how differently the person responds to you.`,links:[{t:'Crucial Conversations — Book',u:'https://cruciallearning.com/crucial-conversations-book/'},{t:'How to Win Friends — Carnegie',u:'https://www.goodreads.com/book/show/4865.How_to_Win_Friends_and_Influence_People'}]},
+      { title:'Setting Healthy Boundaries', body:`<p>Boundaries are not walls. They're the terms under which you can show up fully in a relationship. People without boundaries burn out, become resentful, and attract people who take advantage.</p><h4>WHAT BOUNDARIES ACTUALLY ARE</h4><ul><li>Boundaries define what you will and won't accept in how others treat you</li><li>They're communicated clearly, not assumed or hinted at</li><li>They protect your time, energy, values, and mental health</li></ul><h4>HOW TO SET THEM</h4><ul><li><strong>Identify:</strong> Where do you consistently feel drained, resentful, or violated? That's a boundary violation.</li><li><strong>Name it clearly:</strong> "I'm not available after 8PM." "I need 24 hours notice for plans." "Please don't speak to me that way."</li><li><strong>Enforce it:</strong> A boundary you don't hold is not a boundary. The discomfort of holding it is less than the resentment of not holding it.</li><li><strong>Don't over-explain:</strong> You don't owe an essay. State the boundary calmly. If pushed, repeat it without emotion.</li></ul><p>People who respect your boundaries are safe people. People who resist them consistently are telling you exactly who they are.</p>`,takeaway:`Identify one relationship where you feel consistently drained or resentful. What boundary is missing? Write it down in one sentence. Then consider how and when to communicate it.`,links:[{t:'Nedra Tawwab — Set Boundaries Find Peace',u:'https://nedratawwab.com'},{t:'Brené Brown on Boundaries',u:'https://brenebrown.com/articles/2018/10/15/clear-is-kind-unclear-is-unkind/'}]},
+      { title:'Attracting High-Quality People', body:`<p>The quality of your relationships is largely a function of who you are. High-quality people are attracted to other high-quality people. This isn't a judgment — it's physics.</p><h4>WHAT HIGH-QUALITY PEOPLE LOOK FOR</h4><ul><li><strong>Integrity:</strong> You say what you mean, mean what you say, and keep your word. To everyone, not just when convenient.</li><li><strong>Growth mindset:</strong> You're working on yourself, learning, improving. People who are growing want to be around others who are also growing.</li><li><strong>Energy management:</strong> Your presence is energising, not draining. You bring warmth, curiosity, and positivity — not complaints and neediness.</li><li><strong>Self-sufficiency:</strong> You're interesting independent of your relationships. Hobbies, opinions, goals, standards.</li><li><strong>Reciprocity:</strong> You give as much as you take. You remember things people tell you. You follow through.</li></ul><h4>HOW TO MEET THEM</h4><ul><li>Be in environments aligned with your values: gym, classes, events, communities</li><li>Invest in existing relationships — depth matters more than breadth</li><li>Put yourself in high-quality situations and let proximity do its work</li></ul>`,takeaway:`Audit your 5 closest people this week. Are they moving in the direction you want to go? If not, the goal isn't to cut them off — it's to expand your circle with intention.`,links:[{t:'The Friendship Formula',u:'https://www.artofmanliness.com/people/social-skills/the-friendship-formula/'},{t:'Surrounding Yourself with Winners',u:'https://www.psychologytoday.com/us/blog/social-instincts/202209/do-you-surround-yourself-with-people-who-lift-you-up'}]},
+      { title:'Friendships That Elevate You', body:`<p>Research on loneliness and health is unambiguous: social isolation is as damaging as smoking 15 cigarettes a day. But not just any social connection — quality matters as much as quantity.</p><h4>WHAT ELEVATING FRIENDSHIPS LOOK LIKE</h4><ul><li>They celebrate your wins without resentment</li><li>They tell you the truth, even when it's uncomfortable</li><li>They have their own ambitions and goals — they're not living through yours</li><li>Time with them leaves you energised, not drained</li><li>They show up when things are hard, not just when things are good</li></ul><h4>HOW TO BUILD AND MAINTAIN THEM</h4><ul><li>Consistency: great friendships are maintained through small, regular contact — not occasional grand gestures</li><li>Initiate: most friendships die from mutual assumption that the other person will reach out</li><li>Be there: the ones who show up when it's inconvenient are the ones who matter</li><li>Shared experience: doing things together (not just talking) builds deeper bonds</li></ul>`,takeaway:`Text one person you care about and haven't spoken to in a while. Don't overthink the message. "Been thinking about you — how are you doing?" is enough.`,links:[{t:'The Loneliness Epidemic — Harvard Study',u:'https://news.harvard.edu/gazette/story/2023/02/harvard-researchers-say-pandemic-worsened-loneliness/'},{t:'How to Make Friends as an Adult',u:'https://www.nytimes.com/2022/05/09/well/make-friends-adult.html'}]},
+      { title:'Red Flags & Green Flags', body:`<p>Learning to read people accurately — early — is one of the highest-leverage relationship skills. It saves you years of pain.</p><h4>RED FLAGS (PAY ATTENTION TO THESE)</h4><ul><li>They talk about everyone else negatively (they will talk about you too)</li><li>They never apologise or acknowledge fault</li><li>They're inconsistent — kind sometimes, cruel others</li><li>They push your boundaries and call your discomfort overreaction</li><li>They make you feel smaller, less confident, or crazy for your perceptions</li><li>They only show up when they want something</li><li>Actions and words consistently don't match</li></ul><h4>GREEN FLAGS (THESE MATTER)</h4><ul><li>They admit when they're wrong</li><li>They're consistently kind to people who can do nothing for them (waiters, service workers)</li><li>They respect your time and follow through on plans</li><li>They celebrate your growth, not just your presence</li><li>They can have uncomfortable conversations calmly</li><li>They are the same person in public and private</li></ul>`,takeaway:`Think of your most important relationship right now. Honestly count: how many red flags, how many green flags? What does the ratio tell you?`,links:[{t:'Psychology Today — Relationship Red Flags',u:'https://www.psychologytoday.com/us/basics/red-flag'},{t:'Attachment Theory Explained',u:'https://www.attachmentproject.com/blog/four-attachment-styles/'}]}
+    ]},
+    faith:{ icon:'🙏', name:'Faith & Spirituality', desc:'Build a daily practice that grounds your life in purpose and peace.', chapters:[
+      { title:'Building a Daily Spiritual Practice', body:`<p>Spirituality is not about religion (though it can be). It's about intentionally connecting to something larger than your immediate circumstances — and returning to that connection daily.</p><h4>WHY PRACTICE MATTERS</h4><ul><li>People with daily spiritual practice report higher life satisfaction, lower anxiety, and more resilience under adversity</li><li>It creates a touchstone — something to return to when life is chaotic</li><li>It separates you from reactivity and moves you toward intentional living</li></ul><h4>HOW TO BUILD ONE</h4><ul><li><strong>Start small:</strong> 5 minutes of quiet, intentional practice is better than none</li><li><strong>Consistency over intensity:</strong> Daily 5 minutes beats weekly 2 hours</li><li><strong>Morning is the best time:</strong> Before the world's noise, before the phone, before demands</li><li><strong>Choose your form:</strong> Prayer, meditation, scripture, journaling, nature walk — whatever creates a genuine sense of connection for you</li><li><strong>Protect it:</strong> This is the one appointment you don't cancel</li></ul>`,takeaway:`Tomorrow morning: set your alarm 10 minutes earlier. Before the phone, before anything else — sit in silence or read one page of something spiritual. Just 10 minutes.`,links:[{t:'Daily Examen Practice',u:'https://www.ignatianspirituality.com/ignatian-prayer/the-examen/'},{t:'The Power of Now — Eckhart Tolle',u:'https://www.eckharttolle.com/the-power-of-now/'}]},
+      { title:'Meditation & Stillness', body:`<p>Meditation is training your attention — the ability to choose where your mind goes and keep it there. In an age of infinite distraction, this is a superpower.</p><h4>WHAT MEDITATION ACTUALLY DOES</h4><ul><li>Increases grey matter in the prefrontal cortex (decision-making, self-control)</li><li>Reduces amygdala reactivity (less emotional hair-trigger)</li><li>Lowers cortisol and blood pressure measurably</li><li>Improves focus and working memory</li></ul><h4>HOW TO START</h4><ul><li><strong>Breath awareness (simplest):</strong> Sit comfortably. Focus on your breath. When your mind wanders — and it will — gently bring it back. That's the practice. The wandering is not failure.</li><li><strong>Body scan:</strong> Move attention slowly from feet to head, noticing sensation. Good for sleep.</li><li><strong>Loving-kindness:</strong> Direct warm wishes to yourself, then others. Builds compassion and reduces anxiety.</li><li><strong>Time:</strong> Start with 5 minutes. Use Headspace or Calm for guided sessions.</li></ul>`,takeaway:`Tonight before bed: set a 5-minute timer. Sit up straight. Eyes closed. Focus on the sensation of your breath at your nostrils. When you wander, return. That's it.`,links:[{t:'Headspace App',u:'https://www.headspace.com'},{t:'Calm App',u:'https://www.calm.com'},{t:'Meditation Research — NCBI',u:'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3772979/'}]},
+      { title:'Gratitude as a Practice', body:`<p>Gratitude is not toxic positivity. It's a trained neurological habit that measurably changes your brain's baseline emotional tone over weeks of practice.</p><h4>THE SCIENCE</h4><ul><li>Gratitude practice activates the hypothalamus, which regulates sleep, metabolism, and stress hormones</li><li>Increases dopamine and serotonin — the same neurotransmitters targeted by antidepressants</li><li>21 days of consistent practice measurably shifts your brain's positive bias</li></ul><h4>HOW TO PRACTICE EFFECTIVELY</h4><ul><li><strong>Be specific:</strong> "I'm grateful for the warmth of my morning coffee" activates more neural circuitry than "I'm grateful for my life"</li><li><strong>Novelty matters:</strong> Finding new things to be grateful for works better than recycling the same items</li><li><strong>Morning practice:</strong> Sets the emotional tone for the day before stress accumulates</li><li><strong>3 items minimum:</strong> Research suggests 3 specific items, written by hand, with brief elaboration on why</li><li><strong>Gratitude letters:</strong> Writing to someone who made a difference and reading it to them in person is the single highest-impact gratitude exercise in the research</li></ul>`,takeaway:`Right now: write 3 things you're genuinely grateful for. Make them specific. Something from today if possible. Notice how your state shifts even after just writing them.`,links:[{t:'Greater Good Science Center — Gratitude',u:'https://greatergood.berkeley.edu/topic/gratitude'},{t:'The Science of Gratitude',u:'https://www.health.harvard.edu/healthbeat/giving-thanks-can-make-you-happier'}]},
+      { title:'Finding Your Purpose', body:`<p>Purpose is not found. It's built — through action, reflection, and iteration. Waiting to "discover" your purpose is how people reach 40 having never started.</p><h4>WHAT PURPOSE ACTUALLY IS</h4><ul><li>Purpose is what you'd work on even if you weren't paid for it</li><li>It lives at the intersection of what you're good at, what the world needs, what you can be paid for, and what you love (the Japanese concept of Ikigai)</li><li>It evolves over time — your purpose at 20 is rarely your purpose at 40</li></ul><h4>HOW TO BUILD IT</h4><ul><li><strong>Act first:</strong> You don't find purpose by thinking. You find it by doing things and noticing what gives you energy.</li><li><strong>Pay attention to what angers you:</strong> Your deepest frustrations about the world often point toward what you're called to fix.</li><li><strong>Follow curiosity, not passion:</strong> Passion is outcome-dependent. Curiosity is durable and leads you somewhere.</li><li><strong>Serve others:</strong> Almost every lasting sense of purpose comes from some form of contribution beyond the self.</li></ul>`,takeaway:`Answer this question in writing: "If money, fear, and judgment were removed — what would I spend my time on?" Write for 10 minutes without stopping or editing.`,links:[{t:'Ikigai Concept',u:'https://www.japan.go.jp/kizuna/2022/03/ikigai_japanese_secret_to_a_joyful_life.html'},{t:'Man\'s Search for Meaning — Viktor Frankl',u:'https://www.goodreads.com/book/show/4069.Man_s_Search_for_Meaning'}]},
+      { title:'Prayer, Intention & Manifestation', body:`<p>Whether you approach this through religion, spirituality, or psychology — the act of intentionally declaring what you want has measurable effects on behavior and outcomes.</p><h4>WHY IT WORKS (THE PSYCHOLOGY)</h4><ul><li><strong>Reticular Activating System (RAS):</strong> Your brain filters reality based on what you tell it to look for. Clearly stated intentions activate this system — you literally begin to notice opportunities you previously missed.</li><li><strong>Self-fulfilling prophecy:</strong> Clear belief in a positive outcome increases the behaviors that make it likely.</li><li><strong>Accountability:</strong> Writing and declaring goals creates psychological commitment.</li></ul><h4>PRACTICAL APPLICATIONS</h4><ul><li><strong>Morning prayer/intention:</strong> State clearly what kind of person you want to be today. Not what you want — who you want to be.</li><li><strong>Written goals:</strong> Write your top 3 goals every morning. This alone, done consistently, is one of the most evidence-backed success practices.</li><li><strong>Visualization:</strong> Spend 5 minutes vividly imagining the achievement of your most important goal. Feel it specifically. This is not fantasy — it's neurological rehearsal.</li></ul>`,takeaway:`Tomorrow morning: write three "I am" statements that describe who you're becoming. "I am someone who trains daily." "I am financially responsible." Read them aloud. Do this every day for 30 days.`,links:[{t:'Science of Visualization',u:'https://www.psychologytoday.com/us/basics/visualization'},{t:'The Power of Written Goals',u:'https://www.dominican.edu/academics/lae/undergraduate-programs/psych/faculty/assets-gail-matthews/researchsummary2.pdf'}]}
+    ]},
+    philosophy:{ icon:'🧠', name:'Philosophy', desc:'Timeless frameworks for thinking clearly and living with intention.', chapters:[
+      { title:'Stoicism for Modern Life', body:`<p>Stoicism is the most practical philosophy ever written. Developed 2,300 years ago and still the most useful operating system for handling adversity, success, and everything between.</p><h4>THE CORE IDEA</h4><p>There are things within your control (your thoughts, actions, responses) and things outside your control (others' opinions, outcomes, circumstances). Stoicism says: focus entirely on the former, accept entirely the latter.</p><h4>THE 4 STOIC VIRTUES</h4><ul><li><strong>Wisdom:</strong> Knowing what is good, what is bad, and what is neither</li><li><strong>Justice:</strong> Acting fairly toward others always</li><li><strong>Courage:</strong> Doing what's right even when it's hard</li><li><strong>Temperance:</strong> Self-discipline and moderation in all things</li></ul><h4>DAILY STOIC PRACTICES</h4><ul><li><strong>Morning review:</strong> "What obstacles might arise today? How will I respond with virtue?"</li><li><strong>Evening audit:</strong> "What did I do well? Where did I fall short? What will I do differently?"</li><li><strong>Negative visualization:</strong> Briefly imagine losing what you value most — this creates gratitude for what you have</li><li><strong>The view from above:</strong> Zoom out. Most of what feels urgent is cosmically trivial.</li></ul>`,takeaway:`This week: when something frustrates you, pause and ask: "Is this in my control?" If yes — act. If no — accept and redirect energy to what is.`,links:[{t:'Daily Stoic — Ryan Holiday',u:'https://dailystoic.com'},{t:'Meditations — Marcus Aurelius (free)',u:'https://www.gutenberg.org/ebooks/2680'}]},
+      { title:'The Examined Life (Socrates)', body:`<p>"The unexamined life is not worth living." — Socrates said this at his trial, knowing it would cost him his life. He meant it. He believed that thinking critically about your life — your assumptions, values, and choices — was the highest human activity.</p><h4>SOCRATIC QUESTIONS YOU SHOULD ASK</h4><ul><li>Why do I believe this? What's the evidence?</li><li>What would change my mind? Am I open to being wrong?</li><li>What am I assuming that I haven't examined?</li><li>What would the person I want to become do in this situation?</li><li>What is the most important thing — and am I doing it?</li></ul><h4>HOW TO PRACTICE IT</h4><ul><li><strong>Journaling:</strong> Writing forces thinking. Vague thoughts become clear on paper.</li><li><strong>Socratic dialogue:</strong> Have real intellectual conversations where both people are willing to change their minds</li><li><strong>Read philosophy:</strong> Exposure to rigorous thinking improves your own</li></ul>`,takeaway:`Write one page this week answering: "What do I actually believe about how I should live? And is how I'm living consistent with it?" Be honest.`,links:[{t:'The Last Days of Socrates — Plato',u:'https://www.gutenberg.org/ebooks/1672'},{t:'Philosophy Now Magazine',u:'https://philosophynow.org'}]},
+      { title:'Eastern Philosophy: Buddhism & Taoism', body:`<p>Western philosophy focuses on what to think. Eastern philosophy focuses on how to be. Both are necessary for a whole life.</p><h4>BUDDHISM — KEY CONCEPTS</h4><ul><li><strong>Impermanence:</strong> All things change. Suffering comes from clinging to what cannot last.</li><li><strong>The Middle Way:</strong> Avoid extremes of indulgence and deprivation. Balance is the path.</li><li><strong>Mindfulness:</strong> Full presence in each moment, without judgment. This is what meditation trains.</li><li><strong>Non-attachment:</strong> Engage fully with life while not making your peace conditional on outcomes.</li></ul><h4>TAOISM — KEY CONCEPTS</h4><ul><li><strong>The Tao (The Way):</strong> The natural order of things. Living in alignment with nature rather than against it.</li><li><strong>Wu Wei (Non-forcing):</strong> Effortless action. Not passivity — doing the right thing at the right time without excess effort.</li><li><strong>Simplicity:</strong> The Tao Te Ching repeatedly returns to the power of simplicity and emptiness.</li></ul><p>Both traditions offer the same underlying message: peace comes from within, not from external circumstances.</p>`,takeaway:`Read one chapter of the Tao Te Ching today (it's free online, 81 short chapters). Let one line sit with you for the day.`,links:[{t:'Tao Te Ching — Free Online',u:'https://www.gutenberg.org/ebooks/216'},{t:'Buddhism for Beginners',u:'https://www.lionsroar.com/buddhism-for-beginners/'}]},
+      { title:'Existentialism: Creating Your Own Meaning', body:`<p>Existentialism says: existence precedes essence. You are not born with a predetermined purpose. You are born, and then — through your choices — you create who you are. This is terrifying and liberating in equal measure.</p><h4>KEY THINKERS</h4><ul><li><strong>Jean-Paul Sartre:</strong> Radical freedom — you are defined entirely by your choices. There is no excuse.</li><li><strong>Albert Camus:</strong> Life has no inherent meaning — and that's okay. We can create meaning through passion and rebellion against meaninglessness.</li><li><strong>Simone de Beauvoir:</strong> Meaning comes through engagement with others and the world, not solitary contemplation.</li><li><strong>Viktor Frankl:</strong> Even in extreme suffering, we retain the freedom to choose our response. Meaning can be found in any circumstance.</li></ul><h4>THE PRACTICAL TAKEAWAY</h4><ul><li>Stop waiting for life to give you purpose — create it through committed action</li><li>Your choices define you, not your circumstances or background</li><li>Authentic living means choosing according to your values, not others' expectations</li></ul>`,takeaway:`What are you doing out of habit, expectation, or fear — that you would stop doing if you were living authentically? Write it. Don't act yet — just name it.`,links:[{t:'Man\'s Search for Meaning — Frankl',u:'https://www.goodreads.com/book/show/4069.Man_s_Search_for_Meaning'},{t:'The Stranger — Camus',u:'https://www.goodreads.com/book/show/49552.The_Stranger'}]},
+      { title:'Applying Philosophy to Daily Decisions', body:`<p>Philosophy is useless if it stays in books. The greatest philosophers — Marcus Aurelius, Epictetus, Socrates — all lived their philosophy under real pressure. That's the standard.</p><h4>A DECISION FRAMEWORK FROM PHILOSOPHY</h4><ul><li><strong>The Stoic question:</strong> "Is this in my control?" If no — accept. If yes — act with virtue.</li><li><strong>The Kantian test:</strong> "What if everyone did this?" If the world would break — don't do it.</li><li><strong>The Socratic check:</strong> "Can I defend this choice with good reasons to someone I respect?"</li><li><strong>The Frankl question:</strong> "In 10 years, will this have mattered — and will I have chosen well?"</li><li><strong>The Buddhist check:</strong> "Is this choice coming from clarity, or from craving and fear?"</li></ul><h4>THE EVENING REVIEW (STOIC)</h4><ul><li>What did I do well today?</li><li>Where did I fall short of my values?</li><li>What would I do differently?</li><li>Am I living the life I would choose?</li></ul>`,takeaway:`Tonight: write 3 answers to "Where did I fall short of my values today?" Be honest. Harsh self-assessment is where growth lives.`,links:[{t:'Ryan Holiday — Ego Is the Enemy',u:'https://ryanholiday.net/ego-is-the-enemy/'},{t:'Philosophy Bro — Accessible Summaries',u:'https://www.philosophybro.com'}]}
+    ]},
+    money:{ icon:'💰', name:'Money & Finance', desc:'Build wealth, eliminate debt, and master your money at any income level.', chapters:[
+      { title:'The Money Mindset Shift', body:`<p>Most people have a broken relationship with money — they avoid thinking about it, feel shame around it, and believe wealthy people have something they don't. None of that is true.</p><h4>THE MINDSET SHIFTS THAT MATTER</h4><ul><li><strong>Money is a tool, not a goal:</strong> Money buys freedom and options. The goal is the life you want — money is how you build it.</li><li><strong>Wealth is built slowly:</strong> Almost every first-generation wealthy person built it over decades of consistent, boring decisions. Not one big break.</li><li><strong>Income is not wealth:</strong> Wealth is what you keep and grow. A $200k/year salary with $200k/year expenses builds no wealth.</li><li><strong>The gap is what matters:</strong> Income minus expenses = wealth-building capacity. Increase income, decrease expenses, or both.</li><li><strong>Start now, always:</strong> The single biggest wealth-building mistake is waiting to start. Time in the market beats timing the market. Every year of delay compounds into years of lost growth.</li></ul>`,takeaway:`Write your net worth today: assets minus liabilities. Even if it's negative — know where you're starting. You can't navigate without knowing your current location.`,links:[{t:'I Will Teach You To Be Rich — Ramit Sethi',u:'https://www.iwillteachyoutoberich.com'},{t:'Mr. Money Mustache',u:'https://www.mrmoneymustache.com'}]},
+      { title:'Budgeting That Actually Works', body:`<p>The budget that works is the one you actually use. Most people quit budgeting because they pick a method that requires too much ongoing effort.</p><h4>THE 3 BUDGETING SYSTEMS</h4><ul><li><strong>50/30/20 (Simplest):</strong> 50% needs, 30% wants, 20% savings/debt. Set-and-forget. Good starting point.</li><li><strong>Zero-Based Budget:</strong> Give every dollar a job. Income minus all categories = zero. Most accurate, most work.</li><li><strong>Pay-Yourself-First:</strong> Automate savings/investments immediately on payday. Spend the rest freely. Ramit Sethi's recommended system.</li></ul><h4>THE AUTOMATION SYSTEM THAT WORKS</h4><ul><li>Payday: salary hits main account</li><li>Automatic transfer to savings/investment account (same day)</li><li>Automatic transfers for fixed bills</li><li>Spend what's left on wants without guilt</li></ul><p>The key insight: willpower is not a reliable budgeting tool. Automation removes willpower from the equation entirely.</p>`,takeaway:`This week: set up one automatic transfer on payday — even $50 — to a separate savings account. Don't touch it. This is the first brick of the wall.`,links:[{t:'YNAB — You Need A Budget',u:'https://www.youneedabudget.com'},{t:'Mint Budget App',u:'https://mint.intuit.com'},{t:'Ramit Sethi Automating',u:'https://www.iwillteachyoutoberich.com/automate-your-finances/'}]},
+      { title:'Eliminating Debt Strategically', body:`<p>Debt is the enemy of wealth. Not because debt is morally wrong — but because high-interest debt (credit cards, personal loans) costs more in interest than almost any investment earns in returns.</p><h4>TWO METHODS</h4><ul><li><strong>Debt Avalanche (mathematically optimal):</strong> Pay minimums on all debts. Extra money goes to highest interest rate debt first. Saves the most money over time.</li><li><strong>Debt Snowball (psychologically effective):</strong> Pay minimums on all debts. Extra money goes to smallest balance first. Creates quick wins that keep you motivated.</li></ul><p>Choose the one you'll actually stick to. The best method is the one you complete.</p><h4>ACCELERATING PAYOFF</h4><ul><li>Find one monthly subscription to cancel — redirect to debt</li><li>Any windfall (tax refund, bonus) goes directly to debt — before lifestyle creep</li><li>Consider balance transfers for high-interest credit card debt (0% intro APR offers)</li><li>Never miss minimum payments — the penalties are severe</li></ul>`,takeaway:`List all your debts with balances and interest rates. Arrange them by your chosen method. Calculate how much extra you can put toward the first one this month. Even $20 more matters.`,links:[{t:'National Foundation for Credit Counseling',u:'https://www.nfcc.org'},{t:'Debt Payoff Calculator',u:'https://www.calculator.net/debt-payoff-calculator.html'}]},
+      { title:'Investing for Beginners', body:`<p>Investing is not as complicated as the financial industry wants you to believe. The simple approach beats the complex approach over almost any time horizon.</p><h4>THE SIMPLE INVESTING TRUTH</h4><ul><li>The S&P 500 has returned approximately 10% annually on average over the last 100 years</li><li>Low-cost index funds that track the S&P 500 outperform 92% of actively managed funds over 15 years</li><li>Time in the market beats timing the market — every academic study confirms this</li></ul><h4>THE BEGINNER ROADMAP</h4><ul><li><strong>Step 1:</strong> Emergency fund first — 3-6 months of expenses in high-yield savings. Don't invest without this.</li><li><strong>Step 2:</strong> 401k/employer retirement to get full employer match — this is a 50-100% instant return</li><li><strong>Step 3:</strong> Roth IRA — $7,000/year limit (2024). Tax-free growth and withdrawals in retirement.</li><li><strong>Step 4:</strong> Additional investing in taxable brokerage account</li></ul><h4>WHAT TO BUY</h4><ul><li>VTI (Vanguard Total Market) or VOO (S&P 500 index fund)</li><li>Set it up, automate monthly contributions, never look at it during down markets</li></ul>`,takeaway:`Open a Roth IRA today if you don't have one (Fidelity, Schwab, or Vanguard — all free). You can start with $10. The account existing is what matters first.`,links:[{t:'Investopedia Investing Basics',u:'https://www.investopedia.com/investing-4427685'},{t:'JL Collins — Simple Path to Wealth',u:'https://jlcollinsnh.com/stock-series/'},{t:'Bogleheads Wiki',u:'https://www.bogleheads.org/wiki/Main_Page'}]},
+      { title:'Building Multiple Income Streams', body:`<p>One income source is a single point of failure. Building additional income streams is the difference between financial security and financial fragility.</p><h4>THE INCOME HIERARCHY</h4><ul><li><strong>Level 1 — Active income:</strong> Your job. Trade time for money. Essential but limited by hours in a day.</li><li><strong>Level 2 — Side income:</strong> Freelancing, consulting, gig work. Still active but diversified from your main employer.</li><li><strong>Level 3 — Scalable income:</strong> Digital products, courses, content, SaaS. Built once, sold many times.</li><li><strong>Level 4 — Passive income:</strong> Dividends, rental income, royalties. Money that works while you sleep.</li></ul><h4>WHERE TO START</h4><ul><li>Your highest-value skill → freelance version of your day job</li><li>Sell something: knowledge (course), stuff (eBay/FB Marketplace), service (your neighbourhood)</li><li>Invest consistently until dividends become meaningful</li><li>Build an audience around what you already know</li></ul><p>Most second income streams start as very small. The goal in year one is proof of concept, not retirement income. Start small. Build systems.</p>`,takeaway:`What is one skill you have that someone else would pay for? Write it down. Then write who you would approach first. That's your starting point.`,links:[{t:'Side Hustle Nation',u:'https://www.sidehustlenation.com'},{t:'r/entrepreneur',u:'https://reddit.com/r/entrepreneur'},{t:'Passive Income Ideas',u:'https://www.nerdwallet.com/article/investing/passive-income-ideas'}]}
+    ]},
+    knowledge:{ icon:'📚', name:'Knowledge & Learning', desc:'Learn faster, remember more, and build the mental models that compound.', chapters:[
+      { title:'How to Actually Learn Anything', body:`<p>Most people learn passively — they read, watch, or listen, and feel like they learned something. Then they can't recall or apply it two weeks later. Real learning is active and intentional.</p><h4>THE FEYNMAN TECHNIQUE (MOST POWERFUL)</h4><ul><li>Step 1: Learn the concept as normal</li><li>Step 2: Explain it as if teaching a 12-year-old with no background</li><li>Step 3: Where your explanation breaks down = the gaps in your knowledge</li><li>Step 4: Go back, fill the gaps, repeat</li></ul><h4>PRINCIPLES OF EFFECTIVE LEARNING</h4><ul><li><strong>Active recall:</strong> Testing yourself on material is 3-4x more effective than re-reading</li><li><strong>Spaced repetition:</strong> Reviewing at increasing intervals (Anki, Readwise) is the most efficient way to retain anything long-term</li><li><strong>Interleaving:</strong> Mix topics instead of blocking — forces your brain to work harder and remember more</li><li><strong>Apply immediately:</strong> The fastest way to retain learning is to use it within 24 hours of encountering it</li></ul>`,takeaway:`After reading this: close the app and try to write from memory what you just learned. Don't look. That act of retrieval just tripled your retention.`,links:[{t:'Make It Stick — Brown, Roediger, McDaniel',u:'https://www.goodreads.com/book/show/18770267-make-it-stick'},{t:'Anki Flashcard System',u:'https://apps.ankiweb.net'}]},
+      { title:'Speed Reading & Retention', body:`<p>The goal of reading is not speed — it's retained, applicable understanding. Most "speed reading" advice trades comprehension for throughput, which is useless. Here's what actually works.</p><h4>WHAT KILLS READING SPEED</h4><ul><li><strong>Subvocalization:</strong> Silently pronouncing every word. Limits you to speaking speed (~150 wpm).</li><li><strong>Regression:</strong> Re-reading lines out of habit, not necessity.</li><li><strong>Passive reading:</strong> Letting eyes move without active engagement.</li></ul><h4>HOW TO READ FASTER AND RETAIN MORE</h4><ul><li><strong>Pre-read:</strong> Read title, contents, intro, and chapter summaries before reading fully. Gives your brain a framework to organise incoming information.</li><li><strong>Use a pointer:</strong> Your finger or a pen under the line guides your eyes and prevents regression.</li><li><strong>Read in chunks:</strong> Widen your visual span to take in 2-3 words at a time instead of 1.</li><li><strong>Read active:</strong> Highlight sparingly. Write one sentence summary per chapter.</li><li><strong>Review within 24 hours:</strong> A 5-minute review of highlights cements what would otherwise be lost in a week.</li></ul>`,takeaway:`For your next book: read the table of contents and conclusion first. Then read the book. This alone will improve comprehension and retention by 30%.`,links:[{t:'How to Read a Book — Adler & Van Doren',u:'https://www.goodreads.com/book/show/567610.How_to_Read_a_Book'},{t:'Readwise — Reading Review Tool',u:'https://readwise.io'}]},
+      { title:'Mental Models That Change Everything', body:`<p>A mental model is a framework for understanding how something works. The more mental models you have, the better your decisions — because you can apply the right lens to each situation.</p><h4>THE MOST USEFUL MENTAL MODELS</h4><ul><li><strong>First Principles Thinking:</strong> Break any problem down to its fundamental truths and reason up from there. Elon Musk and Aristotle both used this.</li><li><strong>Inversion:</strong> Instead of asking "how do I succeed?" ask "what would guarantee failure?" Avoid those things.</li><li><strong>Compounding:</strong> Small improvements compound exponentially. 1% better every day = 37x better in a year.</li><li><strong>Opportunity Cost:</strong> Every choice eliminates other choices. Saying yes to something is saying no to everything else.</li><li><strong>Map vs Territory:</strong> Your beliefs about reality are not reality. Update the map when the territory conflicts with it.</li><li><strong>Hanlon's Razor:</strong> Never attribute to malice what can be explained by incompetence. Most bad things are mistakes, not plots.</li></ul>`,takeaway:`Pick one model from this list. Apply it to a current problem or decision you're facing. Write what you see when you look through that lens.`,links:[{t:'Farnam Street — Mental Models',u:'https://fs.blog/mental-models/'},{t:'Poor Charlie\'s Almanack',u:'https://www.goodreads.com/book/show/944652.Poor_Charlie_s_Almanack'}]},
+      { title:'Building Your Knowledge System', body:`<p>A knowledge system is a set of habits and tools for capturing, organising, and using information so it accumulates over time rather than evaporating after each read.</p><h4>THE PARA METHOD</h4><ul><li><strong>Projects:</strong> Active things with a deadline and goal</li><li><strong>Areas:</strong> Ongoing responsibilities (health, finance, relationships)</li><li><strong>Resources:</strong> Reference material by topic</li><li><strong>Archive:</strong> Inactive stuff you might need someday</li></ul><h4>THE CAPTURE HABIT</h4><ul><li>When you encounter something worth keeping: capture it immediately (Notion, Apple Notes, paper)</li><li>Weekly: process your captures into PARA</li><li>Monthly: review what you've captured and ask what actions or insights arise</li></ul><h4>TOOLS</h4><ul><li><strong>Readwise:</strong> Syncs highlights from Kindle, articles, podcasts</li><li><strong>Notion or Obsidian:</strong> Build a personal wiki that grows with you</li><li><strong>Anki:</strong> Spaced repetition for anything you want to truly remember</li></ul>`,takeaway:`Create one note titled "What I Know About [Your Most Important Goal]" and write everything you currently know. Then identify the biggest gap. That gap is your next thing to learn.`,links:[{t:'Building a Second Brain — Tiago Forte',u:'https://www.buildingasecondbrain.com'},{t:'Notion',u:'https://www.notion.so'},{t:'Obsidian',u:'https://obsidian.md'}]},
+      { title:'The Daily Learning Habit', body:`<p>The most successful, knowledgeable people in the world share one habit: they learn every day. Not occasionally, not when they feel inspired — every day. And they've been doing it for decades.</p><h4>THE COMPOUND EFFECT OF DAILY LEARNING</h4><ul><li>30 pages/day = 18 books per year = 180 books per decade</li><li>30 minutes of focused learning daily = 182 hours/year = 4.5 full work weeks of pure development</li><li>Warren Buffett reads 500 pages per day. Bill Gates reads 50 books per year. Charlie Munger described himself as "a book with legs."</li></ul><h4>HOW TO BUILD THE HABIT</h4><ul><li><strong>Schedule it:</strong> A learning block without a time is a wish. Put it in your Planner.</li><li><strong>Stack it:</strong> Attach reading to an existing habit (before bed, during lunch, morning coffee)</li><li><strong>Lower the bar:</strong> 10 minutes counts. On bad days: 10 minutes. Never miss two days in a row.</li><li><strong>Diversify:</strong> Books, podcasts, documentaries, courses, mentors — all count. Different formats for different moods.</li><li><strong>Apply it:</strong> Knowledge without application is trivia. One insight applied is worth 100 passively consumed.</li></ul>`,takeaway:`Schedule your learning block in your Planner right now. Pick a time — morning, lunch, or before bed. Give it 20 minutes. Then pick what you'll read/listen to tomorrow. Done.`,links:[{t:'Blinkist — Book Summaries',u:'https://www.blinkist.com'},{t:'Shortform — Deep Book Guides',u:'https://www.shortform.com'},{t:'Library Genesis (Free Books)',u:'https://libgen.is'}]}
+    ]}
+  };
+
+  function renderLibraryGrid() {
+    document.getElementById('libGrid').style.display = 'block';
+    document.getElementById('libArticleView').style.display = 'none';
   }
-  document.querySelectorAll('.content-cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.content-cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderContent(btn.dataset.content);
+
+  function renderLibraryCat(catKey) {
+    const cat = LIB_CATS[catKey];
+    if (!cat) return;
+    document.getElementById('libGrid').style.display = 'none';
+    const av = document.getElementById('libArticleView');
+    av.style.display = 'block';
+    let html = `<div class="lib-cat-header"><div class="lib-cat-header-icon">${cat.icon}</div><div><div class="lib-cat-header-title">${cat.name}</div><div class="lib-cat-header-desc">${cat.desc}</div></div></div>`;
+    cat.chapters.forEach((ch, i) => {
+      const links = (ch.links||[]).map(l=>`<a class="lib-link" href="${l.u}" target="_blank" rel="noopener">↗ ${l.t}</a>`).join('');
+      html += `<div class="lib-chapter" id="libch-${catKey}-${i}">
+        <div class="lib-chapter-hdr" onclick="toggleChapter('${catKey}',${i})">
+          <div><div class="lib-chapter-num">CHAPTER ${i+1}</div><div class="lib-chapter-title">${ch.title}</div></div>
+          <span class="lib-chapter-arrow">▶</span>
+        </div>
+        <div class="lib-chapter-body">
+          ${ch.body}
+          <div class="lib-takeaway"><strong>YOUR ACTION</strong>${ch.takeaway}</div>
+          ${links ? `<div class="lib-links"><div class="lib-links-label">RESOURCES & FURTHER READING</div>${links}</div>` : ''}
+        </div>
+      </div>`;
     });
+    document.getElementById('libArticleContent').innerHTML = html;
+    // Auto-open first chapter
+    const first = document.getElementById(`libch-${catKey}-0`);
+    if (first) first.classList.add('open');
+    av.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function toggleChapter(catKey, i) {
+    const el = document.getElementById(`libch-${catKey}-${i}`);
+    if (el) el.classList.toggle('open');
+  }
+
+  document.getElementById('libBackBtn').addEventListener('click', renderLibraryGrid);
+  document.addEventListener('click', e => {
+    const card = e.target.closest('.lib-cat-card[data-cat]');
+    if (card) renderLibraryCat(card.dataset.cat);
   });
 
   /* ─ Init ─ */
   renderToday();
   renderCalendar();
   renderDayBlocks();
-  renderContent('all');
+  renderLibraryGrid();
+  setTimeout(() => {
+    checkMonthlyCheckin();
+    const ws = (window.EE_PLAN_PROFILE||{}).workSchedule;
+    if (!ws && window.EE_PLAN_PROFILE) {
+      setTimeout(openSchedModal, 800);
+    }
+  }, 1200);
 
   </script>
 </body>
