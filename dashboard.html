@@ -508,10 +508,10 @@
           const res = await fetch('/api/create-portal', { method:'POST', headers:{ Authorization:`Bearer ${token}` } });
           const data = await res.json();
           if (data.url) { window.location.href = data.url; return; }
-          throw new Error('No URL');
-        } catch {
+          throw new Error(data.error || 'No URL returned');
+        } catch (err) {
           if (btn) { btn.textContent = origText || 'Manage Billing'; btn.disabled = false; }
-          alert('Could not open billing portal. Please try again or contact support.');
+          alert('Could not open billing portal.\n\n' + (err.message || 'Unknown error') + '\n\nPlease contact info.ethosempire@gmail.com if this persists.');
         }
       };
 

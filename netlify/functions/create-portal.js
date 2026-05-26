@@ -48,6 +48,10 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error('create-portal error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Server error' }) };
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: err.message || 'Server error' })
+    };
   }
 };
