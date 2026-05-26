@@ -328,16 +328,22 @@
     .social-cta { background:linear-gradient(135deg,rgba(139,105,20,0.12),rgba(201,149,42,0.04)); border:1px solid rgba(255,215,0,0.14); border-radius:18px; padding:28px 24px; margin-bottom:16px; text-align:center; }
     .social-cta-title { font-size:1rem; font-weight:900; color:#fff; margin-bottom:6px; }
     .social-cta-sub { font-size:0.82rem; color:rgba(255,255,255,0.4); margin-bottom:20px; line-height:1.6; }
-    .social-links { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
-    .social-link { display:flex; align-items:center; gap:7px; padding:10px 18px; border-radius:30px; font-size:0.8rem; font-weight:800; letter-spacing:0.06em; text-decoration:none; transition:all 0.2s; border:1px solid; }
+    .social-links { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
+    .social-link { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 12px; border-radius:14px; font-size:0.72rem; font-weight:800; letter-spacing:0.05em; text-decoration:none; transition:all 0.22s; border:1px solid; min-width:86px; }
+    .social-link-icon { font-size:2rem; line-height:1; }
+    .social-link-label { font-size:0.7rem; font-weight:900; letter-spacing:0.07em; text-transform:uppercase; }
     .social-link-ig { color:#e1306c; border-color:rgba(225,48,108,0.3); background:rgba(225,48,108,0.06); }
-    .social-link-ig:hover { background:rgba(225,48,108,0.14); }
+    .social-link-ig:hover { background:rgba(225,48,108,0.18); transform:translateY(-3px); }
     .social-link-tt { color:#69c9d0; border-color:rgba(105,201,208,0.3); background:rgba(105,201,208,0.06); }
-    .social-link-tt:hover { background:rgba(105,201,208,0.14); }
+    .social-link-tt:hover { background:rgba(105,201,208,0.18); transform:translateY(-3px); }
     .social-link-yt { color:#ff4444; border-color:rgba(255,68,68,0.3); background:rgba(255,68,68,0.06); }
-    .social-link-yt:hover { background:rgba(255,68,68,0.14); }
-    .social-link-x { color:rgba(255,255,255,0.7); border-color:rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); }
-    .social-link-x:hover { background:rgba(255,255,255,0.1); }
+    .social-link-yt:hover { background:rgba(255,68,68,0.18); transform:translateY(-3px); }
+    .social-link-x { color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); }
+    .social-link-x:hover { background:rgba(255,255,255,0.12); transform:translateY(-3px); }
+    .social-link-dc { color:#7289da; border-color:rgba(114,137,218,0.3); background:rgba(114,137,218,0.06); }
+    .social-link-dc:hover { background:rgba(114,137,218,0.18); transform:translateY(-3px); }
+    .social-link-store { color:#f4c430; border-color:rgba(244,196,48,0.3); background:rgba(244,196,48,0.06); }
+    .social-link-store:hover { background:rgba(244,196,48,0.18); transform:translateY(-3px); }
 
     /* ── Ebook CTA ── */
     .ebook-section { margin-bottom:20px; }
@@ -634,10 +640,30 @@
         <div class="social-cta-title">Join the Empire Community</div>
         <div class="social-cta-sub">Daily motivation, tips, and accountability — follow us on all platforms.</div>
         <div class="social-links">
-          <a href="https://instagram.com/ethosempire" target="_blank" rel="noopener" class="social-link social-link-ig">📸 Instagram</a>
-          <a href="https://tiktok.com/@ethosempire" target="_blank" rel="noopener" class="social-link social-link-tt">🎵 TikTok</a>
-          <a href="https://youtube.com/@ethosempire" target="_blank" rel="noopener" class="social-link social-link-yt">▶ YouTube</a>
-          <a href="https://x.com/ethosempire" target="_blank" rel="noopener" class="social-link social-link-x">✕ Twitter / X</a>
+          <a href="https://www.instagram.com/ethos_empireo/" target="_blank" rel="noopener" class="social-link social-link-ig">
+            <span class="social-link-icon">📁</span>
+            <span class="social-link-label">Instagram</span>
+          </a>
+          <a href="https://www.tiktok.com/@ethos.empire" target="_blank" rel="noopener" class="social-link social-link-tt">
+            <span class="social-link-icon">📁</span>
+            <span class="social-link-label">TikTok</span>
+          </a>
+          <a href="https://www.youtube.com/@Ethos.Empire.Official" target="_blank" rel="noopener" class="social-link social-link-yt">
+            <span class="social-link-icon">📁</span>
+            <span class="social-link-label">YouTube</span>
+          </a>
+          <a href="https://x.com/EthosEmpire_X" target="_blank" rel="noopener" class="social-link social-link-x">
+            <span class="social-link-icon">📁</span>
+            <span class="social-link-label">Twitter / X</span>
+          </a>
+          <a href="https://discord.gg/h6HgQP4nWz" target="_blank" rel="noopener" class="social-link social-link-dc">
+            <span class="social-link-icon">📁</span>
+            <span class="social-link-label">Discord</span>
+          </a>
+          <a href="https://ethosempireo.printful.me/" target="_blank" rel="noopener" class="social-link social-link-store">
+            <span class="social-link-icon">📁</span>
+            <span class="social-link-label">Store</span>
+          </a>
         </div>
       </div>
     </div>
