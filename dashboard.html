@@ -218,34 +218,81 @@
     .empty-state { text-align:center; padding:40px 24px; color:rgba(255,255,255,0.3); font-size:0.88rem; }
     .empty-state-icon { font-size:2.2rem; margin-bottom:10px; }
 
-    /* ── Timeline (My Plan) ── */
-    @keyframes tlIn { from { opacity:0; transform:translateX(-18px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes nowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.45);} 60%{box-shadow:0 0 0 10px rgba(255,215,0,0);} }
-    .tl-wrap { position:relative; padding-left:32px; }
-    .tl-wrap::before { content:''; position:absolute; left:9px; top:8px; bottom:8px; width:2px; background:linear-gradient(to bottom,var(--gold-1),rgba(255,215,0,0.06)); border-radius:2px; }
-    .tl-item { position:relative; padding:12px 0 12px 18px; animation:tlIn 0.4s ease both; }
-    .tl-dot { position:absolute; left:-23px; top:17px; width:10px; height:10px; border-radius:50%; background:rgba(255,215,0,0.25); border:2px solid rgba(255,215,0,0.35); flex-shrink:0; }
-    .tl-item.tl-now .tl-dot { background:var(--gold-2); border-color:var(--gold-3); animation:nowPulse 2s infinite; }
-    .tl-item.tl-next .tl-dot { background:rgba(255,215,0,0.5); border-color:var(--gold-2); }
-    .tl-item.tl-work .tl-dot { background:#4d96ff44; border-color:#4d96ff; }
-    .tl-time { font-size:0.68rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.06em; margin-bottom:3px; }
-    .tl-item.tl-now .tl-time { color:var(--gold-3); }
-    .tl-item.tl-next .tl-time { color:var(--gold-2); }
-    .tl-item.tl-work .tl-time { color:#74c0fc; }
-    .tl-title { font-size:0.9rem; font-weight:700; color:rgba(255,255,255,0.75); line-height:1.3; }
-    .tl-item.tl-now .tl-title { color:#fff; }
-    .tl-desc { font-size:0.76rem; color:rgba(255,255,255,0.35); line-height:1.5; margin-top:3px; }
-    .tl-badge { display:inline-block; font-size:0.58rem; font-weight:900; letter-spacing:0.14em; padding:2px 8px; border-radius:20px; margin-left:7px; vertical-align:middle; }
-    .tl-badge-now { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
-    .tl-badge-next { background:rgba(255,215,0,0.12); color:var(--gold-3); border:1px solid rgba(255,215,0,0.28); }
-    .tl-badge-work { background:rgba(77,150,255,0.15); color:#74c0fc; border:1px solid rgba(77,150,255,0.3); }
-    .tl-section-divider { font-size:0.62rem; font-weight:900; letter-spacing:0.22em; color:rgba(255,255,255,0.18); padding:16px 0 6px; display:flex; align-items:center; gap:10px; }
-    .tl-section-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
-    .tl-upnext-banner { display:flex; align-items:center; gap:12px; background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.18); border-radius:14px; padding:14px 18px; margin-bottom:22px; }
-    .tl-upnext-icon { font-size:1.4rem; flex-shrink:0; }
-    .tl-upnext-label { font-size:0.62rem; font-weight:900; letter-spacing:0.2em; color:var(--gold-2); margin-bottom:3px; }
-    .tl-upnext-task { font-size:0.92rem; font-weight:800; color:#fff; }
-    .tl-upnext-time { font-size:0.74rem; color:rgba(255,255,255,0.4); margin-top:2px; }
+    /* ── Timeline (My Plan) — Horizontal ── */
+    @keyframes tlIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes nowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.5);} 60%{box-shadow:0 0 0 12px rgba(255,215,0,0);} }
+    @keyframes htlSlideIn { from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);} }
+
+    /* Scrollable track */
+    .htl-outer { overflow-x:auto; padding-bottom:4px; margin-bottom:0; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:rgba(255,215,0,0.2) transparent; }
+    .htl-outer::-webkit-scrollbar { height:4px; }
+    .htl-outer::-webkit-scrollbar-track { background:transparent; }
+    .htl-outer::-webkit-scrollbar-thumb { background:rgba(255,215,0,0.2); border-radius:4px; }
+    .htl-track { display:flex; position:relative; min-width:max-content; align-items:flex-start; padding:8px 0 16px; }
+    .htl-track::before { content:''; position:absolute; top:27px; left:0; right:0; height:2px; background:linear-gradient(to right,rgba(255,215,0,0.06),rgba(255,215,0,0.35) 30%,rgba(255,215,0,0.35) 70%,rgba(255,215,0,0.06)); z-index:0; }
+
+    /* Individual timeline card */
+    .htl-card { position:relative; display:flex; flex-direction:column; align-items:center; width:108px; flex-shrink:0; cursor:pointer; padding:0 6px 10px; z-index:1; border-radius:14px; transition:background 0.2s; }
+    .htl-card:hover { background:rgba(255,255,255,0.03); }
+    .htl-card.htl-now { background:linear-gradient(180deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.03) 100%); border:1px solid rgba(255,215,0,0.25); }
+    .htl-card.htl-past { opacity:0.42; }
+    .htl-card.htl-selected { background:rgba(255,215,0,0.07); border:1px solid rgba(255,215,0,0.3); }
+
+    /* Dot on the line */
+    .htl-dot { width:12px; height:12px; border-radius:50%; background:rgba(255,215,0,0.2); border:2px solid rgba(255,215,0,0.3); margin-bottom:9px; flex-shrink:0; transition:all 0.25s; }
+    .htl-card.htl-now .htl-dot { background:var(--gold-2); border-color:var(--gold-3); width:16px; height:16px; animation:nowPulse 2s infinite; }
+    .htl-card.htl-next .htl-dot { background:rgba(255,215,0,0.55); border-color:var(--gold-2); }
+    .htl-card.htl-work .htl-dot { background:rgba(77,150,255,0.35); border-color:#4d96ff; }
+    .htl-card.htl-past .htl-dot { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.12); }
+
+    .htl-time-lbl { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.04em; margin-bottom:5px; text-align:center; }
+    .htl-card.htl-now .htl-time-lbl { color:var(--gold-3); }
+    .htl-card.htl-next .htl-time-lbl { color:var(--gold-2); }
+    .htl-card.htl-work .htl-time-lbl { color:#74c0fc; }
+    .htl-title-lbl { font-size:0.7rem; font-weight:700; color:rgba(255,255,255,0.5); text-align:center; line-height:1.35; }
+    .htl-card.htl-now .htl-title-lbl { color:#fff; font-weight:900; }
+    .htl-card.htl-next .htl-title-lbl { color:rgba(255,255,255,0.8); }
+    .htl-badge-h { font-size:0.5rem; font-weight:900; letter-spacing:0.1em; padding:2px 7px; border-radius:10px; margin-top:6px; display:inline-block; }
+    .htl-badge-now { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
+    .htl-badge-next { background:rgba(255,215,0,0.1); color:var(--gold-3); border:1px solid rgba(255,215,0,0.25); }
+    .htl-badge-work { background:rgba(77,150,255,0.12); color:#74c0fc; border:1px solid rgba(77,150,255,0.25); }
+
+    /* Expand panel below track */
+    .htl-expand-area { margin-top:12px; }
+    .htl-expand-panel { display:none; background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.16); border-radius:18px; padding:22px 20px; animation:htlSlideIn 0.28s ease; }
+    .htl-expand-panel.open { display:block; }
+    .htl-expand-time { font-size:0.65rem; font-weight:900; letter-spacing:0.18em; color:var(--gold-2); margin-bottom:6px; }
+    .htl-expand-title { font-size:1.05rem; font-weight:900; color:#fff; margin-bottom:10px; line-height:1.3; }
+    .htl-expand-body { font-size:0.82rem; color:rgba(255,255,255,0.55); line-height:1.7; margin-bottom:14px; }
+    .htl-expand-body ul { margin:8px 0 8px 16px; padding:0; }
+    .htl-expand-body li { margin-bottom:5px; }
+    .htl-expand-body strong { color:rgba(255,255,255,0.82); }
+    .htl-expand-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
+    .htl-expand-tag { font-size:0.62rem; font-weight:800; letter-spacing:0.08em; padding:4px 12px; border-radius:20px; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.2); color:var(--gold-3); }
+
+    /* Read-more toggle button */
+    .htl-read-btn { display:block; width:100%; text-align:center; font-size:0.68rem; font-weight:900; color:var(--gold-2); letter-spacing:0.1em; cursor:pointer; background:none; border:none; padding:6px 0 0; margin-top:6px; font-family:inherit; }
+    .htl-read-btn:hover { color:var(--gold-3); }
+
+    /* Plan + EBP side-by-side layout */
+    .plan-ebp-wrap { display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; margin-top:24px; }
+    @media(max-width:700px){ .plan-ebp-wrap { grid-template-columns:1fr; } }
+
+    /* Empire Builder Protocol mini-menu */
+    .ebp-menu { background:rgba(255,255,255,0.025); border:1px solid rgba(255,215,0,0.14); border-radius:18px; overflow:hidden; position:sticky; top:80px; }
+    .ebp-menu-hdr { padding:16px 18px 12px; border-bottom:1px solid rgba(255,215,0,0.1); }
+    .ebp-menu-title { font-size:0.65rem; font-weight:900; letter-spacing:0.22em; color:var(--gold-2); margin-bottom:3px; }
+    .ebp-menu-sub { font-size:0.78rem; font-weight:700; color:#fff; }
+    .ebp-tab-row { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,0.05); overflow-x:auto; }
+    .ebp-tab { flex-shrink:0; padding:10px 13px; font-size:0.62rem; font-weight:900; letter-spacing:0.1em; color:rgba(255,255,255,0.35); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.18s; white-space:nowrap; }
+    .ebp-tab.active { color:var(--gold-3); border-bottom-color:var(--gold-3); }
+    .ebp-tab-panel { display:none; padding:14px 16px; max-height:420px; overflow-y:auto; }
+    .ebp-tab-panel.active { display:block; }
+    .ebp-item { padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .ebp-item:last-child { border-bottom:none; }
+    .ebp-item-time { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.3); letter-spacing:0.06em; margin-bottom:3px; }
+    .ebp-item-title { font-size:0.78rem; font-weight:800; color:rgba(255,255,255,0.8); line-height:1.3; }
+    .ebp-item-desc { font-size:0.7rem; color:rgba(255,255,255,0.38); line-height:1.5; margin-top:3px; }
 
     /* ── Schedule Builder Modal ── */
     .sched-modal { position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(8px); }
@@ -641,27 +688,27 @@
         <div class="social-cta-sub">Daily motivation, tips, and accountability — follow us on all platforms.</div>
         <div class="social-links">
           <a href="https://www.instagram.com/ethos_empireo/" target="_blank" rel="noopener" class="social-link social-link-ig">
-            <span class="social-link-icon">📁</span>
+            <img src="images/Instagram-gold.png" alt="Instagram" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
             <span class="social-link-label">Instagram</span>
           </a>
           <a href="https://www.tiktok.com/@ethos.empire" target="_blank" rel="noopener" class="social-link social-link-tt">
-            <span class="social-link-icon">📁</span>
+            <img src="images/tiktok-gold.png" alt="TikTok" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
             <span class="social-link-label">TikTok</span>
           </a>
           <a href="https://www.youtube.com/@Ethos.Empire.Official" target="_blank" rel="noopener" class="social-link social-link-yt">
-            <span class="social-link-icon">📁</span>
+            <img src="images/youtube-gold.png" alt="YouTube" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
             <span class="social-link-label">YouTube</span>
           </a>
           <a href="https://x.com/EthosEmpire_X" target="_blank" rel="noopener" class="social-link social-link-x">
-            <span class="social-link-icon">📁</span>
+            <img src="images/x.png" alt="X / Twitter" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
             <span class="social-link-label">Twitter / X</span>
           </a>
           <a href="https://discord.gg/h6HgQP4nWz" target="_blank" rel="noopener" class="social-link social-link-dc">
-            <span class="social-link-icon">📁</span>
+            <img src="images/discord.webp" alt="Discord" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
             <span class="social-link-label">Discord</span>
           </a>
           <a href="https://ethosempireo.printful.me/" target="_blank" rel="noopener" class="social-link social-link-store">
-            <span class="social-link-icon">📁</span>
+            <img src="images/ethos-empire-logo.webp" alt="Store" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;border-radius:6px;">
             <span class="social-link-label">Store</span>
           </a>
         </div>
@@ -1077,7 +1124,7 @@
     if (!el) return;
     const ws = pp && pp.workSchedule;
     let html = '';
-    // Prompt to set schedule if missing
+
     if (!ws) {
       html += `<div class="db-card db-card-gold" style="text-align:center;padding:28px;">
         <div style="font-size:2rem;margin-bottom:10px;">📅</div>
@@ -1085,19 +1132,121 @@
         <div style="font-size:0.83rem;color:rgba(255,255,255,0.45);margin-bottom:18px;line-height:1.6;">Tell us when you work so we can build a daily timeline around your real life — not a generic template.</div>
         <button class="btn-add" onclick="openSchedModal()" style="margin:0 auto;">Build My Schedule →</button>
       </div>`;
+      html += buildFullPlan(pp);
     } else {
-      // Timeline for today
-      html += `<div style="margin-bottom:22px;"><div style="font-size:0.65rem;font-weight:900;letter-spacing:0.22em;color:var(--gold-2);margin-bottom:6px;">TODAY'S TIMELINE</div>
-        <div style="font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:4px;">Your Personalized Daily Plan</div>
-        <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+      // Timeline header
+      html += `<div style="margin-bottom:14px;">
+        <div style="font-size:0.65rem;font-weight:900;letter-spacing:0.22em;color:var(--gold-2);margin-bottom:5px;">TODAY'S TIMELINE</div>
+        <div style="font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:3px;">Your Personalized Daily Plan</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})} · <span style="color:var(--gold-2);cursor:pointer;" onclick="openSchedModal()">Edit schedule</span></div>
       </div>`;
+      // Horizontal timeline + expand area
       html += buildTimeline(pp);
-      html += `<div style="margin-top:28px;"></div>`;
+      // Two-column: full plan left, EBP mini-menu right
+      html += `<div class="plan-ebp-wrap"><div id="planMainCol">${buildFullPlan(pp)}</div><div>${buildEBPMenu(pp)}</div></div>`;
     }
-    // Full static plan always shown below
-    html += buildFullPlan(pp);
     el.innerHTML = html;
   };
+
+  function buildEBPMenu(pp) {
+    const has = g => (pp&&pp.goals||[]).includes(g);
+    const trainAM = has('fitness')||has('weight');
+    const tabs = [
+      { key:'routine', label:'⏰ Routine' },
+      { key:'training', label:'💪 Training' },
+      { key:'nutrition', label:'🥗 Nutrition' },
+      { key:'mindset', label:'🧠 Mindset' },
+      { key:'finance', label:'💰 Finance' },
+    ];
+    const content = {
+      routine: [
+        { time:'MORNING', title:'No Snooze Rule', desc:'Feet on floor the moment the alarm fires. Non-negotiable.' },
+        { time:'MORNING', title:'500ml Water First', desc:'Before coffee, before phone. Every day, no exceptions.' },
+        { time:'MORNING', title:'Cold Shower', desc:'30–60 sec cold at the end. One rep of mental toughness.' },
+        { time:'MORNING', title:'3-2-1 Journal', desc:'3 gratitudes · 2 priorities · 1 non-negotiable standard.' },
+        { time:'MIDDAY', title:'10-Min Walk After Lunch', desc:'Sunlight + movement resets your afternoon focus.' },
+        { time:'EVENING', title:'Reading (30 pages)', desc:'Books only. One insight per session. Non-negotiable.' },
+        { time:'EVENING', title:'Evening Journal', desc:'3 wins · 1 improvement · tomorrow\'s top 3.' },
+        { time:'EVENING', title:'Lights Out on Time', desc:'Same bedtime every night. Circadian rhythm = performance.' },
+      ],
+      training: trainAM ? [
+        { time:'SPLIT', title:'Push Day', desc:'Bench press, dumbbell press, lateral raise, tricep pushdown, dips.' },
+        { time:'SPLIT', title:'Pull Day', desc:'Barbell row, pull-ups, lat pulldown, face pulls, hammer curl.' },
+        { time:'SPLIT', title:'Leg Day', desc:'Squat, Romanian deadlift, leg press, lunges, calf raises.' },
+        { time:'PRINCIPLE', title:'Progressive Overload', desc:'Every session: more weight, more reps, or better form than last time.' },
+        { time:'PRINCIPLE', title:'Protein Target', desc:`${pp&&pp.weightKg ? Math.round(pp.weightKg*2)+'g' : '160–200g'} protein per day. Non-negotiable for muscle.` },
+        { time:'RECOVERY', title:'Sleep 7–9 Hours', desc:'Growth hormone peaks during deep sleep. No sleep = no gains.' },
+        { time:'RECOVERY', title:'Active Recovery', desc:'Walk, stretch, or foam roll on rest days. Stay moving.' },
+      ] : [
+        { time:'MOVEMENT', title:'20-Min Morning Walk', desc:'Outside if possible. No headphones first 10 min. Just move.' },
+        { time:'MOVEMENT', title:'Bodyweight Circuit', desc:'Push-ups · Squats · Lunges · Plank — 3 rounds, 3x/week.' },
+        { time:'HABIT', title:'Take the Stairs', desc:'Every time, every day. Small choices compound over months.' },
+        { time:'HABIT', title:'Stand Every Hour', desc:'Set a timer. Sitting 8+ hours a day accelerates aging.' },
+      ],
+      nutrition: [
+        { time:'DAILY', title:`Calorie Target`, desc: pp&&pp.weightKg&&pp.heightCm&&pp.age ? `~${Math.round((10*pp.weightKg+6.25*pp.heightCm-5*pp.age+5)*1.55)+(has('weight')?-400:has('fitness')?250:0)} kcal/day based on your stats.` : 'Track calories for 2 weeks before targeting a specific number.' },
+        { time:'DAILY', title:'Protein First', desc:'Every meal should include 30–50g of protein. Non-negotiable.' },
+        { time:'DAILY', title:'Hydration', desc:'2.5–3.5L water per day. More if you train or sweat heavily.' },
+        { time:'AVOID', title:'Ultra-Processed Foods', desc:'Anything with more than 5 ingredients you can\'t pronounce. Limit to 10% of diet.' },
+        { time:'AVOID', title:'Liquid Calories', desc:'Sodas, alcohol, flavored coffees, fruit juice. All spike blood sugar.' },
+        { time:'TIMING', title:'Breakfast Within 60 Min', desc:'Post-workout: prioritize protein + carbs. Pre-workout: light carbs.' },
+        { time:'TIMING', title:'No Heavy Carbs Pre-Sleep', desc:'Lighter dinner. Protein + veg. Sleep quality improves significantly.' },
+      ],
+      mindset: [
+        { time:'IDENTITY', title:'You Are What You Repeatedly Do', desc:'Every action is a vote for who you\'re becoming. Vote deliberately.' },
+        { time:'IDENTITY', title:'No Victim Language', desc:'Remove "I can\'t," "I have to," "I\'m stuck" from your vocabulary permanently.' },
+        { time:'PRACTICE', title:'Daily Wins Journal', desc:'Write 3 specific wins every night. Train your brain to notice progress.' },
+        { time:'PRACTICE', title:'Visualization', desc:'5 min each morning. See yourself executing at the level you\'re building toward.' },
+        { time:'PRACTICE', title:'Delayed Gratification', desc:'If it feels good immediately, question it. If it pays off in 90 days, protect it.' },
+        { time:'READING', title:'30 Pages Per Day', desc:'One book on your craft. One on philosophy or history. Rotate monthly.' },
+        { time:'FOCUS', title:'Single-Task Rule', desc:'One thing at a time. Multitasking reduces performance by up to 40%.' },
+      ],
+      finance: [
+        { time:'DAILY', title:'Log Every Expense', desc:'5 min per day. What you track, you control.' },
+        { time:'FRAMEWORK', title:'50/30/20 Rule', desc:'50% needs · 30% wants · 20% wealth (savings + investing + debt payoff).' },
+        { time:'ACCOUNTS', title:'Emergency Fund First', desc:'3–6 months of living expenses in a high-yield savings account. Build this before investing.' },
+        { time:'ACCOUNTS', title:'Investing Account', desc:'After emergency fund: S&P 500 index fund (VOO/VTI) consistently monthly.' },
+        { time:'HABITS', title:'No Impulse Buys', desc:'48-hour rule: want to buy something? Wait 48 hours. If you still want it, decide then.' },
+        { time:'HABITS', title:'Automate Savings', desc:'Pay yourself first. Auto-transfer on payday before you can spend it.' },
+        { time:'GROWTH', title:'Increase Income', desc:'Cutting expenses has a floor. Increasing income has no ceiling. Build a skill that earns more.' },
+      ],
+    };
+
+    const firstTab = tabs[0].key;
+    let h = `<div class="ebp-menu">
+      <div class="ebp-menu-hdr">
+        <div class="ebp-menu-title">EMPIRE BUILDER PROTOCOL</div>
+        <div class="ebp-menu-sub">Your Core System</div>
+      </div>
+      <div class="ebp-tab-row">`;
+    tabs.forEach((t,i) => {
+      h += `<div class="ebp-tab${i===0?' active':''}" onclick="ebpTab('${t.key}')" id="ebpTab_${t.key}">${t.label}</div>`;
+    });
+    h += `</div>`;
+    tabs.forEach((t,i) => {
+      const items = content[t.key] || [];
+      h += `<div class="ebp-tab-panel${i===0?' active':''}" id="ebpPanel_${t.key}">`;
+      items.forEach(item => {
+        h += `<div class="ebp-item">
+          <div class="ebp-item-time">${item.time}</div>
+          <div class="ebp-item-title">${item.title}</div>
+          <div class="ebp-item-desc">${item.desc}</div>
+        </div>`;
+      });
+      h += `</div>`;
+    });
+    h += `</div>`;
+    return h;
+  }
+
+  function ebpTab(key) {
+    document.querySelectorAll('.ebp-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.ebp-tab-panel').forEach(p => p.classList.remove('active'));
+    const tab = document.getElementById('ebpTab_' + key);
+    const panel = document.getElementById('ebpPanel_' + key);
+    if (tab) tab.classList.add('active');
+    if (panel) panel.classList.add('active');
+  }
 
   function buildFullPlan(pp) {
     if (!pp) return `<div class="empty-state"><div class="empty-state-icon">📋</div><p style="color:rgba(255,255,255,0.4);">No plan data found. Fill out your profile in <strong style="color:var(--gold-3);">Settings</strong> to generate your plan.</p></div>`;
@@ -1755,15 +1904,31 @@
       const ap=h<12?'AM':'PM'; const dh=h>12?h-12:h===0?12:h;
       return `${dh}:${String(m).padStart(2,'0')} ${ap}`;
     }
-    function tlItem(mins,title,desc,type,delay) {
-      const diff = mins - nowMins;
-      let cls = 'tl-item';
-      let badge = '';
-      if (type==='work') { cls+=' tl-work'; badge=`<span class="tl-badge tl-badge-work">WORK</span>`; }
-      else if (diff >= -15 && diff < 30) { cls+=' tl-now'; badge=`<span class="tl-badge tl-badge-now">NOW ▶</span>`; }
-      else if (diff >= 30 && diff < 90 && !badge) { cls+=' tl-next'; badge=`<span class="tl-badge tl-badge-next">UP NEXT</span>`; }
-      return `<div class="${cls}" style="animation-delay:${delay}ms"><div class="tl-dot"></div><div class="tl-time">${fmtTime(mins)}</div><div class="tl-title">${title}${badge}</div>${desc?`<div class="tl-desc">${desc}</div>`:''}</div>`;
-    }
+
+    const BLOCK_DETAILS = {
+      'Wake Up': { body:`<p>The first discipline rep of your day happens before you even stand up. Your brain will negotiate — it will tell you "five more minutes." That's the enemy talking. The moment the alarm fires, your feet hit the floor. No snooze, no exceptions.</p><ul><li><strong>Why it matters:</strong> Every snooze trains your brain that your commitments are negotiable. It sets a losing tone for the entire day.</li><li><strong>How to make it easier:</strong> Put your alarm across the room. Set your clothes out the night before. Know exactly what the first 3 minutes look like before you sleep.</li></ul>`, tags:['DISCIPLINE','MORNING','HABIT'] },
+      'Hydrate — 500ml Water': { body:`<p>After 7–9 hours of sleep, your body is mildly dehydrated. Before coffee, before your phone, before anything — drink 500ml (about 2 cups) of water. Your kidneys, brain, and muscles need it to function at full capacity.</p><ul><li><strong>Add electrolytes</strong> if you trained the day before (sodium, magnesium)</li><li><strong>Temperature:</strong> Room temp or warm is absorbed faster than ice cold</li><li><strong>Habit stack it:</strong> Water is ready on your nightstand before bed</li></ul>`, tags:['HEALTH','HYDRATION','MORNING'] },
+      'Morning Training Session': { body:`<p>This is the highest-leverage thing you can do for your body and mind in the morning. A trained body is more focused, more confident, and more resilient under pressure.</p><ul><li><strong>Follow your split:</strong> Push, Pull, Legs or Upper/Lower — choose one and stick to it for 8 weeks minimum before changing</li><li><strong>Key lifts per muscle:</strong> Chest (bench/dips), Back (rows/pullups), Legs (squat/RDL), Shoulders (OHP), Arms (curl/pushdown)</li><li><strong>Progressive overload:</strong> Every session — add weight or add reps. Never repeat the exact same session.</li><li><strong>Duration:</strong> 45–75 minutes. More than 90 is usually wasted volume.</li></ul><p>Consistency beats intensity every single time. Showing up mediocre for 52 weeks beats going hard for 6 weeks and quitting.</p>`, tags:['FITNESS','TRAINING','MORNING'] },
+      'Morning Movement': { body:`<p>20 minutes of deliberate movement in the morning activates your nervous system, increases blood flow to your brain, and sets a physical tone for the rest of the day. You don't need to be chasing performance — you need to move your body with intention.</p><ul><li><strong>Options:</strong> 20-min brisk walk, yoga sequence, bodyweight circuit, stretching routine</li><li><strong>Outside if possible:</strong> Natural light in the first hour regulates your circadian rhythm, improves alertness, and improves sleep quality at night</li><li><strong>Rule:</strong> No headphones for the first 10 minutes. Let your mind process the day ahead in silence.</li></ul>`, tags:['HEALTH','MOVEMENT','MORNING'] },
+      'Cold Shower': { body:`<p>End every shower with 30–60 seconds of cold water. This is not about punishment — it's about building the mental muscle of doing hard things you don't want to do.</p><ul><li><strong>Physiologically:</strong> Cold exposure releases norepinephrine (focus), reduces inflammation, and activates brown fat</li><li><strong>Mentally:</strong> Every rep of "I don't want to but I will" trains your willpower like a muscle</li><li><strong>The method:</strong> Finish your normal shower, breathe out slowly, flip to cold, stay still — panicking makes it worse. 30 seconds minimum. Build to 90.</li></ul><p>After 2 weeks of daily cold showers, you will notice you feel less reactive to minor discomforts throughout the day. That's the adaptation.</p>`, tags:['DISCIPLINE','HEALTH','COLD EXPOSURE'] },
+      'High-Protein Breakfast': { body:`<p>What you eat within 60 minutes of training determines how well your muscles recover. You need protein immediately, carbs to restore glycogen, and minimal junk.</p><ul><li><strong>Target:</strong> 35–50g protein, 40–60g carbs, &lt;10g saturated fat</li><li><strong>Best options:</strong> 4-egg omelette + oats · Greek yogurt + berries + granola · Protein shake + banana + peanut butter toast</li><li><strong>What not to eat:</strong> Sugary cereal, pastries, nothing at all. Skipping breakfast post-training accelerates muscle breakdown.</li><li><strong>Caffeine timing:</strong> Wait 90 minutes after waking before coffee to avoid cortisol stacking</li></ul>`, tags:['NUTRITION','FITNESS','RECOVERY'] },
+      'Breakfast': { body:`<p>A high-quality breakfast sets your blood sugar, brain chemistry, and energy levels for the first half of the day. Skip it or eat junk and you'll hit a wall by mid-morning.</p><ul><li><strong>Non-negotiable:</strong> Protein at every meal. At least 25–30g at breakfast.</li><li><strong>Best options:</strong> Eggs (any style), Greek yogurt, smoked salmon, cottage cheese, protein shake</li><li><strong>Add:</strong> Fruit, oats, whole grain toast — quality carbs for sustained energy</li><li><strong>Avoid:</strong> High-sugar cereals, pastries, flavored yogurts — they cause a spike and crash within 90 minutes</li></ul>`, tags:['NUTRITION','MORNING','HEALTH'] },
+      '3-2-1 Morning Journal': { body:`<p>Three minutes of intentional writing in the morning is worth more than an hour of scrolling. This practice wires your brain to notice what's working, focus on what matters, and protect what you won't compromise.</p><ul><li><strong>3 Gratitudes:</strong> Specific — not "I'm grateful for my family" but "I'm grateful my mom called yesterday to check on me." Specificity creates genuine emotion.</li><li><strong>2 Priorities:</strong> The two things that, if completed today, would make the day a win. Write them before the day pulls you in ten directions.</li><li><strong>1 Non-negotiable:</strong> One standard you will not break today no matter what. It could be "I will not check my phone before 9 AM" or "I will complete my workout."</li></ul>`, tags:['MINDSET','JOURNALING','MORNING'] },
+      'Deep Work Block': { body:`<p>Your most cognitively demanding work belongs in the first 2–3 hours of your day. This is when prefrontal cortex function is at its peak after a full night of sleep and a charged morning routine.</p><ul><li><strong>Rule:</strong> No email, no messages, no social media during this block</li><li><strong>Environment:</strong> One tab open. Notifications off. Door shut or headphones on.</li><li><strong>The Pomodoro method if needed:</strong> 50 min focus → 10 min rest → repeat</li><li><strong>Start with your hardest task first.</strong> Cal Newport calls this "Deep Work." Naval Ravikant calls it "working on your highest leverage activity." Both mean the same thing: the thing you avoid is usually the most important.</li></ul>`, tags:['PRODUCTIVITY','DEEP WORK','FOCUS'] },
+      'Commute': { body:`<p>Commute time is learning time. The average person commutes 30–60 minutes each way — that's 10–20 hours per month. Most people spend it on music or scrolling. High performers treat it as an asset.</p><ul><li><strong>Podcasts:</strong> Pick one topic per month to go deep on — leadership, finance, health, your craft</li><li><strong>Audiobooks:</strong> Audible, Libby (free with library card), Spotify audiobooks</li><li><strong>What not to do:</strong> News, random YouTube, music you've heard a thousand times</li><li><strong>Recommended:</strong> Huberman Lab, Diary of a CEO, We Study Billionaires, Modern Wisdom</li></ul>`, tags:['PRODUCTIVITY','LEARNING','COMMUTE'] },
+      'Work Begins': { body:`<p>The first hour of your workday sets the pace for everything that follows. Protect it aggressively — don't let it be stolen by other people's requests.</p><ul><li><strong>The 3-task rule:</strong> Before you open email, write your 3 most important work tasks for the day. Start with one of them immediately.</li><li><strong>Email:</strong> Delay opening email for at least 30–45 minutes. Every email is someone else's priority intruding on yours.</li><li><strong>Meetings:</strong> Push all meetings to after 10 AM if you have the choice. Your creative and analytical peak is the first 2–3 hours.</li></ul>`, tags:['CAREER','PRODUCTIVITY','FOCUS'] },
+      'Lunch + 10-Min Walk': { body:`<p>Midday movement is one of the highest-leverage habits for afternoon energy and focus. 10 minutes of walking after lunch improves blood sugar response, prevents the afternoon slump, and gives your brain a reset.</p><ul><li><strong>Sunlight exposure at midday</strong> boosts serotonin and sets your circadian rhythm for better sleep</li><li><strong>Lunch target:</strong> Lean protein + complex carbs + vegetables. Avoid heavy fried food or large portions that cause a blood sugar crash.</li><li><strong>The walk:</strong> No phone for the first 5 minutes. Just move and think. Some of your best ideas come during low-stimulation movement.</li></ul>`, tags:['HEALTH','NUTRITION','MIDDAY'] },
+      'Work Ends': { body:`<p>You need a hard boundary between work and the rest of your life. When work ends, it needs to actually end — not follow you through notifications and mental loops for the next 4 hours.</p><ul><li><strong>Shutdown ritual:</strong> Close all work tabs. Write tomorrow's top 3 tasks. Send any pending messages. Then physically close or walk away from your workstation.</li><li><strong>Say it out loud if needed:</strong> "Work is done." This sounds silly but it helps your brain switch modes.</li><li><strong>Protect evenings:</strong> The person who never turns off will eventually burn out. Recovery is a performance strategy, not laziness.</li></ul>`, tags:['CAREER','RECOVERY','BOUNDARIES'] },
+      'Home': { body:`<p>The commute home is a transition zone — use it to decompress rather than carry work energy into your personal space.</p><ul><li><strong>No work calls on the way home</strong> unless truly urgent</li><li><strong>Music, podcasts on non-work topics, or silence</strong> — let your nervous system slow down</li><li><strong>Mental close-out:</strong> Think about 1 thing that went well at work today. That's it. Leave the rest there.</li></ul>`, tags:['RECOVERY','MINDSET','TRANSITION'] },
+      'Exercise / Movement': { body:`<p>Evening training is valid — science shows strength training in the afternoon/evening can actually produce better performance than morning sessions for many people. The key is consistency over timing.</p><ul><li><strong>If you trained in the morning:</strong> Evening can be active recovery — 20–30 min walk, stretching, foam rolling</li><li><strong>If today is your main session:</strong> Warm up properly, hit your split with full intensity, cool down</li><li><strong>Finish no later than 2 hours before sleep</strong> — intense exercise too close to bedtime delays melatonin and disrupts sleep quality</li></ul>`, tags:['FITNESS','TRAINING','EVENING'] },
+      'Skill Development': { body:`<p>Your career trajectory is determined by the skills you build outside of work hours. No one will hand you the next level — you have to build toward it deliberately.</p><ul><li><strong>Pick ONE skill to develop for 90 days.</strong> Coding, sales, public speaking, writing, design, finance, leadership — go deep on one before adding another.</li><li><strong>The 5-hour rule:</strong> Warren Buffett, Bill Gates, and Barack Obama all reported spending at least 5 hours per week in deliberate learning outside of work. That's 1 hour per weekday.</li><li><strong>Resources:</strong> Coursera, Udemy, YouTube (curated channels), books, mentors in your field</li><li><strong>Track it:</strong> What gets measured gets improved. Log your daily study minutes in your Planner.</li></ul>`, tags:['CAREER','LEARNING','GROWTH'] },
+      'Daily Finance Review': { body:`<p>5 minutes every day on your finances is worth more than one panicked hour at the end of the month. What you track, you control.</p><ul><li><strong>Log every expense today.</strong> Even small ones. Especially small ones — death by a thousand coffees is real.</li><li><strong>Check your account balances.</strong> Running blind is how people drift into debt.</li><li><strong>Review your savings goal progress.</strong> Are you on track for the month? If not, why, and what adjusts tomorrow?</li><li><strong>The 50/30/20 rule:</strong> 50% needs, 30% wants, 20% wealth (savings + investment + debt payoff)</li></ul>`, tags:['FINANCE','HABITS','TRACKING'] },
+      'Dinner + Wind Down': { body:`<p>Dinner is not just food — it's a signal to your nervous system that the productive day is complete. The way you wind down determines how well you sleep and how recharged you are tomorrow.</p><ul><li><strong>Dinner:</strong> Lighter than lunch. Protein + vegetables. Avoid heavy carbs close to bed — they can disrupt sleep quality.</li><li><strong>Wind down:</strong> No work email, no news, no arguments. Choose peace deliberately.</li><li><strong>Relax intentionally:</strong> Conversation with someone you care about, music, cooking, light reading — something that is not a screen or a task list.</li><li><strong>Dim your lights</strong> after 7 PM — bright overhead lights suppress melatonin production and delay sleep onset.</li></ul>`, tags:['HEALTH','NUTRITION','EVENING'] },
+      'Reading Session': { body:`<p>30 pages per day = roughly 18 books per year. That is the difference between someone who learns from the condensed experience of the world's best minds — and someone who doesn't.</p><ul><li><strong>Books only during this block.</strong> No articles, no Twitter threads, no Reddit. Books require sustained attention — that's the point.</li><li><strong>What to read:</strong> One business/finance book + one biography/philosophy book at a time. Rotate them.</li><li><strong>Active reading:</strong> Underline. Write in the margins. One key insight on a sticky note when you close it.</li><li><strong>If 30 pages feels like too much:</strong> Start with 10. The habit of sitting with a book is the foundation. Volume follows consistency.</li></ul><p><em>Recommended starters: Atomic Habits, The Richest Man in Babylon, Meditations, 48 Laws of Power, The Almanack of Naval Ravikant</em></p>`, tags:['KNOWLEDGE','HABITS','EVENING'] },
+      'Evening Journal': { body:`<p>Three questions. Five minutes. No excuses. The evening journal closes the loop on the day and prepares your subconscious for tomorrow.</p><ul><li><strong>What did I win today?</strong> Write 3 specific wins — including small ones. Your brain needs evidence that you are progressing, even on hard days.</li><li><strong>What will I improve tomorrow?</strong> One thing. Be honest but not cruel. Growth, not guilt.</li><li><strong>Tomorrow's top 3 priorities.</strong> Write them tonight so your morning starts with clarity, not confusion. You make better decisions before sleep than when you're groggy and reactive.</li></ul>`, tags:['MINDSET','JOURNALING','EVENING'] },
+      'Break + Movement': { body:`<p>Mid-morning breaks are not laziness — they are performance maintenance. Your brain operates in 90-minute ultradian cycles. After 90 minutes of focused work, cognitive performance drops until you allow a recovery window.</p><ul><li><strong>10-min walk:</strong> The best cognitive reset available. Walking increases blood flow to the prefrontal cortex and clears adenosine buildup that causes mental fatigue.</li><li><strong>No screens during the break.</strong> Switching from work screen to phone screen is not a break — your brain is still processing visual information.</li><li><strong>Drink water, eat a light snack</strong> if needed — nuts, fruit, or yogurt.</li></ul>`, tags:['PRODUCTIVITY','HEALTH','FOCUS'] },
+      'Lights Out': { body:`<p>Sleep is the single most powerful performance-enhancing tool available to you — and it's free. Less than 7 hours of sleep impairs cognitive function as severely as being legally drunk. This is not an opinion. It is peer-reviewed neuroscience.</p><ul><li><strong>Temperature:</strong> 65–68°F (18–20°C) is optimal for sleep. Cool room = deeper sleep.</li><li><strong>Darkness:</strong> Total blackout if possible. Even small light sources disrupt melatonin.</li><li><strong>No screens for 30 min before bed:</strong> Blue light delays sleep onset by up to 3 hours.</li><li><strong>Consistency:</strong> Same bedtime and wake time every day — including weekends. Your circadian rhythm runs on consistency.</li><li><strong>What happens during sleep:</strong> Muscle repair, memory consolidation, hormone release (growth hormone peaks at night), immune strengthening, emotional regulation. Everything rebuilds while you sleep.</li></ul>`, tags:['HEALTH','SLEEP','RECOVERY'] },
+    };
 
     let blocks = [];
     const wake  = ws ? toMins(ws.wake)  : 5*60+30;
@@ -1777,60 +1942,115 @@
       return ws.days.includes(d);
     })();
 
-    blocks.push({ m:wake,       title:'Wake Up', desc:'First rep of discipline: stand up the moment the alarm fires. No snooze.' });
-    blocks.push({ m:wake+5,     title:'Hydrate — 500ml Water', desc:'Before coffee, before phone. Your body is dehydrated after sleep.' });
-
+    blocks.push({ m:wake,       title:'Wake Up', desc:'Stand up the moment the alarm fires. First discipline rep of the day.' });
+    blocks.push({ m:wake+5,     title:'Hydrate — 500ml Water', desc:'Before coffee, before phone. Rehydrate your body after sleep.' });
     if (has('fitness')||has('weight')) {
       blocks.push({ m:wake+15,  title:'Morning Training Session', desc:'Follow your split. Consistency beats intensity every time.' });
-      blocks.push({ m:wake+75,  title:'Cold Shower', desc:'30–60 seconds cold at the end. Mental toughness one rep at a time.' });
-      blocks.push({ m:wake+90,  title:'High-Protein Breakfast', desc:'Eggs, Greek yogurt, or protein shake. Eat within 60 min of training.' });
+      blocks.push({ m:wake+75,  title:'Cold Shower', desc:'30–60 sec cold at the end. Mental toughness one rep at a time.' });
+      blocks.push({ m:wake+90,  title:'High-Protein Breakfast', desc:'35–50g protein. Eat within 60 min of training.' });
     } else {
-      blocks.push({ m:wake+15,  title:'Morning Movement', desc:'20-minute walk or stretch. Movement creates mental momentum.' });
-      blocks.push({ m:wake+40,  title:'Cold Shower', desc:'30–60 seconds cold at the end. Builds mental toughness daily.' });
+      blocks.push({ m:wake+15,  title:'Morning Movement', desc:'20-min walk or stretch. Movement creates mental momentum.' });
+      blocks.push({ m:wake+40,  title:'Cold Shower', desc:'30–60 sec cold at the end. Builds mental toughness daily.' });
       blocks.push({ m:wake+55,  title:'Breakfast', desc:'High-protein, low-sugar. Sets the tone for the day.' });
     }
-    blocks.push({ m:wake+100,   title:'3-2-1 Morning Journal', desc:'3 gratitudes, 2 priorities today, 1 non-negotiable. Write it down.' });
-
+    blocks.push({ m:wake+100,   title:'3-2-1 Morning Journal', desc:'3 gratitudes · 2 priorities · 1 non-negotiable.' });
     if (hasWork && isWorkDay) {
-      if (commute > 0) blocks.push({ m:wstart-commute, title:'Commute', desc:`${commute} min to work. Listen to a podcast or audiobook — no dead time.`, type:'work' });
+      if (commute>0) blocks.push({ m:wstart-commute, title:'Commute', desc:`${commute} min to work. Podcast or audiobook — no dead time.`, type:'work' });
       blocks.push({ m:wstart, title:'Work Begins', desc:'Lock in. First hour is your most productive at work.', type:'work' });
       const lunch = Math.floor((wstart+wend)/2/30)*30;
-      blocks.push({ m:lunch,  title:'Lunch + 10-Min Walk', desc:'Step outside. Sunlight and movement reset your afternoon focus.', type:'work' });
-      blocks.push({ m:wend,   title:'Work Ends', desc:'Close all tabs. Mental transition out of work mode starts now.', type:'work' });
-      if (commute > 0) blocks.push({ m:wend+commute, title:'Home', desc:'Decompress. The commute back is recovery time — not scroll time.' });
+      blocks.push({ m:lunch, title:'Lunch + 10-Min Walk', desc:'Step outside. Sunlight and movement reset your afternoon focus.', type:'work' });
+      blocks.push({ m:wend, title:'Work Ends', desc:'Shutdown ritual. Close tabs. Transition out of work mode.', type:'work' });
+      if (commute>0) blocks.push({ m:wend+commute, title:'Home', desc:'Decompress. Commute home is recovery time — not scroll time.' });
       blocks.push({ m:wend+commute+30, title:'Exercise / Movement', desc: has('fitness')||has('weight') ? 'Evening training or active recovery walk.' : '20–30 min walk or mobility work.' });
     } else {
-      blocks.push({ m:wake+120, title:'Deep Work Block', desc:'First 90 minutes = your most important task. Phone off.' });
+      blocks.push({ m:wake+120, title:'Deep Work Block', desc:'First 90 min = most important task. Phone off. No distractions.' });
       blocks.push({ m:wake+210, title:'Break + Movement', desc:'10-min walk. Energy reset before your next block.' });
-      if (has('career')) blocks.push({ m:wake+225, title:'Skill Development', desc:'60–90 minutes on your high-value skill. Treat it like a class.' });
+      if (has('career')) blocks.push({ m:wake+225, title:'Skill Development', desc:'60–90 min on your high-value skill. Treat it like a class.' });
     }
-
-    const eve = hasWork && isWorkDay ? wend + commute + 90 : wake + 300;
-    if (has('finance')) blocks.push({ m:Math.max(eve, 18*60), title:'Daily Finance Review', desc:"Log expenses, check progress. What gets tracked gets managed." });
-    blocks.push({ m:Math.max(eve+30, 19*60), title:'Dinner + Wind Down', desc:'Eat. Relax intentionally — not scrolling. Conversation or quiet.' });
+    const eve = hasWork && isWorkDay ? wend+commute+90 : wake+300;
+    if (has('finance')) blocks.push({ m:Math.max(eve, 18*60), title:'Daily Finance Review', desc:'Log expenses, check savings progress. 5 minutes a day.' });
+    blocks.push({ m:Math.max(eve+30, 19*60), title:'Dinner + Wind Down', desc:'Eat. Relax intentionally — not scrolling.' });
     blocks.push({ m:Math.max(eve+60, 20*60), title:'Reading Session', desc:'30 pages minimum. Books only. This is non-negotiable.' });
-    blocks.push({ m:Math.max(eve+110, 21*60+30), title:'Evening Journal', desc:"3 wins today. 1 thing to improve. Tomorrow's top 3 priorities." });
-    blocks.push({ m:sleep, title:'Lights Out', desc:'7–8 hours of sleep is when your body and brain rebuild. Protect it.' });
-
+    blocks.push({ m:Math.max(eve+110, 21*60+30), title:'Evening Journal', desc:"3 wins · 1 improvement · Tomorrow's top 3 priorities." });
+    blocks.push({ m:sleep, title:'Lights Out', desc:'7–8 hours rebuilds your body and brain. Protect it.' });
     blocks.sort((a,b)=>a.m-b.m);
 
-    // Find "up next" block
-    const nextBlock = blocks.find(b=>b.m - nowMins >= 5 && b.type !== 'work');
+    // Build horizontal HTML
+    let trackHtml = `<div class="htl-outer"><div class="htl-track">`;
+    let expandHtml = `<div class="htl-expand-area" id="htlExpandArea"></div>`;
+    let autoOpenIdx = -1;
 
-    let html = '';
-    if (nextBlock) {
-      html += `<div class="tl-upnext-banner"><div class="tl-upnext-icon">⏭️</div><div><div class="tl-upnext-label">UP NEXT</div><div class="tl-upnext-task">${nextBlock.title}</div><div class="tl-upnext-time">at ${fmtTime(nextBlock.m)}</div></div></div>`;
-    }
-    html += `<div class="tl-wrap">`;
-    let lastSection = '';
     blocks.forEach((b, i) => {
-      const section = b.m < 12*60 ? '🌅 MORNING' : b.m < 17*60 ? '☀️ AFTERNOON' : '🌙 EVENING';
-      if (section !== lastSection) { html += `<div class="tl-section-divider">${section}</div>`; lastSection = section; }
-      html += tlItem(b.m, b.title, b.desc, b.type, i*40);
+      const diff = b.m - nowMins;
+      let stateCls = '';
+      let badge = '';
+      if (b.type==='work') {
+        stateCls = ' htl-work';
+        badge = `<span class="htl-badge-h htl-badge-work">WORK</span>`;
+      } else if (diff >= -30 && diff < 45) {
+        stateCls = ' htl-now';
+        badge = `<span class="htl-badge-h htl-badge-now">NOW ▶</span>`;
+        if (autoOpenIdx === -1) autoOpenIdx = i;
+      } else if (diff >= 45 && diff < 120) {
+        stateCls = ' htl-next';
+        badge = `<span class="htl-badge-h htl-badge-next">UP NEXT</span>`;
+      } else if (diff < -30) {
+        stateCls = ' htl-past';
+      }
+      const detail = BLOCK_DETAILS[b.title] || { body:`<p>${b.desc}</p>`, tags:[] };
+      trackHtml += `<div class="htl-card${stateCls}" data-htl="${i}" onclick="htlToggle(${i})">
+        <div class="htl-dot"></div>
+        <div class="htl-time-lbl">${fmtTime(b.m)}</div>
+        <div class="htl-title-lbl">${b.title}</div>
+        ${badge}
+      </div>`;
     });
-    html += `</div>`;
-    return html;
+    trackHtml += `</div></div>`;
+
+    // Pre-build all expand panels (hidden)
+    let panelsHtml = `<div id="htlPanels" style="display:none;">`;
+    blocks.forEach((b, i) => {
+      const detail = BLOCK_DETAILS[b.title] || { body:`<p>${b.desc}</p>`, tags:[] };
+      panelsHtml += `<div id="htlPanel_${i}" class="htl-expand-panel">
+        <div class="htl-expand-time">${fmtTime(b.m)}</div>
+        <div class="htl-expand-title">${b.title}</div>
+        <div class="htl-expand-body">${detail.body}</div>
+        ${detail.tags.length ? `<div class="htl-expand-tags">${detail.tags.map(t=>`<span class="htl-expand-tag">${t}</span>`).join('')}</div>` : ''}
+      </div>`;
+    });
+    panelsHtml += `</div>`;
+
+    // Store block data for JS use
+    const blockDataScript = `<script>window._htlBlocks=${JSON.stringify(blocks.map((b,i)=>({i,title:b.title,m:b.m})))};window._htlAutoOpen=${autoOpenIdx};<\/script>`;
+
+    return trackHtml + panelsHtml + expandHtml + blockDataScript;
   }
+
+  function htlToggle(idx) {
+    const area = document.getElementById('htlExpandArea');
+    if (!area) return;
+    const cards = document.querySelectorAll('.htl-card');
+    const panel = document.getElementById('htlPanel_' + idx);
+    if (!panel) return;
+    const isOpen = area.innerHTML.includes(`htlPanel_${idx}`) && area.querySelector('.htl-expand-panel.open');
+    // Close all
+    cards.forEach(c => c.classList.remove('htl-selected'));
+    area.innerHTML = '';
+    if (!isOpen) {
+      // Clone and open
+      const clone = panel.cloneNode(true);
+      clone.classList.add('open');
+      area.appendChild(clone);
+      if (cards[idx]) cards[idx].classList.add('htl-selected');
+      area.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
+  }
+
+  // Auto-open current block after render
+  setTimeout(() => {
+    const ai = window._htlAutoOpen;
+    if (typeof ai === 'number' && ai >= 0) htlToggle(ai);
+  }, 300);
 
   /* ─ CONTENT tab (legacy small set, kept for transition) ─ */
   const CONTENT = [
