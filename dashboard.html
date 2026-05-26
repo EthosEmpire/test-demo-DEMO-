@@ -84,8 +84,17 @@
     .focus-dot { color:var(--gold-2); font-weight:700; flex-shrink:0; }
 
     /* ── MY PLAN TAB ── */
-    .plan-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:18px; padding:22px 20px; margin-bottom:14px; }
-    .plan-section-hdr { display:flex; align-items:center; gap:10px; font-size:0.76rem; font-weight:800; letter-spacing:0.16em; color:var(--gold-3); margin-bottom:18px; }
+    .plan-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:18px; overflow:hidden; margin-bottom:10px; }
+    .plan-section-hdr { display:flex; align-items:center; gap:10px; font-size:0.76rem; font-weight:800; letter-spacing:0.16em; color:var(--gold-3); padding:18px 20px; cursor:pointer; user-select:none; transition:background 0.18s; }
+    .plan-section-hdr:hover { background:rgba(255,215,0,0.04); }
+    .plan-section-hdr .ps-arrow { margin-left:auto; font-size:0.7rem; color:rgba(255,255,255,0.3); transition:transform 0.25s; }
+    .plan-section.open .ps-arrow { transform:rotate(180deg); color:var(--gold-2); }
+    .plan-section-body { display:none; padding:0 20px 20px; }
+    .plan-section.open .plan-section-body { display:block; }
+    /* unit toggle */
+    .unit-toggle { display:inline-flex; border:1px solid rgba(255,215,0,0.2); border-radius:30px; overflow:hidden; margin-left:auto; }
+    .unit-btn { padding:5px 13px; font-size:0.62rem; font-weight:900; letter-spacing:0.08em; cursor:pointer; color:rgba(255,255,255,0.4); background:none; border:none; font-family:inherit; transition:all 0.18s; }
+    .unit-btn.active { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
     .plan-stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(80px,1fr)); gap:10px; margin-bottom:12px; }
     .plan-stat-box { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:14px 8px; text-align:center; }
     .plan-stat-box-num { font-size:1.4rem; font-weight:900; color:var(--gold-3); line-height:1.1; }
@@ -1274,17 +1283,49 @@
 
     const bmiColor = !pp.bmi ? '#fff' : pp.bmi < 18.5 ? '#74c0fc' : pp.bmi < 25 ? '#6bcb77' : pp.bmi < 30 ? '#ffd700' : '#ff6b6b';
     const bmiLabel = !pp.bmi ? '' : pp.bmi < 18.5 ? 'Underweight' : pp.bmi < 25 ? 'Healthy Weight' : pp.bmi < 30 ? 'Overweight' : 'Obese';
-    h += `<div class="plan-section">
-      <div class="plan-section-hdr"><span>👤</span> YOUR PROFILE</div>
-      <div class="plan-stat-row">
-        ${pp.age     ? `<div class="plan-stat-box"><div class="plan-stat-box-num">${pp.age}</div><div class="plan-stat-box-lbl">AGE</div></div>` : ''}
-        ${pp.heightCm? `<div class="plan-stat-box"><div class="plan-stat-box-num">${pp.heightCm}<span style="font-size:0.85rem">cm</span></div><div class="plan-stat-box-lbl">HEIGHT</div></div>` : ''}
-        ${pp.weightKg? `<div class="plan-stat-box"><div class="plan-stat-box-num">${pp.weightKg}<span style="font-size:0.85rem">kg</span></div><div class="plan-stat-box-lbl">WEIGHT</div></div>` : ''}
-        ${pp.bmi     ? `<div class="plan-stat-box"><div class="plan-stat-box-num" style="color:${bmiColor}">${pp.bmi}</div><div class="plan-stat-box-lbl">BMI</div></div>` : ''}
+
+    // Pre-compute both unit sets
+    const htCm = pp.heightCm || 0;
+    const wtKg = pp.weightKg || 0;
+    const htFtIn = htCm ? (() => { const totalIn = Math.round(htCm/2.54); const ft=Math.floor(totalIn/12); const inch=totalIn%12; return `${ft}'${inch}"`; })() : '';
+    const wtLb = wtKg ? Math.round(wtKg*2.20462) : 0;
+
+    h += `<div class="plan-section open" id="psProfile">
+      <div class="plan-section-hdr" onclick="psToggle('psProfile')">
+        <span>👤</span> YOUR PROFILE
+        <div class="unit-toggle" onclick="event.stopPropagation()">
+          <button class="unit-btn active" id="unitBtnMetric" onclick="setUnits('metric')">KG / CM</button>
+          <button class="unit-btn" id="unitBtnImperial" onclick="setUnits('imperial')">LB / FT</button>
+        </div>
+        <span class="ps-arrow">▼</span>
       </div>
-      ${pp.bmi ? `<div style="font-size:0.8rem;color:${bmiColor};margin-bottom:12px;">${bmiLabel}</div>` : ''}
-      <div style="display:flex;flex-wrap:wrap;gap:7px;">${(pp.goals||[]).map(g=>`<span class="plan-goal-chip">${GOAL_NAMES[g]||g}</span>`).join('')}</div>
-    </div>`;
+      <div class="plan-section-body">
+        <div class="plan-stat-row" id="profileStatRow">
+          ${pp.age     ? `<div class="plan-stat-box"><div class="plan-stat-box-num">${pp.age}</div><div class="plan-stat-box-lbl">AGE</div></div>` : ''}
+          ${htCm ? `<div class="plan-stat-box" id="statHeight">
+            <div class="plan-stat-box-num"><span id="htVal">${htCm}</span><span style="font-size:0.85rem" id="htUnit">cm</span></div>
+            <div class="plan-stat-box-lbl">HEIGHT</div></div>` : ''}
+          ${wtKg ? `<div class="plan-stat-box" id="statWeight">
+            <div class="plan-stat-box-num"><span id="wtVal">${wtKg}</span><span style="font-size:0.85rem" id="wtUnit">kg</span></div>
+            <div class="plan-stat-box-lbl">WEIGHT</div></div>` : ''}
+          ${pp.bmi ? `<div class="plan-stat-box"><div class="plan-stat-box-num" style="color:${bmiColor}">${pp.bmi}</div><div class="plan-stat-box-lbl">BMI</div></div>` : ''}
+        </div>
+        ${pp.bmi ? `<div style="font-size:0.8rem;color:${bmiColor};margin-bottom:12px;">${bmiLabel}</div>` : ''}
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">${(pp.goals||[]).map(g=>`<span class="plan-goal-chip">${GOAL_NAMES[g]||g}</span>`).join('')}</div>
+      </div>
+    </div>
+    <script>
+      window._ppUnits = { htCm:${htCm}, wtKg:${wtKg}, htFtIn:'${htFtIn}', wtLb:${wtLb} };
+      function setUnits(mode) {
+        const u = window._ppUnits;
+        document.getElementById('unitBtnMetric').classList.toggle('active', mode==='metric');
+        document.getElementById('unitBtnImperial').classList.toggle('active', mode==='imperial');
+        const htEl = document.getElementById('htVal'); const htUEl = document.getElementById('htUnit');
+        const wtEl = document.getElementById('wtVal'); const wtUEl = document.getElementById('wtUnit');
+        if (htEl) { htEl.textContent = mode==='metric' ? u.htCm : u.htFtIn; if(htUEl) htUEl.textContent = mode==='metric' ? 'cm' : ''; }
+        if (wtEl) { wtEl.textContent = mode==='metric' ? u.wtKg : u.wtLb; if(wtUEl) wtUEl.textContent = mode==='metric' ? 'kg' : 'lb'; }
+      }
+    <\/script>
 
     const trainAM = has('fitness') || has('weight');
     const amItems = [
@@ -1296,7 +1337,9 @@
       [trainAM ? '7:50 AM' : '7:00 AM','3-2-1 Intentions','Write 3 gratitudes, 2 priorities for today, 1 thing you will not compromise on.'],
       [trainAM ? '8:00 AM' : '7:15 AM','Deep Work Begins','First 90 minutes = your most important task. No phone. No email. No distractions.'],
     ];
-    h += `<div class="plan-section"><div class="plan-section-hdr"><span>⏰</span> DAILY COMMAND SCHEDULE</div>`;
+    h += `<div class="plan-section" id="psSchedule">
+      <div class="plan-section-hdr" onclick="psToggle('psSchedule')"><span>⏰</span> DAILY COMMAND SCHEDULE <span class="ps-arrow">▼</span></div>
+      <div class="plan-section-body">`;
     amItems.forEach(([t,ti,d]) => h += `<div class="plan-time-item"><div class="plan-time">${t}</div><div><div class="plan-time-title">${e(ti)}</div><div class="plan-time-desc">${e(d)}</div></div></div>`);
     h += `<div class="plan-divider">MIDDAY</div>`;
     [
@@ -1315,7 +1358,7 @@
       ['10:00 PM','Lights Out','Non-negotiable. Sleep is when your body rebuilds and your brain consolidates everything.'],
     ];
     evItems.forEach(([t,ti,d]) => h += `<div class="plan-time-item"><div class="plan-time">${t}</div><div><div class="plan-time-title">${e(ti)}</div><div class="plan-time-desc">${e(d)}</div></div></div>`);
-    h += `</div>`;
+    h += `</div></div>`;
 
     const habits = [
       'Wake up without snooze — every single day',
@@ -1331,14 +1374,19 @@
       ...(has('confidence') ? ['Do one uncomfortable thing every day'] : []),
       ...(has('glowup')     ? ['Skincare routine AM and PM without skipping'] : []),
     ];
-    h += `<div class="plan-section"><div class="plan-section-hdr"><span>✅</span> YOUR DAILY HABIT STACK</div>
-      <div style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-bottom:14px;">Start with 3 habits, add one new habit per week. Use the Planner to track your daily actions.</div>
-      <ul class="plan-list">${habits.map(hb=>`<li>${e(hb)}</li>`).join('')}</ul></div>`;
+    h += `<div class="plan-section" id="psHabits">
+      <div class="plan-section-hdr" onclick="psToggle('psHabits')"><span>✅</span> YOUR DAILY HABIT STACK <span class="ps-arrow">▼</span></div>
+      <div class="plan-section-body">
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-bottom:14px;">Start with 3 habits, add one new habit per week. Use the Planner to track your daily actions.</div>
+        <ul class="plan-list">${habits.map(hb=>`<li>${e(hb)}</li>`).join('')}</ul>
+      </div></div>`;
 
     if (trainAM) {
       const isCut = has('weight') && !has('fitness');
-      h += `<div class="plan-section"><div class="plan-section-hdr"><span>💪</span> FITNESS PROTOCOL — ${isCut ? 'FAT LOSS PROGRAM' : '5-DAY MUSCLE SPLIT'}</div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">${isCut ? '4 days strength + 3 active recovery. Cardio after weights — never before.' : 'Push / Pull / Legs split. Add weight when you hit the top of your rep range — every time.'}</div>`;
+      h += `<div class="plan-section" id="psFitness">
+        <div class="plan-section-hdr" onclick="psToggle('psFitness')"><span>💪</span> FITNESS PROTOCOL — ${isCut ? 'FAT LOSS PROGRAM' : '5-DAY MUSCLE SPLIT'} <span class="ps-arrow">▼</span></div>
+        <div class="plan-section-body">
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">${isCut ? '4 days strength + 3 active recovery. Cardio after weights — never before.' : 'Push / Pull / Legs split. Add weight when you hit the top of your rep range — every time.'}</div>`;
       const split = isCut ? [
         ['MON','Full Body Strength','Squat 3×10 · Push-up 3×15 · DB Row 3×12 · Lunge 3×10. 45-sec rest between sets.'],
         ['TUE','Zone 2 Cardio — 40 Min','Brisk walk, bike, or light jog. Keep heart rate 120–140 BPM.'],
@@ -1357,32 +1405,37 @@
         ['SUN','Rest & Recovery','Stretching, foam rolling, meal prep. This is when muscle is actually built.'],
       ];
       split.forEach(([d,n,desc]) => h += `<div class="plan-split-item"><div class="plan-split-day">${d}</div><div><div class="plan-split-name">${e(n)}</div><div class="plan-split-desc">${e(desc)}</div></div></div>`);
-      h += `</div>`;
+      h += `</div></div></div>`;
     }
 
     if (calTarget) {
-      h += `<div class="plan-section"><div class="plan-section-hdr"><span>🍎</span> NUTRITION TARGETS</div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">Goal: ${has('weight')?'FAT LOSS':has('fitness')?'MUSCLE GAIN':'MAINTENANCE'} · Based on your current stats</div>
-        <div class="plan-stat-row" style="margin-bottom:16px;">
-          <div class="plan-stat-box"><div class="plan-stat-box-num">${calTarget}</div><div class="plan-stat-box-lbl">KCAL/DAY</div></div>
-          <div class="plan-stat-box"><div class="plan-stat-box-num">${proteinG}g</div><div class="plan-stat-box-lbl">PROTEIN</div></div>
-          <div class="plan-stat-box"><div class="plan-stat-box-num">${fatG}g</div><div class="plan-stat-box-lbl">FAT</div></div>
-          <div class="plan-stat-box"><div class="plan-stat-box-num">${carbG}g</div><div class="plan-stat-box-lbl">CARBS</div></div>
-        </div>
-        <ul class="plan-list">
-          <li>Hit your protein target first — everything else adjusts around it</li>
-          <li>Eat mostly whole foods: lean meat, eggs, rice, oats, vegetables, fruit</li>
-          <li>Drink 2.5–3L of water daily — more on training days</li>
-          ${has('weight') ? '<li>Calorie deficit ~400/day. Weigh yourself same time each morning.</li>' : ''}
-          ${has('fitness')? "<li>Eat within 60 minutes of training. Protein shake if you're not hungry.</li>" : ''}
-          <li>Limit alcohol and processed food — they fight every goal on this list</li>
-        </ul></div>`;
+      h += `<div class="plan-section" id="psNutrition">
+        <div class="plan-section-hdr" onclick="psToggle('psNutrition')"><span>🍎</span> NUTRITION TARGETS <span class="ps-arrow">▼</span></div>
+        <div class="plan-section-body">
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">Goal: ${has('weight')?'FAT LOSS':has('fitness')?'MUSCLE GAIN':'MAINTENANCE'} · Based on your current stats</div>
+          <div class="plan-stat-row" style="margin-bottom:16px;">
+            <div class="plan-stat-box"><div class="plan-stat-box-num">${calTarget}</div><div class="plan-stat-box-lbl">KCAL/DAY</div></div>
+            <div class="plan-stat-box"><div class="plan-stat-box-num">${proteinG}g</div><div class="plan-stat-box-lbl">PROTEIN</div></div>
+            <div class="plan-stat-box"><div class="plan-stat-box-num">${fatG}g</div><div class="plan-stat-box-lbl">FAT</div></div>
+            <div class="plan-stat-box"><div class="plan-stat-box-num">${carbG}g</div><div class="plan-stat-box-lbl">CARBS</div></div>
+          </div>
+          <ul class="plan-list">
+            <li>Hit your protein target first — everything else adjusts around it</li>
+            <li>Eat mostly whole foods: lean meat, eggs, rice, oats, vegetables, fruit</li>
+            <li>Drink 2.5–3L of water daily — more on training days</li>
+            ${has('weight') ? '<li>Calorie deficit ~400/day. Weigh yourself same time each morning.</li>' : ''}
+            ${has('fitness')? "<li>Eat within 60 minutes of training. Protein shake if you're not hungry.</li>" : ''}
+            <li>Limit alcohol and processed food — they fight every goal on this list</li>
+          </ul>
+        </div></div>`;
     }
 
     if (has('mindset') || has('discipline') || has('confidence')) {
-      h += `<div class="plan-section"><div class="plan-section-hdr"><span>🧠</span> MINDSET FRAMEWORK</div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">Mental frameworks that separate the top 1% from everyone else.</div>
-        <ul class="plan-list">
+      h += `<div class="plan-section" id="psMindset">
+        <div class="plan-section-hdr" onclick="psToggle('psMindset')"><span>🧠</span> MINDSET FRAMEWORK <span class="ps-arrow">▼</span></div>
+        <div class="plan-section-body">
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">Mental frameworks that separate the top 1% from everyone else.</div>
+          <ul class="plan-list">
           ${has('discipline') ? '<li><strong>No Zero Days</strong> — Do at least one thing every day toward your goal. Even 1%. Momentum compounds.</li>' : ''}
           ${has('mindset')    ? '<li><strong>Stoic Daily Audit</strong> — Every evening: What was in my control? Did I act with integrity? What will I do better?</li>' : ''}
           ${has('confidence') ? '<li><strong>Confidence Through Action</strong> — Confidence is a record, not a feeling. Keep your word to yourself and it builds automatically.</li>' : ''}
@@ -1390,27 +1443,31 @@
           <li><strong>2-Minute Rule</strong> — If something takes under 2 minutes, do it right now. Procrastination is a habit you break in small moments.</li>
           <li><strong>Social Audit</strong> — You are the average of the 5 people closest to you. Evaluate your circle. Upgrade deliberately.</li>
           ${has('discipline') ? '<li><strong>Comfort Zone Protocol</strong> — One uncomfortable thing per day. Cold shower, hard conversation, skipping the excuse.</li>' : ''}
-        </ul></div>`;
+          </ul>
+        </div></div>`;
     }
 
     if (has('finance')) {
-      h += `<div class="plan-section"><div class="plan-section-hdr"><span>💰</span> FINANCIAL WEALTH PLAN</div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">Your money framework. Simple, consistent, and compounding.</div>
-        <div style="font-size:0.76rem;font-weight:800;letter-spacing:0.14em;color:var(--gold-3);margin-bottom:8px;">THE 50/30/20 SPLIT</div>
-        <ul class="plan-list">
-          <li><strong>50% Needs</strong> — Rent, utilities, groceries, transport, minimum debt payments</li>
-          <li><strong>30% Wants</strong> — Dining out, subscriptions, entertainment, upgrades</li>
-          <li><strong>20% Wealth</strong> — Emergency fund first, then investment account</li>
-        </ul>
-        <div style="font-size:0.76rem;font-weight:800;letter-spacing:0.14em;color:var(--gold-3);margin:16px 0 8px;">ACTION STEPS</div>
-        <ul class="plan-list">
-          <li>Open a high-yield savings account today if you don\'t have one</li>
-          <li>Automate transfers on payday — pay yourself first, before any spending</li>
-          <li>Build a 3-month emergency fund before investing</li>
-          <li>Once emergency fund is solid, start investing in low-cost index funds (S&amp;P 500)</li>
-          <li>Track every expense in your Planner — what gets measured gets managed</li>
-          <li>Eliminate one subscription or recurring cost this month</li>
-        </ul></div>`;
+      h += `<div class="plan-section" id="psFinance">
+        <div class="plan-section-hdr" onclick="psToggle('psFinance')"><span>💰</span> FINANCIAL WEALTH PLAN <span class="ps-arrow">▼</span></div>
+        <div class="plan-section-body">
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">Your money framework. Simple, consistent, and compounding.</div>
+          <div style="font-size:0.76rem;font-weight:800;letter-spacing:0.14em;color:var(--gold-3);margin-bottom:8px;">THE 50/30/20 SPLIT</div>
+          <ul class="plan-list">
+            <li><strong>50% Needs</strong> — Rent, utilities, groceries, transport, minimum debt payments</li>
+            <li><strong>30% Wants</strong> — Dining out, subscriptions, entertainment, upgrades</li>
+            <li><strong>20% Wealth</strong> — Emergency fund first, then investment account</li>
+          </ul>
+          <div style="font-size:0.76rem;font-weight:800;letter-spacing:0.14em;color:var(--gold-3);margin:16px 0 8px;">ACTION STEPS</div>
+          <ul class="plan-list">
+            <li>Open a high-yield savings account today if you don\'t have one</li>
+            <li>Automate transfers on payday — pay yourself first, before any spending</li>
+            <li>Build a 3-month emergency fund before investing</li>
+            <li>Once emergency fund is solid, start investing in low-cost index funds (S&amp;P 500)</li>
+            <li>Track every expense in your Planner — what gets measured gets managed</li>
+            <li>Eliminate one subscription or recurring cost this month</li>
+          </ul>
+        </div></div>`;
     }
 
     const books = [
@@ -1426,46 +1483,55 @@
       ...(has('glowup') ? [["You Are a Badass",'Jen Sincero',"Mindset shift for people who know they're capable of more but keep getting in their own way."]] : []),
       ['The Compound Effect','Darren Hardy','Small daily decisions compound over time. This book makes you feel the math clearly.'],
     ];
-    h += `<div class="plan-section"><div class="plan-section-hdr"><span>📚</span> YOUR READING LIST — ${books.length} BOOKS</div>
-      <div style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-bottom:14px;">30 pages/day = one book per month. Schedule your reading block in the Planner.</div>`;
+    h += `<div class="plan-section" id="psBooks">
+      <div class="plan-section-hdr" onclick="psToggle('psBooks')"><span>📚</span> YOUR READING LIST — ${books.length} BOOKS <span class="ps-arrow">▼</span></div>
+      <div class="plan-section-body">
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-bottom:14px;">30 pages/day = one book per month. Schedule your reading block in the Planner.</div>`;
     books.forEach(([t,a,w],i) => h += `<div class="plan-book-item"><div class="plan-book-num">${i+1}</div><div><div class="plan-book-title">${e(t)} <span style="color:rgba(255,255,255,0.3);font-weight:500;font-size:0.82rem;">— ${e(a)}</span></div><div class="plan-book-why">${e(w)}</div></div></div>`);
-    h += `</div>`;
+    h += `</div></div>`;
 
     const trainAM2 = trainAM;
-    h += `<div class="plan-section"><div class="plan-section-hdr"><span>🎯</span> YOUR 30-DAY LAUNCH CHALLENGE</div>
-      <div style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-bottom:14px;">Schedule each week's actions in your Planner. The first 30 days build the foundation.</div>
-      <div class="plan-week"><div class="plan-week-lbl">WEEK 1 — FOUNDATION</div>
-        <ul class="plan-list" style="margin:0;">
-          <li>Wake up at 5:30 AM every day — no exceptions, no snooze</li>
-          <li>500ml water first thing, before coffee or anything else</li>
-          <li>No phone for the first 30 minutes of your day</li>
-          ${trainAM2 ? "<li>Complete your workout — even if it's lighter than you planned</li>" : '<li>Complete your morning movement block every single day</li>'}
-          <li>In bed by 10 PM every night</li>
-        </ul></div>
-      <div class="plan-week"><div class="plan-week-lbl">WEEK 2 — PUSH</div>
-        <ul class="plan-list" style="margin:0;">
-          <li>Add the cold shower to your morning routine — not optional</li>
-          <li>Start your reading habit: 30 pages every day</li>
-          ${has('finance') ? '<li>Set up your income and expense tracking in the Planner</li>' : '<li>Start your daily journal — 5 minutes each morning</li>'}
-          <li>Add one more habit from your stack</li>
-        </ul></div>
-      <div class="plan-week"><div class="plan-week-lbl">WEEK 3 — COMPOUND</div>
-        <ul class="plan-list" style="margin:0;">
-          <li>All Week 1 and Week 2 habits running simultaneously — no skipping</li>
-          ${has('career') ? '<li>60 minutes on your top skill daily — no exceptions</li>' : ''}
-          <li>Evaluate your circle — who lifts you up, who drags you down</li>
-          ${has('fitness')? '<li>Increase weights on at least two exercises (progressive overload)</li>' : ''}
-          <li>Have one uncomfortable conversation you\'ve been avoiding</li>
-        </ul></div>
-      <div class="plan-week" style="border-color:rgba(255,215,0,0.18);background:rgba(255,215,0,0.03);padding:14px;border-radius:10px;"><div class="plan-week-lbl" style="color:var(--gold-3);">WEEK 4 — LOCK IN</div>
-        <ul class="plan-list" style="margin:0;">
-          <li>Review your 30-day progress — what changed physically and mentally?</li>
-          <li>Set your next 30-day targets — go deeper, not just harder</li>
-          <li>You have built the foundation. The next 30 days are where it compounds.</li>
-        </ul></div>
-    </div>`;
+    h += `<div class="plan-section" id="ps30Day">
+      <div class="plan-section-hdr" onclick="psToggle('ps30Day')"><span>🎯</span> YOUR 30-DAY LAUNCH CHALLENGE <span class="ps-arrow">▼</span></div>
+      <div class="plan-section-body">
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-bottom:14px;">Schedule each week's actions in your Planner. The first 30 days build the foundation.</div>
+        <div class="plan-week"><div class="plan-week-lbl">WEEK 1 — FOUNDATION</div>
+          <ul class="plan-list" style="margin:0;">
+            <li>Wake up at 5:30 AM every day — no exceptions, no snooze</li>
+            <li>500ml water first thing, before coffee or anything else</li>
+            <li>No phone for the first 30 minutes of your day</li>
+            ${trainAM2 ? "<li>Complete your workout — even if it's lighter than you planned</li>" : '<li>Complete your morning movement block every single day</li>'}
+            <li>In bed by 10 PM every night</li>
+          </ul></div>
+        <div class="plan-week"><div class="plan-week-lbl">WEEK 2 — PUSH</div>
+          <ul class="plan-list" style="margin:0;">
+            <li>Add the cold shower to your morning routine — not optional</li>
+            <li>Start your reading habit: 30 pages every day</li>
+            ${has('finance') ? '<li>Set up your income and expense tracking in the Planner</li>' : '<li>Start your daily journal — 5 minutes each morning</li>'}
+            <li>Add one more habit from your stack</li>
+          </ul></div>
+        <div class="plan-week"><div class="plan-week-lbl">WEEK 3 — COMPOUND</div>
+          <ul class="plan-list" style="margin:0;">
+            <li>All Week 1 and Week 2 habits running simultaneously — no skipping</li>
+            ${has('career') ? '<li>60 minutes on your top skill daily — no exceptions</li>' : ''}
+            <li>Evaluate your circle — who lifts you up, who drags you down</li>
+            ${has('fitness')? '<li>Increase weights on at least two exercises (progressive overload)</li>' : ''}
+            <li>Have one uncomfortable conversation you\'ve been avoiding</li>
+          </ul></div>
+        <div class="plan-week" style="border-color:rgba(255,215,0,0.18);background:rgba(255,215,0,0.03);padding:14px;border-radius:10px;"><div class="plan-week-lbl" style="color:var(--gold-3);">WEEK 4 — LOCK IN</div>
+          <ul class="plan-list" style="margin:0;">
+            <li>Review your 30-day progress — what changed physically and mentally?</li>
+            <li>Set your next 30-day targets — go deeper, not just harder</li>
+            <li>You have built the foundation. The next 30 days are where it compounds.</li>
+          </ul></div>
+      </div></div>`;
 
     return h;
+  }
+
+  function psToggle(id) {
+    const sec = document.getElementById(id);
+    if (sec) sec.classList.toggle('open');
   }
 
   /* ─ Quotes ─ */
