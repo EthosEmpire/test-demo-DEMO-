@@ -277,8 +277,63 @@ body.snap-ready {
 }
 .hero-free-btn:hover .hero-free-btn-arrow { transform: translateX(5px); }
 
+.hero-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+.hero-btn-group .hero-free-btn {
+  margin-top: 0;
+}
+
+.hero-pay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 36px;
+  border-radius: 999px;
+  background: transparent;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2), 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, letter-spacing 0.22s ease, background 0.22s ease, color 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+.hero-pay-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255, 215, 0, 0.1);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.28s ease;
+  border-radius: inherit;
+}
+.hero-pay-btn:hover::before { transform: scaleX(1); }
+.hero-pay-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.45), 0 14px 32px rgba(0,0,0,0.5);
+  letter-spacing: 0.22em;
+  background: rgba(255, 215, 0, 0.08);
+}
+.hero-pay-btn-text { position: relative; z-index: 1; }
+.hero-pay-btn-arrow {
+  position: relative; z-index: 1;
+  font-size: 1.1em;
+  transition: transform 0.22s ease;
+}
+.hero-pay-btn:hover .hero-pay-btn-arrow { transform: translateX(5px); }
+
 @media (max-width: 480px) {
-  .hero-free-btn { padding: 13px 28px; font-size: 0.75rem; margin-top: 22px; }
+  .hero-free-btn { padding: 13px 28px; font-size: 0.75rem; margin-top: 0; }
+  .hero-pay-btn { padding: 13px 28px; font-size: 0.75rem; }
+  .hero-btn-group { gap: 12px; margin-top: 22px; }
 }
 
 /* ──────────────────────────────────────────────

@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empire Builder Dashboard | Ethos Empire</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" sizes="48x48" href="images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192x192.png">
+  <link rel="apple-touch-icon" href="images/favicon-192x192.png">
+
+  <link rel="stylesheet" href="tailwind.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=3">
+
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; overflow-x: hidden; }
+
+    input, textarea, select {
+      font-family: inherit;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--gold-2); }
+    input::placeholder { color: rgba(255,255,255,0.3); }
+    button { font-family: inherit; cursor: pointer; }
+
+    /* ── Header ── */
+    .db-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: rgba(4,4,4,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .db-header-left { display: flex; align-items: center; gap: 12px; }
+    .db-logo { width: 34px; height: 34px; border-radius: 8px; }
+    .db-brand { font-weight: 800; font-size: 0.92rem; letter-spacing: 0.1em; color: var(--gold-3); }
+    .db-member-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #000;
+      background: linear-gradient(135deg, var(--gold-2), var(--gold-3));
+      padding: 4px 12px;
+      border-radius: 30px;
+    }
+    .db-header-right { display: flex; align-items: center; gap: 14px; }
+    .db-clock {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    /* ── Tab bar ── */
+    .db-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 20px;
+      background: rgba(4,4,4,0.7);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .db-tabs::-webkit-scrollbar { display: none; }
+    .db-tab {
+      flex-shrink: 0;
+      padding: 9px 22px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 30px;
+      transition: all 0.2s;
+    }
+    .db-tab:hover { color: var(--gold-4); border-color: var(--border); }
+    .db-tab.active {
+      color: #000;
+      background: linear-gradient(135deg, var(--gold-2), var(--gold-3));
+      border-color: transparent;
+    }
+
+    /* ── Content panels ── */
+    .db-panel { display: none; padding: 28px 24px; max-width: 900px; margin: 0 auto; }
+    .db-panel.active { display: block; }
+
+    /* ── Section headers ── */
+    .panel-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .panel-sub {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 28px;
+    }
+
+    /* ── Cards ── */
+    .db-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 20px;
+      margin-bottom: 14px;
+    }
+    .db-card-gold {
+      background: rgba(255,215,0,0.04);
+      border-color: rgba(255,215,0,0.14);
+    }
+
+    /* ── Progress bar ── */
+    .progress-bar-wrap {
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--gold-1), var(--gold-3));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── TODAY TAB ── */
+    .today-greeting {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .today-date-line {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+    .today-quote {
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--gold-4);
+      line-height: 1.6;
+      padding: 18px 20px;
+      border-left: 3px solid var(--gold-2);
+      background: rgba(255,215,0,0.04);
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 28px;
+    }
+    .today-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .today-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .today-stat-num {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--gold-3);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .today-stat-label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.08em;
+    }
+
+    /* Quick habits */
+    .quick-habit-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .quick-habit-item:last-child { border-bottom: none; }
+    .habit-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-2);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+    .habit-check.done {
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-3));
+      border-color: transparent;
+      color: #000;
+      font-weight: 900;
+    }
+    .quick-habit-name { font-size: 0.9rem; color: rgba(255,255,255,0.75); flex: 1; }
+    .quick-habit-streak { font-size: 0.78rem; color: var(--text-dim); }
+
+    /* ── PLANNER TAB ── */
+    .planner-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+    .planner-date-display {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gold-4);
+      letter-spacing: 0.04em;
+    }
+    .planner-arrow {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--gold-3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+    .planner-arrow:hover { background: rgba(255,215,0,0.1); }
+
+    .planner-progress-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+    .planner-progress-row .progress-bar-wrap { flex: 1; margin: 0; }
+
+    .time-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .time-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.3);
+      width: 52px;
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+    }
+    .time-label.hour { color: var(--text-dim); }
+    .time-task-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-radius: 0;
+      padding: 6px 8px;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.75);
+      transition: border-color 0.2s;
+    }
+    .time-task-input:focus { border-bottom-color: var(--gold-2); background: transparent; }
+    .time-task-input.has-task { color: #fff; }
+    .time-done-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      background: transparent;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: transparent;
+    }
+    .time-done-btn.done {
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      border-color: transparent;
+      color: #000;
+      font-weight: 900;
+    }
+    .time-block.is-done .time-task-input { text-decoration: line-through; color: rgba(255,255,255,0.3); }
+
+    /* ── HABITS TAB ── */
+    .habit-add-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .habit-add-row input { flex: 1; }
+    .btn-add {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-add:hover { opacity: 0.85; }
+
+    .habit-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .habit-card.done-today { border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.04); }
+    .habit-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .habit-card-name { flex: 1; font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .habit-streak {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gold-3);
+      letter-spacing: 0.04em;
+    }
+    .habit-delete {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.2);
+      font-size: 1rem;
+      padding: 2px 6px;
+      transition: color 0.2s;
+    }
+    .habit-delete:hover { color: rgba(255,100,100,0.7); }
+    .habit-dots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .habit-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .habit-dot.completed {
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      border-color: transparent;
+      color: #000;
+      font-weight: 900;
+    }
+    .habit-dot.today-dot {
+      border-color: var(--gold-2);
+      color: var(--gold-3);
+    }
+    .habit-dot.today-dot.completed { color: #000; }
+
+    .habits-summary {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .habits-summary-chip {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    .habits-summary-chip strong { color: var(--gold-3); }
+
+    /* ── BUDGET TAB ── */
+    .budget-income-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 520px) { .budget-income-row { grid-template-columns: 1fr; } }
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+    .input-group input { width: 100%; }
+
+    .expense-add-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: end;
+    }
+    @media (max-width: 520px) {
+      .expense-add-row { grid-template-columns: 1fr 1fr; }
+      .expense-add-row .btn-add { grid-column: 1 / -1; }
+    }
+
+    .expense-list { margin-bottom: 20px; }
+    .expense-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .expense-cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .expense-name { flex: 1; font-size: 0.88rem; color: rgba(255,255,255,0.72); }
+    .expense-amount { font-size: 0.88rem; font-weight: 700; color: var(--gold-4); }
+    .expense-del {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.2);
+      font-size: 0.9rem;
+      transition: color 0.2s;
+      padding: 2px 6px;
+    }
+    .expense-del:hover { color: rgba(255,100,100,0.7); }
+
+    .budget-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .budget-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+    .budget-stat-val {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--gold-3);
+      margin-bottom: 4px;
+    }
+    .budget-stat-val.negative { color: #ff6b6b; }
+    .budget-stat-val.positive { color: #6bcb77; }
+    .budget-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; }
+
+    .budget-goal-section { margin-top: 16px; }
+    .goal-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    /* ── CONTENT TAB ── */
+    .content-category-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .content-category-bar::-webkit-scrollbar { display: none; }
+    .content-cat-btn {
+      flex-shrink: 0;
+      padding: 7px 18px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    .content-cat-btn.active, .content-cat-btn:hover {
+      color: #000;
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      border-color: transparent;
+    }
+    .content-cards { display: grid; gap: 16px; }
+    .content-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 20px;
+      transition: border-color 0.25s;
+    }
+    .content-card:hover { border-color: var(--border-strong); }
+    .content-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: var(--gold-2);
+      margin-bottom: 10px;
+    }
+    .content-card-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .content-card-body {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+    .content-card-body p { margin: 0 0 10px; }
+    .content-card-body p:last-child { margin: 0; }
+    .content-card-body strong { color: var(--gold-4); font-weight: 700; }
+
+    /* hidden content panels */
+    .content-panel { display: none; }
+    .content-panel.active { display: grid; gap: 16px; }
+
+    /* empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.88rem;
+    }
+    .empty-state-icon { font-size: 2.4rem; margin-bottom: 12px; }
+  </style>
+</head>
+
+<body>
+
+  <!-- Matrix background -->
+  <div class="page-matrix-layer" aria-hidden="true">
+    <canvas id="pageMatrixCanvas" class="page-matrix-canvas"></canvas>
+    <div class="page-matrix-vignette"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="db-header">
+    <div class="db-header-left">
+      <img src="images/ethos-empire-logo.webp" alt="Ethos Empire" class="db-logo" width="34" height="34">
+      <span class="db-brand">ETHOS EMPIRE</span>
+      <span class="db-member-badge">EMPIRE BUILDER</span>
+    </div>
+    <div class="db-header-right">
+      <span class="db-clock" id="dbClock"></span>
+    </div>
+  </header>
+
+  <!-- Tab bar -->
+  <nav class="db-tabs" role="tablist">
+    <button class="db-tab active" data-tab="today" role="tab">Today</button>
+    <button class="db-tab" data-tab="planner" role="tab">📅 Planner</button>
+    <button class="db-tab" data-tab="habits" role="tab">🔥 Habits</button>
+    <button class="db-tab" data-tab="budget" role="tab">💰 Budget</button>
+    <button class="db-tab" data-tab="content" role="tab">⭐ Content</button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       TODAY TAB
+       ═══════════════════════════════════════ -->
+  <div class="db-panel active" id="tab-today">
+    <div class="today-greeting" id="todayGreeting">Good morning, Empire Builder</div>
+    <div class="today-date-line" id="todayDateLine"></div>
+
+    <div class="today-quote" id="todayQuote"></div>
+
+    <div class="today-stats">
+      <div class="today-stat">
+        <div class="today-stat-num" id="stat-tasks">0</div>
+        <div class="today-stat-label">TASKS DONE</div>
+      </div>
+      <div class="today-stat">
+        <div class="today-stat-num" id="stat-habits">0</div>
+        <div class="today-stat-label">HABITS DONE</div>
+      </div>
+      <div class="today-stat">
+        <div class="today-stat-num" id="stat-streak">0</div>
+        <div class="today-stat-label">BEST STREAK 🔥</div>
+      </div>
+      <div class="today-stat">
+        <div class="today-stat-num" id="stat-saved">$0</div>
+        <div class="today-stat-label">SAVED THIS MO.</div>
+      </div>
+    </div>
+
+    <div class="db-card">
+      <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.15em;color:var(--text-dim);margin-bottom:14px;">TODAY'S HABITS</div>
+      <div id="todayHabits">
+        <div class="empty-state">
+          <div class="empty-state-icon">🔥</div>
+          No habits yet. Add them in the Habits tab.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PLANNER TAB
+       ═══════════════════════════════════════ -->
+  <div class="db-panel" id="tab-planner">
+    <div class="panel-title">Daily Planner</div>
+    <div class="panel-sub">Map out your day. Every hour counts.</div>
+
+    <div class="planner-nav">
+      <button class="planner-arrow" id="plannerPrev">← Prev</button>
+      <div class="planner-date-display" id="plannerDateDisplay"></div>
+      <button class="planner-arrow" id="plannerNext">Next →</button>
+    </div>
+
+    <div class="planner-progress-row">
+      <span id="plannerProgressLabel">0 of 0 tasks done</span>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="plannerProgressBar" style="width:0%"></div></div>
+    </div>
+
+    <div id="plannerBlocks"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       HABITS TAB
+       ═══════════════════════════════════════ -->
+  <div class="db-panel" id="tab-habits">
+    <div class="panel-title">Habit Tracker</div>
+    <div class="panel-sub">Build the streaks. Build the life.</div>
+
+    <div class="habit-add-row">
+      <input type="text" id="habitInput" placeholder="New habit (e.g. Drink 2L water)" maxlength="60">
+      <button class="btn-add" id="habitAddBtn">+ Add</button>
+    </div>
+
+    <div class="habits-summary" id="habitsSummary"></div>
+    <div id="habitsList"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       BUDGET TAB
+       ═══════════════════════════════════════ -->
+  <div class="db-panel" id="tab-budget">
+    <div class="panel-title">Budget Calculator</div>
+    <div class="panel-sub">Know your numbers. Control your future.</div>
+
+    <div class="db-card db-card-gold">
+      <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.15em;color:var(--text-dim);margin-bottom:14px;">MONTHLY OVERVIEW</div>
+      <div class="budget-income-row">
+        <div class="input-group">
+          <label>MONTHLY INCOME ($)</label>
+          <input type="number" id="budgetIncome" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="input-group">
+          <label>SAVINGS GOAL ($)</label>
+          <input type="number" id="budgetGoal" placeholder="0.00" min="0" step="0.01">
+        </div>
+      </div>
+    </div>
+
+    <div class="db-card" style="margin-bottom:14px;">
+      <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.15em;color:var(--text-dim);margin-bottom:14px;">ADD EXPENSE</div>
+      <div class="expense-add-row">
+        <div class="input-group">
+          <label>NAME</label>
+          <input type="text" id="expenseName" placeholder="e.g. Rent, Groceries..." maxlength="40">
+        </div>
+        <div class="input-group">
+          <label>AMOUNT ($)</label>
+          <input type="number" id="expenseAmount" placeholder="0.00" min="0" step="0.01" style="width:110px;">
+        </div>
+        <button class="btn-add" id="expenseAddBtn">+ Add</button>
+      </div>
+    </div>
+
+    <div class="expense-list" id="expenseList"></div>
+
+    <div class="budget-summary" id="budgetSummary"></div>
+
+    <div class="db-card budget-goal-section" id="budgetGoalSection" style="display:none;">
+      <div class="goal-progress-label">
+        <span>Savings Progress</span>
+        <span id="goalProgressText"></span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="goalProgressBar" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       CONTENT TAB
+       ═══════════════════════════════════════ -->
+  <div class="db-panel" id="tab-content">
+    <div class="panel-title">Premium Content</div>
+    <div class="panel-sub">Exclusive insights, challenges, and frameworks — updated monthly.</div>
+
+    <div class="content-category-bar">
+      <button class="content-cat-btn active" data-content="all">All</button>
+      <button class="content-cat-btn" data-content="discipline">Discipline</button>
+      <button class="content-cat-btn" data-content="mindset">Mindset</button>
+      <button class="content-cat-btn" data-content="finance">Finance</button>
+      <button class="content-cat-btn" data-content="health">Health</button>
+    </div>
+
+    <div id="contentCards"></div>
+  </div>
+
+  <script src="matrix.js"></script>
+
+  <!-- ── Subscription access guard ── -->
+  <script>
+  (function() {
+    const STORAGE_KEY = 'ee_subscription';
+    const params = new URLSearchParams(window.location.search);
+
+    // Stripe redirects here with ?paid=true after a successful checkout
+    if (params.get('paid') === 'true') {
+      // Store subscription with a 30-day expiry (refreshed each visit while active)
+      const expiry = Date.now() + 30 * 24 * 60 * 60 * 1000;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ active: true, expiry }));
+      // Clean the URL so the param doesn't persist
+      history.replaceState(null, '', window.location.pathname);
+    }
+
+    // Check stored subscription
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      window.location.replace('plan.html');
+      return;
+    }
+    try {
+      const sub = JSON.parse(raw);
+      if (!sub.active || Date.now() > sub.expiry) {
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.replace('plan.html');
+      }
+    } catch (e) {
+      localStorage.removeItem(STORAGE_KEY);
+      window.location.replace('plan.html');
+    }
+  })();
+  </script>
+
+  <script>
+
+  /* ══════════════════════════════════════════
+     HELPERS
+  ══════════════════════════════════════════ */
+
+  const dateKey = (d) => d.toISOString().slice(0, 10);
+  const today = () => new Date();
+  const todayKey = () => dateKey(today());
+
+  function fmtDate(d) {
+    return d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  }
+  function fmtShortDate(d) {
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  }
+
+  function load(key, def) {
+    try { const v = localStorage.getItem('ee_' + key); return v ? JSON.parse(v) : def; }
+    catch { return def; }
+  }
+  function save(key, val) {
+    try { localStorage.setItem('ee_' + key, JSON.stringify(val)); } catch {}
+  }
+
+  /* ══════════════════════════════════════════
+     CLOCK
+  ══════════════════════════════════════════ */
+  function updateClock() {
+    const n = new Date();
+    document.getElementById('dbClock').textContent =
+      n.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' }) +
+      '  ·  ' + n.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  /* ══════════════════════════════════════════
+     TAB SWITCHING
+  ══════════════════════════════════════════ */
+  document.querySelectorAll('.db-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.db-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.db-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'today') renderToday();
+      if (btn.dataset.tab === 'planner') renderPlanner();
+      if (btn.dataset.tab === 'habits') renderHabits();
+      if (btn.dataset.tab === 'budget') renderBudget();
+    });
+  });
+
+  /* ══════════════════════════════════════════
+     DAILY QUOTES
+  ══════════════════════════════════════════ */
+  const QUOTES = [
+    ["Discipline is choosing between what you want now and what you want most.", "Unknown"],
+    ["You don't rise to the level of your goals. You fall to the level of your systems.", "James Clear"],
+    ["Don't count the days. Make the days count.", "Muhammad Ali"],
+    ["The secret of getting ahead is getting started.", "Mark Twain"],
+    ["Do something today that your future self will thank you for.", "Sean Patrick Flanery"],
+    ["Success is the sum of small efforts repeated day in and day out.", "Robert Collier"],
+    ["You are one decision away from a completely different life.", "Mel Robbins"],
+    ["Work hard in silence. Let success be your noise.", "Frank Ocean"],
+    ["It does not matter how slowly you go, so long as you do not stop.", "Confucius"],
+    ["The man who moves a mountain begins by carrying away small stones.", "Confucius"],
+    ["You have to be willing to suffer more than anyone else.", "Greg Plitt"],
+    ["The only way to do great work is to love what you do.", "Steve Jobs"],
+    ["Pain is temporary. Quitting lasts forever.", "Lance Armstrong"],
+    ["If you are not willing to risk the unusual, you will have to settle for the ordinary.", "Jim Rohn"],
+    ["Your life does not get better by chance. It gets better by change.", "Jim Rohn"],
+    ["Hard work beats talent when talent doesn't work hard.", "Tim Notke"],
+    ["Act as if what you do makes a difference. It does.", "William James"],
+    ["Strength does not come from physical capacity. It comes from indomitable will.", "Mahatma Gandhi"],
+    ["The harder you work, the luckier you get.", "Gary Player"],
+    ["Be the change you wish to see in the world.", "Mahatma Gandhi"],
+    ["Push yourself because no one else is going to do it for you.", "Unknown"],
+    ["Great things never come from comfort zones.", "Unknown"],
+    ["Dream it. Wish it. Do it.", "Unknown"],
+    ["Success doesn't just find you. You have to go out and get it.", "Unknown"],
+    ["The harder the battle, the sweeter the victory.", "Les Brown"],
+    ["Nothing will work unless you do.", "Maya Angelou"],
+    ["Don't stop when you are tired. Stop when you are done.", "Unknown"],
+    ["Wake up with determination. Go to bed with satisfaction.", "Unknown"],
+    ["Do something today that your future self will thank you for.", "Unknown"],
+    ["Little things make big days.", "Unknown"],
+    ["It's going to be hard, but hard does not mean impossible.", "Unknown"],
+  ];
+
+  function getDailyQuote() {
+    const dayIndex = Math.floor(Date.now() / 86400000) % QUOTES.length;
+    return QUOTES[dayIndex];
+  }
+
+  /* ══════════════════════════════════════════
+     TODAY TAB
+  ══════════════════════════════════════════ */
+  function renderToday() {
+    const now = new Date();
+    const hour = now.getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('todayGreeting').textContent = greeting + ', Empire Builder';
+    document.getElementById('todayDateLine').textContent = fmtDate(now).toUpperCase();
+
+    const [quote, author] = getDailyQuote();
+    document.getElementById('todayQuote').innerHTML =
+      `"${quote}" <span style="display:block;margin-top:8px;font-size:0.78rem;color:var(--text-dim);font-style:normal;letter-spacing:0.08em;">— ${author}</span>`;
+
+    const tasks = load('tasks', {});
+    const todayTasks = tasks[todayKey()] || [];
+    const doneTasks = todayTasks.filter(t => t.done).length;
+    document.getElementById('stat-tasks').textContent = doneTasks;
+
+    const habits = load('habits', []);
+    const doneHabits = habits.filter(h => h.completions && h.completions[todayKey()]).length;
+    document.getElementById('stat-habits').textContent = doneHabits;
+
+    let bestStreak = 0;
+    habits.forEach(h => {
+      const s = calcStreak(h);
+      if (s > bestStreak) bestStreak = s;
+    });
+    document.getElementById('stat-streak').textContent = bestStreak;
+
+    const budget = load('budget', {income:0, goal:0, expenses:[]});
+    const totalExp = (budget.expenses || []).reduce((a, e) => a + (parseFloat(e.amount) || 0), 0);
+    const saved = Math.max(0, (parseFloat(budget.income) || 0) - totalExp);
+    document.getElementById('stat-saved').textContent = '$' + saved.toFixed(0);
+
+    const habitsEl = document.getElementById('todayHabits');
+    if (habits.length === 0) {
+      habitsEl.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔥</div>No habits yet. Add them in the Habits tab.</div>`;
+      return;
+    }
+    habitsEl.innerHTML = habits.map(h => {
+      const done = h.completions && h.completions[todayKey()];
+      const streak = calcStreak(h);
+      return `<div class="quick-habit-item">
+        <div class="habit-check ${done ? 'done' : ''}" data-hid="${h.id}" onclick="toggleHabitToday('${h.id}',this)">${done ? '✓' : ''}</div>
+        <span class="quick-habit-name">${escHtml(h.name)}</span>
+        <span class="quick-habit-streak">${streak > 0 ? '🔥 ' + streak + 'd' : ''}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleHabitToday(id, el) {
+    const habits = load('habits', []);
+    const h = habits.find(x => x.id === id);
+    if (!h) return;
+    if (!h.completions) h.completions = {};
+    if (h.completions[todayKey()]) {
+      delete h.completions[todayKey()];
+      el.classList.remove('done');
+      el.textContent = '';
+    } else {
+      h.completions[todayKey()] = true;
+      el.classList.add('done');
+      el.textContent = '✓';
+    }
+    save('habits', habits);
+    renderToday();
+  }
+
+  /* ══════════════════════════════════════════
+     PLANNER TAB
+  ══════════════════════════════════════════ */
+  let plannerDate = new Date();
+  plannerDate.setHours(0,0,0,0);
+
+  const SLOTS = [];
+  for (let h = 5; h <= 23; h++) {
+    SLOTS.push({ hour: h, min: 0 });
+    if (h < 23) SLOTS.push({ hour: h, min: 30 });
+  }
+
+  function slotId(h, m) { return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
+  function fmtSlot(h, m) {
+    const period = h < 12 ? 'AM' : 'PM';
+    const displayH = h > 12 ? h - 12 : h === 0 ? 12 : h;
+    return `${displayH}:${String(m).padStart(2,'0')} ${period}`;
+  }
+
+  function renderPlanner() {
+    const dk = dateKey(plannerDate);
+    document.getElementById('plannerDateDisplay').textContent = fmtDate(plannerDate);
+
+    const tasks = load('tasks', {});
+    const dayTasks = tasks[dk] || {};
+
+    let doneCount = 0, totalWithTask = 0;
+
+    const html = SLOTS.map(s => {
+      const sid = slotId(s.hour, s.min);
+      const t = dayTasks[sid] || { task: '', done: false };
+      const isHour = s.min === 0;
+      const isDone = t.done && t.task;
+      if (t.task) totalWithTask++;
+      if (isDone) doneCount++;
+      return `<div class="time-block ${isDone ? 'is-done' : ''}" id="block-${sid}">
+        <span class="time-label ${isHour ? 'hour' : ''}">${fmtSlot(s.hour, s.min)}</span>
+        <input class="time-task-input ${t.task ? 'has-task' : ''}" type="text"
+          placeholder="Add task..."
+          value="${escHtml(t.task)}"
+          data-slot="${sid}"
+          onchange="saveTask('${dk}','${sid}',this.value)"
+          oninput="updateBlockStyle(this)">
+        <button class="time-done-btn ${isDone ? 'done' : ''}"
+          data-slot="${sid}"
+          onclick="toggleTask('${dk}','${sid}',this)">${isDone ? '✓' : ''}</button>
+      </div>`;
+    }).join('');
+
+    document.getElementById('plannerBlocks').innerHTML = html;
+
+    const pct = totalWithTask > 0 ? Math.round(doneCount / totalWithTask * 100) : 0;
+    document.getElementById('plannerProgressLabel').textContent = `${doneCount} of ${totalWithTask} tasks done`;
+    document.getElementById('plannerProgressBar').style.width = pct + '%';
+  }
+
+  function updateBlockStyle(input) {
+    input.classList.toggle('has-task', input.value.trim().length > 0);
+  }
+
+  function saveTask(dk, sid, val) {
+    const tasks = load('tasks', {});
+    if (!tasks[dk]) tasks[dk] = {};
+    if (!tasks[dk][sid]) tasks[dk][sid] = { task: '', done: false };
+    tasks[dk][sid].task = val.trim();
+    save('tasks', tasks);
+    updatePlannerProgress(dk);
+    renderToday();
+  }
+
+  function toggleTask(dk, sid, btn) {
+    const tasks = load('tasks', {});
+    if (!tasks[dk]) tasks[dk] = {};
+    if (!tasks[dk][sid]) tasks[dk][sid] = { task: '', done: false };
+    if (!tasks[dk][sid].task) return;
+    tasks[dk][sid].done = !tasks[dk][sid].done;
+    save('tasks', tasks);
+    const isDone = tasks[dk][sid].done;
+    const block = document.getElementById('block-' + sid);
+    block.classList.toggle('is-done', isDone);
+    btn.classList.toggle('done', isDone);
+    btn.textContent = isDone ? '✓' : '';
+    updatePlannerProgress(dk);
+    renderToday();
+  }
+
+  function updatePlannerProgress(dk) {
+    const tasks = load('tasks', {});
+    const dayTasks = tasks[dk] || {};
+    let done = 0, total = 0;
+    Object.values(dayTasks).forEach(t => { if (t.task) { total++; if (t.done) done++; } });
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    document.getElementById('plannerProgressLabel').textContent = `${done} of ${total} tasks done`;
+    document.getElementById('plannerProgressBar').style.width = pct + '%';
+  }
+
+  document.getElementById('plannerPrev').addEventListener('click', () => {
+    plannerDate.setDate(plannerDate.getDate() - 1);
+    renderPlanner();
+  });
+  document.getElementById('plannerNext').addEventListener('click', () => {
+    plannerDate.setDate(plannerDate.getDate() + 1);
+    renderPlanner();
+  });
+
+  /* ══════════════════════════════════════════
+     HABITS TAB
+  ══════════════════════════════════════════ */
+  function calcStreak(h) {
+    if (!h.completions) return 0;
+    let streak = 0;
+    const d = new Date(); d.setHours(0,0,0,0);
+    while (true) {
+      if (h.completions[dateKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
+      else break;
+    }
+    return streak;
+  }
+
+  function getLast7Days() {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i);
+      days.push(d);
+    }
+    return days;
+  }
+
+  function renderHabits() {
+    const habits = load('habits', []);
+    const days = getLast7Days();
+    const tk = todayKey();
+
+    const doneToday = habits.filter(h => h.completions && h.completions[tk]).length;
+    const bestStreak = habits.reduce((best, h) => Math.max(best, calcStreak(h)), 0);
+
+    const summaryEl = document.getElementById('habitsSummary');
+    if (habits.length > 0) {
+      summaryEl.innerHTML = `
+        <div class="habits-summary-chip"><strong>${doneToday}/${habits.length}</strong> done today</div>
+        <div class="habits-summary-chip">Best streak: <strong>🔥 ${bestStreak} days</strong></div>
+        <div class="habits-summary-chip"><strong>${habits.length}</strong> active habit${habits.length !== 1 ? 's' : ''}</div>
+      `;
+    } else {
+      summaryEl.innerHTML = '';
+    }
+
+    const listEl = document.getElementById('habitsList');
+    if (habits.length === 0) {
+      listEl.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔥</div>No habits yet. Add your first one above.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = habits.map(h => {
+      const streak = calcStreak(h);
+      const doneToday = h.completions && h.completions[tk];
+      const dotsHtml = days.map(d => {
+        const dk = dateKey(d);
+        const isToday = dk === tk;
+        const done = h.completions && h.completions[dk];
+        const dayLabel = d.toLocaleDateString('en-US', { weekday: 'narrow' });
+        return `<div class="habit-dot ${done ? 'completed' : ''} ${isToday ? 'today-dot' : ''}"
+          onclick="toggleHabitDay('${h.id}','${dk}')"
+          title="${fmtShortDate(d)}">${dayLabel}</div>`;
+      }).join('');
+
+      return `<div class="habit-card ${doneToday ? 'done-today' : ''}" id="hcard-${h.id}">
+        <div class="habit-card-top">
+          <div class="habit-check ${doneToday ? 'done' : ''}" onclick="toggleHabitDay('${h.id}','${tk}')">${doneToday ? '✓' : ''}</div>
+          <div class="habit-card-name">${escHtml(h.name)}</div>
+          ${streak > 0 ? `<div class="habit-streak">🔥 ${streak}d</div>` : ''}
+          <button class="habit-delete" onclick="deleteHabit('${h.id}')" title="Delete habit">✕</button>
+        </div>
+        <div class="habit-dots">${dotsHtml}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleHabitDay(id, dk) {
+    const habits = load('habits', []);
+    const h = habits.find(x => x.id === id);
+    if (!h) return;
+    if (!h.completions) h.completions = {};
+    if (h.completions[dk]) delete h.completions[dk];
+    else h.completions[dk] = true;
+    save('habits', habits);
+    renderHabits();
+    renderToday();
+  }
+
+  function deleteHabit(id) {
+    const habits = load('habits', []).filter(h => h.id !== id);
+    save('habits', habits);
+    renderHabits();
+    renderToday();
+  }
+
+  document.getElementById('habitAddBtn').addEventListener('click', () => {
+    const input = document.getElementById('habitInput');
+    const name = input.value.trim();
+    if (!name) return;
+    const habits = load('habits', []);
+    habits.push({ id: Date.now().toString(), name, completions: {} });
+    save('habits', habits);
+    input.value = '';
+    renderHabits();
+    renderToday();
+  });
+  document.getElementById('habitInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('habitAddBtn').click();
+  });
+
+  /* ══════════════════════════════════════════
+     BUDGET TAB
+  ══════════════════════════════════════════ */
+  const CAT_COLORS = ['#c9952a','#6bcb77','#4d96ff','#ff6b6b','#ffd700','#cc5de8','#74c0fc','#ff9f43'];
+
+  function renderBudget() {
+    const budget = load('budget', { income: '', goal: '', expenses: [] });
+    document.getElementById('budgetIncome').value = budget.income || '';
+    document.getElementById('budgetGoal').value = budget.goal || '';
+    renderExpenseList(budget.expenses || []);
+    updateBudgetSummary();
+  }
+
+  function renderExpenseList(expenses) {
+    const el = document.getElementById('expenseList');
+    if (!expenses.length) {
+      el.innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-state-icon">💸</div>No expenses added yet.</div>`;
+      return;
+    }
+    el.innerHTML = expenses.map((e, i) => `
+      <div class="expense-item">
+        <div class="expense-cat-dot" style="background:${CAT_COLORS[i % CAT_COLORS.length]}"></div>
+        <div class="expense-name">${escHtml(e.name)}</div>
+        <div class="expense-amount">$${parseFloat(e.amount).toFixed(2)}</div>
+        <button class="expense-del" onclick="deleteExpense('${e.id}')">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function updateBudgetSummary() {
+    const budget = load('budget', { income: '', goal: '', expenses: [] });
+    const income = parseFloat(budget.income) || 0;
+    const expenses = budget.expenses || [];
+    const totalExp = expenses.reduce((a, e) => a + (parseFloat(e.amount) || 0), 0);
+    const remaining = income - totalExp;
+    const savingsRate = income > 0 ? Math.round((remaining / income) * 100) : 0;
+    const goal = parseFloat(budget.goal) || 0;
+
+    const summaryEl = document.getElementById('budgetSummary');
+    summaryEl.innerHTML = `
+      <div class="budget-stat">
+        <div class="budget-stat-val">$${income.toFixed(2)}</div>
+        <div class="budget-stat-label">MONTHLY INCOME</div>
+      </div>
+      <div class="budget-stat">
+        <div class="budget-stat-val">$${totalExp.toFixed(2)}</div>
+        <div class="budget-stat-label">TOTAL EXPENSES</div>
+      </div>
+      <div class="budget-stat">
+        <div class="budget-stat-val ${remaining < 0 ? 'negative' : remaining > 0 ? 'positive' : ''}">
+          ${remaining < 0 ? '-' : ''}$${Math.abs(remaining).toFixed(2)}
+        </div>
+        <div class="budget-stat-label">REMAINING</div>
+      </div>
+      <div class="budget-stat">
+        <div class="budget-stat-val ${savingsRate < 0 ? 'negative' : savingsRate >= 20 ? 'positive' : ''}">${savingsRate}%</div>
+        <div class="budget-stat-label">SAVINGS RATE</div>
+      </div>
+    `;
+
+    const goalSection = document.getElementById('budgetGoalSection');
+    if (goal > 0 && income > 0) {
+      goalSection.style.display = 'block';
+      const pct = Math.min(100, Math.round((Math.max(0, remaining) / goal) * 100));
+      document.getElementById('goalProgressText').textContent = `$${Math.max(0, remaining).toFixed(0)} / $${goal.toFixed(0)} (${pct}%)`;
+      document.getElementById('goalProgressBar').style.width = pct + '%';
+    } else {
+      goalSection.style.display = 'none';
+    }
+  }
+
+  document.getElementById('budgetIncome').addEventListener('input', () => {
+    const b = load('budget', { income: '', goal: '', expenses: [] });
+    b.income = document.getElementById('budgetIncome').value;
+    save('budget', b);
+    updateBudgetSummary();
+    renderToday();
+  });
+  document.getElementById('budgetGoal').addEventListener('input', () => {
+    const b = load('budget', { income: '', goal: '', expenses: [] });
+    b.goal = document.getElementById('budgetGoal').value;
+    save('budget', b);
+    updateBudgetSummary();
+  });
+
+  document.getElementById('expenseAddBtn').addEventListener('click', () => {
+    const name = document.getElementById('expenseName').value.trim();
+    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    if (!name || isNaN(amount) || amount <= 0) return;
+    const b = load('budget', { income: '', goal: '', expenses: [] });
+    if (!b.expenses) b.expenses = [];
+    b.expenses.push({ id: Date.now().toString(), name, amount: amount.toFixed(2) });
+    save('budget', b);
+    document.getElementById('expenseName').value = '';
+    document.getElementById('expenseAmount').value = '';
+    renderExpenseList(b.expenses);
+    updateBudgetSummary();
+    renderToday();
+  });
+  document.getElementById('expenseAmount').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('expenseAddBtn').click();
+  });
+
+  function deleteExpense(id) {
+    const b = load('budget', { income: '', goal: '', expenses: [] });
+    b.expenses = (b.expenses || []).filter(e => e.id !== id);
+    save('budget', b);
+    renderExpenseList(b.expenses);
+    updateBudgetSummary();
+    renderToday();
+  }
+
+  /* ══════════════════════════════════════════
+     CONTENT TAB
+  ══════════════════════════════════════════ */
+  const CONTENT = [
+    {
+      cat: 'discipline',
+      tag: 'DAILY CHALLENGE',
+      title: 'The 1% Rule: Improve One Thing Every Day',
+      body: `<p>Most people overestimate what they can do in a week and underestimate what they can do in a year. The 1% rule is simple: focus on getting <strong>1% better at one thing</strong> per day.</p>
+      <p>This week's challenge: Pick one area — fitness, finance, relationships, or skill — and commit to one tiny improvement every single day. Log it in your Planner.</p>
+      <p><strong>Action:</strong> Open your planner right now and block 15 minutes each day this week for your chosen area.</p>`
+    },
+    {
+      cat: 'mindset',
+      tag: 'MINDSET',
+      title: 'Stop Waiting for Motivation — Build Systems Instead',
+      body: `<p>Motivation is unreliable. It shows up when things are exciting and vanishes when things get hard. <strong>Systems are what carry you when motivation is gone.</strong></p>
+      <p>A system is a set of habits and routines that run on autopilot. You don't decide whether to work out — it's Tuesday, and Tuesday is gym day. You don't decide whether to track your budget — it's Sunday, and Sunday is money review day.</p>
+      <p><strong>Build one system this month:</strong> Pick a habit in your tracker, assign it a specific time daily, and commit to it for 30 days straight. Watch what happens.</p>`
+    },
+    {
+      cat: 'finance',
+      tag: 'FINANCE',
+      title: 'The 50/30/20 Rule Simplified',
+      body: `<p>The simplest budgeting framework ever: split your after-tax income into three buckets.</p>
+      <p><strong>50% Needs</strong> — Rent, utilities, groceries, transport, minimum debt payments.<br>
+      <strong>30% Wants</strong> — Dining out, subscriptions, entertainment, clothing upgrades.<br>
+      <strong>20% Savings & Debt</strong> — Emergency fund, investing, paying off debt faster.</p>
+      <p>Use your Budget Calculator above to see how your current split compares. Most people spend 60-70% on needs. If that's you, the goal isn't guilt — it's <strong>finding one thing to cut</strong>.</p>`
+    },
+    {
+      cat: 'health',
+      tag: 'HEALTH',
+      title: 'The Non-Negotiable Morning Stack',
+      body: `<p>Your first 60 minutes set the tone for everything that follows. Here's a minimal stack that costs nothing and changes everything:</p>
+      <p><strong>1. Hydrate first.</strong> Drink 500ml of water before anything else. Your body is dehydrated from 8 hours of sleep.<br>
+      <strong>2. No phone for 20 minutes.</strong> Don't let someone else's agenda colonize your mind before you've had time to set your own.<br>
+      <strong>3. Move.</strong> 10 minutes of walking, stretching, or light training. Not for fitness — for mental clarity.<br>
+      <strong>4. Set three intentions.</strong> What are the three most important things you will do today? Write them in your Planner.</p>`
+    },
+    {
+      cat: 'discipline',
+      tag: 'DISCIPLINE',
+      title: 'Why Your Environment Is Sabotaging You',
+      body: `<p>You cannot consistently win against a bad environment. If junk food is in your house, you will eat it. If your phone is on your desk, you will pick it up. If your workout gear is buried in a closet, you will not work out.</p>
+      <p><strong>Environment design</strong> is the highest-leverage discipline hack. Make good behaviors easy and bad behaviors hard.</p>
+      <p>This week: audit your environment. Remove two things that trigger bad habits. Place two things that trigger good habits where you will see them immediately.</p>`
+    },
+    {
+      cat: 'mindset',
+      tag: 'MINDSET',
+      title: 'Identity-Based Change: Who Are You Becoming?',
+      body: `<p>Most people set outcome goals: lose 20 pounds, save $10,000, read 12 books. These goals focus on <em>what</em> you want. But the most powerful shift is focusing on <em>who</em> you want to become.</p>
+      <p>Instead of "I want to run a marathon," say "I am a runner." Instead of "I want to save money," say "I am someone who builds wealth."</p>
+      <p><strong>Every action you take is a vote for the identity you want to hold.</strong> One habit in your tracker isn't just a task to check off — it's evidence that you are becoming the person you want to be.</p>`
+    },
+    {
+      cat: 'finance',
+      tag: 'FINANCE',
+      title: 'The Three Accounts Everyone Should Have',
+      body: `<p>Financial clarity starts with separation. If all your money lives in one account, you can't see what's actually available for spending versus saving.</p>
+      <p><strong>Account 1: Operating.</strong> Your paycheck goes here. Bills and daily expenses come out of here. Target balance: 1-2 months of expenses.<br>
+      <strong>Account 2: Emergency Fund.</strong> 3-6 months of living expenses. High-yield savings. You do not touch this unless something breaks or you lose income.<br>
+      <strong>Account 3: Growth.</strong> Everything above your operating and emergency buffer goes here. This is your wealth-building account — investing, index funds, business capital.</p>`
+    },
+    {
+      cat: 'health',
+      tag: 'HEALTH',
+      title: 'Sleep Is the Ultimate Performance Drug',
+      body: `<p>No supplement, no workout program, no diet will overcome the damage of poor sleep. Sleep is when your body repairs muscle, consolidates memory, balances hormones, and clears metabolic waste from your brain.</p>
+      <p>The science is clear: <strong>less than 7 hours of sleep consistently impairs judgment, willpower, and physical performance</strong> as severely as being legally drunk.</p>
+      <p>Add a habit called "In bed by [time]" to your tracker. Protect your sleep window like you protect your most important meeting. Because it is.</p>`
+    },
+    {
+      cat: 'discipline',
+      tag: 'WEEKLY FOCUS',
+      title: 'This Week: The Hard Thing First',
+      body: `<p>Every day this week, identify the one task you are most tempted to avoid — and do it first. Before email, before social media, before anything easy.</p>
+      <p>This practice, called "eating the frog," trains your brain to associate mornings with hard work instead of distraction. It also means your most important work gets done when your willpower is highest.</p>
+      <p>Use your Planner. Put the hard task in the first block of your day. Do this for 7 days straight and notice the difference in how you feel by Friday.</p>`
+    },
+    {
+      cat: 'mindset',
+      tag: 'MINDSET',
+      title: 'The Gap Between Input and Output',
+      body: `<p>Most people consume far more than they produce. They read books but don't apply them. They watch motivational videos but don't take action. They think about goals but don't plan steps.</p>
+      <p>The gap between input and output is where mediocrity lives. <strong>Close the gap.</strong></p>
+      <p>For every piece of content you consume this week — every article, video, or podcast — write one action it suggests and put it in your Planner. Information without action is just entertainment.</p>`
+    },
+  ];
+
+  function renderContent(filter) {
+    const filtered = filter === 'all' ? CONTENT : CONTENT.filter(c => c.cat === filter);
+    const el = document.getElementById('contentCards');
+    el.innerHTML = filtered.map(c => `
+      <div class="content-card">
+        <div class="content-tag">${c.tag}</div>
+        <div class="content-card-title">${c.title}</div>
+        <div class="content-card-body">${c.body}</div>
+      </div>
+    `).join('');
+  }
+
+  document.querySelectorAll('.content-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.content-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderContent(btn.dataset.content);
+    });
+  });
+
+  /* ══════════════════════════════════════════
+     UTILS
+  ══════════════════════════════════════════ */
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ══════════════════════════════════════════
+     INIT
+  ══════════════════════════════════════════ */
+  renderToday();
+  renderPlanner();
+  renderContent('all');
+
+  </script>
+</body>
+</html>
