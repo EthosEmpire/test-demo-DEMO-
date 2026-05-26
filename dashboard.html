@@ -1290,6 +1290,9 @@
     const htFtIn = htCm ? (() => { const totalIn = Math.round(htCm/2.54); const ft=Math.floor(totalIn/12); const inch=totalIn%12; return `${ft}'${inch}"`; })() : '';
     const wtLb = wtKg ? Math.round(wtKg*2.20462) : 0;
 
+    // Store unit data globally so setUnits() can access it after DOM render
+    window._ppUnits = { htCm, wtKg, htFtIn, wtLb };
+
     h += `<div class="plan-section open" id="psProfile">
       <div class="plan-section-hdr" onclick="psToggle('psProfile')">
         <span>👤</span> YOUR PROFILE
@@ -1302,30 +1305,14 @@
       <div class="plan-section-body">
         <div class="plan-stat-row" id="profileStatRow">
           ${pp.age     ? `<div class="plan-stat-box"><div class="plan-stat-box-num">${pp.age}</div><div class="plan-stat-box-lbl">AGE</div></div>` : ''}
-          ${htCm ? `<div class="plan-stat-box" id="statHeight">
-            <div class="plan-stat-box-num"><span id="htVal">${htCm}</span><span style="font-size:0.85rem" id="htUnit">cm</span></div>
-            <div class="plan-stat-box-lbl">HEIGHT</div></div>` : ''}
-          ${wtKg ? `<div class="plan-stat-box" id="statWeight">
-            <div class="plan-stat-box-num"><span id="wtVal">${wtKg}</span><span style="font-size:0.85rem" id="wtUnit">kg</span></div>
-            <div class="plan-stat-box-lbl">WEIGHT</div></div>` : ''}
+          ${htCm ? `<div class="plan-stat-box" id="statHeight"><div class="plan-stat-box-num"><span id="htVal">${htCm}</span><span style="font-size:0.85rem" id="htUnit">cm</span></div><div class="plan-stat-box-lbl">HEIGHT</div></div>` : ''}
+          ${wtKg ? `<div class="plan-stat-box" id="statWeight"><div class="plan-stat-box-num"><span id="wtVal">${wtKg}</span><span style="font-size:0.85rem" id="wtUnit">kg</span></div><div class="plan-stat-box-lbl">WEIGHT</div></div>` : ''}
           ${pp.bmi ? `<div class="plan-stat-box"><div class="plan-stat-box-num" style="color:${bmiColor}">${pp.bmi}</div><div class="plan-stat-box-lbl">BMI</div></div>` : ''}
         </div>
         ${pp.bmi ? `<div style="font-size:0.8rem;color:${bmiColor};margin-bottom:12px;">${bmiLabel}</div>` : ''}
         <div style="display:flex;flex-wrap:wrap;gap:7px;">${(pp.goals||[]).map(g=>`<span class="plan-goal-chip">${GOAL_NAMES[g]||g}</span>`).join('')}</div>
       </div>
-    </div>
-    <script>
-      window._ppUnits = { htCm:${htCm}, wtKg:${wtKg}, htFtIn:'${htFtIn}', wtLb:${wtLb} };
-      function setUnits(mode) {
-        const u = window._ppUnits;
-        document.getElementById('unitBtnMetric').classList.toggle('active', mode==='metric');
-        document.getElementById('unitBtnImperial').classList.toggle('active', mode==='imperial');
-        const htEl = document.getElementById('htVal'); const htUEl = document.getElementById('htUnit');
-        const wtEl = document.getElementById('wtVal'); const wtUEl = document.getElementById('wtUnit');
-        if (htEl) { htEl.textContent = mode==='metric' ? u.htCm : u.htFtIn; if(htUEl) htUEl.textContent = mode==='metric' ? 'cm' : ''; }
-        if (wtEl) { wtEl.textContent = mode==='metric' ? u.wtKg : u.wtLb; if(wtUEl) wtUEl.textContent = mode==='metric' ? 'kg' : 'lb'; }
-      }
-    <\/script>
+    </div>`;
 
     const trainAM = has('fitness') || has('weight');
     const amItems = [
@@ -1532,6 +1519,23 @@
   function psToggle(id) {
     const sec = document.getElementById(id);
     if (sec) sec.classList.toggle('open');
+  }
+
+  function setUnits(mode) {
+    const u = window._ppUnits || {};
+    const metric = mode === 'metric';
+    const mBtn = document.getElementById('unitBtnMetric');
+    const iBtn = document.getElementById('unitBtnImperial');
+    if (mBtn) mBtn.classList.toggle('active', metric);
+    if (iBtn) iBtn.classList.toggle('active', !metric);
+    const htEl = document.getElementById('htVal');
+    const htUEl = document.getElementById('htUnit');
+    const wtEl = document.getElementById('wtVal');
+    const wtUEl = document.getElementById('wtUnit');
+    if (htEl) htEl.textContent = metric ? (u.htCm || '') : (u.htFtIn || '');
+    if (htUEl) htUEl.textContent = metric ? 'cm' : '';
+    if (wtEl) wtEl.textContent = metric ? (u.wtKg || '') : (u.wtLb || '');
+    if (wtUEl) wtUEl.textContent = metric ? 'kg' : 'lb';
   }
 
   /* ─ Quotes ─ */
@@ -2086,10 +2090,10 @@
     });
     panelsHtml += `</div>`;
 
-    // Store block data for JS use
-    const blockDataScript = `<script>window._htlBlocks=${JSON.stringify(blocks.map((b,i)=>({i,title:b.title,m:b.m})))};window._htlAutoOpen=${autoOpenIdx};<\/script>`;
+    // Set auto-open index directly (innerHTML-injected scripts don't execute)
+    window._htlAutoOpen = autoOpenIdx;
 
-    return trackHtml + panelsHtml + expandHtml + blockDataScript;
+    return trackHtml + panelsHtml + expandHtml;
   }
 
   function htlToggle(idx) {
