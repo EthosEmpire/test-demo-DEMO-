@@ -351,10 +351,9 @@
         track your money, and feed your mind — every single month.
       </p>
 
-      <!-- ⚠ Replace #stripe-link with your Stripe Payment Link. In your Stripe Dashboard set the success URL to: https://ethosempire.org/dashboard.html?paid=true -->
-      <a href="https://buy.stripe.com/test_aFa8wH8di7Z61wAbaCbsc00" class="plan-cta-btn" id="mainCTA">
+      <button class="plan-cta-btn" id="mainCTA" onclick="startCheckout(this)">
         Start Building &nbsp;→
-      </a>
+      </button>
 
       <p class="plan-cancel-note">Cancel anytime &nbsp;·&nbsp; No contracts &nbsp;·&nbsp; Instant access</p>
     </section>
@@ -506,10 +505,9 @@
     <section class="plan-bottom-cta">
       <h2>Ready to stop talking and start building?</h2>
       <p>Every day without a plan is a day you're leaving to chance. Empire Builder gives you the structure to win daily.</p>
-      <!-- ⚠ Replace #stripe-link with your Stripe Payment Link -->
-      <a href="https://buy.stripe.com/test_aFa8wH8di7Z61wAbaCbsc00" class="plan-cta-btn">
+      <button class="plan-cta-btn" onclick="startCheckout(this)">
         Join Empire Builder &nbsp;→
-      </a>
+      </button>
       <p class="plan-cancel-note" style="margin-top:16px;">Cancel anytime &nbsp;·&nbsp; No contracts &nbsp;·&nbsp; $30/month</p>
     </section>
 
@@ -526,6 +524,63 @@
   </div>
 
   <script src="matrix.js"></script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABZ1GlwOK1YizD1LzlGKHOZ6vUsUSW3sI",
+      authDomain: "ethos-empire.firebaseapp.com",
+      projectId: "ethos-empire",
+      storageBucket: "ethos-empire.firebasestorage.app",
+      messagingSenderId: "56025972719",
+      appId: "1:56025972719:web:7d4f546719980cbe01c01a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Expose checkout function to global scope for the onclick handlers
+    window.startCheckout = async (btn) => {
+      const user = auth.currentUser;
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Redirecting to checkout...';
+      try {
+        const token = await user.getIdToken();
+        const res = await fetch('/api/create-checkout', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Start Building →';
+          alert('Something went wrong. Please try again.');
+        }
+      } catch {
+        btn.disabled = false;
+        btn.textContent = 'Start Building →';
+        alert('Something went wrong. Please try again.');
+      }
+    };
+
+    // If not logged in when clicking subscribe, redirect to login
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        document.querySelectorAll('.plan-cta-btn').forEach(btn => {
+          btn.onclick = () => { window.location.href = 'login.html'; };
+        });
+      }
+    });
+  </script>
+
   <script>
     /* FAQ accordion */
     document.querySelectorAll('.faq-q').forEach(q => {

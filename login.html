@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | Ethos Empire</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" sizes="48x48" href="images/favicon-48x48.png">
+  <link rel="stylesheet" href="tailwind.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=3">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,215,0,0.15);
+      border-radius: 24px;
+      padding: 40px 36px;
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      text-decoration: none;
+    }
+    .auth-logo img { width: 38px; height: 38px; border-radius: 9px; }
+    .auth-logo span {
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      color: var(--gold-3);
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .auth-tab.active {
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      color: #000;
+    }
+
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+
+    .auth-field { margin-bottom: 16px; }
+    .auth-field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 8px;
+    }
+    .auth-field input {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .auth-field input:focus { border-color: var(--gold-2); }
+    .auth-field input::placeholder { color: rgba(255,255,255,0.25); }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      color: #000;
+      font-size: 0.88rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      margin-top: 8px;
+    }
+    .auth-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .auth-divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+    .auth-divider span {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em;
+    }
+
+    .google-btn {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.2s, border-color 0.2s;
+      font-family: inherit;
+    }
+    .google-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.25); }
+    .google-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .auth-error {
+      background: rgba(255, 80, 80, 0.12);
+      border: 1px solid rgba(255, 80, 80, 0.3);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.83rem;
+      color: #ff8080;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-error.show { display: block; }
+
+    .auth-back {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+    .auth-back:hover { color: var(--gold-3); }
+  </style>
+</head>
+<body>
+
+  <div class="page-matrix-layer" aria-hidden="true">
+    <canvas id="pageMatrixCanvas" class="page-matrix-canvas"></canvas>
+    <div class="page-matrix-vignette"></div>
+  </div>
+
+  <div class="auth-page">
+    <div class="auth-card">
+
+      <a href="index.html" class="auth-logo">
+        <img src="images/ethos-empire-logo.webp" alt="Ethos Empire">
+        <span>ETHOS EMPIRE</span>
+      </a>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabSignIn">Sign In</button>
+        <button class="auth-tab" id="tabCreate">Create Account</button>
+      </div>
+
+      <div class="auth-error" id="authError"></div>
+
+      <!-- Sign In Form -->
+      <div class="auth-form active" id="formSignIn">
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="siEmail" placeholder="your@email.com" autocomplete="email">
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="siPassword" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="auth-btn" id="signInBtn">Sign In</button>
+        <div class="auth-divider">
+          <div class="auth-divider-line"></div>
+          <span>OR</span>
+          <div class="auth-divider-line"></div>
+        </div>
+        <button class="google-btn" id="googleSignInBtn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <!-- Create Account Form -->
+      <div class="auth-form" id="formCreate">
+        <div class="auth-field">
+          <label>Full Name</label>
+          <input type="text" id="caName" placeholder="Your name" autocomplete="name">
+        </div>
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="caEmail" placeholder="your@email.com" autocomplete="email">
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="caPassword" placeholder="At least 6 characters" autocomplete="new-password">
+        </div>
+        <button class="auth-btn" id="createBtn">Create Account</button>
+        <div class="auth-divider">
+          <div class="auth-divider-line"></div>
+          <span>OR</span>
+          <div class="auth-divider-line"></div>
+        </div>
+        <button class="google-btn" id="googleCreateBtn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Sign up with Google
+        </button>
+      </div>
+
+      <a href="index.html" class="auth-back">← Back to Ethos Empire</a>
+    </div>
+  </div>
+
+  <script src="matrix.js"></script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signInWithPopup,
+      GoogleAuthProvider,
+      onAuthStateChanged
+    } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABZ1GlwOK1YizD1LzlGKHOZ6vUsUSW3sI",
+      authDomain: "ethos-empire.firebaseapp.com",
+      projectId: "ethos-empire",
+      storageBucket: "ethos-empire.firebasestorage.app",
+      messagingSenderId: "56025972719",
+      appId: "1:56025972719:web:7d4f546719980cbe01c01a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // If already signed in, redirect immediately
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      await redirectAfterAuth(user);
+    });
+
+    function showError(msg) {
+      const el = document.getElementById('authError');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+    function clearError() {
+      document.getElementById('authError').classList.remove('show');
+    }
+    function setLoading(btn, loading) {
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Please wait...' : btn.dataset.label;
+    }
+
+    // After auth, decide where to send the user
+    async function redirectAfterAuth(user) {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        // Brand new user — create their Firestore document
+        await setDoc(userRef, {
+          uid: user.uid,
+          name: user.displayName || '',
+          email: user.email,
+          stripeCustomerId: null,
+          subscriptionStatus: 'none',
+          plan: null,
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        window.location.replace('onboarding.html');
+        return;
+      }
+
+      // Returning user — update last login
+      await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
+
+      const profile = userSnap.data();
+
+      // If onboarding not done yet, send there
+      if (!profile.onboardingComplete) {
+        window.location.replace('onboarding.html');
+        return;
+      }
+
+      // If active subscription, go to dashboard
+      if (profile.subscriptionStatus === 'active' || profile.subscriptionStatus === 'trialing') {
+        window.location.replace('dashboard.html');
+        return;
+      }
+
+      // Otherwise send to plan page to subscribe
+      window.location.replace('plan.html');
+    }
+
+    // Tab switching
+    document.getElementById('tabSignIn').addEventListener('click', () => {
+      document.getElementById('tabSignIn').classList.add('active');
+      document.getElementById('tabCreate').classList.remove('active');
+      document.getElementById('formSignIn').classList.add('active');
+      document.getElementById('formCreate').classList.remove('active');
+      clearError();
+    });
+    document.getElementById('tabCreate').addEventListener('click', () => {
+      document.getElementById('tabCreate').classList.add('active');
+      document.getElementById('tabSignIn').classList.remove('active');
+      document.getElementById('formCreate').classList.add('active');
+      document.getElementById('formSignIn').classList.remove('active');
+      clearError();
+    });
+
+    // Store button labels
+    document.getElementById('signInBtn').dataset.label = 'Sign In';
+    document.getElementById('createBtn').dataset.label = 'Create Account';
+
+    // Sign In
+    document.getElementById('signInBtn').addEventListener('click', async () => {
+      clearError();
+      const email = document.getElementById('siEmail').value.trim();
+      const password = document.getElementById('siPassword').value;
+      if (!email || !password) return showError('Please fill in all fields.');
+      const btn = document.getElementById('signInBtn');
+      setLoading(btn, true);
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged handles the redirect
+      } catch (err) {
+        setLoading(btn, false);
+        showError(friendlyError(err.code));
+      }
+    });
+
+    // Create Account
+    document.getElementById('createBtn').addEventListener('click', async () => {
+      clearError();
+      const name = document.getElementById('caName').value.trim();
+      const email = document.getElementById('caEmail').value.trim();
+      const password = document.getElementById('caPassword').value;
+      if (!name || !email || !password) return showError('Please fill in all fields.');
+      if (password.length < 6) return showError('Password must be at least 6 characters.');
+      const btn = document.getElementById('createBtn');
+      setLoading(btn, true);
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        // Manually create Firestore doc with name since displayName isn't set yet
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid,
+          name,
+          email,
+          stripeCustomerId: null,
+          subscriptionStatus: 'none',
+          plan: null,
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        window.location.replace('onboarding.html');
+      } catch (err) {
+        setLoading(btn, false);
+        showError(friendlyError(err.code));
+      }
+    });
+
+    // Google Sign In / Sign Up (same button, same flow)
+    async function googleAuth() {
+      clearError();
+      try {
+        await signInWithPopup(auth, googleProvider);
+        // onAuthStateChanged handles redirect
+      } catch (err) {
+        if (err.code !== 'auth/popup-closed-by-user') {
+          showError(friendlyError(err.code));
+        }
+      }
+    }
+    document.getElementById('googleSignInBtn').addEventListener('click', googleAuth);
+    document.getElementById('googleCreateBtn').addEventListener('click', googleAuth);
+
+    // Enter key support
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const signInActive = document.getElementById('formSignIn').classList.contains('active');
+      if (signInActive) document.getElementById('signInBtn').click();
+      else document.getElementById('createBtn').click();
+    });
+
+    function friendlyError(code) {
+      const map = {
+        'auth/user-not-found': 'No account found with that email.',
+        'auth/wrong-password': 'Incorrect password. Try again.',
+        'auth/invalid-email': 'Please enter a valid email address.',
+        'auth/email-already-in-use': 'An account with this email already exists. Sign in instead.',
+        'auth/weak-password': 'Password must be at least 6 characters.',
+        'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
+        'auth/invalid-credential': 'Incorrect email or password.',
+        'auth/network-request-failed': 'Network error. Check your connection.'
+      };
+      return map[code] || 'Something went wrong. Please try again.';
+    }
+  </script>
+
+</body>
+</html>

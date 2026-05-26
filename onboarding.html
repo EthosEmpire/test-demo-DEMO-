@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Plan | Ethos Empire</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="48x48" href="images/favicon-48x48.png">
+  <link rel="stylesheet" href="tailwind.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=3">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    .ob-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 32px 20px 60px; }
+
+    .ob-header { text-align: center; margin-bottom: 36px; }
+    .ob-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 24px; }
+    .ob-logo img { width: 36px; height: 36px; border-radius: 9px; }
+    .ob-logo span { font-weight: 900; font-size: 0.95rem; letter-spacing: 0.12em; color: var(--gold-3); }
+
+    .ob-progress { display: flex; align-items: center; gap: 6px; justify-content: center; margin-bottom: 8px; }
+    .ob-step-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); transition: background 0.3s; }
+    .ob-step-dot.active { background: var(--gold-2); }
+    .ob-step-dot.done { background: var(--gold-1); }
+    .ob-step-label { font-size: 0.72rem; color: rgba(255,255,255,0.35); letter-spacing: 0.15em; margin-top: 6px; }
+
+    .ob-card { width: 100%; max-width: 560px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,215,0,0.15); border-radius: 24px; padding: 36px 32px; position: relative; z-index: 1; }
+    .ob-step { display: none; }
+    .ob-step.active { display: block; }
+
+    .ob-step-title { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900; color: #fff; margin-bottom: 8px; }
+    .ob-step-title span { color: var(--gold-3); }
+    .ob-step-sub { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin-bottom: 28px; line-height: 1.6; }
+
+    .ob-field { margin-bottom: 20px; }
+    .ob-field label { display: block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; color: rgba(255,255,255,0.45); margin-bottom: 8px; }
+    .ob-field input, .ob-field select, .ob-field textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .ob-field input:focus, .ob-field select:focus, .ob-field textarea:focus { border-color: var(--gold-2); }
+    .ob-field input::placeholder, .ob-field textarea::placeholder { color: rgba(255,255,255,0.25); }
+    .ob-field textarea { resize: vertical; min-height: 90px; }
+    .ob-field select option { background: #111; color: #fff; }
+
+    .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 480px) { .ob-row { grid-template-columns: 1fr; } .ob-card { padding: 28px 20px; } }
+
+    .ob-unit-row { display: flex; gap: 10px; align-items: flex-end; }
+    .ob-unit-row .ob-field { flex: 1; margin-bottom: 0; }
+    .unit-toggle { display: flex; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+    .unit-btn { padding: 8px 14px; border: none; background: transparent; color: rgba(255,255,255,0.4); font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+    .unit-btn.active { background: var(--gold-2); color: #000; }
+
+    .goals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 400px) { .goals-grid { grid-template-columns: 1fr; } }
+    .goal-card {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(255,255,255,0.03);
+    }
+    .goal-card:hover { border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.04); }
+    .goal-card.selected { border-color: var(--gold-2); background: rgba(255,215,0,0.08); }
+    .goal-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .goal-text { font-size: 0.83rem; font-weight: 700; color: rgba(255,255,255,0.75); line-height: 1.3; }
+    .goal-card.selected .goal-text { color: var(--gold-4); }
+
+    .ob-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      color: #000;
+      font-size: 0.88rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      margin-top: 24px;
+      font-family: inherit;
+    }
+    .ob-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .ob-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .ob-btn-outline {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      font-family: inherit;
+      letter-spacing: 0.08em;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .ob-btn-outline:hover { color: var(--gold-3); border-color: var(--gold-3); }
+
+    .ob-error { color: #ff8080; font-size: 0.82rem; margin-top: 10px; display: none; }
+    .ob-error.show { display: block; }
+
+    /* ── Plan output ── */
+    .plan-output { display: none; }
+    .plan-output.show { display: block; }
+
+    .plan-section {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .plan-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .plan-section-icon { font-size: 1.4rem; }
+    .plan-section-title { font-size: 1rem; font-weight: 800; color: var(--gold-3); letter-spacing: 0.05em; }
+
+    .plan-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .plan-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .plan-item-time { font-size: 0.78rem; font-weight: 800; color: var(--gold-2); min-width: 70px; flex-shrink: 0; letter-spacing: 0.04em; }
+    .plan-item-content { flex: 1; }
+    .plan-item-title { font-size: 0.88rem; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .plan-item-desc { font-size: 0.78rem; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+    .plan-list { list-style: none; padding: 0; margin: 0; }
+    .plan-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 0.86rem;
+      color: rgba(255,255,255,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      line-height: 1.5;
+    }
+    .plan-list li:last-child { border-bottom: none; }
+    .plan-list li::before { content: "→"; color: var(--gold-2); flex-shrink: 0; font-weight: 700; }
+
+    .plan-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: var(--gold-2);
+      background: rgba(255,215,0,0.08);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 20px;
+      padding: 4px 12px;
+      margin: 0 4px 8px 0;
+    }
+
+    .plan-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .plan-day { text-align: center; }
+    .plan-day-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); margin-bottom: 6px; }
+    .plan-day-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 8px 4px; }
+    .plan-day-focus { font-size: 0.65rem; color: rgba(255,255,255,0.5); line-height: 1.4; }
+    .plan-day-card.highlight { border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.05); }
+    .plan-day-card.highlight .plan-day-focus { color: var(--gold-4); }
+
+    .bmi-bar-wrap { background: rgba(255,255,255,0.08); border-radius: 20px; height: 8px; margin: 10px 0; overflow: hidden; }
+    .bmi-bar { height: 100%; border-radius: 20px; transition: width 0.6s ease; }
+
+    .profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+    .profile-stat { text-align: center; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px 8px; }
+    .profile-stat-val { font-size: 1.4rem; font-weight: 900; color: var(--gold-3); }
+    .profile-stat-label { font-size: 0.65rem; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; margin-top: 4px; }
+
+    .reading-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .reading-card:last-child { border-bottom: none; }
+    .reading-num { font-size: 1.1rem; font-weight: 900; color: rgba(255,215,0,0.3); min-width: 28px; }
+    .reading-info { flex: 1; }
+    .reading-title { font-size: 0.88rem; font-weight: 800; color: #fff; margin-bottom: 2px; }
+    .reading-why { font-size: 0.75rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+  <div class="page-matrix-layer" aria-hidden="true">
+    <canvas id="pageMatrixCanvas" class="page-matrix-canvas"></canvas>
+    <div class="page-matrix-vignette"></div>
+  </div>
+
+  <div class="ob-page">
+    <div class="ob-header">
+      <div class="ob-logo">
+        <img src="images/ethos-empire-logo.webp" alt="Ethos Empire" width="36" height="36">
+        <span>ETHOS EMPIRE</span>
+      </div>
+      <div class="ob-progress">
+        <div class="ob-step-dot active" id="dot1"></div>
+        <div class="ob-step-dot" id="dot2"></div>
+        <div class="ob-step-dot" id="dot3"></div>
+        <div class="ob-step-dot" id="dot4"></div>
+      </div>
+      <div class="ob-step-label" id="stepLabel">STEP 1 OF 4</div>
+    </div>
+
+    <div class="ob-card">
+
+      <!-- Step 1: About You -->
+      <div class="ob-step active" id="step1">
+        <div class="ob-step-title">Tell us about <span>yourself</span></div>
+        <div class="ob-step-sub">We'll use this to build a plan made exactly for you.</div>
+
+        <div class="ob-field">
+          <label>Your Name</label>
+          <input type="text" id="obName" placeholder="What should we call you?">
+        </div>
+        <div class="ob-field">
+          <label>Date of Birth</label>
+          <input type="date" id="obDob" max="">
+        </div>
+
+        <div class="ob-error" id="err1"></div>
+        <button class="ob-btn" id="next1Btn">Continue →</button>
+      </div>
+
+      <!-- Step 2: Body Stats -->
+      <div class="ob-step" id="step2">
+        <div class="ob-step-title">Your <span>body stats</span></div>
+        <div class="ob-step-sub">Used to calculate your BMI and build a health plan suited to you.</div>
+
+        <div class="ob-field">
+          <label>Height</label>
+          <div class="ob-unit-row">
+            <div class="ob-field" style="margin-bottom:0;">
+              <input type="number" id="obHeightFt" placeholder="Feet" min="3" max="8" style="margin-bottom:6px;">
+              <input type="number" id="obHeightIn" placeholder="Inches (0–11)" min="0" max="11">
+            </div>
+            <div>
+              <div class="unit-toggle" id="heightUnits" style="margin-bottom:6px;">
+                <button class="unit-btn active" data-unit="imperial">ft/in</button>
+                <button class="unit-btn" data-unit="metric">cm</button>
+              </div>
+            </div>
+          </div>
+          <input type="number" id="obHeightCm" placeholder="Height in cm" min="100" max="250" style="display:none;margin-top:8px;">
+        </div>
+
+        <div class="ob-field">
+          <label>Weight</label>
+          <div class="ob-unit-row">
+            <div class="ob-field" style="flex:1;margin-bottom:0;">
+              <input type="number" id="obWeightLbs" placeholder="Pounds (lbs)" min="60" max="700">
+              <input type="number" id="obWeightKg" placeholder="Kilograms (kg)" min="30" max="300" style="display:none;margin-top:8px;">
+            </div>
+            <div>
+              <div class="unit-toggle" id="weightUnits">
+                <button class="unit-btn active" data-unit="lbs">lbs</button>
+                <button class="unit-btn" data-unit="kg">kg</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ob-error" id="err2"></div>
+        <button class="ob-btn" id="next2Btn">Continue →</button>
+        <button class="ob-btn-outline" id="back2Btn">← Back</button>
+      </div>
+
+      <!-- Step 3: Goals -->
+      <div class="ob-step" id="step3">
+        <div class="ob-step-title">What's your <span>mission?</span></div>
+        <div class="ob-step-sub">Pick everything that applies. Your plan adapts to all of them.</div>
+
+        <div class="goals-grid">
+          <div class="goal-card" data-goal="fitness"><span class="goal-icon">💪</span><span class="goal-text">Build Muscle & Get Fit</span></div>
+          <div class="goal-card" data-goal="weight"><span class="goal-icon">⚖️</span><span class="goal-text">Lose Weight</span></div>
+          <div class="goal-card" data-goal="discipline"><span class="goal-icon">🔥</span><span class="goal-text">Build Discipline</span></div>
+          <div class="goal-card" data-goal="mindset"><span class="goal-icon">🧠</span><span class="goal-text">Master My Mindset</span></div>
+          <div class="goal-card" data-goal="finance"><span class="goal-icon">💰</span><span class="goal-text">Build Financial Wealth</span></div>
+          <div class="goal-card" data-goal="confidence"><span class="goal-icon">😎</span><span class="goal-text">Build Confidence</span></div>
+          <div class="goal-card" data-goal="glowup"><span class="goal-icon">✨</span><span class="goal-text">Glow Up (Appearance)</span></div>
+          <div class="goal-card" data-goal="career"><span class="goal-icon">📈</span><span class="goal-text">Career & Academic Growth</span></div>
+        </div>
+
+        <div class="ob-field">
+          <label>Anything else? (Optional)</label>
+          <textarea id="obCustomGoal" placeholder="Tell us more about what you want to achieve..."></textarea>
+        </div>
+
+        <div class="ob-error" id="err3"></div>
+        <button class="ob-btn" id="next3Btn">Build My Plan →</button>
+        <button class="ob-btn-outline" id="back3Btn">← Back</button>
+      </div>
+
+      <!-- Step 4: Your Plan -->
+      <div class="ob-step" id="step4">
+        <div class="ob-step-title">Your <span>Empire Plan</span></div>
+        <div class="ob-step-sub" id="planSubtitle">Built just for you. Read it. Own it. Execute it.</div>
+        <div id="planOutput"></div>
+        <button class="ob-btn" id="enterDashBtn">Enter Your Dashboard →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="matrix.js"></script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABZ1GlwOK1YizD1LzlGKHOZ6vUsUSW3sI",
+      authDomain: "ethos-empire.firebaseapp.com",
+      projectId: "ethos-empire",
+      storageBucket: "ethos-empire.firebasestorage.app",
+      messagingSenderId: "56025972719",
+      appId: "1:56025972719:web:7d4f546719980cbe01c01a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let currentStep = 1;
+    let selectedGoals = [];
+    let obData = {};
+
+    // Require auth
+    onAuthStateChanged(auth, (user) => {
+      if (!user) { window.location.replace('login.html'); return; }
+      currentUser = user;
+      // Pre-fill name if available
+      if (user.displayName) document.getElementById('obName').value = user.displayName;
+    });
+
+    // Set max date for DOB (must be at least 13)
+    const maxDob = new Date();
+    maxDob.setFullYear(maxDob.getFullYear() - 13);
+    document.getElementById('obDob').max = maxDob.toISOString().split('T')[0];
+
+    // ── Goal selection ──
+    document.querySelectorAll('.goal-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('selected');
+        const g = card.dataset.goal;
+        if (card.classList.contains('selected')) selectedGoals.push(g);
+        else selectedGoals = selectedGoals.filter(x => x !== g);
+      });
+    });
+
+    // ── Unit toggles ──
+    document.querySelectorAll('.unit-toggle').forEach(toggle => {
+      toggle.querySelectorAll('.unit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          toggle.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          if (toggle.id === 'heightUnits') {
+            const isMetric = btn.dataset.unit === 'metric';
+            document.getElementById('obHeightFt').style.display = isMetric ? 'none' : '';
+            document.getElementById('obHeightIn').style.display = isMetric ? 'none' : '';
+            document.getElementById('obHeightCm').style.display = isMetric ? '' : 'none';
+          }
+          if (toggle.id === 'weightUnits') {
+            const isKg = btn.dataset.unit === 'kg';
+            document.getElementById('obWeightLbs').style.display = isKg ? 'none' : '';
+            document.getElementById('obWeightKg').style.display = isKg ? '' : 'none';
+          }
+        });
+      });
+    });
+
+    // ── Step navigation ──
+    function setStep(n) {
+      document.querySelectorAll('.ob-step').forEach((s, i) => {
+        s.classList.toggle('active', i + 1 === n);
+      });
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById('dot' + i);
+        dot.classList.remove('active', 'done');
+        if (i < n) dot.classList.add('done');
+        else if (i === n) dot.classList.add('active');
+      }
+      document.getElementById('stepLabel').textContent = `STEP ${n} OF 4`;
+      currentStep = n;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+    function clearError(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    // Step 1 → 2
+    document.getElementById('next1Btn').addEventListener('click', () => {
+      clearError('err1');
+      const name = document.getElementById('obName').value.trim();
+      const dob = document.getElementById('obDob').value;
+      if (!name) return showError('err1', 'Please enter your name.');
+      if (!dob) return showError('err1', 'Please enter your date of birth.');
+      obData.name = name;
+      obData.dob = dob;
+      obData.age = calcAge(dob);
+      setStep(2);
+    });
+
+    // Step 2 → 3
+    document.getElementById('next2Btn').addEventListener('click', () => {
+      clearError('err2');
+      const heightMetric = document.getElementById('heightUnits').querySelector('.unit-btn.active').dataset.unit === 'metric';
+      const weightKg = document.getElementById('weightUnits').querySelector('.unit-btn.active').dataset.unit === 'kg';
+
+      let heightCm, weightKg_val;
+
+      if (heightMetric) {
+        heightCm = parseFloat(document.getElementById('obHeightCm').value);
+        if (!heightCm || heightCm < 100 || heightCm > 250) return showError('err2', 'Please enter a valid height in cm.');
+      } else {
+        const ft = parseFloat(document.getElementById('obHeightFt').value) || 0;
+        const inches = parseFloat(document.getElementById('obHeightIn').value) || 0;
+        if (!ft) return showError('err2', 'Please enter your height in feet.');
+        heightCm = (ft * 12 + inches) * 2.54;
+      }
+
+      if (weightKg) {
+        weightKg_val = parseFloat(document.getElementById('obWeightKg').value);
+        if (!weightKg_val || weightKg_val < 30) return showError('err2', 'Please enter a valid weight in kg.');
+      } else {
+        const lbs = parseFloat(document.getElementById('obWeightLbs').value);
+        if (!lbs || lbs < 60) return showError('err2', 'Please enter a valid weight in lbs.');
+        weightKg_val = lbs * 0.453592;
+      }
+
+      obData.heightCm = Math.round(heightCm);
+      obData.weightKg = Math.round(weightKg_val * 10) / 10;
+      obData.bmi = calcBMI(heightCm, weightKg_val);
+      obData.bmiCategory = getBMICategory(obData.bmi);
+      setStep(3);
+    });
+
+    document.getElementById('back2Btn').addEventListener('click', () => setStep(1));
+
+    // Step 3 → 4 (Generate Plan)
+    document.getElementById('next3Btn').addEventListener('click', () => {
+      clearError('err3');
+      if (selectedGoals.length === 0) return showError('err3', 'Please select at least one goal.');
+      obData.goals = [...selectedGoals];
+      obData.customGoal = document.getElementById('obCustomGoal').value.trim();
+
+      document.getElementById('planSubtitle').textContent =
+        `Built for ${obData.name}, Age ${obData.age}. Read it. Own it. Execute it every day.`;
+
+      document.getElementById('planOutput').innerHTML = generatePlan(obData);
+      setStep(4);
+    });
+
+    document.getElementById('back3Btn').addEventListener('click', () => setStep(2));
+
+    // Enter Dashboard — save to Firestore
+    document.getElementById('enterDashBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('enterDashBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving your plan...';
+
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          name: obData.name,
+          profile: {
+            dob: obData.dob,
+            age: obData.age,
+            heightCm: obData.heightCm,
+            weightKg: obData.weightKg,
+            bmi: obData.bmi,
+            bmiCategory: obData.bmiCategory,
+            goals: obData.goals,
+            customGoal: obData.customGoal || ''
+          },
+          onboardingComplete: true,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        window.location.replace('plan.html');
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.textContent = 'Enter Your Dashboard →';
+      }
+    });
+
+    // ── Helpers ──
+    function calcAge(dob) {
+      const today = new Date();
+      const b = new Date(dob);
+      let age = today.getFullYear() - b.getFullYear();
+      if (today.getMonth() < b.getMonth() || (today.getMonth() === b.getMonth() && today.getDate() < b.getDate())) age--;
+      return age;
+    }
+
+    function calcBMI(heightCm, weightKg) {
+      const h = heightCm / 100;
+      return Math.round((weightKg / (h * h)) * 10) / 10;
+    }
+
+    function getBMICategory(bmi) {
+      if (bmi < 18.5) return { label: 'Underweight', color: '#74c0fc', advice: 'Focus on building lean muscle and eating in a caloric surplus with high protein.' };
+      if (bmi < 25) return { label: 'Healthy Weight', color: '#6bcb77', advice: 'Maintain with strength training and balanced nutrition.' };
+      if (bmi < 30) return { label: 'Overweight', color: '#ffd700', advice: 'Prioritize a caloric deficit, cardio 3–4x per week, and tracking your food.' };
+      return { label: 'Obese', color: '#ff6b6b', advice: 'Start with daily walks, cut processed food, track calories. Small consistent steps win.' };
+    }
+
+    // ══════════════════════════════════════════
+    // PLAN GENERATOR
+    // ══════════════════════════════════════════
+    function generatePlan(d) {
+      const has = (g) => d.goals.includes(g);
+      const bmiPct = Math.min(100, Math.max(5, ((d.bmi - 15) / 25) * 100));
+      const bmiColor = d.bmiCategory.color;
+
+      let html = '';
+
+      // ── Profile Card ──
+      html += `<div class="plan-section">
+        <div class="plan-section-header"><span class="plan-section-icon">👤</span><span class="plan-section-title">YOUR PROFILE</span></div>
+        <div class="profile-stats">
+          <div class="profile-stat"><div class="profile-stat-val">${d.age}</div><div class="profile-stat-label">AGE</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${d.heightCm}cm</div><div class="profile-stat-label">HEIGHT</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${d.weightKg}kg</div><div class="profile-stat-label">WEIGHT</div></div>
+        </div>
+        <div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.78rem;color:rgba(255,255,255,0.4);">BMI: <strong style="color:${bmiColor}">${d.bmi} — ${d.bmiCategory.label}</strong></span>
+        </div>
+        <div class="bmi-bar-wrap"><div class="bmi-bar" style="width:${bmiPct}%;background:${bmiColor};"></div></div>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-top:10px;line-height:1.6;">${d.bmiCategory.advice}</p>
+        <div style="margin-top:12px;">${d.goals.map(g => `<span class="plan-tag">${goalLabel(g)}</span>`).join('')}</div>
+        ${d.customGoal ? `<p style="font-size:0.82rem;color:rgba(255,255,255,0.45);margin-top:8px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;font-style:italic;">"${d.customGoal}"</p>` : ''}
+      </div>`;
+
+      // ── Daily Command Schedule ──
+      const morningRoutine = buildMorningRoutine(d);
+      html += `<div class="plan-section">
+        <div class="plan-section-header"><span class="plan-section-icon">⏰</span><span class="plan-section-title">DAILY COMMAND SCHEDULE</span></div>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:14px;">Your non-negotiable daily structure. Follow this every day, no exceptions.</p>
+        ${morningRoutine.map(item => `
+          <div class="plan-item">
+            <div class="plan-item-time">${item.time}</div>
+            <div class="plan-item-content">
+              <div class="plan-item-title">${item.title}</div>
+              <div class="plan-item-desc">${item.desc}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+
+      // ── Health & Fitness ──
+      if (has('fitness') || has('weight') || has('glowup')) {
+        html += `<div class="plan-section">
+          <div class="plan-section-header"><span class="plan-section-icon">💪</span><span class="plan-section-title">FITNESS & HEALTH PROTOCOL</span></div>
+          ${buildFitnessPlan(d)}
+        </div>`;
+      }
+
+      // ── Mindset & Discipline ──
+      if (has('discipline') || has('mindset') || has('confidence')) {
+        html += `<div class="plan-section">
+          <div class="plan-section-header"><span class="plan-section-icon">🧠</span><span class="plan-section-title">MINDSET & DISCIPLINE FRAMEWORK</span></div>
+          ${buildMindsetPlan(d)}
+        </div>`;
+      }
+
+      // ── Finance ──
+      if (has('finance')) {
+        html += `<div class="plan-section">
+          <div class="plan-section-header"><span class="plan-section-icon">💰</span><span class="plan-section-title">FINANCIAL EMPIRE PLAN</span></div>
+          ${buildFinancePlan(d)}
+        </div>`;
+      }
+
+      // ── Glow Up ──
+      if (has('glowup') || has('confidence')) {
+        html += `<div class="plan-section">
+          <div class="plan-section-header"><span class="plan-section-icon">✨</span><span class="plan-section-title">GLOW UP PROTOCOL</span></div>
+          ${buildGlowUpPlan(d)}
+        </div>`;
+      }
+
+      // ── Career ──
+      if (has('career')) {
+        html += `<div class="plan-section">
+          <div class="plan-section-header"><span class="plan-section-icon">📈</span><span class="plan-section-title">CAREER & GROWTH SYSTEM</span></div>
+          ${buildCareerPlan(d)}
+        </div>`;
+      }
+
+      // ── Weekly Schedule ──
+      html += `<div class="plan-section">
+        <div class="plan-section-header"><span class="plan-section-icon">📅</span><span class="plan-section-title">YOUR WEEKLY STRUCTURE</span></div>
+        ${buildWeeklySchedule(d)}
+      </div>`;
+
+      // ── 30-Day Challenge ──
+      html += `<div class="plan-section">
+        <div class="plan-section-header"><span class="plan-section-icon">🔥</span><span class="plan-section-title">30-DAY LAUNCH CHALLENGE</span></div>
+        ${build30DayChallenge(d)}
+      </div>`;
+
+      // ── Daily Habits to Build ──
+      html += `<div class="plan-section">
+        <div class="plan-section-header"><span class="plan-section-icon">✅</span><span class="plan-section-title">HABITS TO ADD TO YOUR TRACKER</span></div>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:14px;">Add these to your Habit Tracker tab inside the dashboard right now.</p>
+        <ul class="plan-list">${buildHabits(d).map(h => `<li>${h}</li>`).join('')}</ul>
+      </div>`;
+
+      // ── Reading List ──
+      html += `<div class="plan-section">
+        <div class="plan-section-header"><span class="plan-section-icon">📚</span><span class="plan-section-title">YOUR READING LIST</span></div>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:14px;">Read one of these per month. Each one will change how you think.</p>
+        ${buildReadingList(d).map((b, i) => `
+          <div class="reading-card">
+            <div class="reading-num">${String(i + 1).padStart(2, '0')}</div>
+            <div class="reading-info">
+              <div class="reading-title">${b.title} — <em style="font-weight:400;color:rgba(255,255,255,0.5);">${b.author}</em></div>
+              <div class="reading-why">${b.why}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+
+      // ── Final Message ──
+      html += `<div style="text-align:center;padding:24px 0 8px;">
+        <p style="font-size:1rem;font-weight:800;color:var(--gold-3);margin-bottom:8px;">This is your blueprint, ${d.name}.</p>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.45);line-height:1.7;">Nobody is coming to save you. Nobody is going to build your empire for you. You have the plan. Now all you owe yourself is execution — one day at a time.</p>
+      </div>`;
+
+      return html;
+    }
+
+    function goalLabel(g) {
+      const m = { fitness:'Build Muscle', weight:'Lose Weight', discipline:'Discipline', mindset:'Mindset', finance:'Finance', confidence:'Confidence', glowup:'Glow Up', career:'Career' };
+      return m[g] || g;
+    }
+
+    function buildMorningRoutine(d) {
+      const has = (g) => d.goals.includes(g);
+      const workout = has('fitness') || has('weight') || has('glowup');
+      return [
+        { time: '5:30 AM', title: 'Wake Up — No Snooze', desc: 'The moment the alarm goes off, you stand up. No negotiation. This is the first discipline rep of your day.' },
+        { time: '5:35 AM', title: 'Hydrate First', desc: 'Drink 500ml of water immediately. Your body is dehydrated after 8 hours. Coffee comes after water, never before.' },
+        { time: '5:45 AM', title: workout ? 'Morning Training' : 'Morning Movement', desc: workout ? 'Hit your workout. See your training plan below for what to do each day.' : '20 minutes of walking, stretching, or light exercise. Movement builds momentum.' },
+        { time: has('glowup') ? '6:30 AM' : '6:15 AM', title: 'Cold Shower', desc: 'End every shower with 30–60 seconds of cold water. Builds mental toughness, improves energy, sharpens focus. Non-negotiable.' },
+        { time: '6:40 AM', title: 'Morning Journal', desc: 'Write 3 things you are grateful for. Write today\'s 3 most important tasks. This primes your brain for execution, not scrolling.' },
+        { time: '7:00 AM', title: 'High-Protein Breakfast', desc: 'Minimum 30g of protein. Eggs, Greek yogurt, protein shake. Protein in the morning reduces cravings and fuels muscle recovery.' },
+        { time: '7:20 AM', title: 'Review Your Plan', desc: 'Open your dashboard. Check habits, plan your planner blocks for today. 10 minutes of intentional planning saves 2 hours of chaos.' },
+        { time: '10:00 PM', title: 'No Screens', desc: 'Phone goes face-down at 10 PM. Blue light destroys melatonin production. Protect your sleep like you protect your goals.' },
+        { time: '10:30 PM', title: 'Evening Journal', desc: 'Write what you accomplished today. What you\'ll do better tomorrow. Gratitude. This closes the day intentionally.' },
+        { time: '11:00 PM', title: 'Lights Out', desc: '7–8 hours of sleep is not laziness — it\'s when your body repairs muscle, resets hormones, and consolidates everything you learned.' }
+      ];
+    }
+
+    function buildFitnessPlan(d) {
+      const bmi = d.bmi;
+      const hasWeight = d.goals.includes('weight');
+      const hasFitness = d.goals.includes('fitness');
+
+      let plan = '';
+
+      if (hasFitness && !hasWeight) {
+        plan += `<p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.7;"><strong style="color:var(--gold-4);">Goal: Build Muscle & Strength.</strong> You need to be in a slight caloric surplus (200–300 calories above maintenance) with high protein intake (0.8–1g per lb of bodyweight).</p>`;
+        plan += `<p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin-bottom:10px;">5-DAY TRAINING SPLIT</p>`;
+        plan += `<ul class="plan-list">
+          <li><strong>Monday — Push:</strong> Chest, Shoulders, Triceps. Bench press, overhead press, dips, lateral raises.</li>
+          <li><strong>Tuesday — Pull:</strong> Back, Biceps. Pull-ups, barbell rows, face pulls, hammer curls.</li>
+          <li><strong>Wednesday — Legs:</strong> Squats, Romanian deadlifts, leg press, calf raises.</li>
+          <li><strong>Thursday — Upper Body:</strong> Incline press, seated rows, shoulder press, arm work.</li>
+          <li><strong>Friday — Lower Body + Core:</strong> Deadlifts, Bulgarian split squats, leg curls, planks.</li>
+          <li><strong>Saturday — Active Recovery:</strong> 30-min walk, stretching, mobility work.</li>
+          <li><strong>Sunday — Rest:</strong> Sleep 9 hours, eat well, prepare for the week.</li>
+        </ul>`;
+      } else if (hasWeight || bmi >= 25) {
+        plan += `<p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.7;"><strong style="color:var(--gold-4);">Goal: Fat Loss.</strong> You need to be in a 300–500 calorie daily deficit. Track everything you eat for the first 30 days. Strength train to preserve muscle while losing fat.</p>`;
+        plan += `<ul class="plan-list">
+          <li><strong>Monday + Thursday:</strong> Full body strength training — squats, bench, rows, overhead press. 3 sets each, 8–12 reps.</li>
+          <li><strong>Tuesday + Friday:</strong> 30–45 min steady-state cardio — brisk walking, cycling, treadmill incline walking.</li>
+          <li><strong>Wednesday:</strong> HIIT — 20 minutes. 30 seconds all-out sprint, 90 seconds walk. Repeat 8 times.</li>
+          <li><strong>Saturday:</strong> Long walk (45–60 min) + stretching.</li>
+          <li><strong>Sunday:</strong> Rest and meal prep for the week.</li>
+          <li><strong>Nutrition target:</strong> ${Math.round(d.weightKg * 2.2 * 12)}–${Math.round(d.weightKg * 2.2 * 14)} calories/day. ${Math.round(d.weightKg * 2.2 * 0.7)}g protein minimum.</li>
+        </ul>`;
+      }
+
+      plan += `<p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">NUTRITION NON-NEGOTIABLES</p>`;
+      plan += `<ul class="plan-list">
+        <li>Drink 2–3 litres of water daily. Most people are chronically dehydrated.</li>
+        <li>Eat protein with every single meal. This is not optional.</li>
+        <li>Limit ultra-processed food to maximum 1 meal per week.</li>
+        <li>Eat vegetables with at least 2 meals per day — fibre controls hunger and feeds your gut.</li>
+        <li>Sleep 7–9 hours. Sleep deprivation increases cortisol, kills muscle gains, and spikes hunger.</li>
+        <li>Weigh yourself every morning. Use a 7-day average to track real progress (ignore daily fluctuations).</li>
+      </ul>`;
+
+      return plan;
+    }
+
+    function buildMindsetPlan(d) {
+      const has = (g) => d.goals.includes(g);
+      let plan = '';
+
+      plan += `<p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.7;">Discipline is not something you feel. It's something you build through repetition until it becomes identity. Here's how you wire it in.</p>`;
+
+      plan += `<p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin-bottom:10px;">THE 5 LAWS YOU LIVE BY</p>`;
+      plan += `<ul class="plan-list">
+        <li><strong>Do the hard thing first.</strong> Every morning, identify your most avoided task and do it before anything else. This is called eating the frog.</li>
+        <li><strong>No phone for the first 30 minutes.</strong> Your first 30 minutes set the direction of your day. Don't let someone else's notifications hijack your mind.</li>
+        <li><strong>Keep every promise you make to yourself.</strong> Every broken promise to yourself is a vote that you can't be trusted. Keep the small ones first.</li>
+        <li><strong>Embrace discomfort as a signal, not a stop sign.</strong> Every time you feel resistance toward something important, that's where you must go.</li>
+        <li><strong>Identity over outcome.</strong> Don't say "I want to be disciplined." Say "I am someone who does what needs to be done." Act from identity.</li>
+      </ul>`;
+
+      if (has('confidence')) {
+        plan += `<p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">CONFIDENCE BUILDING SYSTEM</p>`;
+        plan += `<ul class="plan-list">
+          <li><strong>Keep micro-commitments.</strong> Confidence is built through evidence. Every time you do what you said you'd do, you collect a confidence vote.</li>
+          <li><strong>Eye contact rule:</strong> Hold eye contact in every conversation until the other person looks away first. Practice daily.</li>
+          <li><strong>Speak first.</strong> In every social situation, be the first to introduce yourself or break silence. Do this once per day.</li>
+          <li><strong>Stand and sit like you own the room.</strong> Back straight, shoulders back, chin parallel to the floor. Your posture is a message to your nervous system.</li>
+          <li><strong>Weekly social challenge:</strong> Each week, do one thing that makes you slightly uncomfortable socially — start a conversation, ask for something, speak in a group.</li>
+        </ul>`;
+      }
+
+      plan += `<p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">DAILY MINDSET PRACTICES</p>`;
+      plan += `<ul class="plan-list">
+        <li><strong>Morning journal:</strong> 3 gratitudes, 3 daily intentions, 1 focus word. Takes 5 minutes, changes your default state.</li>
+        <li><strong>Meditation:</strong> Start with 5 minutes of box breathing — 4 counts in, hold 4, out 4, hold 4. Work up to 15 minutes.</li>
+        <li><strong>Evening reflection:</strong> What went well? What will I improve tomorrow? Did I act like the person I want to become?</li>
+        <li><strong>Weekly review (Sunday):</strong> Review your habits, planner, and goals. Score your week 1–10 and write why. Adjust your plan.</li>
+        <li><strong>Read 10 pages per day.</strong> Not social media. Not YouTube. A real book. 10 pages daily = 12 books per year.</li>
+      </ul>`;
+
+      return plan;
+    }
+
+    function buildFinancePlan(d) {
+      return `<p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.7;">Building wealth is simple — but not easy. Most people fail not from lack of knowledge but from lack of consistency. Here's your system.</p>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin-bottom:10px;">THE 3-ACCOUNT SYSTEM</p>
+      <ul class="plan-list">
+        <li><strong>Operating Account:</strong> Where your paycheck lands. Bills, rent, daily expenses come from here. Keep 1–2 months of expenses here at all times.</li>
+        <li><strong>Emergency Fund:</strong> 3–6 months of living expenses. High-yield savings account. Never touch unless you lose income or face a genuine emergency.</li>
+        <li><strong>Growth Account:</strong> Everything above your buffer. This is your wealth-building account — index funds, investing, business capital.</li>
+      </ul>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">THE 50/30/20 BUDGET RULE</p>
+      <ul class="plan-list">
+        <li><strong>50% Needs:</strong> Rent, food, utilities, transport, minimum debt payments.</li>
+        <li><strong>30% Wants:</strong> Entertainment, dining out, subscriptions, clothes, hobbies.</li>
+        <li><strong>20% Savings & Investing:</strong> Emergency fund first, then index funds or business investment.</li>
+      </ul>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">WEEKLY MONEY HABITS</p>
+      <ul class="plan-list">
+        <li>Every Sunday: review last week's spending in your Budget Calculator. Takes 10 minutes.</li>
+        <li>Track every expense for the first 60 days. Awareness is the first step to control.</li>
+        <li>Delete or cancel any subscription you haven't used in 30 days — right now, not later.</li>
+        <li>Automate savings: set up an automatic transfer on payday. Pay yourself first before spending anything.</li>
+        <li>Never buy anything over $50 impulsively. Apply the 48-hour rule — wait 2 days. If you still want it, buy it. Most of the time you won't.</li>
+        <li>Build one income stream this year: resell, freelance, content, skill-based service. Even $200/month extra changes the trajectory.</li>
+      </ul>`;
+    }
+
+    function buildGlowUpPlan(d) {
+      return `<p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.7;">A glow up is not just physical — it's the totality of showing up as the best, cleanest, sharpest version of yourself every single day.</p>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin-bottom:10px;">SKINCARE FOUNDATION (MORNING)</p>
+      <ul class="plan-list">
+        <li><strong>Cleanser:</strong> Wash your face with a gentle cleanser every morning. Non-negotiable — removes sweat and excess oil from overnight.</li>
+        <li><strong>Vitamin C Serum:</strong> Apply before moisturiser. Brightens skin, reduces dark spots, boosts collagen.</li>
+        <li><strong>Moisturiser:</strong> Hydrated skin is healthy skin. Use one suited to your skin type (oily: gel-based, dry: cream-based).</li>
+        <li><strong>SPF 30+:</strong> Apply sunscreen every morning, even indoors. UV light is the #1 cause of premature ageing. This single habit protects your face for decades.</li>
+      </ul>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">SKINCARE (EVENING)</p>
+      <ul class="plan-list">
+        <li><strong>Double cleanse:</strong> Oil cleanser first to remove SPF, then a gentle cleanser.</li>
+        <li><strong>Retinol (2–3x per week):</strong> The most proven anti-ageing ingredient. Start with 0.025%, work up slowly. Apply at night.</li>
+        <li><strong>Hydrating moisturiser:</strong> Lock in moisture overnight when skin repairs itself.</li>
+      </ul>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">HAIR, GROOMING & STYLE</p>
+      <ul class="plan-list">
+        <li><strong>Find your signature haircut</strong> and get it every 4–6 weeks. A fresh cut costs less than most people spend on one meal out.</li>
+        <li><strong>Skincare beats all makeup.</strong> Good skin is the foundation. Everything else is secondary.</li>
+        <li><strong>Build a minimal wardrobe</strong> that fits your body and current shape. Well-fitted basics beat trendy ill-fitting clothes every time.</li>
+        <li><strong>Smell good every day.</strong> Deodorant minimum. Learn one or two fragrances that complement your energy.</li>
+        <li><strong>Posture is your first outfit.</strong> Head up, shoulders back, walk with intention. People read your posture before they hear your words.</li>
+        <li><strong>Teeth:</strong> Brush twice, floss once. Whitening strips 1x per month. A good smile is one of the most overlooked high-leverage investments.</li>
+      </ul>`;
+    }
+
+    function buildCareerPlan(d) {
+      return `<p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.7;">Career growth is not about working harder in the same direction. It's about getting so good they can't ignore you — and then positioning yourself where that value is rewarded.</p>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin-bottom:10px;">THE SKILL-STACK SYSTEM</p>
+      <ul class="plan-list">
+        <li><strong>Identify your 1 core skill</strong> — the thing you want to be known for. Go deep on this before going wide.</li>
+        <li><strong>Dedicate 1 focused hour per day</strong> to deliberate practice of that skill. Not passive learning — active application and feedback.</li>
+        <li><strong>Add complementary skills:</strong> Communication + any technical skill = explosive value. Writing + your core skill = personal brand.</li>
+        <li><strong>Build in public.</strong> Share what you're learning on social media. Your learning journal is your portfolio before you have a portfolio.</li>
+      </ul>
+      <p style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.12em;margin:14px 0 10px;">DAILY EXECUTION</p>
+      <ul class="plan-list">
+        <li><strong>Deep work block:</strong> Every day, block 90–120 minutes of distraction-free work on your most important skill or project. Phone off, door closed.</li>
+        <li><strong>Learn before you scroll:</strong> Replace your first 20 minutes of phone time with reading, a course, or a skill-building exercise.</li>
+        <li><strong>Network with intention:</strong> Send one message per week to someone doing work you admire. Ask one real question. Relationships compound like money.</li>
+        <li><strong>Monthly review:</strong> What have I shipped? What did I learn? What is my next milestone? Write the answers down every month.</li>
+      </ul>`;
+    }
+
+    function buildWeeklySchedule(d) {
+      const has = (g) => d.goals.includes(g);
+      const workout = has('fitness') || has('weight');
+      const days = [
+        { label: 'MON', focus: workout ? 'Push\nTraining' : 'Deep Work', highlight: true },
+        { label: 'TUE', focus: workout ? 'Pull\nTraining' : 'Skills', highlight: false },
+        { label: 'WED', focus: workout ? 'Leg\nDay' : 'Reflection', highlight: true },
+        { label: 'THU', focus: workout ? 'Upper\nBody' : 'Deep Work', highlight: false },
+        { label: 'FRI', focus: workout ? 'Lower\n+ Core' : 'Skills', highlight: true },
+        { label: 'SAT', focus: 'Active\nRecovery', highlight: false },
+        { label: 'SUN', focus: 'Rest &\nReview', highlight: false }
+      ];
+
+      return `<p style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:14px;">Consistent weekly structure removes the need to decide what to do — you just execute the plan.</p>
+      <div class="plan-week-grid">
+        ${days.map(day => `
+          <div class="plan-day">
+            <div class="plan-day-label">${day.label}</div>
+            <div class="plan-day-card ${day.highlight ? 'highlight' : ''}">
+              <div class="plan-day-focus">${day.focus}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <ul class="plan-list" style="margin-top:14px;">
+        <li><strong>Every morning:</strong> Journal + review your plan for the day in the Planner tab.</li>
+        <li><strong>Every evening:</strong> Check off habits, write evening journal entry.</li>
+        <li><strong>Sunday evening:</strong> Weekly review — score your week, plan the next one in full.</li>
+      </ul>`;
+    }
+
+    function build30DayChallenge(d) {
+      const has = (g) => d.goals.includes(g);
+      return `<p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.7;">The first 30 days builds the foundation everything else is built on. Complete every single task below.</p>
+      <ul class="plan-list">
+        <li><strong>Days 1–7:</strong> Set up all habits in your tracker. Follow the morning routine every single day. No breaks. Track your results daily.</li>
+        <li><strong>Days 1–7:</strong> ${has('finance') ? 'Log every single expense — nothing is too small to track.' : 'Fill in your daily planner each morning before you touch your phone.'}</li>
+        <li><strong>Days 8–14:</strong> Add 1 new healthy habit that stretches you. ${has('fitness') ? 'Add one extra training session this week.' : 'Add 10 minutes of reading every night before bed.'}</li>
+        <li><strong>Days 8–14:</strong> Audit and remove one bad habit or time-wasting behaviour from your life this week.</li>
+        <li><strong>Days 15–21:</strong> Do one thing this week that scares you socially or professionally. Send the message, make the call, introduce yourself.</li>
+        <li><strong>Days 15–21:</strong> ${has('finance') ? 'Review your budget. Find one expense to cut. Redirect it to savings.' : 'Do one act of discipline that nobody will see or reward you for.'}</li>
+        <li><strong>Days 22–28:</strong> Teach someone one thing you have learned. Teaching solidifies your own knowledge and builds your identity as someone who grows.</li>
+        <li><strong>Days 22–28:</strong> Write a letter to yourself from 1 year in the future — describing what you have built. Keep it. Read it when motivation drops.</li>
+        <li><strong>Day 30:</strong> Score yourself across all your goals. What moved? What stalled? What is your plan for Month 2? Write it down and execute.</li>
+      </ul>`;
+    }
+
+    function buildHabits(d) {
+      const has = (g) => d.goals.includes(g);
+      const habits = [
+        'Wake up at 5:30 AM (no snooze)',
+        'Drink 500ml water on waking',
+        'Morning journal (5 minutes)',
+        'Cold shower (30–60 sec cold at end)',
+        'No phone for first 30 minutes'
+      ];
+      if (has('fitness') || has('weight')) habits.push('Train (follow your split)');
+      if (has('weight')) habits.push('Log all food in app');
+      if (has('mindset') || has('discipline')) habits.push('Meditate (5–15 minutes)');
+      if (has('finance')) habits.push('Review budget weekly (Sunday)');
+      if (has('glowup')) habits.push('Skincare morning + night routine');
+      if (has('career')) habits.push('1 hour deep work on core skill');
+      if (has('confidence')) habits.push('Daily social challenge (speak first)');
+      habits.push('Read 10 pages before bed');
+      habits.push('In bed by 10:30 PM');
+      habits.push('Evening journal (3 min)');
+      return habits;
+    }
+
+    function buildReadingList(d) {
+      const has = (g) => d.goals.includes(g);
+      const books = [
+        { title: 'Atomic Habits', author: 'James Clear', why: 'The blueprint for building any habit. Read this first — it underpins everything in your plan.' },
+        { title: 'Can\'t Hurt Me', author: 'David Goggins', why: 'Proof of what the human will can overcome. Essential reading for discipline and mental toughness.' },
+        { title: 'The Compound Effect', author: 'Darren Hardy', why: 'Small consistent actions compounding into massive results. Exactly what this plan is built on.' }
+      ];
+      if (has('mindset') || has('discipline')) {
+        books.push({ title: 'Meditations', author: 'Marcus Aurelius', why: 'The original mindset manual. 2,000 years old and more relevant than any modern self-help book.' });
+        books.push({ title: 'The Obstacle Is the Way', author: 'Ryan Holiday', why: 'Stoic principles for turning every problem into fuel.' });
+      }
+      if (has('finance')) {
+        books.push({ title: 'The Psychology of Money', author: 'Morgan Housel', why: 'Changes how you think about money, risk, and wealth. The most important finance book for beginners.' });
+        books.push({ title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', why: 'Assets vs liabilities. A simple framework that rewires your relationship with money.' });
+      }
+      if (has('fitness') || has('health')) {
+        books.push({ title: 'Why We Sleep', author: 'Matthew Walker', why: 'Will make you take sleep seriously. The most high-leverage health decision you can make is free.' });
+      }
+      if (has('confidence') || has('career')) {
+        books.push({ title: 'How to Win Friends and Influence People', author: 'Dale Carnegie', why: 'The original social skills manual. Every principle still applies today.' });
+        books.push({ title: 'So Good They Can\'t Ignore You', author: 'Cal Newport', why: 'Deliberate practice and career capital over passion-following. A smarter model for career building.' });
+      }
+      if (has('glowup')) {
+        books.push({ title: 'The Code of the Extraordinary Mind', author: 'Vishen Lakhiani', why: 'Challenges societal defaults and helps you design life on your own terms.' });
+      }
+      return books.slice(0, 8);
+    }
+
+  </script>
+
+</body>
+</html>
