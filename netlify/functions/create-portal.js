@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     const uid = decoded.uid;
 
     const userSnap = await db.collection('users').doc(uid).get();
-    if (!userSnap.exists()) {
+    if (!userSnap.exists) {
       return { statusCode: 404, body: JSON.stringify({ error: 'User not found' }) };
     }
 

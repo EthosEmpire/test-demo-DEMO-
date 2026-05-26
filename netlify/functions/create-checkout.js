@@ -31,7 +31,7 @@ exports.handler = async (event) => {
     // Read user document once
     const userRef = db.collection('users').doc(uid);
     const userSnap = await userRef.get();
-    let stripeCustomerId = userSnap.exists() ? userSnap.data().stripeCustomerId : null;
+    let stripeCustomerId = userSnap.exists ? userSnap.data().stripeCustomerId : null;
 
     // Create Stripe customer if this is their first checkout
     if (!stripeCustomerId) {
