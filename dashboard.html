@@ -235,6 +235,20 @@
     /* ── Empty state ── */
     .empty-state { text-align: center; padding: 48px 24px; color: rgba(255,255,255,0.3); font-size: 0.88rem; }
     .empty-state-icon { font-size: 2.4rem; margin-bottom: 12px; }
+
+    /* ── Paused / inactive subscription ── */
+    .locked-banner { display:none; align-items:center; justify-content:space-between; gap:12px; padding:13px 24px; background:rgba(255,90,40,0.07); border-bottom:1px solid rgba(255,110,60,0.18); flex-wrap:wrap; }
+    .locked-banner-msg { font-size:0.84rem; color:rgba(255,190,170,0.85); }
+    .locked-banner-msg strong { color:#fff; }
+    .locked-reactivate-btn { flex-shrink:0; padding:9px 20px; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); border:none; border-radius:10px; color:#000; font-size:0.8rem; font-weight:800; letter-spacing:0.06em; cursor:pointer; font-family:inherit; white-space:nowrap; }
+    .db-panel.panel-locked { position:relative; min-height:300px; }
+    .db-panel.panel-locked > *:not(.panel-lock-overlay) { filter:blur(5px); pointer-events:none; user-select:none; }
+    .panel-lock-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; padding:40px 24px; z-index:50; background:rgba(5,5,5,0.65); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+    .lock-icon { font-size:2.5rem; }
+    .lock-title { font-size:1.05rem; font-weight:800; color:#fff; }
+    .lock-sub { font-size:0.83rem; color:rgba(255,255,255,0.42); max-width:270px; line-height:1.65; }
+    .lock-btn { padding:13px 30px; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); border:none; border-radius:12px; color:#000; font-size:0.86rem; font-weight:800; letter-spacing:0.08em; cursor:pointer; font-family:inherit; transition:opacity 0.2s; }
+    .lock-btn:hover { opacity:0.85; }
   </style>
 </head>
 
@@ -245,6 +259,12 @@
     <img src="images/ethos-empire-logo.webp" width="48" height="48" style="border-radius:10px;opacity:0.85;">
     <div id="overlayMsg" style="color:var(--gold-3);font-size:0.75rem;font-weight:800;letter-spacing:0.22em;">LOADING...</div>
     <div id="overlaySub" style="color:rgba(255,255,255,0.28);font-size:0.7rem;letter-spacing:0.1em;"></div>
+  </div>
+
+  <!-- Paused/inactive subscription banner -->
+  <div class="locked-banner" id="lockedBanner">
+    <div class="locked-banner-msg"><strong>⏸ Access Paused</strong> — Your subscription is inactive. Reactivate to unlock your full Empire Builder dashboard.</div>
+    <button class="locked-reactivate-btn" id="lockedReactivateBtn">Reactivate Plan — $30/mo</button>
   </div>
 
   <!-- Header -->
@@ -480,14 +500,18 @@
       }
 
       const status = profile.subscriptionStatus;
-      if (status !== 'active' && status !== 'trialing') {
+      const isActive = status === 'active' || status === 'trialing';
+      // Never completed a payment → send to plan page
+      if (!status || status === 'incomplete' || status === 'incomplete_expired') {
         window.location.replace('plan.html');
         return;
       }
+      // canceled/past_due/paused → allow in, but dashboard will show blur overlays
 
       // Expose to classic script
-      window.EE_USER = { uid: user.uid, firebaseUser: user, ...profile };
+      window.EE_USER = { uid: user.uid, firebaseUser: user, isActive, ...profile };
       window.EE_PLAN_PROFILE = profile.planProfile || null;
+      window.EE_SUBSCRIPTION_ACTIVE = isActive;
 
       // Expose Firebase helpers for classic script to call
       window.EE_SAVE_PROFILE = async (updates) => {
@@ -569,6 +593,11 @@
         window.renderMyPlan(profile.planProfile);
       }
 
+      // Apply blur overlays for inactive subscriptions
+      if (!isActive && typeof window.applyLockedState === 'function') {
+        window.applyLockedState(status);
+      }
+
       overlay.remove();
     });
   </script>
@@ -595,6 +624,48 @@
   }
   updateClock();
   setInterval(updateClock, 1000);
+
+  /* ─ Locked subscription overlay ─ */
+  window.applyLockedState = function(status) {
+    const banner = document.getElementById('lockedBanner');
+    if (banner) banner.style.display = 'flex';
+    const reBtn = document.getElementById('lockedReactivateBtn');
+    if (reBtn) reBtn.addEventListener('click', function() { if (window.EE_OPEN_PORTAL) window.EE_OPEN_PORTAL(this); });
+
+    const badge = document.querySelector('.db-member-badge');
+    if (badge) { badge.textContent = 'PAUSED'; badge.style.background = 'rgba(255,255,255,0.07)'; badge.style.color = 'rgba(255,255,255,0.4)'; }
+
+    const label = status === 'canceled' ? 'canceled' : status === 'past_due' ? 'payment past due' : 'paused';
+    document.querySelectorAll('.db-panel').forEach(panel => {
+      if (panel.id === 'tab-settings') return;
+      panel.classList.add('panel-locked');
+      const overlay = document.createElement('div');
+      overlay.className = 'panel-lock-overlay';
+      overlay.innerHTML = `
+        <div class="lock-icon">🔒</div>
+        <div class="lock-title">Access Paused</div>
+        <div class="lock-sub">Your subscription is ${label}. Reactivate to unlock your full Empire Builder dashboard and plan.</div>
+        <button class="lock-btn" id="lockBtn-${panel.id}">Reactivate for $30/mo</button>`;
+      panel.insertBefore(overlay, panel.firstChild);
+      overlay.querySelector('button').addEventListener('click', function() { if (window.EE_OPEN_PORTAL) window.EE_OPEN_PORTAL(this); });
+    });
+  };
+
+  /* ─ Light stat patch (avoids full Today re-render from other tabs) ─ */
+  function patchTodayStats() {
+    const tasks = load('tasks', {});
+    const habits = load('habits', []);
+    const b = load('budget', { income:'', goal:'', expenses:[] });
+    const todayTasks = tasks[todayKey()] || {};
+    const totalExp = (b.expenses||[]).reduce((s,e) => s+(parseFloat(e.amount)||0), 0);
+    const el = id => document.getElementById(id);
+    if (el('stat-tasks')) el('stat-tasks').textContent = Object.values(todayTasks).filter(t=>t.done&&t.task).length;
+    if (el('stat-habits')) el('stat-habits').textContent = habits.filter(h=>h.completions&&h.completions[todayKey()]).length;
+    if (el('stat-saved')) el('stat-saved').textContent = '$'+Math.max(0,(parseFloat(b.income)||0)-totalExp).toFixed(0);
+    // Update streak stat (needs calcStreak which is declared later — safe because function declarations are hoisted)
+    let best = 0; habits.forEach(h=>{ const s=calcStreak(h); if(s>best)best=s; });
+    if (el('stat-streak')) el('stat-streak').textContent = best;
+  }
 
   /* ─ Tab switching ─ */
   document.querySelectorAll('.db-tab').forEach(btn => {
@@ -990,7 +1061,7 @@
     if (h.completions[todayKey()]) { delete h.completions[todayKey()]; el.classList.remove('done'); el.textContent = ''; }
     else { h.completions[todayKey()] = true; el.classList.add('done'); el.textContent = '✓'; }
     save('habits', habits);
-    renderToday();
+    patchTodayStats();
   }
 
   /* ─ PLANNER tab ─ */
@@ -1006,6 +1077,7 @@
     const tasks = load('tasks', {});
     const dayTasks = tasks[dk] || {};
     let doneCount = 0, totalWithTask = 0;
+    // Build HTML without inline event handlers — delegation handles all events below
     const html = SLOTS.map(s => {
       const sid = slotId(s.hour, s.min);
       const t = dayTasks[sid] || { task:'', done:false };
@@ -1016,9 +1088,8 @@
       return `<div class="time-block ${isDone?'is-done':''}" id="block-${sid}">
         <span class="time-label ${isHour?'hour':''}">${fmtSlot(s.hour,s.min)}</span>
         <input class="time-task-input ${t.task?'has-task':''}" type="text" placeholder="Add task..."
-          value="${escHtml(t.task)}" data-slot="${sid}"
-          onchange="saveTask('${dk}','${sid}',this.value)" oninput="updateBlockStyle(this)">
-        <button class="time-done-btn ${isDone?'done':''}" onclick="toggleTask('${dk}','${sid}',this)">${isDone?'✓':''}</button>
+          value="${escHtml(t.task)}" data-slot="${sid}">
+        <button class="time-done-btn ${isDone?'done':''}" data-slot="${sid}">${isDone?'✓':''}</button>
       </div>`;
     }).join('');
     document.getElementById('plannerBlocks').innerHTML = html;
@@ -1027,13 +1098,51 @@
     document.getElementById('plannerProgressBar').style.width = pct + '%';
   }
 
+  // Event delegation for all planner interactions — survives innerHTML replacements
+  const plannerBlocksEl = document.getElementById('plannerBlocks');
+  plannerBlocksEl.addEventListener('input', e => {
+    const inp = e.target.closest('.time-task-input');
+    if (inp) inp.classList.toggle('has-task', inp.value.trim().length > 0);
+  });
+  plannerBlocksEl.addEventListener('change', e => {
+    const inp = e.target.closest('.time-task-input');
+    if (!inp) return;
+    const dk = dateKey(plannerDate);
+    const tasks = load('tasks', {});
+    if (!tasks[dk]) tasks[dk] = {};
+    if (!tasks[dk][inp.dataset.slot]) tasks[dk][inp.dataset.slot] = { task:'', done:false };
+    tasks[dk][inp.dataset.slot].task = inp.value.trim();
+    save('tasks', tasks);
+    updatePlannerProgress(dk);
+    patchTodayStats();
+  });
+  plannerBlocksEl.addEventListener('click', e => {
+    const btn = e.target.closest('.time-done-btn');
+    if (!btn) return;
+    const sid = btn.dataset.slot;
+    const dk = dateKey(plannerDate);
+    const tasks = load('tasks', {});
+    if (!tasks[dk]) tasks[dk] = {};
+    if (!tasks[dk][sid]) tasks[dk][sid] = { task:'', done:false };
+    if (!tasks[dk][sid].task) return;
+    tasks[dk][sid].done = !tasks[dk][sid].done;
+    save('tasks', tasks);
+    const isDone = tasks[dk][sid].done;
+    const block = document.getElementById('block-'+sid);
+    if (block) block.classList.toggle('is-done', isDone);
+    btn.classList.toggle('done', isDone);
+    btn.textContent = isDone ? '✓' : '';
+    updatePlannerProgress(dk);
+    patchTodayStats();
+  });
+
   function updateBlockStyle(input) { input.classList.toggle('has-task', input.value.trim().length > 0); }
   function saveTask(dk, sid, val) {
     const tasks = load('tasks', {});
     if (!tasks[dk]) tasks[dk] = {};
     if (!tasks[dk][sid]) tasks[dk][sid] = { task:'', done:false };
     tasks[dk][sid].task = val.trim();
-    save('tasks', tasks); updatePlannerProgress(dk); renderToday();
+    save('tasks', tasks); updatePlannerProgress(dk); patchTodayStats();
   }
   function toggleTask(dk, sid, btn) {
     const tasks = load('tasks', {});
@@ -1046,7 +1155,7 @@
     document.getElementById('block-'+sid).classList.toggle('is-done', isDone);
     btn.classList.toggle('done', isDone);
     btn.textContent = isDone ? '✓' : '';
-    updatePlannerProgress(dk); renderToday();
+    updatePlannerProgress(dk); patchTodayStats();
   }
   function updatePlannerProgress(dk) {
     const tasks = load('tasks', {}); const dayTasks = tasks[dk] || {};
@@ -1106,15 +1215,15 @@
     const habits = load('habits', []); const h = habits.find(x => x.id === id); if (!h) return;
     if (!h.completions) h.completions = {};
     if (h.completions[dk]) delete h.completions[dk]; else h.completions[dk] = true;
-    save('habits', habits); renderHabits(); renderToday();
+    save('habits', habits); renderHabits(); patchTodayStats();
   }
-  function deleteHabit(id) { save('habits', load('habits',[]).filter(h => h.id !== id)); renderHabits(); renderToday(); }
+  function deleteHabit(id) { save('habits', load('habits',[]).filter(h => h.id !== id)); renderHabits(); patchTodayStats(); }
 
   document.getElementById('habitAddBtn').addEventListener('click', () => {
     const input = document.getElementById('habitInput');
     const name = input.value.trim(); if (!name) return;
     const habits = load('habits', []); habits.push({ id: Date.now().toString(), name, completions:{} });
-    save('habits', habits); input.value = ''; renderHabits(); renderToday();
+    save('habits', habits); input.value = ''; renderHabits(); patchTodayStats();
   });
   document.getElementById('habitInput').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('habitAddBtn').click(); });
 
@@ -1160,7 +1269,7 @@
       document.getElementById('goalProgressBar').style.width=pct+'%';
     } else gs.style.display='none';
   }
-  document.getElementById('budgetIncome').addEventListener('input', () => { const b=load('budget',{income:'',goal:'',expenses:[]}); b.income=document.getElementById('budgetIncome').value; save('budget',b); updateBudgetSummary(); renderToday(); });
+  document.getElementById('budgetIncome').addEventListener('input', () => { const b=load('budget',{income:'',goal:'',expenses:[]}); b.income=document.getElementById('budgetIncome').value; save('budget',b); updateBudgetSummary(); patchTodayStats(); });
   document.getElementById('budgetGoal').addEventListener('input', () => { const b=load('budget',{income:'',goal:'',expenses:[]}); b.goal=document.getElementById('budgetGoal').value; save('budget',b); updateBudgetSummary(); });
   document.getElementById('expenseAddBtn').addEventListener('click', () => {
     const name=document.getElementById('expenseName').value.trim();
@@ -1172,10 +1281,10 @@
     save('budget',b);
     document.getElementById('expenseName').value='';
     document.getElementById('expenseAmount').value='';
-    renderExpenseList(b.expenses); updateBudgetSummary(); renderToday();
+    renderExpenseList(b.expenses); updateBudgetSummary(); patchTodayStats();
   });
   document.getElementById('expenseAmount').addEventListener('keydown', e => { if(e.key==='Enter')document.getElementById('expenseAddBtn').click(); });
-  function deleteExpense(id) { const b=load('budget',{income:'',goal:'',expenses:[]}); b.expenses=(b.expenses||[]).filter(e=>e.id!==id); save('budget',b); renderExpenseList(b.expenses); updateBudgetSummary(); renderToday(); }
+  function deleteExpense(id) { const b=load('budget',{income:'',goal:'',expenses:[]}); b.expenses=(b.expenses||[]).filter(e=>e.id!==id); save('budget',b); renderExpenseList(b.expenses); updateBudgetSummary(); patchTodayStats(); }
 
   /* ─ CONTENT tab ─ */
   const CONTENT = [
@@ -1210,7 +1319,6 @@
 
   /* ─ Init ─ */
   renderToday();
-  renderPlanner();
   renderContent('all');
 
   </script>

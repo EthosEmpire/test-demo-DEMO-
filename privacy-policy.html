@@ -198,6 +198,7 @@
     .policy-section:nth-child(10) { animation-delay: 0.50s; }
     .policy-section:nth-child(11) { animation-delay: 0.55s; }
     .policy-section:nth-child(12) { animation-delay: 0.60s; }
+    .policy-section:nth-child(13) { animation-delay: 0.65s; }
 
     .section-num {
       font-size: 0.65rem;
@@ -335,12 +336,14 @@
       <p>
         Ethos Empire ("we", "us", or "our") operates the website located at
         <a href="https://ethosempire.org">ethosempire.org</a>.
-        We are a personal growth and self-mastery brand that sells digital ebooks and physical merchandise.
+        We are a personal growth and self-mastery brand offering a subscription-based
+        dashboard ("Empire Builder") that provides personalized fitness, nutrition,
+        mindset, finance, and habit-tracking plans.
       </p>
       <p>
-        This Privacy Policy explains what information we collect when you visit our site,
-        how we use it, and what your rights are. We are committed to handling your data
-        with transparency and respect.
+        This Privacy Policy explains what information we collect when you use our site
+        and services, how we use it, and what your rights are. We are committed to
+        handling your data with transparency and respect.
       </p>
       <div class="highlight-box">
         We do not sell, rent, or trade your personal information to any third party. Ever.
@@ -350,19 +353,29 @@
     <div class="policy-section">
       <p class="section-num">Section 1</p>
       <h2 class="section-title">Information We Collect</h2>
-      <p>When you visit ethosempire.org, the following data may be collected automatically:</p>
+      <p>We collect two categories of information: automatically collected site data and account data you provide when subscribing.</p>
+
+      <p><strong>Automatically collected:</strong></p>
       <ul>
         <li>Your IP address and general geographic location (country/region)</li>
         <li>Browser type, device type, and operating system</li>
         <li>Pages you visit, time spent on pages, and referring URLs</li>
         <li>Cookies and similar tracking technologies (see Section 4)</li>
       </ul>
+
+      <p><strong>Account and subscription data:</strong></p>
+      <ul>
+        <li>Email address and display name (provided when creating your account)</li>
+        <li>Profile data you enter in our onboarding form: age, height, weight, health and lifestyle goals</li>
+        <li>Dashboard usage data stored locally in your browser (planner tasks, habits, budget entries) — this data never leaves your device</li>
+        <li>Subscription status and billing history (managed via Stripe — see Section 3)</li>
+        <li>Firebase Authentication identifiers (unique user ID) used to link your account to your plan</li>
+      </ul>
+
       <p>
-        We do <strong>not</strong> operate our own checkout or payment system.
-        All purchases are handled directly by <strong>Gumroad</strong> (ebooks) and
-        <strong>Printful</strong> (merch). We never see, store, or handle your payment
-        card details, billing address, or order details — those are processed entirely
-        by those third-party platforms under their own privacy policies.
+        We do <strong>not</strong> store or handle your payment card details. All payment
+        processing is handled by <strong>Stripe</strong> under their own privacy policy
+        and PCI-DSS compliance. We receive only a confirmation token to activate your subscription.
       </p>
       <p>
         If you contact us via social media or email, we may retain that communication
@@ -373,8 +386,12 @@
     <div class="policy-section">
       <p class="section-num">Section 2</p>
       <h2 class="section-title">How We Use Your Information</h2>
-      <p>The data collected from site visits is used only to:</p>
+      <p>We use the information we collect to:</p>
       <ul>
+        <li>Create and manage your Empire Builder member account</li>
+        <li>Generate and display your personalized plan (fitness, nutrition, mindset, finance goals)</li>
+        <li>Process and manage your subscription via Stripe</li>
+        <li>Verify subscription status and grant or restrict dashboard access accordingly</li>
         <li>Understand how visitors use the site so we can improve it</li>
         <li>Monitor site performance, uptime, and security</li>
         <li>Diagnose technical issues</li>
@@ -382,7 +399,7 @@
       </ul>
       <p>
         We do not use your data to send unsolicited emails, build advertising profiles,
-        or share it with data brokers. We have no email newsletter or mailing list at this time.
+        or share it with data brokers. We have no email newsletter or mailing list.
       </p>
     </div>
 
@@ -392,28 +409,74 @@
       <p>Our website integrates or links to the following third-party services. Each operates under its own privacy policy:</p>
       <ul>
         <li>
-          <strong>Gumroad</strong> — processes all ebook purchases and manages digital delivery.
-          <a href="https://gumroad.com/privacy" target="_blank" rel="noopener noreferrer">Gumroad Privacy Policy</a>
+          <strong>Firebase (Google)</strong> — provides user authentication (email/password and Google Sign-In)
+          and our Firestore database where your account profile and subscription status are stored.
+          <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer">Firebase Privacy Policy</a>
         </li>
         <li>
-          <strong>Printful</strong> — fulfils and ships all physical merchandise orders.
-          <a href="https://www.printful.com/policies/privacy" target="_blank" rel="noopener noreferrer">Printful Privacy Policy</a>
+          <strong>Stripe</strong> — processes all subscription payments. Stripe handles your card details,
+          billing address, and payment history directly. We never see your full card number.
+          <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">Stripe Privacy Policy</a>
+        </li>
+        <li>
+          <strong>Netlify</strong> — hosts our website and serverless backend functions.
+          Standard server access logs (IP address, request timestamps) may be retained for security.
+          <a href="https://www.netlify.com/privacy/" target="_blank" rel="noopener noreferrer">Netlify Privacy Policy</a>
         </li>
         <li>
           <strong>Social media platforms</strong> — Instagram, TikTok, YouTube, Facebook, X, Discord, LinkedIn,
           Snapchat, and Pinterest. When you click through to these platforms, their respective
           privacy policies apply.
         </li>
-        <li>
-          <strong>Hosting / CDN providers</strong> — our hosting infrastructure may log standard server
-          access data (IP address, request timestamps) for security and uptime monitoring.
-        </li>
       </ul>
       <p>
-        Embedded content or links from these platforms may load third-party cookies or pixels
+        Links or embedded content from these platforms may load third-party cookies or pixels
         in your browser. We do not control this and recommend reviewing each platform's
         privacy policy.
       </p>
+    </div>
+
+    <div class="policy-section">
+      <p class="section-num">Section 3A</p>
+      <h2 class="section-title">Subscription Services &amp; Billing</h2>
+      <p>
+        Ethos Empire offers a recurring monthly subscription ("Empire Builder") at <strong>$30 per month</strong>.
+        By subscribing you agree to the following terms:
+      </p>
+
+      <p><strong>Billing &amp; Renewal</strong></p>
+      <ul>
+        <li>Your subscription renews automatically each month on your billing date</li>
+        <li>You will be charged using the payment method on file with Stripe</li>
+        <li>You will receive a receipt from Stripe to your registered email address</li>
+        <li>Ethos Empire does not store, process, or have access to your full card details</li>
+      </ul>
+
+      <p><strong>Cancellation</strong></p>
+      <ul>
+        <li>You may cancel your subscription at any time through the Manage Billing portal in your dashboard</li>
+        <li>Cancellation takes effect at the end of your current billing period — you will not be charged again</li>
+        <li>After cancellation, your dashboard remains accessible but all content sections will be locked (blurred) until you reactivate</li>
+        <li>Your account and profile data are retained so you can reactivate and pick up where you left off</li>
+      </ul>
+
+      <p><strong>Refund Policy</strong></p>
+      <ul>
+        <li>All subscription fees are non-refundable once a billing period begins</li>
+        <li>If you believe you were charged in error, contact us within 7 days of the charge at <a href="mailto:info.ethosempire@gmail.com">info.ethosempire@gmail.com</a> and we will review your case</li>
+        <li>Ethos Empire reserves the right to issue refunds at its sole discretion in cases of genuine billing errors</li>
+      </ul>
+
+      <p><strong>Account Termination</strong></p>
+      <ul>
+        <li>We reserve the right to suspend or terminate accounts that violate our Terms of Service, engage in fraudulent activity, or attempt to circumvent payment</li>
+        <li>In such cases, no refund will be issued for any remaining subscription period</li>
+      </ul>
+
+      <div class="highlight-box">
+        To manage your subscription, cancel, or update your payment method — use the
+        <strong>Manage Billing</strong> option inside your dashboard. Changes take effect immediately through our Stripe-powered billing portal.
+      </div>
     </div>
 
     <div class="policy-section">
