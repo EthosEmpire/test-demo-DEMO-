@@ -202,6 +202,12 @@
         <button class="auth-tab" id="tabCreate">Create Account</button>
       </div>
 
+      <!-- Shown when user arrives from Stripe checkout -->
+      <div id="checkoutBanner" style="display:none;background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.18);border-radius:14px;padding:14px 16px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:0.72rem;font-weight:900;letter-spacing:0.22em;color:var(--gold-2);margin-bottom:5px;">✓ PAYMENT CONFIRMED</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;">Create your account below to unlock your full personalized plan.</div>
+      </div>
+
       <div class="auth-error" id="authError"></div>
 
       <!-- Sign In Form -->
@@ -300,11 +306,24 @@
     const db = getFirestore(app);
     const googleProvider = new GoogleAuthProvider();
 
-    // If already signed in, redirect immediately
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return;
-      await redirectAfterAuth(user);
-    });
+    // Detect post-payment checkout flow
+    const params = new URLSearchParams(window.location.search);
+    const isCheckout = params.get('checkout') === 'success';
+    const sessionId = params.get('session_id');
+
+    // Auto-switch to Create Account tab if checkout or #create hash
+    if (isCheckout || window.location.hash === '#create') {
+      document.getElementById('tabCreate').classList.add('active');
+      document.getElementById('tabSignIn').classList.remove('active');
+      document.getElementById('formCreate').classList.add('active');
+      document.getElementById('formSignIn').classList.remove('active');
+      if (isCheckout) {
+        document.getElementById('checkoutBanner').style.display = 'block';
+      }
+    }
+
+    // Holds name from signup form so onAuthStateChanged can access it
+    let pendingName = null;
 
     function showError(msg) {
       const el = document.getElementById('authError');
@@ -319,16 +338,71 @@
       btn.textContent = loading ? 'Please wait...' : btn.dataset.label;
     }
 
-    // After auth, decide where to send the user
+    // Post-payment flow: save plan profile to Firestore + call verify-checkout
+    async function handleCheckoutFlow(user) {
+      const pending = JSON.parse(localStorage.getItem('ee_pending_profile') || 'null');
+      const name = pendingName || (pending && pending.name) || user.displayName || '';
+
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          name,
+          email: user.email || '',
+          stripeCustomerId: null,
+          subscriptionStatus: 'none',
+          plan: null,
+          planProfile: pending,
+          onboardingComplete: true,
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      } else {
+        await setDoc(userRef, {
+          name: name || userSnap.data().name || '',
+          planProfile: pending,
+          onboardingComplete: true,
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      }
+
+      try {
+        const token = await user.getIdToken();
+        const res = await fetch('/api/verify-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ sessionId })
+        });
+        if (!res.ok) {
+          showError('Payment verification failed. Please contact info.ethosempire@gmail.com');
+          return;
+        }
+      } catch {
+        showError('Network error during verification. Please refresh and try again.');
+        return;
+      }
+
+      localStorage.removeItem('ee_pending_profile');
+      pendingName = null;
+      window.location.replace('dashboard.html');
+    }
+
+    // Standard post-auth redirect for non-checkout logins
     async function redirectAfterAuth(user) {
       const userRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
-        // Brand new user — create their Firestore document
         await setDoc(userRef, {
           uid: user.uid,
-          name: user.displayName || '',
+          name: pendingName || user.displayName || '',
           email: user.email,
           stripeCustomerId: null,
           subscriptionStatus: 'none',
@@ -337,30 +411,35 @@
           lastLogin: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
+        pendingName = null;
         window.location.replace('onboarding.html');
         return;
       }
 
-      // Returning user — update last login
       await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
-
       const profile = userSnap.data();
+      pendingName = null;
 
-      // If onboarding not done yet, send there
       if (!profile.onboardingComplete) {
         window.location.replace('onboarding.html');
         return;
       }
-
-      // If active subscription, go to dashboard
       if (profile.subscriptionStatus === 'active' || profile.subscriptionStatus === 'trialing') {
         window.location.replace('dashboard.html');
         return;
       }
-
-      // Otherwise send to plan page to subscribe
       window.location.replace('plan.html');
     }
+
+    // Fires on page load if already signed in, and after any auth action
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      if (isCheckout && sessionId) {
+        await handleCheckoutFlow(user);
+      } else {
+        await redirectAfterAuth(user);
+      }
+    });
 
     // Tab switching
     document.getElementById('tabSignIn').addEventListener('click', () => {
@@ -378,7 +457,6 @@
       clearError();
     });
 
-    // Store button labels
     document.getElementById('signInBtn').dataset.label = 'Sign In';
     document.getElementById('createBtn').dataset.label = 'Create Account';
 
@@ -392,14 +470,13 @@
       setLoading(btn, true);
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        // onAuthStateChanged handles the redirect
       } catch (err) {
         setLoading(btn, false);
         showError(friendlyError(err.code));
       }
     });
 
-    // Create Account
+    // Create Account — set pendingName then create user; onAuthStateChanged handles the rest
     document.getElementById('createBtn').addEventListener('click', async () => {
       clearError();
       const name = document.getElementById('caName').value.trim();
@@ -410,32 +487,20 @@
       const btn = document.getElementById('createBtn');
       setLoading(btn, true);
       try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        // Manually create Firestore doc with name since displayName isn't set yet
-        await setDoc(doc(db, 'users', cred.user.uid), {
-          uid: cred.user.uid,
-          name,
-          email,
-          stripeCustomerId: null,
-          subscriptionStatus: 'none',
-          plan: null,
-          createdAt: serverTimestamp(),
-          lastLogin: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-        window.location.replace('onboarding.html');
+        pendingName = name;
+        await createUserWithEmailAndPassword(auth, email, password);
       } catch (err) {
+        pendingName = null;
         setLoading(btn, false);
         showError(friendlyError(err.code));
       }
     });
 
-    // Google Sign In / Sign Up (same button, same flow)
+    // Google — onAuthStateChanged handles redirect
     async function googleAuth() {
       clearError();
       try {
         await signInWithPopup(auth, googleProvider);
-        // onAuthStateChanged handles redirect
       } catch (err) {
         if (err.code !== 'auth/popup-closed-by-user') {
           showError(friendlyError(err.code));
@@ -445,7 +510,6 @@
     document.getElementById('googleSignInBtn').addEventListener('click', googleAuth);
     document.getElementById('googleCreateBtn').addEventListener('click', googleAuth);
 
-    // Enter key support
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter') return;
       const signInActive = document.getElementById('formSignIn').classList.contains('active');

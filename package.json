@@ -4,7 +4,11 @@
   "private": true,
   "description": "Ethos Empire static website",
   "scripts": {
-    "build": "echo \"No build step is configured yet. This is a static HTML/CSS/JS site.\"",
+    "build": "echo \"Static site — no build step required.\"",
     "dev": "echo \"Use VS Code Live Server or upload to GitHub Pages to preview the site.\""
+  },
+  "dependencies": {
+    "firebase-admin": "^12.3.0",
+    "stripe": "^16.0.0"
   }
 }

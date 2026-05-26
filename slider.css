@@ -277,6 +277,23 @@ body.snap-ready {
 }
 .hero-free-btn:hover .hero-free-btn-arrow { transform: translateX(5px); }
 
+.hero-auth-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.hero-auth-link {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.38);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.hero-auth-link:hover { color: var(--gold-3); }
+
 .hero-btn-group {
   display: flex;
   flex-wrap: wrap;

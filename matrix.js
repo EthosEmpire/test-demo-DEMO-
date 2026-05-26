@@ -28,6 +28,7 @@ let pageMatrixLastFrameTime = 0;
 let pageMatrixAnimationFrame = 0;
 let pageMatrixEventsBound = false;
 let pageMatrixTime = 0;
+let pageMatrixHue = 140; /* starts green, cycles slowly through all colors */
 
 function randomMatrixChar() {
   return MATRIX_CHARSET[Math.floor(Math.random() * MATRIX_CHARSET.length)];
@@ -161,6 +162,10 @@ function drawPageMatrixLayer(width, height, delta) {
   const trailAlphaBase = isMobile ? 0.10 : 0.30;
   const fadeFill       = isMobile ? 0.10 : 0.045;
 
+  /* Advance hue by ~2 degrees per second — full cycle takes ~3 minutes */
+  pageMatrixHue = (pageMatrixHue + delta * 2) % 360;
+  const h = pageMatrixHue.toFixed(1);
+
   pageMatrixCtx.clearRect(0, 0, width, height);
   pageMatrixCtx.fillStyle = `rgba(0, 0, 0, ${fadeFill})`;
   pageMatrixCtx.fillRect(0, 0, width, height);
@@ -188,12 +193,12 @@ function drawPageMatrixLayer(width, height, delta) {
       const trailStrength = 1 - i / col.length;
 
       if (i === 0) {
-        pageMatrixCtx.fillStyle = `rgba(245, 255, 248, ${(headAlphaBase * col.headBoost).toFixed(3)})`;
+        pageMatrixCtx.fillStyle = `hsla(${h}, 100%, 97%, ${(headAlphaBase * col.headBoost).toFixed(3)})`;
       } else if (i <= 2) {
         const subFade = i === 1 ? 0.68 : 0.44;
-        pageMatrixCtx.fillStyle = `rgba(195, 255, 215, ${(headAlphaBase * subFade * col.headBoost).toFixed(3)})`;
+        pageMatrixCtx.fillStyle = `hsla(${h}, 90%, 88%, ${(headAlphaBase * subFade * col.headBoost).toFixed(3)})`;
       } else {
-        pageMatrixCtx.fillStyle = `rgba(100, 220, 150, ${(trailAlphaBase * trailStrength * col.trailBoost).toFixed(3)})`;
+        pageMatrixCtx.fillStyle = `hsla(${h}, 65%, 63%, ${(trailAlphaBase * trailStrength * col.trailBoost).toFixed(3)})`;
       }
 
       pageMatrixCtx.fillText(col.glyphs[i % col.glyphs.length], x, y);
