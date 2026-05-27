@@ -227,113 +227,95 @@
     .empty-state { text-align:center; padding:40px 24px; color:rgba(255,255,255,0.3); font-size:0.88rem; }
     .empty-state-icon { font-size:2.2rem; margin-bottom:10px; }
 
-    /* ── Timeline (My Plan) — Vertical Zigzag ── */
-    @keyframes tlIn { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
-    @keyframes nowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.55);}60%{box-shadow:0 0 0 12px rgba(255,215,0,0);} }
-    @keyframes vtlFlow {
-      0%   { background-position:0% 0%; }
-      100% { background-position:0% 200%; }
+    /* ── Timeline (My Plan) — Arc Carousel ── */
+    @keyframes nowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.6);}60%{box-shadow:0 0 0 14px rgba(255,215,0,0);} }
+    @keyframes arcDetailIn { from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);} }
+
+    .arc-wrap { position:relative; user-select:none; -webkit-user-select:none; }
+    .arc-stage { position:relative; height:210px; overflow:hidden; cursor:grab; }
+    .arc-stage:active { cursor:grabbing; }
+
+    /* Each item absolutely positioned, moved by JS */
+    .arc-item {
+      position:absolute; top:0; left:0; width:110px;
+      display:flex; flex-direction:column; align-items:center;
+      transition:transform 0.42s cubic-bezier(0.34,1.1,0.64,1), opacity 0.35s ease;
+      will-change:transform,opacity; cursor:pointer;
     }
-    @keyframes vtlMoverPulse { 0%,100%{box-shadow:0 0 14px 4px rgba(255,215,0,0.55);}50%{box-shadow:0 0 28px 8px rgba(255,215,0,0.2);} }
-
-    /* Outer container — position:relative for spine overlay */
-    .vtl-outer { position:relative; padding:8px 0 24px; }
-
-    /* Animated spine line */
-    .vtl-spine {
-      position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
-      width:2px; z-index:0; pointer-events:none;
+    .arc-dot-ring {
+      width:13px; height:13px; border-radius:50%;
+      border:2px solid rgba(255,215,0,0.28);
+      background:rgba(255,215,0,0.1);
+      transition:all 0.38s cubic-bezier(0.34,1.1,0.64,1); flex-shrink:0;
     }
-    .vtl-spine-glow {
-      position:absolute; inset:0;
-      background:linear-gradient(to bottom,
-        transparent 0%,
-        rgba(255,215,0,0.12) 8%,
-        rgba(255,215,0,0.45) 45%,
-        rgba(255,215,0,0.55) 50%,
-        rgba(255,215,0,0.45) 55%,
-        rgba(255,215,0,0.12) 92%,
-        transparent 100%);
-      background-size:100% 300%;
-      animation:vtlFlow 3.5s linear infinite;
+    .arc-item.arc-active .arc-dot-ring {
+      width:20px; height:20px; background:var(--gold-2);
+      border-color:var(--gold-3); box-shadow:0 0 22px rgba(255,215,0,0.55);
+      animation:nowPulse 2.2s infinite;
     }
-    /* Sliding gold dot that travels along the spine */
-    .vtl-mover {
-      position:absolute; left:50%; transform:translate(-50%,-50%);
-      width:14px; height:14px; border-radius:50%;
-      background:rgba(255,215,0,0.95);
-      animation:vtlMoverPulse 2.4s ease-in-out infinite;
-      transition:top 5s cubic-bezier(0.4,0,0.2,1);
-      z-index:3; top:20%;
+    .arc-item.arc-work .arc-dot-ring { border-color:#4d96ff; background:rgba(77,150,255,0.15); }
+    .arc-item.arc-work.arc-active .arc-dot-ring {
+      background:#4d96ff; border-color:#74c0fc;
+      box-shadow:0 0 22px rgba(77,150,255,0.55); animation:none;
     }
+    .arc-item.arc-past .arc-dot-ring { border-color:rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); }
 
-    /* Each row: flex with left card | center spine | right card */
-    .vtl-row {
-      display:flex; align-items:flex-start;
-      margin-bottom:12px; position:relative; z-index:1;
+    .arc-time-lbl {
+      font-size:0.58rem; font-weight:800; color:rgba(255,255,255,0.28);
+      letter-spacing:0.06em; margin-top:6px; white-space:nowrap;
+      transition:color 0.3s, font-size 0.3s;
     }
-    /* Card slot — flex:1 on each side */
-    .vtl-card-slot { flex:1; padding:0 14px; }
-    .vtl-spacer     { flex:1; }
-    /* Spine column — fixed 52px, centered */
-    .vtl-spine-col  { width:52px; flex-shrink:0; display:flex; justify-content:center; padding-top:15px; }
+    .arc-item.arc-active .arc-time-lbl { color:var(--gold-3); font-size:0.66rem; }
+    .arc-item.arc-work.arc-active .arc-time-lbl { color:#74c0fc; }
 
-    /* Dot */
-    .vtl-dot { width:12px; height:12px; border-radius:50%; background:rgba(255,215,0,0.2); border:2px solid rgba(255,215,0,0.28); position:relative; z-index:2; transition:all 0.3s; }
-    .vtl-dot-now  { width:16px; height:16px; background:var(--gold-2); border-color:var(--gold-3); animation:nowPulse 2s infinite; }
-    .vtl-dot-next { background:rgba(255,215,0,0.5); border-color:var(--gold-2); }
-    .vtl-dot-work { background:rgba(77,150,255,0.3); border-color:#4d96ff; }
-    .vtl-dot-past { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); }
-
-    /* Card */
-    .vtl-card {
-      background:rgba(255,255,255,0.03); border:1px solid rgba(255,215,0,0.08);
-      border-radius:16px; padding:13px 15px; cursor:pointer;
-      transition:background 0.2s, border-color 0.2s;
-      animation:tlIn 0.4s ease both;
+    .arc-title-lbl {
+      font-size:0.58rem; font-weight:800; color:rgba(255,255,255,0.18);
+      text-align:center; max-width:100px; line-height:1.25; margin-top:3px;
+      transition:color 0.3s, font-size 0.3s;
     }
-    .vtl-card:hover { background:rgba(255,215,0,0.04); border-color:rgba(255,215,0,0.2); }
-    .vtl-card.vtl-now  { background:rgba(255,215,0,0.07); border-color:rgba(255,215,0,0.3); box-shadow:0 0 24px rgba(255,215,0,0.05); }
-    .vtl-card.vtl-next { background:rgba(255,215,0,0.04); border-color:rgba(255,215,0,0.2); }
-    .vtl-card.vtl-work { background:rgba(77,150,255,0.04); border-color:rgba(77,150,255,0.18); }
-    .vtl-card.vtl-past { opacity:0.42; }
+    .arc-item.arc-active .arc-title-lbl { color:rgba(255,255,255,0.82); font-size:0.7rem; }
+    .arc-item.arc-work.arc-active .arc-title-lbl { color:#74c0fc; }
 
-    .vtl-ctime { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.06em; margin-bottom:3px; }
-    .vtl-card.vtl-now  .vtl-ctime { color:var(--gold-3); }
-    .vtl-card.vtl-next .vtl-ctime { color:var(--gold-2); }
-    .vtl-card.vtl-work .vtl-ctime { color:#74c0fc; }
-    .vtl-ctitle { font-size:0.88rem; font-weight:800; color:rgba(255,255,255,0.7); line-height:1.3; }
-    .vtl-card.vtl-now .vtl-ctitle { color:#fff; font-weight:900; }
-    .vtl-cdesc { font-size:0.72rem; color:rgba(255,255,255,0.32); line-height:1.5; margin-top:3px; }
+    /* SVG arc curve */
+    .arc-curve-svg { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
 
-    /* Badge */
-    .vtl-badge { display:inline-block; font-size:0.5rem; font-weight:900; letter-spacing:0.1em; padding:2px 7px; border-radius:10px; margin-left:5px; vertical-align:middle; }
-    .vtl-badge-now  { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
-    .vtl-badge-next { background:rgba(255,215,0,0.1); color:var(--gold-3); border:1px solid rgba(255,215,0,0.25); }
-    .vtl-badge-work { background:rgba(77,150,255,0.12); color:#74c0fc; border:1px solid rgba(77,150,255,0.25); }
-
-    /* Inline expand */
-    .vtl-expand { display:none; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,215,0,0.08); }
-    .vtl-expand.open { display:block; animation:tlIn 0.25s ease; }
-    .vtl-expand-body { font-size:0.78rem; color:rgba(255,255,255,0.5); line-height:1.7; }
-    .vtl-expand-body ul { margin:6px 0 6px 14px; padding:0; }
-    .vtl-expand-body li { margin-bottom:4px; }
-    .vtl-expand-body strong { color:rgba(255,255,255,0.82); }
-    .vtl-expand-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
-    .vtl-expand-tag { font-size:0.57rem; font-weight:800; letter-spacing:0.07em; padding:3px 10px; border-radius:20px; background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.15); color:var(--gold-2); }
-    .vtl-toggle-btn { display:block; width:100%; text-align:center; font-size:0.62rem; font-weight:900; color:rgba(255,215,0,0.5); letter-spacing:0.1em; cursor:pointer; background:none; border:none; padding:6px 0 0; margin:0; font-family:inherit; transition:color 0.18s; }
-    .vtl-toggle-btn:hover { color:var(--gold-3); }
-
-    /* Mobile — single column, spine on left */
-    @media(max-width:640px){
-      .vtl-spine { left:18px; transform:none; }
-      .vtl-mover { left:18px; transform:translate(-50%,-50%); }
-      .vtl-row { flex-direction:row !important; }
-      .vtl-spacer { display:none; }
-      .vtl-spine-col { width:36px; }
-      .vtl-card-slot { order:2; text-align:left !important; padding:0 0 0 8px; }
-      .vtl-spine-col { order:1; }
+    /* Nav row */
+    .arc-navs { display:flex; align-items:center; justify-content:space-between; padding:0 4px; margin-top:6px; }
+    .arc-nav-btn {
+      background:none; border:1px solid rgba(255,215,0,0.15);
+      color:rgba(255,215,0,0.45); border-radius:50%; width:30px; height:30px;
+      font-size:0.85rem; cursor:pointer; display:flex; align-items:center;
+      justify-content:center; transition:all 0.18s; font-family:inherit;
     }
+    .arc-nav-btn:hover:not(:disabled) { border-color:rgba(255,215,0,0.4); color:var(--gold-2); }
+    .arc-nav-btn:disabled { opacity:0.18; cursor:default; }
+    .arc-progress { font-size:0.58rem; font-weight:900; color:rgba(255,255,255,0.18); letter-spacing:0.1em; }
+
+    /* Detail card below arc */
+    .arc-detail {
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,215,0,0.12);
+      border-radius:18px; padding:18px 20px; margin-top:14px;
+      animation:arcDetailIn 0.28s ease;
+    }
+    .arc-detail.arc-detail-work { border-color:rgba(77,150,255,0.22); background:rgba(77,150,255,0.03); }
+    .arc-detail.arc-detail-past { border-color:rgba(255,255,255,0.06); opacity:0.72; }
+    .arc-detail-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+    .arc-detail-time { font-size:0.62rem; font-weight:900; color:rgba(255,255,255,0.3); letter-spacing:0.1em; }
+    .arc-detail-badge { font-size:0.5rem; font-weight:900; letter-spacing:0.1em; padding:2px 9px; border-radius:10px; }
+    .arc-badge-now  { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
+    .arc-badge-next { background:rgba(255,215,0,0.1); color:var(--gold-3); border:1px solid rgba(255,215,0,0.25); }
+    .arc-badge-work { background:rgba(77,150,255,0.12); color:#74c0fc; border:1px solid rgba(77,150,255,0.25); }
+    .arc-badge-past { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.3); }
+    .arc-detail-title { font-size:1.05rem; font-weight:900; color:#fff; line-height:1.3; margin-bottom:6px; }
+    .arc-detail.arc-detail-work .arc-detail-title { color:#74c0fc; }
+    .arc-detail.arc-detail-past .arc-detail-title { color:rgba(255,255,255,0.5); }
+    .arc-detail-desc { font-size:0.78rem; color:rgba(255,255,255,0.4); line-height:1.6; margin-bottom:10px; }
+    .arc-expand-body { font-size:0.78rem; color:rgba(255,255,255,0.5); line-height:1.7; }
+    .arc-expand-body ul { margin:6px 0 6px 14px; padding:0; }
+    .arc-expand-body li { margin-bottom:4px; }
+    .arc-expand-body strong { color:rgba(255,255,255,0.82); }
+    .arc-expand-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .arc-expand-tag { font-size:0.57rem; font-weight:800; letter-spacing:0.07em; padding:3px 10px; border-radius:20px; background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.15); color:var(--gold-2); }
 
     /* Plan + EBP side-by-side layout */
     .plan-ebp-wrap { display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; margin-top:24px; }
@@ -2097,107 +2079,179 @@
     blocks.push({ m:sleep, title:'Lights Out', desc:'7–8 hours rebuilds your body and brain. Protect it.' });
     blocks.sort((a,b)=>a.m-b.m);
 
-    // Build vertical zigzag HTML
+    // Enrich blocks and store globally
     let autoOpenIdx = -1;
-    let rowsHtml = '';
-
     blocks.forEach((b, i) => {
       const diff = b.m - nowMins;
-      const detail = BLOCK_DETAILS[b.title] || { body:`<p>${b.desc}</p>`, tags:[] };
-      const isLeft = i % 2 === 0;
-
-      let cardCls = 'vtl-card';
-      let dotCls = 'vtl-dot';
-      let badge = '';
-      if (b.type === 'work') {
-        cardCls += ' vtl-work'; dotCls += ' vtl-dot-work';
-        badge = `<span class="vtl-badge vtl-badge-work">WORK</span>`;
-      } else if (diff >= -30 && diff < 45) {
-        cardCls += ' vtl-now'; dotCls += ' vtl-dot-now';
-        badge = `<span class="vtl-badge vtl-badge-now">NOW ▶</span>`;
-        if (autoOpenIdx === -1) autoOpenIdx = i;
-      } else if (diff >= 45 && diff < 120) {
-        cardCls += ' vtl-next'; dotCls += ' vtl-dot-next';
-        badge = `<span class="vtl-badge vtl-badge-next">UP NEXT</span>`;
-      } else if (diff < -30) {
-        cardCls += ' vtl-past'; dotCls += ' vtl-dot-past';
-      }
-
-      const tagsHtml = detail.tags.length
-        ? `<div class="vtl-expand-tags">${detail.tags.map(t => `<span class="vtl-expand-tag">${t}</span>`).join('')}</div>`
-        : '';
-
-      const cardHtml = `<div class="${cardCls}" id="vtlCard_${i}" onclick="vtlExpand(${i})">
-          <div class="vtl-ctime">${fmtTime(b.m)}${badge}</div>
-          <div class="vtl-ctitle">${b.title}</div>
-          <div class="vtl-cdesc">${b.desc}</div>
-          <div class="vtl-expand" id="vtlExp_${i}">
-            <div class="vtl-expand-body">${detail.body}${tagsHtml}</div>
-          </div>
-          <button class="vtl-toggle-btn" id="vtlBtn_${i}">READ MORE ▼</button>
-        </div>`;
-
-      const spineCol = `<div class="vtl-spine-col"><div class="${dotCls}" id="vtlDot_${i}"></div></div>`;
-
-      if (isLeft) {
-        rowsHtml += `<div class="vtl-row">
-          <div class="vtl-card-slot" style="text-align:right;">${cardHtml}</div>
-          ${spineCol}
-          <div class="vtl-spacer"></div>
-        </div>`;
-      } else {
-        rowsHtml += `<div class="vtl-row">
-          <div class="vtl-spacer"></div>
-          ${spineCol}
-          <div class="vtl-card-slot">${cardHtml}</div>
-        </div>`;
-      }
+      b.timeStr = fmtTime(b.m);
+      b.diff = diff;
+      b.detail = BLOCK_DETAILS[b.title] || { body:`<p>${b.desc}</p>`, tags:[] };
+      if (!b.type && diff >= -30 && diff < 45 && autoOpenIdx === -1) autoOpenIdx = i;
     });
+    window._arcData = blocks;
+    window._arcActive = autoOpenIdx >= 0 ? autoOpenIdx
+      : Math.max(0, blocks.findIndex(b => b.m > nowMins) - 1);
 
-    window._htlAutoOpen = autoOpenIdx;
-    window._vtlBlockCount = blocks.length;
+    // Build item HTML (positions set by arcRender after mount)
+    const itemsHtml = blocks.map((b, i) => {
+      const isPast = b.diff < -30 && b.type !== 'work';
+      const cls = ['arc-item', b.type === 'work' ? 'arc-work' : '', isPast ? 'arc-past' : ''].filter(Boolean).join(' ');
+      return `<div class="${cls}" id="arcItem_${i}" onclick="arcSetActive(${i})" style="opacity:0;">
+        <div class="arc-dot-ring"></div>
+        <div class="arc-time-lbl">${b.timeStr}</div>
+        <div class="arc-title-lbl">${b.title}</div>
+      </div>`;
+    }).join('');
 
-    return `<div class="vtl-outer">
-      <div class="vtl-spine">
-        <div class="vtl-spine-glow"></div>
-        <div class="vtl-mover" id="vtlMover"></div>
+    return `<div class="arc-wrap" id="arcWrap">
+      <div class="arc-stage" id="arcStage">
+        ${itemsHtml}
+        <svg class="arc-curve-svg" id="arcCurveSvg" xmlns="http://www.w3.org/2000/svg"></svg>
       </div>
-      ${rowsHtml}
+      <div class="arc-navs">
+        <button class="arc-nav-btn" id="arcBtnPrev" onclick="arcNav(-1)">&#9664;</button>
+        <div class="arc-progress" id="arcProgress"></div>
+        <button class="arc-nav-btn" id="arcBtnNext" onclick="arcNav(1)">&#9654;</button>
+      </div>
+      <div class="arc-detail" id="arcDetail"></div>
     </div>`;
   }
 
-  function vtlExpand(idx) {
-    const exp = document.getElementById('vtlExp_' + idx);
-    const btn = document.getElementById('vtlBtn_' + idx);
-    if (!exp) return;
-    const isOpen = exp.classList.toggle('open');
-    if (btn) btn.textContent = isOpen ? 'SHOW LESS ▲' : 'READ MORE ▼';
+  function arcRender() {
+    const stage = document.getElementById('arcStage');
+    if (!stage) return;
+    const data = window._arcData || [];
+    const active = window._arcActive || 0;
+    const W = stage.offsetWidth || 360;
+    const cx = W / 2;
+    const ITEM_W = 110;
+    const SPACING = Math.min(130, W / 4.2);
+    const PEAK_Y = 16;
+    const CURVE_K = 19;
+
+    data.forEach((b, i) => {
+      const el = document.getElementById('arcItem_' + i);
+      if (!el) return;
+      const d = i - active;
+      const x = cx + d * SPACING - ITEM_W / 2;
+      const y = PEAK_Y + d * d * CURVE_K;
+      const scale = Math.max(0.46, 1 - Math.abs(d) * 0.11);
+      let opacity = Math.max(0.07, 1 - Math.abs(d) * 0.21);
+      if (d < 0) opacity *= 0.58;
+      el.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      el.style.opacity = opacity;
+      el.classList.toggle('arc-active', d === 0);
+    });
+
+    arcUpdateCurve(W, cx, SPACING, PEAK_Y, CURVE_K);
+    arcUpdateDetail();
+    arcUpdateNav(data.length, active);
   }
 
-  function vtlPositionMover() {
-    const mover = document.getElementById('vtlMover');
-    const outer = document.querySelector('.vtl-outer');
-    if (!mover || !outer) return;
-    const nowDot = document.querySelector('.vtl-dot-now');
-    if (nowDot) {
-      const outerRect = outer.getBoundingClientRect();
-      const dotRect = nowDot.getBoundingClientRect();
-      const pct = ((dotRect.top + dotRect.height / 2) - outerRect.top) / outerRect.height * 100;
-      mover.style.top = Math.min(Math.max(pct, 2), 98) + '%';
-    } else {
-      mover.style.top = '20%';
+  function arcUpdateCurve(W, cx, SPACING, PEAK_Y, CURVE_K) {
+    const svg = document.getElementById('arcCurveSvg');
+    if (!svg) return;
+    svg.setAttribute('viewBox', `0 0 ${W} 210`);
+    const DOT_CY = PEAK_Y + 6; // center of dot (dot is 13px tall)
+    const steps = 80;
+    let pathD = '';
+    for (let s = 0; s <= steps; s++) {
+      const x = (s / steps) * W;
+      const offset = (x - cx) / SPACING;
+      const y = DOT_CY + offset * offset * CURVE_K;
+      pathD += s === 0 ? `M ${x.toFixed(1)} ${y.toFixed(1)}` : ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
     }
+    const active = window._arcActive || 0;
+    const data = window._arcData || [];
+    const isWork = data[active] && data[active].type === 'work';
+    let path = document.getElementById('arcPathLine');
+    if (!path) {
+      path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.id = 'arcPathLine';
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(path);
+    }
+    path.setAttribute('stroke', isWork ? 'rgba(77,150,255,0.22)' : 'rgba(255,215,0,0.18)');
+    path.setAttribute('d', pathD);
   }
 
-  // Auto-open current block after render
-  setTimeout(() => {
-    const ai = window._htlAutoOpen;
-    if (typeof ai === 'number' && ai >= 0) {
-      vtlExpand(ai);
-      document.getElementById('vtlCard_' + ai)?.scrollIntoView({ behavior:'smooth', block:'center' });
+  function arcUpdateDetail() {
+    const detail = document.getElementById('arcDetail');
+    if (!detail) return;
+    const data = window._arcData || [];
+    const active = window._arcActive || 0;
+    const b = data[active];
+    if (!b) return;
+    let badge = '', extra = '';
+    if (b.type === 'work') {
+      badge = `<span class="arc-detail-badge arc-badge-work">WORK HOURS</span>`; extra = ' arc-detail-work';
+    } else if (b.diff >= -30 && b.diff < 45) {
+      badge = `<span class="arc-detail-badge arc-badge-now">NOW ▶</span>`;
+    } else if (b.diff >= 45 && b.diff < 120) {
+      badge = `<span class="arc-detail-badge arc-badge-next">UP NEXT</span>`;
+    } else if (b.diff < -30) {
+      badge = `<span class="arc-detail-badge arc-badge-past">COMPLETED</span>`; extra = ' arc-detail-past';
     }
-    vtlPositionMover();
-  }, 300);
+    const d = b.detail || { body:`<p>${b.desc}</p>`, tags:[] };
+    const tagsHtml = d.tags.length
+      ? `<div class="arc-expand-tags">${d.tags.map(t=>`<span class="arc-expand-tag">${t}</span>`).join('')}</div>`
+      : '';
+    detail.className = 'arc-detail' + extra;
+    detail.innerHTML = `
+      <div class="arc-detail-top"><span class="arc-detail-time">${b.timeStr}</span>${badge}</div>
+      <div class="arc-detail-title">${b.title}</div>
+      <div class="arc-detail-desc">${b.desc}</div>
+      <div class="arc-expand-body">${d.body}${tagsHtml}</div>`;
+  }
+
+  function arcUpdateNav(total, active) {
+    const prev = document.getElementById('arcBtnPrev');
+    const next = document.getElementById('arcBtnNext');
+    const prog = document.getElementById('arcProgress');
+    if (prev) prev.disabled = active <= 0;
+    if (next) next.disabled = active >= total - 1;
+    if (prog) prog.textContent = `${active + 1} / ${total}`;
+  }
+
+  function arcNav(dir) {
+    const data = window._arcData || [];
+    const cur = window._arcActive || 0;
+    const nxt = Math.max(0, Math.min(data.length - 1, cur + dir));
+    if (nxt === cur) return;
+    window._arcActive = nxt;
+    arcRender();
+  }
+
+  function arcSetActive(idx) {
+    window._arcActive = idx;
+    arcRender();
+  }
+
+  function arcInit() {
+    arcRender();
+    const stage = document.getElementById('arcStage');
+    if (!stage) return;
+    let startX = 0, dragging = false, startTime = 0;
+    stage.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; startTime = Date.now(); }, { passive:true });
+    stage.addEventListener('touchend', e => {
+      if (!dragging) return; dragging = false;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dt = Date.now() - startTime;
+      if (Math.abs(dx) > 38 || (Math.abs(dx) > 18 && dt < 220)) arcNav(dx < 0 ? 1 : -1);
+    }, { passive:true });
+    stage.addEventListener('mousedown', e => { startX = e.clientX; dragging = true; startTime = Date.now(); });
+    window.addEventListener('mouseup', e => {
+      if (!dragging) return; dragging = false;
+      const dx = e.clientX - startX;
+      const dt = Date.now() - startTime;
+      if (Math.abs(dx) > 38 || (Math.abs(dx) > 18 && dt < 220)) arcNav(dx < 0 ? 1 : -1);
+    });
+  }
+
+  // Init arc after render
+  setTimeout(() => { arcInit(); }, 300);
 
   /* ─ CONTENT tab (legacy small set, kept for transition) ─ */
   const CONTENT = [
