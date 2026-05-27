@@ -82,6 +82,13 @@
     .focus-item { display:flex; gap:10px; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.86rem; color:rgba(255,255,255,0.68); line-height:1.55; }
     .focus-item:last-child { border-bottom:none; }
     .focus-dot { color:var(--gold-2); font-weight:700; flex-shrink:0; }
+    .gb-check-item { display:flex; align-items:center; gap:10px; padding:8px 4px; cursor:pointer; transition:opacity 0.18s; font-size:0.83rem; color:rgba(255,255,255,0.75); border-radius:8px; user-select:none; }
+    .gb-check-item:hover { background:rgba(255,255,255,0.03); }
+    .gb-check-item.gb-checked { opacity:0.38; }
+    .gb-check-item.gb-checked span { text-decoration:line-through; }
+    .gb-check-box { width:20px; height:20px; border-radius:6px; border:1.5px solid rgba(255,255,255,0.18); background:transparent; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:#6bcb77; font-weight:900; transition:all 0.18s; }
+    .gb-check-item.gb-checked .gb-check-box { background:rgba(107,203,119,0.15); border-color:rgba(107,203,119,0.4); }
+    .gb-sub-label { font-size:0.68rem; font-weight:800; letter-spacing:0.12em; color:rgba(255,255,255,0.28); margin:10px 0 4px; }
 
     /* ── MY PLAN TAB ── */
     .plan-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:18px; overflow:hidden; margin-bottom:10px; }
@@ -849,6 +856,7 @@
       <div class="today-stat"><div class="today-stat-num" id="stat-active">0</div><div class="today-stat-label">DAYS ACTIVE</div></div>
       <div class="today-stat"><div class="today-stat-num" id="stat-week">0%</div><div class="today-stat-label">WEEK DONE</div></div>
     </div>
+    <div id="goalBlocks"></div>
     <div class="db-card">
       <div class="card-label">TODAY'S SCHEDULE</div>
       <div id="todaySchedule">
@@ -1326,6 +1334,7 @@
       if (typeof window.renderSettingsGoals === 'function') window.renderSettingsGoals(pp.goals || []);
       if (typeof window.renderMyPlan === 'function') window.renderMyPlan(profile.planProfile);
       if (typeof window.renderTodayFocus === 'function') window.renderTodayFocus();
+      renderGoalBlocks(profile.planProfile);
 
       if (!isActive && typeof window.applyLockedState === 'function') window.applyLockedState(status);
 
@@ -1591,6 +1600,7 @@
         ov.remove();
         if (typeof window.renderMyPlan === 'function') window.renderMyPlan(window.EE_PLAN_PROFILE);
         if (typeof window.renderTodayFocus === 'function') window.renderTodayFocus();
+        if (typeof renderGoalBlocks === 'function') renderGoalBlocks(window.EE_PLAN_PROFILE);
       }, 500);
     }
 
@@ -2208,6 +2218,141 @@
     return total > 0 ? Math.round(done/total*100) : 0;
   }
 
+  /* ─ GOAL BLOCKS — personalized today sections ─ */
+  function renderGoalBlocks(pp) {
+    var el = document.getElementById('goalBlocks');
+    if (!el) return;
+    if (!pp) { el.innerHTML = ''; return; }
+
+    var goals = pp.goals || [];
+    var mainGoal = (pp.mainGoal || '').toLowerCase();
+
+    var hasFitness = goals.some(function(g){ return g.includes('Fitness') || g.includes('Body') || g.includes('Transformation'); })
+                    || /muscle|gym|workout|fitness|weight loss|build my bod|train/.test(mainGoal);
+    var hasFinance = goals.some(function(g){ return g.includes('Finance') || g.includes('Wealth') || g.includes('Transformation'); })
+                    || /money|finance|wealth|sav|budget|debt|invest/.test(mainGoal);
+    var hasMindset = goals.some(function(g){ return g.includes('Mindset') || g.includes('Discipline') || g.includes('Transformation'); })
+                    || /mindset|discipline|habit|routine|focus|consistency/.test(mainGoal);
+    var hasFaith   = goals.some(function(g){ return g.includes('Faith') || g.includes('Purpose'); });
+    var hasRel     = goals.includes('Relationships');
+    var hasSkin    = /skin|skincare|glow|complexion|acne|pore/.test(mainGoal);
+    var hasHair    = /hair/.test(mainGoal);
+
+    var day = new Date().getDay();
+    var workouts = {
+      1: { label:'PUSH DAY',     ex:['Bench Press 4×8','Overhead Press 3×10','Lateral Raises 3×15','Tricep Pushdowns 3×12','Dips 3×failure'] },
+      2: { label:'PULL DAY',     ex:['Pull-Ups 4×8','Barbell Row 4×8','Lat Pulldown 3×12','Face Pulls 3×15','Hammer Curls 3×12'] },
+      3: { label:'LEG DAY',      ex:['Squat 4×8','Romanian Deadlift 3×10','Leg Press 3×12','Walking Lunges 3×10/leg','Calf Raises 4×20'] },
+      4: { label:'PUSH DAY',     ex:['Incline Press 4×8','Cable Fly 3×12','Arnold Press 3×10','Rope Pushdowns 3×12','Close-Grip Bench 3×10'] },
+      5: { label:'PULL DAY',     ex:['Deadlift 4×5','Seated Row 3×12','Single-Arm Row 3×10','Reverse Fly 3×15','Barbell Curl 3×10'] },
+      6: { label:'LEG DAY',      ex:['Front Squat 4×8','Leg Curl 3×12','Bulgarian Split Squat 3×8/leg','Hip Thrust 4×12','Seated Calf Raise 4×20'] },
+      0: { label:'REST & RECOVERY', ex:['20-min light walk','Full-body stretch (15 min)','Foam roll major muscle groups','8 hours sleep tonight'] }
+    };
+    var w = workouts[day];
+    var dk = 'gb_' + new Date().toISOString().slice(0,10);
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem('ee_goal_checks') || '{}'); } catch(e){}
+    var checks = saved[dk] || {};
+
+    function cb(id, label) {
+      var isChecked = !!checks[id];
+      return '<div class="gb-check-item' + (isChecked ? ' gb-checked' : '') + '" onclick="gbToggle(\'' + id + '\')">'
+           + '<div class="gb-check-box">' + (isChecked ? '✓' : '') + '</div>'
+           + '<span>' + escHtml(label) + '</span></div>';
+    }
+
+    var html = '';
+
+    if (hasFitness) {
+      var prot = pp.weightKg ? Math.round(pp.weightKg * 2) : 160;
+      html += '<div class="db-card" style="border-color:rgba(107,203,119,0.2);">'
+            + '<div class="card-label" style="color:rgba(107,203,119,0.65);">TODAY\'S WORKOUT · ' + w.label + '</div>'
+            + w.ex.map(function(e,i){ return cb('fit_' + i, e); }).join('')
+            + '<div class="gb-sub-label">DAILY TARGETS</div>'
+            + cb('fit_prot', 'Hit ' + prot + 'g protein today')
+            + cb('fit_water', 'Drink 2.5–3L water')
+            + '</div>';
+    }
+
+    if (hasSkin) {
+      html += '<div class="db-card" style="border-color:rgba(255,182,193,0.2);">'
+            + '<div class="card-label" style="color:rgba(255,182,193,0.7);">SKIN CARE ROUTINE</div>'
+            + '<div class="gb-sub-label">MORNING</div>'
+            + cb('skin_am1', 'Gentle cleanser (60 sec massage)')
+            + cb('skin_am2', 'Vitamin C serum — pat in gently')
+            + cb('skin_am3', 'Moisturizer')
+            + cb('skin_am4', 'SPF 30+ — every single day')
+            + '<div class="gb-sub-label">EVENING</div>'
+            + cb('skin_pm1', 'Oil cleanser → foaming cleanser')
+            + cb('skin_pm2', day % 3 === 0 ? 'Exfoliate tonight (2–3x/week only)' : 'Skip exfoliant tonight — let skin rest')
+            + cb('skin_pm3', 'Retinol or niacinamide serum')
+            + cb('skin_pm4', 'Night cream / barrier repair moisturizer')
+            + '</div>';
+    }
+
+    if (hasHair) {
+      html += '<div class="db-card" style="border-color:rgba(218,165,32,0.22);">'
+            + '<div class="card-label" style="color:rgba(218,165,32,0.7);">HAIR CARE</div>'
+            + cb('hair_1', day === 1 ? 'Wash day — deep condition today (20 min heat)' : 'Protective style or low manipulation today')
+            + cb('hair_2', 'Apply leave-in conditioner or oil to ends')
+            + cb('hair_3', 'Avoid direct heat (air dry or diffuse)')
+            + cb('hair_4', 'Hydrate — hair growth = internal health')
+            + '</div>';
+    }
+
+    if (hasFinance) {
+      html += '<div class="db-card" style="border-color:rgba(201,149,42,0.2);">'
+            + '<div class="card-label" style="color:rgba(201,149,42,0.7);">TODAY\'S MONEY MOVES</div>'
+            + cb('fin_1', 'Log every expense from today (takes 3 min)')
+            + cb('fin_2', 'Review spending vs your budget')
+            + cb('fin_3', 'Avoid one impulse buy — pause before purchasing')
+            + cb('fin_4', 'Check progress toward your 90-day financial goal')
+            + '</div>';
+    }
+
+    if (hasMindset) {
+      html += '<div class="db-card" style="border-color:rgba(171,71,188,0.2);">'
+            + '<div class="card-label" style="color:rgba(171,71,188,0.7);">DISCIPLINE STACK</div>'
+            + cb('mind_1', 'Write 3 intentions before opening any apps')
+            + cb('mind_2', 'No social media until your first major task is done')
+            + cb('mind_3', '90-minute single-task deep work block')
+            + cb('mind_4', 'Evening: write 3 wins + 1 thing to improve')
+            + '</div>';
+    }
+
+    if (hasFaith) {
+      html += '<div class="db-card" style="border-color:rgba(255,215,0,0.13);">'
+            + '<div class="card-label" style="color:rgba(255,215,0,0.55);">FAITH & PURPOSE</div>'
+            + cb('faith_1', 'Morning prayer or meditation (15 min)')
+            + cb('faith_2', 'Read scripture or devotional')
+            + cb('faith_3', 'Write 3 specific gratitudes')
+            + cb('faith_4', 'One action today aligned with your purpose')
+            + '</div>';
+    }
+
+    if (hasRel) {
+      html += '<div class="db-card" style="border-color:rgba(77,150,255,0.18);">'
+            + '<div class="card-label" style="color:rgba(77,150,255,0.65);">RELATIONSHIPS</div>'
+            + cb('rel_1', 'Reach out to one person you care about today')
+            + cb('rel_2', 'Be fully present — phone away during conversations')
+            + cb('rel_3', 'Tell someone specifically what you appreciate about them')
+            + '</div>';
+    }
+
+    el.innerHTML = html;
+  }
+
+  window.gbToggle = function(id) {
+    var dk = 'gb_' + new Date().toISOString().slice(0,10);
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem('ee_goal_checks') || '{}'); } catch(e){}
+    if (!saved[dk]) saved[dk] = {};
+    saved[dk][id] = !saved[dk][id];
+    try { localStorage.setItem('ee_goal_checks', JSON.stringify(saved)); } catch(e){}
+    renderGoalBlocks(window.EE_PLAN_PROFILE);
+    if (typeof patchTodayStats === 'function') patchTodayStats();
+  };
+
   /* ─ TODAY tab ─ */
   function renderToday() {
     const now = new Date();
@@ -2255,6 +2400,7 @@
       }
     }
 
+    renderGoalBlocks(window.EE_PLAN_PROFILE);
     renderTodayFocus();
   }
 
@@ -2264,31 +2410,34 @@
     const pp = window.EE_PLAN_PROFILE;
     if (!pp) { el.innerHTML = `<div style="font-size:0.83rem;color:rgba(255,255,255,0.32);">Complete your profile in Settings to see your personalized daily focus.</div>`; return; }
     const hour = new Date().getHours();
-    const has = g => (pp.goals||[]).includes(g);
+    const goals = pp.goals || [];
+    const mainGoal = (pp.mainGoal || '').toLowerCase();
+    const hasFit = goals.some(g => g.includes('Fitness') || g.includes('Body') || g.includes('Transformation')) || /muscle|gym|workout|fitness/.test(mainGoal);
+    const hasFin = goals.some(g => g.includes('Finance') || g.includes('Wealth') || g.includes('Transformation')) || /money|finance|sav|budget/.test(mainGoal);
     let items = [];
     if (hour < 9) {
       items = [
         'Drink 500ml water right now — before coffee or anything else',
-        has('fitness')||has('weight') ? 'This is your training window. Do not skip it today.' : 'Complete your 20-minute morning movement block',
-        'Write your 3 intentions for today in the Planner before you open any apps',
+        hasFit ? 'Morning training window — do not skip it today.' : 'Complete your 20-minute morning movement block',
+        'Write your 3 intentions for today before you open any apps',
       ];
     } else if (hour < 12) {
       items = [
         'You should be in deep work right now. Phone face-down. One task only.',
-        has('career') ? 'Block your skill development time — 60 minutes minimum' : 'Are you on your most important task? If not, switch now.',
+        'Are you on your most important task? If not, switch now.',
         'No social media until your first major task of the day is done',
       ];
     } else if (hour < 17) {
       items = [
         'Check your top 2 priorities from this morning. Are they done?',
         'Energy dip? Take a 10-minute walk — not coffee, not sugar.',
-        has('finance') ? 'Log any expenses from today so far — keep it current' : 'Stay locked in. Afternoon is where most people lose the day.',
+        hasFin ? 'Log any expenses from today so far — keep it current' : 'Stay locked in. Afternoon is where most people lose the day.',
       ];
     } else {
       items = [
         "Wrap your work and write tomorrow's top 3 priorities in the Planner right now",
         'Evening journal: 3 wins, 1 thing to improve. Takes 5 minutes.',
-        'In bed by 10 PM — sleep is non-negotiable. Every hour counts.',
+        hasFit ? 'Prep your gym bag or workout plan for tomorrow now — remove friction.' : 'In bed by 10 PM — sleep is non-negotiable. Every hour counts.',
       ];
     }
     el.innerHTML = items.map(item => `<div class="focus-item"><span class="focus-dot">→</span><span>${escHtml(item)}</span></div>`).join('');
@@ -2726,19 +2875,25 @@
       const weekData = getWeekData().map(d => ({ day: d.day, pct: d.pct ?? 0 }));
       const activeTab = document.querySelector('.db-tab.active');
       const currentPage = 'Dashboard — ' + (activeTab ? activeTab.textContent.replace(/[^\w\s]/g,'').trim() : 'Planner') + ' tab';
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
       const resp = await fetch('/.netlify/functions/ai-chat', {
         method: 'POST',
         headers: { 'Content-Type':'application/json', ...(token ? { Authorization:'Bearer '+token } : {}) },
-        body: JSON.stringify({ messages: aiMessages.map(m=>({role:m.role,content:m.content})), planProfile: window.EE_PLAN_PROFILE || {}, weekData, currentPage, userName: window.EE_USER?.name || '' })
+        body: JSON.stringify({ messages: aiMessages.map(m=>({role:m.role,content:m.content})), planProfile: window.EE_PLAN_PROFILE || {}, weekData, currentPage, userName: window.EE_USER?.name || '' }),
+        signal: controller.signal
       });
+      clearTimeout(timer);
       const data = await resp.json();
       typingEl.remove();
       const reply = data.reply || 'No response. Try again.';
       aiMessages.push({ role:'assistant', content: reply });
     } catch (err) {
       typingEl.remove();
-      console.error('AI chat error:', err);
-      aiMessages.push({ role:'assistant', content: 'Could not reach Empire AI right now. Check your connection and try again. If it keeps happening, contact info.ethosempire@gmail.com.' });
+      const isAbort = err && err.name === 'AbortError';
+      aiMessages.push({ role:'assistant', content: isAbort
+        ? 'That took too long. Check your connection and try again.'
+        : 'Empire AI needs the local server running. In your terminal: npx netlify-cli dev — then reload.' });
     }
     renderAiMessages();
     document.getElementById('aiChatSend').disabled = false;
