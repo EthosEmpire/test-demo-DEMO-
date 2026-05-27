@@ -677,6 +677,119 @@
     <div id="overlaySub" style="color:rgba(255,255,255,0.28);font-size:0.7rem;letter-spacing:0.1em;"></div>
   </div>
 
+  <!-- ══ Plan Builder Overlay ══ -->
+  <div id="pbOverlay" style="display:none;position:fixed;inset:0;background:#080808;z-index:9998;overflow-y:auto;">
+    <style>
+      @keyframes pb-glow-spin{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+      @keyframes pb-dot-bounce{0%,80%,100%{transform:scale(0.4);opacity:.3}40%{transform:scale(1);opacity:1}}
+      @keyframes pb-fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes pb-check-pop{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+      @keyframes pb-orbit{to{transform:rotate(360deg)}}
+      #pbWelcomeScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px 80px;text-align:center;max-width:700px;margin:0 auto;}
+      #pbChatScreen{display:none;flex-direction:column;height:100vh;max-width:700px;margin:0 auto;}
+      #pbBuildingScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;text-align:center;}
+      #pbReadyScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;text-align:center;}
+      .pb-logo-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:44px;}
+      .pb-logo-row img{width:36px;height:36px;border-radius:9px;}
+      .pb-logo-row span{font-size:.72rem;font-weight:900;letter-spacing:.22em;color:var(--gold-3);}
+      .pb-heading{font-size:clamp(1.8rem,5.5vw,2.8rem);font-weight:900;color:#fff;line-height:1.15;margin-bottom:14px;}
+      .pb-grad{background:linear-gradient(135deg,#FFD700,#4285F4,#AB47BC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+      .pb-subtext{font-size:.95rem;color:rgba(255,255,255,.38);line-height:1.7;margin-bottom:48px;max-width:440px;}
+      .pb-glow-ring{position:relative;border-radius:24px;padding:2px;background:linear-gradient(270deg,#FFD700,#4285F4,#AB47BC,#26a69a,#FFD700);background-size:400% 400%;animation:pb-glow-spin 4s ease infinite;box-shadow:0 0 32px rgba(255,215,0,.12),0 0 80px rgba(66,133,244,.07);width:100%;max-width:640px;margin-bottom:22px;}
+      .pb-glow-inner{background:#0d0d0d;border-radius:22px;padding:18px 20px 14px;}
+      .pb-glow-textarea{width:100%;background:transparent;border:none;outline:none;color:#fff;font-size:1rem;font-family:inherit;resize:none;min-height:52px;line-height:1.6;}
+      .pb-glow-textarea::placeholder{color:rgba(255,255,255,.22);}
+      .pb-glow-row{display:flex;align-items:center;justify-content:flex-end;margin-top:8px;}
+      .pb-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;font-size:1rem;font-weight:900;cursor:pointer;transition:transform .2s,opacity .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+      .pb-send:hover{transform:scale(1.08);}
+      .pb-send:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+      .pb-welcome-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:600px;}
+      .pb-welcome-chip{padding:10px 20px;border-radius:30px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s;white-space:nowrap;}
+      .pb-welcome-chip:hover{border-color:rgba(255,215,0,.35);background:rgba(255,215,0,.05);color:#fff;}
+      .pb-chat-header{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;}
+      .pb-chat-header img{width:28px;height:28px;border-radius:6px;}
+      .pb-chat-header span{font-size:.68rem;font-weight:900;letter-spacing:.18em;color:var(--gold-3);}
+      .pb-msgs{flex:1;overflow-y:auto;padding:24px 20px 16px;display:flex;flex-direction:column;gap:20px;scrollbar-width:none;}
+      .pb-msgs::-webkit-scrollbar{display:none;}
+      .pb-row-ai,.pb-row-user{display:flex;gap:12px;animation:pb-fade-up .3s ease;}
+      .pb-row-user{flex-direction:row-reverse;}
+      .pb-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#4285F4);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:900;color:#000;flex-shrink:0;margin-top:3px;}
+      .pb-bubble{max-width:82%;padding:13px 17px;border-radius:18px;font-size:.9rem;line-height:1.65;}
+      .pb-row-ai .pb-bubble{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.88);border-radius:4px 18px 18px 18px;}
+      .pb-row-user .pb-bubble{background:rgba(255,215,0,.09);border:1px solid rgba(255,215,0,.18);color:#fff;border-radius:18px 18px 4px 18px;}
+      .pb-typing{display:flex;align-items:center;gap:5px;padding:13px 17px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:4px 18px 18px 18px;width:fit-content;}
+      .pb-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45);animation:pb-dot-bounce 1.3s infinite ease;}
+      .pb-dot:nth-child(2){animation-delay:.15s}.pb-dot:nth-child(3){animation-delay:.3s}
+      .pb-step-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+      .pb-step-chip{padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.04);color:rgba(255,255,255,.68);font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .17s;}
+      .pb-step-chip:hover{border-color:var(--gold-2);color:#fff;background:rgba(255,215,0,.07);}
+      .pb-step-chip.pb-sel{border-color:var(--gold-2);color:var(--gold-3);background:rgba(255,215,0,.09);}
+      .pb-step-chip:disabled{opacity:.4;pointer-events:none;}
+      .pb-cta-chip{background:rgba(255,215,0,.08)!important;border-color:rgba(255,215,0,.3)!important;color:var(--gold-3)!important;}
+      .pb-chat-foot{padding:12px 20px 28px;border-top:1px solid rgba(255,255,255,.05);flex-shrink:0;}
+      .pb-orbit{width:72px;height:72px;border-radius:50%;border:3px solid transparent;border-top-color:var(--gold-3);border-right-color:rgba(66,133,244,.45);animation:pb-orbit 1.1s linear infinite;margin:0 auto 32px;}
+      .pb-check-circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 28px;animation:pb-check-pop .5s cubic-bezier(.34,1.56,.64,1);}
+      .pb-enter-btn{margin-top:36px;padding:16px 52px;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:50px;color:#000;font-size:.95rem;font-weight:900;letter-spacing:.1em;cursor:pointer;transition:transform .2s,opacity .2s;font-family:inherit;}
+      .pb-enter-btn:hover{transform:translateY(-2px);opacity:.9;}
+    </style>
+
+    <!-- Welcome Screen -->
+    <div id="pbWelcomeScreen">
+      <div class="pb-logo-row">
+        <img src="images/ethos-empire-logo.webp" alt="EE">
+        <span>ETHOS EMPIRE</span>
+      </div>
+      <h1 class="pb-heading">Hey <span id="pbGreetName" class="pb-grad">there</span>,<br>let's build your plan.</h1>
+      <p class="pb-subtext">Tell me your goals and I'll create your complete personalized roadmap — fitness, wealth, mindset, and more.</p>
+      <div class="pb-glow-ring">
+        <div class="pb-glow-inner">
+          <textarea class="pb-glow-textarea" id="pbWelcomeInput" rows="2" placeholder="What do you want to build? Type or choose below..."></textarea>
+          <div class="pb-glow-row"><button class="pb-send" id="pbWelcomeSend">&#10148;</button></div>
+        </div>
+      </div>
+      <div class="pb-welcome-chips" id="pbWelcomeChips">
+        <button class="pb-welcome-chip" data-val="Full Life Transformation">Full Life Transformation</button>
+        <button class="pb-welcome-chip" data-val="Body &amp; Fitness">Body &amp; Fitness</button>
+        <button class="pb-welcome-chip" data-val="Wealth &amp; Finance">Wealth &amp; Finance</button>
+        <button class="pb-welcome-chip" data-val="Mindset &amp; Discipline">Mindset &amp; Discipline</button>
+        <button class="pb-welcome-chip" data-val="Faith &amp; Purpose">Faith &amp; Purpose</button>
+        <button class="pb-welcome-chip" data-val="Relationships">Relationships</button>
+      </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="pbChatScreen">
+      <div class="pb-chat-header">
+        <img src="images/ethos-empire-logo.webp" alt="EE">
+        <span>EMPIRE AI PLAN BUILDER</span>
+      </div>
+      <div class="pb-msgs" id="pbMsgs"></div>
+      <div class="pb-chat-foot">
+        <div class="pb-glow-ring" style="margin-bottom:0;">
+          <div class="pb-glow-inner" style="padding:12px 16px 10px;">
+            <textarea class="pb-glow-textarea" id="pbChatInput" rows="1" style="min-height:32px;" placeholder="Type your answer..."></textarea>
+            <div class="pb-glow-row" style="margin-top:6px;"><button class="pb-send" id="pbChatSend">&#10148;</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Building Screen -->
+    <div id="pbBuildingScreen">
+      <div class="pb-orbit"></div>
+      <div style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:14px;">Building your Empire plan...</div>
+      <div id="pbBuildMsg" style="font-size:.9rem;color:rgba(255,255,255,.38);max-width:340px;line-height:1.7;min-height:48px;"></div>
+    </div>
+
+    <!-- Ready Screen -->
+    <div id="pbReadyScreen">
+      <div class="pb-check-circle">✓</div>
+      <div style="font-size:1.9rem;font-weight:900;color:#fff;margin-bottom:14px;">Your plan is ready.</div>
+      <div id="pbReadyMsg" style="font-size:.92rem;color:rgba(255,255,255,.48);max-width:500px;line-height:1.75;"></div>
+      <button class="pb-enter-btn" id="pbEnterBtn">Enter Your Dashboard &#10148;</button>
+    </div>
+  </div>
+
   <!-- Paused/inactive banner -->
   <div class="locked-banner" id="lockedBanner">
     <div class="locked-banner-msg"><strong>⏸ Access Paused</strong> — Your subscription is inactive. Reactivate to unlock your full Empire Builder dashboard.</div>
@@ -1186,8 +1299,252 @@
 
       if (!isActive && typeof window.applyLockedState === 'function') window.applyLockedState(status);
 
+      // Show plan builder for new members who haven't built a plan yet
+      if (!profile.planProfile || !profile.planProfile.goals) {
+        document.dispatchEvent(new CustomEvent('ee:showPlanBuilder', { detail: { name } }));
+      }
+
       overlay.remove();
     });
+  </script>
+
+  <!-- ══ Plan Builder Logic ══ -->
+  <script>
+  (function() {
+    const STEPS = [
+      {
+        key: 'goals',
+        msg: (n) => `Hey ${n || 'there'}! I\'m your Ethos Empire AI Coach.\n\nI\'m going to build your complete personalized plan right now. What are you here to build? Pick everything that applies — you can choose more than one.`,
+        chips: ['Full Life Transformation','Body & Fitness','Wealth & Finance','Mindset & Discipline','Faith & Purpose','Relationships'],
+        multi: true,
+        cta: 'These are my goals →'
+      },
+      {
+        key: 'experience',
+        msg: () => 'Got it! Now tell me — where are you starting from right now?',
+        chips: ['Just getting started','Tried before but struggled','Have some good habits','Consistent — want to level up'],
+        multi: false
+      },
+      {
+        key: 'wakeTime',
+        msg: () => 'Perfect. What time do you usually wake up?',
+        chips: ['5–6 AM — Early riser','7–8 AM — Standard morning','9–10 AM — Late start','No fixed routine yet'],
+        multi: false
+      },
+      {
+        key: 'mainGoal',
+        msg: () => 'Last one — what\'s your #1 goal in the next 90 days? Be specific.',
+        type: 'text',
+        placeholder: 'e.g. Lose 20 lbs, save $5,000, build a daily routine...'
+      }
+    ];
+
+    let pbStep = 0;
+    const pbData = { goals: [], experience: '', wakeTime: '', mainGoal: '' };
+
+    function initPB(name) {
+      const el = document.getElementById('pbGreetName');
+      if (el) el.textContent = (name || 'there').split(' ')[0];
+
+      document.getElementById('pbWelcomeSend').onclick = sendFromWelcome;
+      document.getElementById('pbWelcomeInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendFromWelcome(); }
+      });
+      document.getElementById('pbWelcomeChips').addEventListener('click', (e) => {
+        const chip = e.target.closest('.pb-welcome-chip');
+        if (!chip) return;
+        pbData.goals = [chip.dataset.val];
+        gotoChat(chip.dataset.val);
+        pbStep = 1;
+        setTimeout(() => showStep(pbStep), 900);
+      });
+      document.getElementById('pbChatSend').onclick = sendChatMsg;
+      document.getElementById('pbChatInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
+      });
+      document.getElementById('pbEnterBtn').onclick = pbEnterDash;
+    }
+
+    function sendFromWelcome() {
+      const txt = document.getElementById('pbWelcomeInput').value.trim();
+      if (!txt) return;
+      gotoChat(txt);
+      pbStep = 0;
+      setTimeout(() => showStep(pbStep), 900);
+    }
+
+    function gotoChat(firstMsg) {
+      const ws = document.getElementById('pbWelcomeScreen');
+      ws.style.cssText = 'opacity:0;transition:opacity .3s;pointer-events:none;display:flex;';
+      setTimeout(() => {
+        ws.style.display = 'none';
+        document.getElementById('pbChatScreen').style.display = 'flex';
+        addUserBubble(firstMsg);
+      }, 300);
+    }
+
+    function showStep(idx) {
+      const s = STEPS[idx];
+      if (!s) { pbBuild(); return; }
+      showTyping().then(() => {
+        const n = (window.EE_USER?.name || '').split(' ')[0];
+        addAiBubble(s.msg(n), s);
+        if (s.type === 'text') {
+          const inp = document.getElementById('pbChatInput');
+          inp.placeholder = s.placeholder || 'Type your answer...';
+          inp.focus();
+        }
+      });
+    }
+
+    function showTyping() {
+      return new Promise(res => {
+        const msgs = document.getElementById('pbMsgs');
+        const row = document.createElement('div');
+        row.className = 'pb-row-ai'; row.id = 'pbTypingRow';
+        row.innerHTML = '<div class="pb-avatar">EE</div><div class="pb-typing"><div class="pb-dot"></div><div class="pb-dot"></div><div class="pb-dot"></div></div>';
+        msgs.appendChild(row); pbScroll();
+        setTimeout(() => { const t = document.getElementById('pbTypingRow'); if (t) t.remove(); res(); }, 1100);
+      });
+    }
+
+    function addAiBubble(text, s) {
+      const msgs = document.getElementById('pbMsgs');
+      const row = document.createElement('div');
+      row.className = 'pb-row-ai';
+      let chips = '';
+      if (s?.chips) {
+        chips = `<div class="pb-step-chips" data-key="${s.key}" data-multi="${!!s.multi}">
+          ${s.chips.map(c => `<button class="pb-step-chip" data-val="${esc(c)}">${esc(c)}</button>`).join('')}
+          ${s.multi ? `<button class="pb-step-chip pb-cta-chip">${s.cta || 'Continue →'}</button>` : ''}
+        </div>`;
+      }
+      row.innerHTML = `<div class="pb-avatar">EE</div><div><div class="pb-bubble">${esc(text).replace(/\n/g,'<br>')}</div>${chips}</div>`;
+      const cc = row.querySelector('.pb-step-chips');
+      if (cc) cc.addEventListener('click', onChip);
+      msgs.appendChild(row); pbScroll();
+    }
+
+    function onChip(e) {
+      const chip = e.target.closest('.pb-step-chip');
+      if (!chip || chip.disabled) return;
+      const cc = e.currentTarget;
+      const isMulti = cc.dataset.multi === 'true';
+      const isCta = chip.classList.contains('pb-cta-chip');
+      const key = cc.dataset.key;
+      if (isCta) {
+        const sel = [...cc.querySelectorAll('.pb-sel')].map(c => c.dataset.val);
+        if (!sel.length) return;
+        pbData[key] = sel;
+        lockChips(cc); addUserBubble(sel.join(', '));
+        pbStep++; setTimeout(() => showStep(pbStep), 800);
+      } else if (isMulti) {
+        chip.classList.toggle('pb-sel');
+      } else {
+        pbData[key] = chip.dataset.val;
+        lockChips(cc); chip.classList.add('pb-sel');
+        addUserBubble(chip.dataset.val);
+        pbStep++; setTimeout(() => showStep(pbStep), 800);
+      }
+    }
+
+    function lockChips(cc) { cc.querySelectorAll('.pb-step-chip').forEach(c => { c.disabled = true; }); }
+
+    function addUserBubble(txt) {
+      const msgs = document.getElementById('pbMsgs');
+      const row = document.createElement('div');
+      row.className = 'pb-row-user';
+      row.innerHTML = `<div class="pb-bubble">${esc(txt)}</div>`;
+      msgs.appendChild(row); pbScroll();
+    }
+
+    function sendChatMsg() {
+      const s = STEPS[pbStep];
+      if (!s || s.type !== 'text') return;
+      const val = document.getElementById('pbChatInput').value.trim();
+      if (!val) return;
+      document.getElementById('pbChatInput').value = '';
+      pbData[s.key] = val;
+      addUserBubble(val);
+      pbStep++;
+      setTimeout(pbBuild, 400);
+    }
+
+    function pbScroll() {
+      const m = document.getElementById('pbMsgs');
+      if (m) setTimeout(() => { m.scrollTop = m.scrollHeight; }, 60);
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function pbBuild() {
+      document.getElementById('pbChatScreen').style.display = 'none';
+      const bs = document.getElementById('pbBuildingScreen');
+      bs.style.display = 'flex';
+      const msgs = ['Analyzing your goals...','Mapping your schedule...','Calibrating your roadmap...','Finalizing your plan...'];
+      let i = 0;
+      const el = document.getElementById('pbBuildMsg');
+      const iv = setInterval(() => { if (el && i < msgs.length) el.textContent = msgs[i++]; }, 900);
+
+      const planProfile = {
+        goals: pbData.goals.length ? pbData.goals : ['Full Life Transformation'],
+        experience: pbData.experience,
+        wakeTime: pbData.wakeTime,
+        mainGoal: pbData.mainGoal,
+        builtAt: new Date().toISOString()
+      };
+
+      let readyMsg = 'Your personalized Empire plan is built and locked in. Every part of your dashboard is now calibrated to your goals. It\'s time to get to work.';
+      try {
+        const token = window.EE_USER?.firebaseUser?.getIdToken ? await window.EE_USER.firebaseUser.getIdToken().catch(() => null) : null;
+        const res = await Promise.race([
+          fetch('/.netlify/functions/ai-chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            body: JSON.stringify({
+              messages: [{ role: 'user', content: `My goals: ${planProfile.goals.join(', ')}. Experience: ${planProfile.experience}. Wake time: ${planProfile.wakeTime}. 90-day goal: ${planProfile.mainGoal}. Write 2 motivating sentences about the specific Empire plan you just built for me. Be direct and specific to my goals.` }],
+              userName: (window.EE_USER?.name || '').split(' ')[0],
+              planProfile
+            })
+          }),
+          new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 5000))
+        ]);
+        if (res.ok) { const d = await res.json(); if (d.reply) readyMsg = d.reply; }
+      } catch {}
+
+      try {
+        if (window.EE_SAVE_PROFILE) {
+          await window.EE_SAVE_PROFILE({ planProfile });
+          window.EE_PLAN_PROFILE = planProfile;
+        }
+      } catch {}
+
+      clearInterval(iv);
+      setTimeout(() => {
+        bs.style.display = 'none';
+        const rs = document.getElementById('pbReadyScreen');
+        const rm = document.getElementById('pbReadyMsg');
+        if (rm) rm.textContent = readyMsg;
+        rs.style.display = 'flex';
+      }, 800);
+    }
+
+    function pbEnterDash() {
+      const ov = document.getElementById('pbOverlay');
+      if (!ov) return;
+      ov.style.transition = 'opacity .5s';
+      ov.style.opacity = '0';
+      setTimeout(() => {
+        ov.remove();
+        if (typeof window.renderMyPlan === 'function') window.renderMyPlan(window.EE_PLAN_PROFILE);
+        if (typeof window.renderTodayFocus === 'function') window.renderTodayFocus();
+      }, 500);
+    }
+
+    document.addEventListener('ee:showPlanBuilder', (e) => { initPB(e.detail?.name || ''); });
+  })();
   </script>
 
   <!-- ══ Dashboard Logic ══ -->
