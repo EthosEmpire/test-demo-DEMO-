@@ -1373,6 +1373,10 @@
     const pbData = { goals: [], experience: '', wakeTime: '', mainGoal: '' };
 
     function initPB(name) {
+      const ov = document.getElementById('pbOverlay');
+      if (!ov) return;
+      ov.style.display = 'block';
+
       const el = document.getElementById('pbGreetName');
       if (el) el.textContent = (name || 'there').split(' ')[0];
 
