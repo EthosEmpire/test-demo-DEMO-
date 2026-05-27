@@ -1445,7 +1445,7 @@
     function pbMd(raw) {
       let s = String(raw||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       s = s.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');
-      s = s.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g,'<em>$1</em>');
+      s = s.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
       s = s.replace(/`([^`\n]+)`/g,'<code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;font-size:0.85em;">$1</code>');
       const lines = s.split('\n');
       let html = '', inUl = false, inOl = false;
