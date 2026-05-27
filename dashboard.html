@@ -1132,6 +1132,20 @@
       <button class="btn-add" id="settingsEditSched" style="width:100%;">Edit My Schedule</button>
     </div>
 
+    <!-- Reset Plan -->
+    <div class="db-card" style="border-color:rgba(255,165,0,0.15);">
+      <div class="card-label" style="color:rgba(255,165,0,0.55);">PLAN</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:16px;line-height:1.55;">Rebuild your personalized plan from scratch. The AI coach will walk you through your goals again and recalibrate everything.</div>
+      <div id="resetPlanConfirm" style="display:none;background:rgba(255,120,0,0.07);border:1px solid rgba(255,120,0,0.2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+        <div style="font-size:0.82rem;color:rgba(255,200,100,0.9);font-weight:700;margin-bottom:10px;">Are you sure? This will clear your current plan and restart the builder.</div>
+        <div style="display:flex;gap:10px;">
+          <button id="resetPlanYes" style="padding:9px 20px;background:rgba(255,120,0,0.15);border:1px solid rgba(255,120,0,0.35);border-radius:9px;color:#ffaa55;font-size:0.82rem;font-weight:700;font-family:inherit;cursor:pointer;">Yes, Reset My Plan</button>
+          <button id="resetPlanNo" style="padding:9px 18px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:rgba(255,255,255,0.4);font-size:0.82rem;font-weight:600;font-family:inherit;cursor:pointer;">Cancel</button>
+        </div>
+      </div>
+      <button id="resetPlanBtn" style="padding:10px 20px;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.2);border-radius:10px;color:rgba(255,165,0,0.85);font-size:0.82rem;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s;">Rebuild My Plan</button>
+    </div>
+
     <!-- Sign out -->
     <div class="db-card" style="border-color:rgba(255,80,80,0.12);">
       <div class="card-label" style="color:rgba(255,80,80,0.5);">SESSION</div>
@@ -1292,6 +1306,22 @@
       document.getElementById('ddSignOutBtn').addEventListener('click', () => window.EE_SIGN_OUT());
       document.getElementById('settingsBillingBtn').addEventListener('click', function() { window.EE_OPEN_PORTAL(this); });
       document.getElementById('settingsSignOutBtn').addEventListener('click', () => window.EE_SIGN_OUT());
+
+      // Reset plan
+      document.getElementById('resetPlanBtn').addEventListener('click', () => {
+        document.getElementById('resetPlanConfirm').style.display = 'block';
+        document.getElementById('resetPlanBtn').style.display = 'none';
+      });
+      document.getElementById('resetPlanNo').addEventListener('click', () => {
+        document.getElementById('resetPlanConfirm').style.display = 'none';
+        document.getElementById('resetPlanBtn').style.display = '';
+      });
+      document.getElementById('resetPlanYes').addEventListener('click', async () => {
+        const btn = document.getElementById('resetPlanYes');
+        btn.textContent = 'Resetting...'; btn.disabled = true;
+        try { await window.EE_SAVE_PROFILE({ planProfile: null }); } catch {}
+        window.location.reload();
+      });
 
       if (typeof window.renderSettingsGoals === 'function') window.renderSettingsGoals(pp.goals || []);
       if (typeof window.renderMyPlan === 'function') window.renderMyPlan(profile.planProfile);
