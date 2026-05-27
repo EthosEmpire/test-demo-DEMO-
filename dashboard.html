@@ -529,6 +529,42 @@
     .lib-links-label { font-size:0.65rem; font-weight:800; letter-spacing:0.16em; color:rgba(255,255,255,0.25); margin-bottom:8px; }
     .lib-link { display:inline-flex; align-items:center; gap:5px; font-size:0.78rem; color:rgba(255,215,0,0.6); text-decoration:none; background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.15); border-radius:20px; padding:4px 12px; margin:3px 3px 3px 0; transition:all 0.15s; }
     .lib-link:hover { color:var(--gold-3); background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3); }
+    /* ── Chapter list cards ── */
+    .lib-ch-card { display:flex; align-items:flex-start; gap:14px; padding:16px 18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; margin-bottom:10px; cursor:pointer; transition:all 0.2s; }
+    .lib-ch-card:hover { border-color:rgba(255,215,0,0.35); background:rgba(255,215,0,0.03); transform:translateX(4px); }
+    .lib-ch-badge { font-size:0.58rem; font-weight:900; color:var(--gold-2); letter-spacing:0.18em; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.15); border-radius:20px; padding:4px 10px; white-space:nowrap; flex-shrink:0; margin-top:2px; }
+    .lib-ch-info { flex:1; min-width:0; }
+    .lib-ch-card-title { font-size:0.9rem; font-weight:800; color:#fff; margin-bottom:5px; }
+    .lib-ch-card-preview { font-size:0.78rem; color:rgba(255,255,255,0.35); line-height:1.5; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lib-ch-read { font-size:0.68rem; font-weight:800; color:var(--gold-3); letter-spacing:0.06em; }
+    /* ── Single chapter article page ── */
+    #libChapterPage { display:none; }
+    .lib-art-cat-row { display:flex; align-items:center; gap:9px; font-size:0.62rem; font-weight:900; letter-spacing:0.2em; color:var(--gold-2); margin-bottom:10px; }
+    .lib-art-ch-num { font-size:0.68rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.14em; margin-bottom:10px; }
+    .lib-art-title { font-size:1.18rem; font-weight:900; color:#fff; line-height:1.35; margin-bottom:16px; }
+    .lib-art-divider { height:2px; background:linear-gradient(90deg,rgba(255,215,0,0.35),transparent); border-radius:2px; margin-bottom:24px; }
+    .lib-art-body { font-size:0.87rem; color:rgba(255,255,255,0.7); line-height:1.82; }
+    .lib-art-body h4 { font-size:0.7rem; font-weight:900; letter-spacing:0.18em; color:var(--gold-3); margin:22px 0 10px; }
+    .lib-art-body p { margin:0 0 14px; }
+    .lib-art-body ul { list-style:none; padding:0; margin:0 0 14px; }
+    .lib-art-body ul li { padding:7px 0 7px 18px; border-bottom:1px solid rgba(255,255,255,0.04); line-height:1.65; position:relative; font-size:0.86rem; }
+    .lib-art-body ul li:last-child { border-bottom:none; }
+    .lib-art-body ul li::before { content:'→'; color:var(--gold-2); font-weight:700; position:absolute; left:0; }
+    .lib-art-body strong { color:var(--gold-4); font-weight:700; }
+    .lib-art-takeaway { background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.18); border-radius:14px; padding:16px 18px; margin:24px 0; }
+    .lib-art-takeaway-lbl { font-size:0.6rem; font-weight:900; letter-spacing:0.2em; color:var(--gold-2); margin-bottom:8px; }
+    .lib-art-takeaway-txt { font-size:0.85rem; color:rgba(255,255,255,0.72); line-height:1.65; }
+    .lib-art-nav { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:28px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.07); }
+    .lib-art-nav-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:10px 16px; font-size:0.78rem; font-weight:700; color:rgba(255,255,255,0.5); cursor:pointer; font-family:inherit; transition:all 0.18s; text-align:center; }
+    .lib-art-nav-btn:hover { border-color:rgba(255,215,0,0.3); color:#ffd700; }
+    .lib-art-nav-btn.gone { opacity:0.2; pointer-events:none; }
+    /* ── Term highlighting ── */
+    .lib-term { border-bottom:1px dashed rgba(255,215,0,0.5); color:rgba(255,215,0,0.92); cursor:pointer; transition:color 0.15s; }
+    .lib-term:hover { color:#ffd700; }
+    #libTermTip { position:fixed; z-index:6000; max-width:290px; background:#161616; border:1px solid rgba(255,215,0,0.22); border-radius:14px; padding:14px 16px; box-shadow:0 8px 40px rgba(0,0,0,0.75); display:none; }
+    .lib-tt-word { font-size:0.62rem; font-weight:900; letter-spacing:0.16em; color:var(--gold-2); margin-bottom:7px; }
+    .lib-tt-def { font-size:0.8rem; color:rgba(255,255,255,0.75); line-height:1.6; margin-bottom:6px; }
+    .lib-tt-fact { font-size:0.75rem; color:rgba(255,215,0,0.5); line-height:1.5; font-style:italic; padding-top:6px; border-top:1px solid rgba(255,255,255,0.06); }
 
     /* ── Social CTA ── */
     .social-cta { background:linear-gradient(135deg,rgba(139,105,20,0.12),rgba(201,149,42,0.04)); border:1px solid rgba(255,215,0,0.14); border-radius:18px; padding:28px 24px; margin-bottom:16px; text-align:center; }
@@ -1034,8 +1070,8 @@
             <span class="social-link-label">YouTube</span>
           </a>
           <a href="https://x.com/EthosEmpire_X" target="_blank" rel="noopener" class="social-link social-link-x">
-            <img src="images/x.png" alt="X / Twitter" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
-            <span class="social-link-label">Twitter / X</span>
+            <img src="images/x.webp" alt="X" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
+            <span class="social-link-label">X</span>
           </a>
           <a href="https://discord.gg/h6HgQP4nWz" target="_blank" rel="noopener" class="social-link social-link-dc">
             <img src="images/discord.webp" alt="Discord" class="social-link-icon" style="width:34px;height:34px;object-fit:contain;">
@@ -1049,11 +1085,24 @@
       </div>
     </div>
 
-    <!-- Article View (hidden by default) -->
+    <!-- Chapter list (hidden by default) -->
     <div class="lib-article-view" id="libArticleView">
       <button class="lib-back-btn" id="libBackBtn">← Back to Library</button>
       <div id="libArticleContent"></div>
     </div>
+
+    <!-- Single chapter article (hidden by default) -->
+    <div id="libChapterPage">
+      <button class="lib-back-btn" id="libChBackBtn">← Back to Chapters</button>
+      <div id="libChapterContent"></div>
+    </div>
+  </div>
+
+  <!-- Term definition tooltip -->
+  <div id="libTermTip">
+    <div class="lib-tt-word" id="libTtWord"></div>
+    <div class="lib-tt-def" id="libTtDef"></div>
+    <div class="lib-tt-fact" id="libTtFact"></div>
   </div>
 
   <!-- SETTINGS -->
@@ -3370,45 +3419,162 @@
     ]}
   };
 
+  /* ─ LIBRARY TERM DICTIONARY ─ */
+  const LIB_TERMS = {
+    'progressive overload': { def: 'Gradually increasing training stress — more weight, reps, or shorter rest — to force continued adaptation and growth.', fact: 'Progressive overload is the single most critical variable in long-term muscle and strength gain, confirmed by decades of exercise science.' },
+    'spf': { def: 'Sun Protection Factor. SPF 30 blocks 97% of UVB rays; SPF 50 blocks 98%. Required daily — rain or shine.', fact: 'UV radiation causes approximately 80% of visible skin aging including wrinkles, dark spots, and texture changes.' },
+    'retinol': { def: 'A form of Vitamin A that accelerates skin cell turnover, reduces fine lines, and fights acne by unclogging pores.', fact: 'Retinol is the most clinically studied anti-aging ingredient in dermatology with over 40 years of research behind it.' },
+    'niacinamide': { def: 'A form of Vitamin B3 that reduces pores, redness, and oil production, strengthens the skin barrier, and fades dark spots.', fact: 'Niacinamide is one of the most well-tolerated skincare actives and works for all skin types — ideal for beginners.' },
+    'cortisol': { def: 'The primary stress hormone. Chronically elevated, it breaks down muscle, stores fat, disrupts sleep, and suppresses immunity.', fact: 'Even a single 20-minute walk significantly reduces circulating cortisol levels — exercise is the most effective acute stress reliever.' },
+    'roth ira': { def: 'A retirement account funded with after-tax dollars. Investments grow tax-free and qualified withdrawals in retirement are also tax-free.', fact: 'Investing $7,000/year from age 25–65 in a Roth IRA at 7% average return yields approximately $1.4 million — completely tax-free.' },
+    'index fund': { def: 'An investment fund that tracks a market index (like the S&P 500) with very low fees, rather than being actively managed.', fact: 'Index funds outperform 92% of actively managed funds over 15-year periods, according to S&P SPIVA data.' },
+    's&p 500': { def: 'A stock market index tracking 500 of the largest US public companies. The standard benchmark for US stock performance.', fact: 'The S&P 500 has returned approximately 10% per year on average since 1957 — making it one of the most reliable long-term wealth vehicles.' },
+    'compound interest': { def: 'Interest earned on both the principal AND previously accumulated interest — creating exponential growth over time.', fact: '$10,000 at 10% annual return becomes $174,000 in 30 years through compound interest alone, with no additional contributions.' },
+    'stoicism': { def: 'A Greek philosophy (300 BC) with one core idea: control what you can (your thoughts and actions), accept what you cannot.', fact: 'Marcus Aurelius (emperor), Epictetus (former slave), and Seneca (advisor to Nero) — three vastly different people — all practiced Stoicism.' },
+    'ikigai': { def: 'Japanese concept: "reason for being." The intersection of what you love, what you\'re good at, what the world needs, and what you can be paid for.', fact: 'Okinawa, Japan — home of some of the world\'s longest-lived people — attributes much of their longevity to a strong sense of ikigai.' },
+    'spaced repetition': { def: 'Reviewing material at increasing intervals. Exploits the spacing effect — reviewing just before forgetting creates the strongest memories.', fact: 'Spaced repetition improves long-term retention by up to 200% compared to cramming, according to cognitive psychology research.' },
+    'active recall': { def: 'Testing yourself on material rather than re-reading it. Forces your brain to retrieve information, strengthening the memory trace each time.', fact: 'Active recall is 3-4x more effective for long-term retention than passive re-reading.' },
+    'zone 2': { def: 'Low-intensity cardio at 60-70% max heart rate — a sustainable pace where you can hold a conversation. The foundation of cardiovascular fitness.', fact: 'Zone 2 training builds mitochondrial density and fat-oxidation capacity more effectively than any other cardio intensity.' },
+    'hiit': { def: 'High-Intensity Interval Training — alternating maximum-effort bursts with recovery periods. Efficient, time-compressed cardio.', fact: 'HIIT burns 25-30% more calories than steady-state cardio in the same time period.' },
+    'caloric deficit': { def: 'Consuming fewer calories than your TDEE (total daily energy expenditure). The only scientifically proven mechanism for fat loss.', fact: 'A 500 cal/day deficit produces approximately 1 lb of fat loss per week — the safe, sustainable standard recommended by research.' },
+    'hyaluronic acid': { def: 'A molecule that holds up to 1,000x its weight in water. Used in skincare to draw moisture into the skin and maintain hydration.', fact: 'Hyaluronic acid is naturally produced by your body — your joints and eyes contain high concentrations of it.' },
+    'sebum': { def: 'Natural oil produced by skin glands. Essential for barrier function, but overproduction clogs pores and causes acne.', fact: 'Over-washing your face can increase sebum production — the skin compensates for excessive dryness by producing more oil.' },
+    'circadian rhythm': { def: 'The internal 24-hour biological clock regulating sleep-wake cycles, hormone release, and metabolism. Primarily set by light exposure.', fact: '10-30 minutes of morning sunlight is the single most powerful behavioral tool for regulating your circadian rhythm.' },
+    'omega-3': { def: 'Essential fatty acids (EPA and DHA) found in fatty fish, walnuts, and flaxseed that the body cannot produce itself.', fact: 'Omega-3s reduce systemic inflammation and are associated with reduced risk of heart disease, depression, and cognitive decline.' },
+    'dopamine': { def: 'A neurotransmitter governing motivation, reward anticipation, and goal-directed behavior — the "wanting" chemical.', fact: 'Social media and junk food trigger dopamine release in a similar pattern to addictive substances — explaining their compulsive pull.' },
+    'feynman technique': { def: 'Nobel physicist Richard Feynman\'s learning method: explain a concept in simple terms, identify where your explanation breaks, fill the gaps.', fact: 'Feynman was famous for being able to explain quantum mechanics and other complex physics to anyone — he credited this method.' },
+    'wu wei': { def: 'A core Taoist concept: "effortless action" — doing the right thing at the right time without force, struggle, or excess.', fact: 'The Tao Te Ching, which centers on wu wei, is the most translated book in history after the Bible.' },
+    'porosity': { def: 'In hair care: how well your hair absorbs and retains moisture. Determines which products and techniques will work for your hair.', fact: 'Test your hair porosity: drop a clean strand in water. Sinks fast = high porosity. Floats = low porosity. Sinks slowly = medium.' },
+    'hypertrophy': { def: 'Increase in muscle size caused by microscopic fiber damage during training, repaired larger and stronger during recovery.', fact: 'Maximum hypertrophy requires 10-20 working sets per muscle group per week, spread across multiple sessions.' },
+    'tdee': { def: 'Total Daily Energy Expenditure — the total calories your body burns in a day including exercise. Your maintenance calorie level.', fact: 'Most people underestimate their daily calorie intake by 20-40%, explaining why many fail to lose fat despite "eating less."' },
+    'dopamine fasting': { def: 'Deliberately reducing stimulation from high-reward activities (social media, junk food, games) to restore motivation sensitivity.', fact: 'Chronic overstimulation of the dopamine system raises the "baseline" needed to feel motivated — making everyday tasks feel unrewarding.' },
+    'net worth': { def: 'Total assets (what you own) minus total liabilities (what you owe). The primary measure of financial health and wealth accumulation.', fact: 'Median US net worth is ~$192,000 but mean is ~$1.06M — the top 1% dramatically skew the average upward.' }
+  };
+
+  function highlightTerms(html) {
+    // Split on HTML tags to only process text nodes
+    var parts = html.split(/(<[^>]+>)/);
+    return parts.map(function(part, i) {
+      if (i % 2 === 1) return part; // HTML tag — skip
+      var result = part;
+      Object.keys(LIB_TERMS).forEach(function(term) {
+        var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var re = new RegExp('(?<![>\\w])(' + escaped + ')(?![\\w<])', 'gi');
+        if (re.test(result)) {
+          re.lastIndex = 0;
+          result = result.replace(re, '<span class="lib-term" data-key="' + term + '">$1</span>');
+        }
+      });
+      return result;
+    }).join('');
+  }
+
   function renderLibraryGrid() {
     document.getElementById('libGrid').style.display = 'block';
     document.getElementById('libArticleView').style.display = 'none';
+    document.getElementById('libChapterPage').style.display = 'none';
   }
+
+  var _libCurrentCat = null;
 
   function renderLibraryCat(catKey) {
     const cat = LIB_CATS[catKey];
     if (!cat) return;
+    _libCurrentCat = catKey;
     document.getElementById('libGrid').style.display = 'none';
+    document.getElementById('libChapterPage').style.display = 'none';
     const av = document.getElementById('libArticleView');
     av.style.display = 'block';
+
+    function stripHtml(h) { return h.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/\s+/g,' ').trim(); }
+
     let html = `<div class="lib-cat-header"><div class="lib-cat-header-icon">${cat.icon}</div><div><div class="lib-cat-header-title">${cat.name}</div><div class="lib-cat-header-desc">${cat.desc}</div></div></div>`;
     cat.chapters.forEach((ch, i) => {
-      const links = (ch.links||[]).map(l=>`<a class="lib-link" href="${l.u}" target="_blank" rel="noopener">↗ ${l.t}</a>`).join('');
-      html += `<div class="lib-chapter" id="libch-${catKey}-${i}">
-        <div class="lib-chapter-hdr" onclick="toggleChapter('${catKey}',${i})">
-          <div><div class="lib-chapter-num">CHAPTER ${i+1}</div><div class="lib-chapter-title">${ch.title}</div></div>
-          <span class="lib-chapter-arrow">▶</span>
-        </div>
-        <div class="lib-chapter-body">
-          ${ch.body}
-          <div class="lib-takeaway"><strong>YOUR ACTION</strong>${ch.takeaway}</div>
-          ${links ? `<div class="lib-links"><div class="lib-links-label">RESOURCES & FURTHER READING</div>${links}</div>` : ''}
+      const preview = stripHtml(ch.body).slice(0, 110) + '…';
+      html += `<div class="lib-ch-card" onclick="renderChapterPage('${catKey}',${i})">
+        <div class="lib-ch-badge">CH ${i+1}</div>
+        <div class="lib-ch-info">
+          <div class="lib-ch-card-title">${ch.title}</div>
+          <div class="lib-ch-card-preview">${preview}</div>
+          <div class="lib-ch-read">Read Chapter →</div>
         </div>
       </div>`;
     });
     document.getElementById('libArticleContent').innerHTML = html;
-    // Auto-open first chapter
-    const first = document.getElementById(`libch-${catKey}-0`);
-    if (first) first.classList.add('open');
     av.scrollIntoView({ behavior:'smooth', block:'start' });
   }
 
-  function toggleChapter(catKey, i) {
-    const el = document.getElementById(`libch-${catKey}-${i}`);
-    if (el) el.classList.toggle('open');
-  }
+  window.renderChapterPage = function(catKey, chIdx) {
+    const cat = LIB_CATS[catKey];
+    if (!cat) return;
+    const ch = cat.chapters[chIdx];
+    if (!ch) return;
+    _libCurrentCat = catKey;
+
+    document.getElementById('libGrid').style.display = 'none';
+    document.getElementById('libArticleView').style.display = 'none';
+    const cp = document.getElementById('libChapterPage');
+    cp.style.display = 'block';
+
+    const links = (ch.links||[]).map(l=>`<a class="lib-link" href="${l.u}" target="_blank" rel="noopener">↗ ${l.t}</a>`).join('');
+    const prevDisabled = chIdx === 0 ? 'gone' : '';
+    const nextDisabled = chIdx === cat.chapters.length - 1 ? 'gone' : '';
+
+    const bodyHighlighted = highlightTerms(ch.body);
+
+    document.getElementById('libChapterContent').innerHTML = `
+      <div class="lib-art-cat-row">${cat.icon} ${cat.name.toUpperCase()}</div>
+      <div class="lib-art-ch-num">CHAPTER ${chIdx+1} OF ${cat.chapters.length}</div>
+      <div class="lib-art-title">${ch.title}</div>
+      <div class="lib-art-divider"></div>
+      <div class="lib-art-body">${bodyHighlighted}</div>
+      <div class="lib-art-takeaway">
+        <div class="lib-art-takeaway-lbl">YOUR ACTION TODAY</div>
+        <div class="lib-art-takeaway-txt">${ch.takeaway}</div>
+      </div>
+      ${links ? `<div class="lib-links"><div class="lib-links-label">RESOURCES & FURTHER READING</div>${links}</div>` : ''}
+      <div class="lib-art-nav">
+        <button class="lib-art-nav-btn ${prevDisabled}" onclick="renderChapterPage('${catKey}',${chIdx-1})">← Previous</button>
+        <span style="font-size:0.7rem;color:rgba(255,255,255,0.2);font-weight:700;">${chIdx+1} / ${cat.chapters.length}</span>
+        <button class="lib-art-nav-btn ${nextDisabled}" onclick="renderChapterPage('${catKey}',${chIdx+1})">Next →</button>
+      </div>`;
+
+    cp.scrollIntoView({ behavior:'smooth', block:'start' });
+  };
+
+  // Term tooltip
+  document.addEventListener('click', function(e) {
+    const term = e.target.closest('.lib-term');
+    const tip = document.getElementById('libTermTip');
+    if (!tip) return;
+    if (!term) { tip.style.display = 'none'; return; }
+    const key = term.dataset.key;
+    const data = LIB_TERMS[key];
+    if (!data) { tip.style.display = 'none'; return; }
+    document.getElementById('libTtWord').textContent = key.toUpperCase();
+    document.getElementById('libTtDef').textContent = data.def;
+    const factEl = document.getElementById('libTtFact');
+    factEl.textContent = data.fact || '';
+    factEl.style.display = data.fact ? 'block' : 'none';
+    tip.style.display = 'block';
+    const rect = term.getBoundingClientRect();
+    const tipW = 290;
+    let left = rect.left;
+    if (left + tipW > window.innerWidth - 12) left = window.innerWidth - tipW - 12;
+    if (left < 8) left = 8;
+    let top = rect.bottom + 8;
+    if (top + 160 > window.innerHeight) top = rect.top - 168;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+    e.stopPropagation();
+  });
 
   document.getElementById('libBackBtn').addEventListener('click', renderLibraryGrid);
+  document.getElementById('libChBackBtn').addEventListener('click', function() {
+    document.getElementById('libChapterPage').style.display = 'none';
+    document.getElementById('libArticleView').style.display = 'block';
+    document.getElementById('libArticleView').scrollIntoView({ behavior:'smooth', block:'start' });
+  });
   document.addEventListener('click', e => {
     const card = e.target.closest('.lib-cat-card[data-cat]');
     if (card) renderLibraryCat(card.dataset.cat);
