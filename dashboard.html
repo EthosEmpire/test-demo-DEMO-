@@ -1189,6 +1189,8 @@
       html += `<div class="plan-ebp-wrap"><div id="planMainCol">${buildFullPlan(pp)}</div><div>${buildEBPMenu(pp)}</div></div>`;
     }
     el.innerHTML = html;
+    // Init arc carousel after DOM update
+    setTimeout(() => { if (typeof arcInit === 'function') arcInit(); }, 60);
   };
 
   function buildEBPMenu(pp) {
@@ -1426,7 +1428,7 @@
         ['SUN','Rest & Recovery','Stretching, foam rolling, meal prep. This is when muscle is actually built.'],
       ];
       split.forEach(([d,n,desc]) => h += `<div class="plan-split-item"><div class="plan-split-day">${d}</div><div><div class="plan-split-name">${e(n)}</div><div class="plan-split-desc">${e(desc)}</div></div></div>`);
-      h += `</div></div></div>`;
+      h += `</div></div>`;
     }
 
     if (calTarget) {
@@ -2250,8 +2252,7 @@
     });
   }
 
-  // Init arc after render
-  setTimeout(() => { arcInit(); }, 300);
+  // arcInit() is called by renderMyPlan() after DOM is updated
 
   /* ─ CONTENT tab (legacy small set, kept for transition) ─ */
   const CONTENT = [
