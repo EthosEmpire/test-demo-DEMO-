@@ -216,6 +216,70 @@
     .day-task-del:hover { color:rgba(255,80,80,0.55); }
     .day-no-tasks { text-align:center; padding:20px; font-size:0.82rem; color:rgba(255,255,255,0.18); }
 
+    /* Auto-plan time edit */
+    .auto-time-edit { background:none; border:none; color:rgba(255,255,255,0.18); font-size:0.6rem; cursor:pointer; padding:0 3px; transition:color 0.18s; flex-shrink:0; }
+    .auto-time-edit:hover { color:rgba(255,215,0,0.5); }
+    .auto-time-input { background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:6px; padding:2px 5px; font-size:0.6rem; color:#fff; width:78px; font-family:inherit; }
+
+    /* Week report */
+    .week-report-toggle { display:flex; align-items:center; justify-content:space-between; margin-top:22px; padding:14px 18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; cursor:pointer; user-select:none; transition:background 0.18s; }
+    .week-report-toggle:hover { background:rgba(255,215,0,0.04); }
+    .week-report-toggle-label { font-size:0.7rem; font-weight:900; letter-spacing:0.16em; color:rgba(255,255,255,0.45); }
+    .week-report-arrow { font-size:0.7rem; color:rgba(255,255,255,0.28); transition:transform 0.25s; }
+    .week-report-toggle.open .week-report-arrow { transform:rotate(180deg); }
+    .week-report-body { display:none; padding-top:14px; }
+    .week-report-body.open { display:block; }
+    .week-day-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .week-day-lbl { font-size:0.65rem; font-weight:800; color:rgba(255,255,255,0.35); width:30px; flex-shrink:0; }
+    .week-day-date { font-size:0.58rem; color:rgba(255,255,255,0.18); width:34px; flex-shrink:0; }
+    .week-bar-wrap { flex:1; height:8px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; }
+    .week-bar-fill { height:100%; border-radius:4px; transition:width 0.6s ease; }
+    .week-day-pct { font-size:0.65rem; font-weight:800; width:34px; text-align:right; flex-shrink:0; }
+    .week-day-emoji { font-size:0.85rem; width:18px; text-align:center; flex-shrink:0; }
+    .week-day-row.is-today .week-day-lbl { color:var(--gold-3); }
+    .week-day-row.is-future { opacity:0.25; }
+    .week-score-row { display:flex; align-items:center; justify-content:space-between; margin:14px 0 10px; padding:12px 16px; background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.1); border-radius:12px; }
+    .week-score-label { font-size:0.68rem; font-weight:800; letter-spacing:0.14em; color:rgba(255,255,255,0.35); }
+    .week-score-val { font-size:1.2rem; font-weight:900; }
+    .week-missed-hdr { font-size:0.58rem; font-weight:900; letter-spacing:0.18em; color:rgba(255,255,255,0.2); margin:14px 0 8px; }
+    .week-missed-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); margin-bottom:5px; }
+    .week-missed-title { font-size:0.8rem; color:rgba(255,255,255,0.42); flex:1; }
+    .week-missed-count { font-size:0.6rem; font-weight:800; color:rgba(255,100,100,0.6); flex-shrink:0; }
+    .week-tip { margin-top:14px; padding:13px 16px; background:rgba(255,215,0,0.04); border-left:2px solid rgba(255,215,0,0.28); border-radius:0 12px 12px 0; font-size:0.8rem; color:rgba(255,255,255,0.48); line-height:1.6; }
+    .week-tip strong { color:var(--gold-3); }
+
+    /* AI Coach chat */
+    .ai-coach-section { margin-top:20px; border:1px solid rgba(255,215,0,0.12); border-radius:18px; overflow:hidden; }
+    .ai-coach-header { display:flex; align-items:center; gap:12px; padding:14px 18px; cursor:pointer; user-select:none; background:rgba(255,215,0,0.02); transition:background 0.18s; }
+    .ai-coach-header:hover { background:rgba(255,215,0,0.04); }
+    .ai-coach-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+    .ai-coach-name { font-size:0.84rem; font-weight:800; color:#fff; }
+    .ai-coach-status { font-size:0.62rem; color:rgba(255,215,0,0.45); margin-top:2px; }
+    .ai-coach-arrow { margin-left:auto; font-size:0.7rem; color:rgba(255,255,255,0.28); transition:transform 0.25s; }
+    .ai-coach-header.open .ai-coach-arrow { transform:rotate(180deg); }
+    .ai-chat-body { display:none; border-top:1px solid rgba(255,215,0,0.08); }
+    .ai-chat-body.open { display:flex; flex-direction:column; }
+    .ai-chat-messages { min-height:160px; max-height:300px; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:10px; scroll-behavior:smooth; }
+    .ai-chat-messages::-webkit-scrollbar { width:4px; }
+    .ai-chat-messages::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:2px; }
+    .ai-msg { max-width:84%; padding:9px 13px; border-radius:14px; font-size:0.82rem; line-height:1.55; }
+    .ai-msg-bot { align-self:flex-start; background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.75); border-radius:4px 14px 14px 14px; }
+    .ai-msg-user { align-self:flex-end; background:rgba(255,215,0,0.1); color:#fff; border-radius:14px 14px 4px 14px; border:1px solid rgba(255,215,0,0.14); }
+    .ai-msg-loading-dots { display:flex; gap:5px; padding:4px 2px; align-items:center; }
+    .ai-msg-loading-dots span { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); animation:aiDot 1.2s infinite; }
+    .ai-msg-loading-dots span:nth-child(2){animation-delay:0.2s;} .ai-msg-loading-dots span:nth-child(3){animation-delay:0.4s;}
+    @keyframes aiDot { 0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-5px);} }
+    .ai-chat-suggestions { display:flex; gap:6px; padding:0 14px 10px; flex-wrap:wrap; }
+    .ai-chat-suggestion { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:20px; padding:5px 12px; font-size:0.7rem; color:rgba(255,255,255,0.4); cursor:pointer; font-family:inherit; transition:all 0.18s; }
+    .ai-chat-suggestion:hover { border-color:rgba(255,215,0,0.28); color:var(--gold-3); }
+    .ai-chat-input-row { display:flex; gap:8px; padding:10px 14px 14px; }
+    .ai-chat-input { flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; font-size:0.84rem; color:#fff; font-family:inherit; outline:none; transition:border-color 0.2s; }
+    .ai-chat-input:focus { border-color:rgba(255,215,0,0.35); }
+    .ai-chat-input::placeholder { color:rgba(255,255,255,0.18); }
+    .ai-chat-send { padding:9px 16px; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); border:none; border-radius:10px; color:#000; font-weight:900; font-size:0.78rem; cursor:pointer; font-family:inherit; transition:opacity 0.18s; letter-spacing:0.06em; flex-shrink:0; }
+    .ai-chat-send:hover { opacity:0.88; }
+    .ai-chat-send:disabled { opacity:0.35; cursor:default; }
+
     /* ── CONTENT TAB ── */
     .content-category-bar { display:flex; gap:8px; margin-bottom:24px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; }
     .content-category-bar::-webkit-scrollbar { display:none; }
@@ -747,6 +811,38 @@
       <div class="holiday-notice-text" id="holidayNoticeText"></div>
     </div>
     <div id="dayBlocks"></div>
+
+    <!-- Week Report -->
+    <div class="week-report-toggle" id="weekReportToggle">
+      <span class="week-report-toggle-label">📊 WEEKLY TRACKER REPORT</span>
+      <span class="week-report-arrow" id="weekReportArrow">▼</span>
+    </div>
+    <div class="week-report-body" id="weekReportBody"></div>
+
+    <!-- AI Coach -->
+    <div class="ai-coach-section">
+      <div class="ai-coach-header" id="aiCoachHeader">
+        <div class="ai-coach-avatar">🤖</div>
+        <div>
+          <div class="ai-coach-name">Empire AI Coach</div>
+          <div class="ai-coach-status">● Online · Ask me anything about your plan</div>
+        </div>
+        <span class="ai-coach-arrow" id="aiCoachArrow">▼</span>
+      </div>
+      <div class="ai-chat-body" id="aiChatBody">
+        <div class="ai-chat-messages" id="aiChatMessages"></div>
+        <div class="ai-chat-suggestions" id="aiChatSuggestions">
+          <button class="ai-chat-suggestion">Optimize my schedule</button>
+          <button class="ai-chat-suggestion">What should I focus on?</button>
+          <button class="ai-chat-suggestion">Help me build a habit</button>
+          <button class="ai-chat-suggestion">My weak spots this week</button>
+        </div>
+        <div class="ai-chat-input-row">
+          <input class="ai-chat-input" id="aiChatInput" placeholder="Ask your AI coach..." type="text">
+          <button class="ai-chat-send" id="aiChatSend">SEND</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- LIBRARY -->
@@ -1157,7 +1253,7 @@
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (btn.dataset.tab === 'today')    renderToday();
       if (btn.dataset.tab === 'myplan')   renderMyPlan(window.EE_PLAN_PROFILE);
-      if (btn.dataset.tab === 'planner')  { renderCalendar(); renderDayBlocks(); initAdder(); }
+      if (btn.dataset.tab === 'planner')  { renderCalendar(); renderDayBlocks(); initAdder(); initWeekReport(); initAiChat(); }
       if (btn.dataset.tab === 'library')  renderLibraryGrid();
       if (btn.dataset.tab === 'settings') { renderSettingsGoals((window.EE_PLAN_PROFILE || {}).goals || []); renderSchedSummary(); }
     });
@@ -1876,6 +1972,8 @@
     items.push({ time:'20:30',                       title:'Reading — 30 Pages',          cat:'learn',    icon:'📚' });
     items.push({ time:'21:30',                       title:'Evening Journal',             cat:'personal', icon:'📔' });
     items.push({ time:sleep,                         title:'Lights Out',                  cat:'health',   icon:'😴' });
+    const customTimes = (load('customtimes', {}))[dateKey(date)] || {};
+    items.forEach((item, idx) => { if (customTimes[idx]) item.time = customTimes[idx]; });
     return items.sort((a,b) => a.time.localeCompare(b.time));
   }
 
@@ -1899,7 +1997,7 @@
       if (pp) dots += `<div class="cal-evt-dot" style="background:#ffd700;opacity:0.65;"></div>`;
       if (hasTasks) dots += `<div class="cal-evt-dot" style="background:#6bcb77;"></div>`;
       if (holiday) dots += `<div class="cal-evt-dot" style="background:#ff8080;"></div>`;
-      html += `<div class="cal-cell${isToday?' is-today':''}${isSelected?' is-selected':''}${holiday?' has-holiday':''}" data-date="${dk}">
+      html += `<div class="cal-cell${isToday?' is-today':''}${holiday?' has-holiday':''}" data-date="${dk}">
         <span>${d}</span>
         ${holiday ? `<div class="cal-hol-strip">${holiday.split(' ')[0].toUpperCase()}</div>` : ''}
         ${dots ? `<div class="cal-event-dots">${dots}</div>` : ''}
@@ -1939,9 +2037,10 @@
         html += `<div class="day-auto-item${done?' is-auto-done':''}" data-auto="${idx}">
           <div class="day-auto-check">${done?'✓':''}</div>
           <div class="day-auto-icon">${item.icon}</div>
-          <div class="day-auto-time">${fmtTime12(item.time)}</div>
+          <div class="day-auto-time" id="autoTime_${idx}">${fmtTime12(item.time)}</div>
           <div class="day-auto-title">${item.title}</div>
           <div class="day-auto-cat-dot" style="background:${color};"></div>
+          <button class="auto-time-edit" data-autoedit="${idx}" title="Change time">✏️</button>
         </div>`;
       });
     }
@@ -2052,6 +2151,30 @@
   // ── Event delegation ──
   const dayBlocksEl = document.getElementById('dayBlocks');
   dayBlocksEl.addEventListener('click', e => {
+    // Auto-plan time edit
+    const editBtn = e.target.closest('.auto-time-edit');
+    if (editBtn) {
+      e.stopPropagation();
+      const idx = parseInt(editBtn.dataset.autoedit);
+      const timeEl = document.getElementById('autoTime_' + idx);
+      if (!timeEl || timeEl.querySelector('input')) return;
+      const autoPlanNow = getPlanForDay(plannerDate, window.EE_PLAN_PROFILE);
+      const curTime = autoPlanNow[idx]?.time || '00:00';
+      const inp = document.createElement('input');
+      inp.type = 'time'; inp.value = curTime; inp.className = 'auto-time-input';
+      inp.addEventListener('change', () => {
+        const ct = load('customtimes', {});
+        const dk = dateKey(plannerDate);
+        if (!ct[dk]) ct[dk] = {};
+        ct[dk][idx] = inp.value;
+        save('customtimes', ct);
+        renderDayBlocks();
+      });
+      inp.addEventListener('blur', () => { if (!inp.dataset.changed) renderDayBlocks(); });
+      timeEl.innerHTML = ''; timeEl.appendChild(inp);
+      inp.focus();
+      return;
+    }
     // Auto-plan check toggle
     const autoItem = e.target.closest('.day-auto-item');
     if (autoItem && autoItem.dataset.auto !== undefined) {
@@ -2095,6 +2218,145 @@
 
   document.getElementById('calPrev').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()-1); renderCalendar(); });
   document.getElementById('calNext').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()+1); renderCalendar(); });
+
+  // ── Weekly Tracker Report ──
+  const WEEK_DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  function getWeekData() {
+    const results = [];
+    const today = new Date(); today.setHours(0,0,0,0);
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today); d.setDate(today.getDate() - i);
+      const dk = dateKey(d);
+      const dayTasks = load('tasks', {})[dk] || {};
+      const autoChecks = (load('autocheck', {}))[dk] || {};
+      const autoPlan = getPlanForDay(d, window.EE_PLAN_PROFILE);
+      let done = 0, total = 0;
+      Object.values(dayTasks).forEach(t => { if(t&&t.task){ total++; if(t.done) done++; } });
+      autoPlan.forEach((_,idx) => { total++; if(autoChecks[idx]) done++; });
+      const pct = total > 0 ? Math.round(done/total*100) : null;
+      const missed = autoPlan.filter((_,idx) => total > 0 && !autoChecks[idx]);
+      results.push({ day: WEEK_DAYS[d.getDay()], dk, pct, done, total, missed, isToday: i === 0 });
+    }
+    return results;
+  }
+
+  function renderWeekReport() {
+    const body = document.getElementById('weekReportBody');
+    if (!body || !body.classList.contains('open')) return;
+    const data = getWeekData();
+    const activeDays = data.filter(d => d.pct !== null);
+    const avg = activeDays.length ? Math.round(activeDays.reduce((s,d)=>s+d.pct,0)/activeDays.length) : 0;
+    const barColor = p => p >= 80 ? '#6bcb77' : p >= 50 ? '#ffd700' : '#ff8080';
+    const tip = avg >= 80 ? 'Exceptional discipline. Keep the streak alive.'
+      : avg >= 60 ? 'Solid week. Identify the 1–2 items you keep skipping and nail them next week.'
+      : avg >= 40 ? 'Over halfway there. Pick one habit to anchor your day and build from it.'
+      : 'Rough week — reset, don\'t quit. Start tomorrow with just 3 non-negotiable items.';
+    let html = `<div class="week-score-row"><span class="week-score-val" style="color:${barColor(avg)}">${avg}%</span><span class="week-score-label">7-Day Average</span></div>`;
+    data.forEach(d => {
+      const pct = d.pct ?? 0;
+      html += `<div class="week-day-row${d.isToday?' is-today':''}">
+        <div class="week-day-lbl">${d.day}</div>
+        <div class="week-bar-wrap"><div class="week-bar-fill" style="width:${pct}%;background:${barColor(pct)};"></div></div>
+        <div class="week-day-pct" style="color:${d.pct !== null ? barColor(pct) : 'rgba(255,255,255,0.18)'}">${d.pct !== null ? pct+'%' : '—'}</div>
+      </div>`;
+    });
+    const allMissed = data.flatMap(d => (d.pct !== null && d.pct < 100) ? d.missed.slice(0,2).map(m=>`${d.day}: ${m.title}`) : []).slice(0,6);
+    if (allMissed.length) {
+      html += `<div class="week-missed-hdr">MOST MISSED</div>`;
+      allMissed.forEach(m => { html += `<div class="week-missed-item"><span class="week-missed-title">⚠️ ${escHtml(m)}</span></div>`; });
+    }
+    html += `<div class="week-tip">💡 ${escHtml(tip)}</div>`;
+    body.innerHTML = html;
+  }
+
+  function initWeekReport() {
+    const toggle = document.getElementById('weekReportToggle');
+    const body = document.getElementById('weekReportBody');
+    const arrow = document.getElementById('weekReportArrow');
+    if (!toggle || !body) return;
+    const newToggle = toggle.cloneNode(true);
+    toggle.parentNode.replaceChild(newToggle, toggle);
+    document.getElementById('weekReportToggle').addEventListener('click', () => {
+      const isOpen = body.classList.toggle('open');
+      document.getElementById('weekReportArrow').textContent = isOpen ? '▲' : '▼';
+      if (isOpen) renderWeekReport();
+    });
+  }
+
+  // ── AI Coach ──
+  let aiMessages = [];
+
+  function renderAiMessages() {
+    const el = document.getElementById('aiChatMessages');
+    if (!el) return;
+    if (aiMessages.length === 0) {
+      el.innerHTML = `<div class="ai-msg ai-msg-bot">Hey, I'm your Empire AI Coach. Ask me anything about your plan, schedule, or habits.</div>`;
+      return;
+    }
+    el.innerHTML = aiMessages.map(m =>
+      `<div class="ai-msg ai-msg-${m.role === 'user' ? 'user' : 'bot'}">${escHtml(m.content)}</div>`
+    ).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  async function sendAiMessage(text) {
+    if (!text.trim()) return;
+    aiMessages.push({ role:'user', content: text });
+    renderAiMessages();
+    document.getElementById('aiChatInput').value = '';
+    document.getElementById('aiChatSend').disabled = true;
+
+    const typingEl = document.createElement('div');
+    typingEl.className = 'ai-msg ai-msg-bot';
+    typingEl.innerHTML = '<div class="ai-msg-loading-dots"><span></span><span></span><span></span></div>';
+    document.getElementById('aiChatMessages').appendChild(typingEl);
+    document.getElementById('aiChatMessages').scrollTop = 9999;
+
+    try {
+      const token = await firebase.auth().currentUser?.getIdToken();
+      const weekData = getWeekData().map(d => ({ day: d.day, pct: d.pct ?? 0 }));
+      const resp = await fetch('/.netlify/functions/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', ...(token ? { Authorization:'Bearer '+token } : {}) },
+        body: JSON.stringify({ messages: aiMessages.map(m=>({role:m.role,content:m.content})), planProfile: window.EE_PLAN_PROFILE || {}, weekData })
+      });
+      const data = await resp.json();
+      typingEl.remove();
+      const reply = data.reply || 'No response. Try again.';
+      aiMessages.push({ role:'assistant', content: reply });
+    } catch (err) {
+      typingEl.remove();
+      aiMessages.push({ role:'assistant', content: 'Connection error. Check your network and try again.' });
+    }
+    renderAiMessages();
+    document.getElementById('aiChatSend').disabled = false;
+  }
+
+  function initAiChat() {
+    const header = document.getElementById('aiCoachHeader');
+    const body = document.getElementById('aiChatBody');
+    const arrow = document.getElementById('aiCoachArrow');
+    if (!header || !body) return;
+    const newHeader = header.cloneNode(true);
+    header.parentNode.replaceChild(newHeader, header);
+    document.getElementById('aiCoachHeader').addEventListener('click', () => {
+      const isOpen = body.classList.toggle('open');
+      document.getElementById('aiCoachArrow').textContent = isOpen ? '▲' : '▼';
+      if (isOpen) renderAiMessages();
+    });
+    const sendBtn = document.getElementById('aiChatSend');
+    const input = document.getElementById('aiChatInput');
+    const newSend = sendBtn.cloneNode(true);
+    sendBtn.parentNode.replaceChild(newSend, sendBtn);
+    document.getElementById('aiChatSend').addEventListener('click', () => sendAiMessage(document.getElementById('aiChatInput').value));
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') sendAiMessage(input.value); });
+    document.querySelectorAll('.ai-chat-suggestion').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!body.classList.contains('open')) { body.classList.add('open'); document.getElementById('aiCoachArrow').textContent = '▲'; renderAiMessages(); }
+        sendAiMessage(btn.textContent);
+      });
+    });
+  }
 
   /* ─ Schedule Builder ─ */
   let schedData = {};
