@@ -227,61 +227,113 @@
     .empty-state { text-align:center; padding:40px 24px; color:rgba(255,255,255,0.3); font-size:0.88rem; }
     .empty-state-icon { font-size:2.2rem; margin-bottom:10px; }
 
-    /* ── Timeline (My Plan) — Horizontal ── */
-    @keyframes tlIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes nowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.5);} 60%{box-shadow:0 0 0 12px rgba(255,215,0,0);} }
-    @keyframes htlSlideIn { from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);} }
+    /* ── Timeline (My Plan) — Vertical Zigzag ── */
+    @keyframes tlIn { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+    @keyframes nowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.55);}60%{box-shadow:0 0 0 12px rgba(255,215,0,0);} }
+    @keyframes vtlFlow {
+      0%   { background-position:0% 0%; }
+      100% { background-position:0% 200%; }
+    }
+    @keyframes vtlMoverPulse { 0%,100%{box-shadow:0 0 14px 4px rgba(255,215,0,0.55);}50%{box-shadow:0 0 28px 8px rgba(255,215,0,0.2);} }
 
-    /* Scrollable track */
-    .htl-outer { overflow-x:auto; padding-bottom:4px; margin-bottom:0; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:rgba(255,215,0,0.2) transparent; }
-    .htl-outer::-webkit-scrollbar { height:4px; }
-    .htl-outer::-webkit-scrollbar-track { background:transparent; }
-    .htl-outer::-webkit-scrollbar-thumb { background:rgba(255,215,0,0.2); border-radius:4px; }
-    .htl-track { display:flex; position:relative; min-width:max-content; align-items:flex-start; padding:8px 0 16px; }
-    .htl-track::before { content:''; position:absolute; top:27px; left:0; right:0; height:2px; background:linear-gradient(to right,rgba(255,215,0,0.06),rgba(255,215,0,0.35) 30%,rgba(255,215,0,0.35) 70%,rgba(255,215,0,0.06)); z-index:0; }
+    /* Outer container — position:relative for spine overlay */
+    .vtl-outer { position:relative; padding:8px 0 24px; }
 
-    /* Individual timeline card */
-    .htl-card { position:relative; display:flex; flex-direction:column; align-items:center; width:108px; flex-shrink:0; cursor:pointer; padding:0 6px 10px; z-index:1; border-radius:14px; transition:background 0.2s; }
-    .htl-card:hover { background:rgba(255,255,255,0.03); }
-    .htl-card.htl-now { background:linear-gradient(180deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.03) 100%); border:1px solid rgba(255,215,0,0.25); }
-    .htl-card.htl-past { opacity:0.42; }
-    .htl-card.htl-selected { background:rgba(255,215,0,0.07); border:1px solid rgba(255,215,0,0.3); }
+    /* Animated spine line */
+    .vtl-spine {
+      position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+      width:2px; z-index:0; pointer-events:none;
+    }
+    .vtl-spine-glow {
+      position:absolute; inset:0;
+      background:linear-gradient(to bottom,
+        transparent 0%,
+        rgba(255,215,0,0.12) 8%,
+        rgba(255,215,0,0.45) 45%,
+        rgba(255,215,0,0.55) 50%,
+        rgba(255,215,0,0.45) 55%,
+        rgba(255,215,0,0.12) 92%,
+        transparent 100%);
+      background-size:100% 300%;
+      animation:vtlFlow 3.5s linear infinite;
+    }
+    /* Sliding gold dot that travels along the spine */
+    .vtl-mover {
+      position:absolute; left:50%; transform:translate(-50%,-50%);
+      width:14px; height:14px; border-radius:50%;
+      background:rgba(255,215,0,0.95);
+      animation:vtlMoverPulse 2.4s ease-in-out infinite;
+      transition:top 5s cubic-bezier(0.4,0,0.2,1);
+      z-index:3; top:20%;
+    }
 
-    /* Dot on the line */
-    .htl-dot { width:12px; height:12px; border-radius:50%; background:rgba(255,215,0,0.2); border:2px solid rgba(255,215,0,0.3); margin-bottom:9px; flex-shrink:0; transition:all 0.25s; }
-    .htl-card.htl-now .htl-dot { background:var(--gold-2); border-color:var(--gold-3); width:16px; height:16px; animation:nowPulse 2s infinite; }
-    .htl-card.htl-next .htl-dot { background:rgba(255,215,0,0.55); border-color:var(--gold-2); }
-    .htl-card.htl-work .htl-dot { background:rgba(77,150,255,0.35); border-color:#4d96ff; }
-    .htl-card.htl-past .htl-dot { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.12); }
+    /* Each row: flex with left card | center spine | right card */
+    .vtl-row {
+      display:flex; align-items:flex-start;
+      margin-bottom:12px; position:relative; z-index:1;
+    }
+    /* Card slot — flex:1 on each side */
+    .vtl-card-slot { flex:1; padding:0 14px; }
+    .vtl-spacer     { flex:1; }
+    /* Spine column — fixed 52px, centered */
+    .vtl-spine-col  { width:52px; flex-shrink:0; display:flex; justify-content:center; padding-top:15px; }
 
-    .htl-time-lbl { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.04em; margin-bottom:5px; text-align:center; }
-    .htl-card.htl-now .htl-time-lbl { color:var(--gold-3); }
-    .htl-card.htl-next .htl-time-lbl { color:var(--gold-2); }
-    .htl-card.htl-work .htl-time-lbl { color:#74c0fc; }
-    .htl-title-lbl { font-size:0.7rem; font-weight:700; color:rgba(255,255,255,0.5); text-align:center; line-height:1.35; }
-    .htl-card.htl-now .htl-title-lbl { color:#fff; font-weight:900; }
-    .htl-card.htl-next .htl-title-lbl { color:rgba(255,255,255,0.8); }
-    .htl-badge-h { font-size:0.5rem; font-weight:900; letter-spacing:0.1em; padding:2px 7px; border-radius:10px; margin-top:6px; display:inline-block; }
-    .htl-badge-now { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
-    .htl-badge-next { background:rgba(255,215,0,0.1); color:var(--gold-3); border:1px solid rgba(255,215,0,0.25); }
-    .htl-badge-work { background:rgba(77,150,255,0.12); color:#74c0fc; border:1px solid rgba(77,150,255,0.25); }
+    /* Dot */
+    .vtl-dot { width:12px; height:12px; border-radius:50%; background:rgba(255,215,0,0.2); border:2px solid rgba(255,215,0,0.28); position:relative; z-index:2; transition:all 0.3s; }
+    .vtl-dot-now  { width:16px; height:16px; background:var(--gold-2); border-color:var(--gold-3); animation:nowPulse 2s infinite; }
+    .vtl-dot-next { background:rgba(255,215,0,0.5); border-color:var(--gold-2); }
+    .vtl-dot-work { background:rgba(77,150,255,0.3); border-color:#4d96ff; }
+    .vtl-dot-past { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); }
 
-    /* Expand panel below track */
-    .htl-expand-area { margin-top:12px; }
-    .htl-expand-panel { display:none; background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.16); border-radius:18px; padding:22px 20px; animation:htlSlideIn 0.28s ease; }
-    .htl-expand-panel.open { display:block; }
-    .htl-expand-time { font-size:0.65rem; font-weight:900; letter-spacing:0.18em; color:var(--gold-2); margin-bottom:6px; }
-    .htl-expand-title { font-size:1.05rem; font-weight:900; color:#fff; margin-bottom:10px; line-height:1.3; }
-    .htl-expand-body { font-size:0.82rem; color:rgba(255,255,255,0.55); line-height:1.7; margin-bottom:14px; }
-    .htl-expand-body ul { margin:8px 0 8px 16px; padding:0; }
-    .htl-expand-body li { margin-bottom:5px; }
-    .htl-expand-body strong { color:rgba(255,255,255,0.82); }
-    .htl-expand-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
-    .htl-expand-tag { font-size:0.62rem; font-weight:800; letter-spacing:0.08em; padding:4px 12px; border-radius:20px; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.2); color:var(--gold-3); }
+    /* Card */
+    .vtl-card {
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,215,0,0.08);
+      border-radius:16px; padding:13px 15px; cursor:pointer;
+      transition:background 0.2s, border-color 0.2s;
+      animation:tlIn 0.4s ease both;
+    }
+    .vtl-card:hover { background:rgba(255,215,0,0.04); border-color:rgba(255,215,0,0.2); }
+    .vtl-card.vtl-now  { background:rgba(255,215,0,0.07); border-color:rgba(255,215,0,0.3); box-shadow:0 0 24px rgba(255,215,0,0.05); }
+    .vtl-card.vtl-next { background:rgba(255,215,0,0.04); border-color:rgba(255,215,0,0.2); }
+    .vtl-card.vtl-work { background:rgba(77,150,255,0.04); border-color:rgba(77,150,255,0.18); }
+    .vtl-card.vtl-past { opacity:0.42; }
 
-    /* Read-more toggle button */
-    .htl-read-btn { display:block; width:100%; text-align:center; font-size:0.68rem; font-weight:900; color:var(--gold-2); letter-spacing:0.1em; cursor:pointer; background:none; border:none; padding:6px 0 0; margin-top:6px; font-family:inherit; }
-    .htl-read-btn:hover { color:var(--gold-3); }
+    .vtl-ctime { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.06em; margin-bottom:3px; }
+    .vtl-card.vtl-now  .vtl-ctime { color:var(--gold-3); }
+    .vtl-card.vtl-next .vtl-ctime { color:var(--gold-2); }
+    .vtl-card.vtl-work .vtl-ctime { color:#74c0fc; }
+    .vtl-ctitle { font-size:0.88rem; font-weight:800; color:rgba(255,255,255,0.7); line-height:1.3; }
+    .vtl-card.vtl-now .vtl-ctitle { color:#fff; font-weight:900; }
+    .vtl-cdesc { font-size:0.72rem; color:rgba(255,255,255,0.32); line-height:1.5; margin-top:3px; }
+
+    /* Badge */
+    .vtl-badge { display:inline-block; font-size:0.5rem; font-weight:900; letter-spacing:0.1em; padding:2px 7px; border-radius:10px; margin-left:5px; vertical-align:middle; }
+    .vtl-badge-now  { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; }
+    .vtl-badge-next { background:rgba(255,215,0,0.1); color:var(--gold-3); border:1px solid rgba(255,215,0,0.25); }
+    .vtl-badge-work { background:rgba(77,150,255,0.12); color:#74c0fc; border:1px solid rgba(77,150,255,0.25); }
+
+    /* Inline expand */
+    .vtl-expand { display:none; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,215,0,0.08); }
+    .vtl-expand.open { display:block; animation:tlIn 0.25s ease; }
+    .vtl-expand-body { font-size:0.78rem; color:rgba(255,255,255,0.5); line-height:1.7; }
+    .vtl-expand-body ul { margin:6px 0 6px 14px; padding:0; }
+    .vtl-expand-body li { margin-bottom:4px; }
+    .vtl-expand-body strong { color:rgba(255,255,255,0.82); }
+    .vtl-expand-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .vtl-expand-tag { font-size:0.57rem; font-weight:800; letter-spacing:0.07em; padding:3px 10px; border-radius:20px; background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.15); color:var(--gold-2); }
+    .vtl-toggle-btn { display:block; width:100%; text-align:center; font-size:0.62rem; font-weight:900; color:rgba(255,215,0,0.5); letter-spacing:0.1em; cursor:pointer; background:none; border:none; padding:6px 0 0; margin:0; font-family:inherit; transition:color 0.18s; }
+    .vtl-toggle-btn:hover { color:var(--gold-3); }
+
+    /* Mobile — single column, spine on left */
+    @media(max-width:640px){
+      .vtl-spine { left:18px; transform:none; }
+      .vtl-mover { left:18px; transform:translate(-50%,-50%); }
+      .vtl-row { flex-direction:row !important; }
+      .vtl-spacer { display:none; }
+      .vtl-spine-col { width:36px; }
+      .vtl-card-slot { order:2; text-align:left !important; padding:0 0 0 8px; }
+      .vtl-spine-col { order:1; }
+    }
 
     /* Plan + EBP side-by-side layout */
     .plan-ebp-wrap { display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; margin-top:24px; }
@@ -1149,7 +1201,7 @@
         <div style="font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:3px;">Your Personalized Daily Plan</div>
         <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})} · <span style="color:var(--gold-2);cursor:pointer;" onclick="openSchedModal()">Edit schedule</span></div>
       </div>`;
-      // Horizontal timeline + expand area
+      // Vertical zigzag animated timeline
       html += buildTimeline(pp);
       // Two-column: full plan left, EBP mini-menu right
       html += `<div class="plan-ebp-wrap"><div id="planMainCol">${buildFullPlan(pp)}</div><div>${buildEBPMenu(pp)}</div></div>`;
@@ -2045,81 +2097,106 @@
     blocks.push({ m:sleep, title:'Lights Out', desc:'7–8 hours rebuilds your body and brain. Protect it.' });
     blocks.sort((a,b)=>a.m-b.m);
 
-    // Build horizontal HTML
-    let trackHtml = `<div class="htl-outer"><div class="htl-track">`;
-    let expandHtml = `<div class="htl-expand-area" id="htlExpandArea"></div>`;
+    // Build vertical zigzag HTML
     let autoOpenIdx = -1;
+    let rowsHtml = '';
 
     blocks.forEach((b, i) => {
       const diff = b.m - nowMins;
-      let stateCls = '';
+      const detail = BLOCK_DETAILS[b.title] || { body:`<p>${b.desc}</p>`, tags:[] };
+      const isLeft = i % 2 === 0;
+
+      let cardCls = 'vtl-card';
+      let dotCls = 'vtl-dot';
       let badge = '';
-      if (b.type==='work') {
-        stateCls = ' htl-work';
-        badge = `<span class="htl-badge-h htl-badge-work">WORK</span>`;
+      if (b.type === 'work') {
+        cardCls += ' vtl-work'; dotCls += ' vtl-dot-work';
+        badge = `<span class="vtl-badge vtl-badge-work">WORK</span>`;
       } else if (diff >= -30 && diff < 45) {
-        stateCls = ' htl-now';
-        badge = `<span class="htl-badge-h htl-badge-now">NOW ▶</span>`;
+        cardCls += ' vtl-now'; dotCls += ' vtl-dot-now';
+        badge = `<span class="vtl-badge vtl-badge-now">NOW ▶</span>`;
         if (autoOpenIdx === -1) autoOpenIdx = i;
       } else if (diff >= 45 && diff < 120) {
-        stateCls = ' htl-next';
-        badge = `<span class="htl-badge-h htl-badge-next">UP NEXT</span>`;
+        cardCls += ' vtl-next'; dotCls += ' vtl-dot-next';
+        badge = `<span class="vtl-badge vtl-badge-next">UP NEXT</span>`;
       } else if (diff < -30) {
-        stateCls = ' htl-past';
+        cardCls += ' vtl-past'; dotCls += ' vtl-dot-past';
       }
-      const detail = BLOCK_DETAILS[b.title] || { body:`<p>${b.desc}</p>`, tags:[] };
-      trackHtml += `<div class="htl-card${stateCls}" data-htl="${i}" onclick="htlToggle(${i})">
-        <div class="htl-dot"></div>
-        <div class="htl-time-lbl">${fmtTime(b.m)}</div>
-        <div class="htl-title-lbl">${b.title}</div>
-        ${badge}
-      </div>`;
-    });
-    trackHtml += `</div></div>`;
 
-    // Pre-build all expand panels (hidden)
-    let panelsHtml = `<div id="htlPanels" style="display:none;">`;
-    blocks.forEach((b, i) => {
-      const detail = BLOCK_DETAILS[b.title] || { body:`<p>${b.desc}</p>`, tags:[] };
-      panelsHtml += `<div id="htlPanel_${i}" class="htl-expand-panel">
-        <div class="htl-expand-time">${fmtTime(b.m)}</div>
-        <div class="htl-expand-title">${b.title}</div>
-        <div class="htl-expand-body">${detail.body}</div>
-        ${detail.tags.length ? `<div class="htl-expand-tags">${detail.tags.map(t=>`<span class="htl-expand-tag">${t}</span>`).join('')}</div>` : ''}
-      </div>`;
-    });
-    panelsHtml += `</div>`;
+      const tagsHtml = detail.tags.length
+        ? `<div class="vtl-expand-tags">${detail.tags.map(t => `<span class="vtl-expand-tag">${t}</span>`).join('')}</div>`
+        : '';
 
-    // Set auto-open index directly (innerHTML-injected scripts don't execute)
+      const cardHtml = `<div class="${cardCls}" id="vtlCard_${i}" onclick="vtlExpand(${i})">
+          <div class="vtl-ctime">${fmtTime(b.m)}${badge}</div>
+          <div class="vtl-ctitle">${b.title}</div>
+          <div class="vtl-cdesc">${b.desc}</div>
+          <div class="vtl-expand" id="vtlExp_${i}">
+            <div class="vtl-expand-body">${detail.body}${tagsHtml}</div>
+          </div>
+          <button class="vtl-toggle-btn" id="vtlBtn_${i}">READ MORE ▼</button>
+        </div>`;
+
+      const spineCol = `<div class="vtl-spine-col"><div class="${dotCls}" id="vtlDot_${i}"></div></div>`;
+
+      if (isLeft) {
+        rowsHtml += `<div class="vtl-row">
+          <div class="vtl-card-slot" style="text-align:right;">${cardHtml}</div>
+          ${spineCol}
+          <div class="vtl-spacer"></div>
+        </div>`;
+      } else {
+        rowsHtml += `<div class="vtl-row">
+          <div class="vtl-spacer"></div>
+          ${spineCol}
+          <div class="vtl-card-slot">${cardHtml}</div>
+        </div>`;
+      }
+    });
+
     window._htlAutoOpen = autoOpenIdx;
+    window._vtlBlockCount = blocks.length;
 
-    return trackHtml + panelsHtml + expandHtml;
+    return `<div class="vtl-outer">
+      <div class="vtl-spine">
+        <div class="vtl-spine-glow"></div>
+        <div class="vtl-mover" id="vtlMover"></div>
+      </div>
+      ${rowsHtml}
+    </div>`;
   }
 
-  function htlToggle(idx) {
-    const area = document.getElementById('htlExpandArea');
-    if (!area) return;
-    const cards = document.querySelectorAll('.htl-card');
-    const panel = document.getElementById('htlPanel_' + idx);
-    if (!panel) return;
-    const isOpen = area.innerHTML.includes(`htlPanel_${idx}`) && area.querySelector('.htl-expand-panel.open');
-    // Close all
-    cards.forEach(c => c.classList.remove('htl-selected'));
-    area.innerHTML = '';
-    if (!isOpen) {
-      // Clone and open
-      const clone = panel.cloneNode(true);
-      clone.classList.add('open');
-      area.appendChild(clone);
-      if (cards[idx]) cards[idx].classList.add('htl-selected');
-      area.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  function vtlExpand(idx) {
+    const exp = document.getElementById('vtlExp_' + idx);
+    const btn = document.getElementById('vtlBtn_' + idx);
+    if (!exp) return;
+    const isOpen = exp.classList.toggle('open');
+    if (btn) btn.textContent = isOpen ? 'SHOW LESS ▲' : 'READ MORE ▼';
+  }
+
+  function vtlPositionMover() {
+    const mover = document.getElementById('vtlMover');
+    const outer = document.querySelector('.vtl-outer');
+    if (!mover || !outer) return;
+    const nowDot = document.querySelector('.vtl-dot-now');
+    if (nowDot) {
+      const outerRect = outer.getBoundingClientRect();
+      const dotRect = nowDot.getBoundingClientRect();
+      const pct = ((dotRect.top + dotRect.height / 2) - outerRect.top) / outerRect.height * 100;
+      mover.style.top = Math.min(Math.max(pct, 2), 98) + '%';
+    } else {
+      mover.style.top = '20%';
     }
   }
 
   // Auto-open current block after render
   setTimeout(() => {
     const ai = window._htlAutoOpen;
-    if (typeof ai === 'number' && ai >= 0) htlToggle(ai);
+    if (typeof ai === 'number' && ai >= 0) {
+      vtlExpand(ai);
+      document.getElementById('vtlCard_' + ai)?.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+    vtlPositionMover();
   }, 300);
 
   /* ─ CONTENT tab (legacy small set, kept for transition) ─ */
