@@ -422,6 +422,25 @@
       const userRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userRef);
 
+      // Developer account — auto-provision full access and go straight to dashboard
+      if (user.email === 'dev@ethosempire.org') {
+        await setDoc(userRef, {
+          uid: user.uid,
+          name: 'Developer',
+          email: user.email,
+          subscriptionStatus: 'active',
+          onboardingComplete: true,
+          plan: 'pro',
+          stripeCustomerId: null,
+          role: 'developer',
+          ...(userSnap.exists() ? {} : { createdAt: serverTimestamp() }),
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        window.location.replace('dashboard.html');
+        return;
+      }
+
       if (!userSnap.exists()) {
         await setDoc(userRef, {
           uid: user.uid,
