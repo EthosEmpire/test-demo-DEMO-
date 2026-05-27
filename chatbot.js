@@ -275,21 +275,24 @@
 
       typing.remove();
 
-      if (!res.ok) {
+      let reply;
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        reply = data.reply || 'Try again in a moment.';
+      } else {
+        // Non-200 from the function itself (rare — function now returns 200 even on Gemini errors)
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || 'Server returned ' + res.status);
+        reply = errData.reply || errData.error || 'Try again in a moment. If this keeps happening, contact info.ethosempire@gmail.com.';
       }
-
-      const data = await res.json();
-      const reply = data.reply || 'No response — please try again.';
       messages.push({ role: 'assistant', content: reply });
 
     } catch (err) {
+      // Only fires when the network request itself fails (offline, DNS, etc.)
       typing.remove();
-      console.error('Empire AI error:', err.message);
+      console.error('Empire AI network error:', err.message);
       messages.push({
         role: 'assistant',
-        content: 'Something went wrong reaching Empire AI. Make sure you\'re connected, then try again. If this keeps happening, contact info.ethosempire@gmail.com.'
+        content: 'Could not connect to Empire AI. Check your internet connection and try again.'
       });
     }
 
