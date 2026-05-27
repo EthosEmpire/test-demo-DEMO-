@@ -2313,12 +2313,15 @@
     document.getElementById('aiChatMessages').scrollTop = 9999;
 
     try {
-      const token = await firebase.auth().currentUser?.getIdToken();
+      let token = null;
+      try { if (window.EE_USER?.firebaseUser?.getIdToken) token = await window.EE_USER.firebaseUser.getIdToken(); } catch(_) {}
       const weekData = getWeekData().map(d => ({ day: d.day, pct: d.pct ?? 0 }));
+      const activeTab = document.querySelector('.db-tab.active');
+      const currentPage = 'Dashboard — ' + (activeTab ? activeTab.textContent.replace(/[^\w\s]/g,'').trim() : 'Planner') + ' tab';
       const resp = await fetch('/.netlify/functions/ai-chat', {
         method: 'POST',
         headers: { 'Content-Type':'application/json', ...(token ? { Authorization:'Bearer '+token } : {}) },
-        body: JSON.stringify({ messages: aiMessages.map(m=>({role:m.role,content:m.content})), planProfile: window.EE_PLAN_PROFILE || {}, weekData })
+        body: JSON.stringify({ messages: aiMessages.map(m=>({role:m.role,content:m.content})), planProfile: window.EE_PLAN_PROFILE || {}, weekData, currentPage, userName: window.EE_USER?.name || '' })
       });
       const data = await resp.json();
       typingEl.remove();
@@ -2326,7 +2329,8 @@
       aiMessages.push({ role:'assistant', content: reply });
     } catch (err) {
       typingEl.remove();
-      aiMessages.push({ role:'assistant', content: 'Connection error. Check your network and try again.' });
+      console.error('AI chat error:', err);
+      aiMessages.push({ role:'assistant', content: 'Could not reach Empire AI right now. Check your connection and try again. If it keeps happening, contact info.ethosempire@gmail.com.' });
     }
     renderAiMessages();
     document.getElementById('aiChatSend').disabled = false;
@@ -2861,5 +2865,6 @@
   }, 1200);
 
   </script>
+  <script src="chatbot.js"></script>
 </body>
 </html>

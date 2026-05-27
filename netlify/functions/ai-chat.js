@@ -9,7 +9,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { messages, planProfile, weekData } = JSON.parse(event.body);
+    const { messages, planProfile, weekData, currentPage, userName } = JSON.parse(event.body);
 
     const goalsMap = {
       fitness: 'Build Muscle', weight: 'Lose Weight', discipline: 'Discipline',
@@ -109,13 +109,27 @@ Keep answers short and useful. Best format: direct answer → 3–5 steps → si
 THIS USER'S PLAN PROFILE
 ========================
 
-Name: ${planProfile.name || 'Empire Builder'}
+Name: ${userName || planProfile.name || 'Empire Builder'}
 Goals: ${goals}
 Schedule: ${schedSummary}
 Stats: ${[planProfile.age ? `Age ${planProfile.age}` : '', planProfile.weightKg ? `${planProfile.weightKg}kg` : '', planProfile.heightCm ? `${planProfile.heightCm}cm` : ''].filter(Boolean).join(', ') || 'Not set'}
 This week's completion: ${weekSummary}
+Currently viewing: ${currentPage || 'Ethos Empire website'}
 
 Use this profile to give personalised coaching advice. Keep replies under 120 words unless the user asks for detail.
+
+If the user is currently on the Login page, help them with sign-in. If on the Subscription page, help them understand the plan options. If on the Dashboard, you can reference their plan data. Always acknowledge where they are if relevant.
+
+========================
+PLAN BUILDING
+========================
+
+If the user asks you to "build my plan", "create my schedule", "plan my day/week", or similar:
+1. Ask for any missing info: wake time, sleep time, work schedule, top 2–3 goals, biggest challenges.
+2. Once you have enough context, output a clear, structured daily schedule using their data.
+3. Format the schedule as a numbered time-block list (e.g. "05:30 — Wake Up | No snooze").
+4. End with: "This plan is saved in your Dashboard → My Plan section."
+5. Keep it practical, no fluff.
 
 ========================
 FINAL RULE
