@@ -1442,6 +1442,23 @@
       });
     }
 
+    function pbMd(raw) {
+      let s = String(raw||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      s = s.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');
+      s = s.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g,'<em>$1</em>');
+      s = s.replace(/`([^`\n]+)`/g,'<code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;font-size:0.85em;">$1</code>');
+      const lines = s.split('\n');
+      let html = '', inUl = false, inOl = false;
+      for (const line of lines) {
+        const ul = line.match(/^[\-\*•] (.+)/), ol = line.match(/^\d+\. (.+)/), h = line.match(/^#{1,3} (.+)/);
+        if (ul) { if (!inUl){html+='<ul style="margin:5px 0 5px 16px;padding:0;">'; inUl=true;} if(inOl){html+='</ol>';inOl=false;} html+=`<li>${ul[1]}</li>`; }
+        else if (ol) { if (!inOl){html+='<ol style="margin:5px 0 5px 16px;padding:0;">'; inOl=true;} if(inUl){html+='</ul>';inUl=false;} html+=`<li>${ol[1]}</li>`; }
+        else { if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} html += h ? `<div style="font-weight:800;color:#fff;margin:8px 0 3px;">${h[1]}</div>` : line.trim()==='' ? '<br>' : line+'<br>'; }
+      }
+      if(inUl)html+='</ul>'; if(inOl)html+='</ol>';
+      return html.replace(/(<br>\s*){3,}/g,'<br><br>').replace(/(<br>)+$/,'');
+    }
+
     function addAiBubble(text, s) {
       const msgs = document.getElementById('pbMsgs');
       const row = document.createElement('div');
@@ -1453,7 +1470,7 @@
           ${s.multi ? `<button class="pb-step-chip pb-cta-chip">${s.cta || 'Continue →'}</button>` : ''}
         </div>`;
       }
-      row.innerHTML = `<div class="pb-avatar">EE</div><div><div class="pb-bubble">${esc(text).replace(/\n/g,'<br>')}</div>${chips}</div>`;
+      row.innerHTML = `<div class="pb-avatar">EE</div><div><div class="pb-bubble">${pbMd(text)}</div>${chips}</div>`;
       const cc = row.querySelector('.pb-step-chips');
       if (cc) cc.addEventListener('click', onChip);
       msgs.appendChild(row); pbScroll();

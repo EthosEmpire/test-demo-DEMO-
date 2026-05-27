@@ -24,14 +24,14 @@
 
     #ee-bot-panel {
       position:fixed; bottom:92px; right:22px; z-index:9998;
-      width:340px; max-width:calc(100vw - 32px);
+      width:360px; max-width:calc(100vw - 32px);
       background:#0f0f0f; border:1px solid rgba(255,215,0,0.18);
       border-radius:20px; overflow:hidden;
       box-shadow:0 8px 48px rgba(0,0,0,0.7),0 2px 12px rgba(255,215,0,0.08);
       display:flex; flex-direction:column;
       transform:translateY(14px) scale(0.97); opacity:0; pointer-events:none;
       transition:transform 0.28s cubic-bezier(0.34,1.2,0.64,1), opacity 0.22s ease;
-      max-height:78vh;
+      max-height:82vh;
     }
     #ee-bot-panel.open {
       transform:translateY(0) scale(1); opacity:1; pointer-events:all;
@@ -63,21 +63,28 @@
     #ee-bot-messages {
       flex:1; overflow-y:auto; padding:14px 14px 6px;
       display:flex; flex-direction:column; gap:9px;
-      scroll-behavior:smooth; min-height:140px; max-height:320px;
+      scroll-behavior:smooth; min-height:140px; max-height:340px;
     }
     #ee-bot-messages::-webkit-scrollbar { width:3px; }
     #ee-bot-messages::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:2px; }
     .ee-msg {
-      max-width:88%; padding:9px 13px; font-size:0.82rem;
-      line-height:1.55; white-space:pre-wrap; word-break:break-word;
+      max-width:90%; padding:10px 14px; font-size:0.84rem;
+      line-height:1.6; word-break:break-word;
     }
     .ee-msg-bot {
       align-self:flex-start; background:rgba(255,255,255,0.06);
-      color:rgba(255,255,255,0.82); border-radius:4px 14px 14px 14px;
+      color:rgba(255,255,255,0.88); border-radius:4px 16px 16px 16px;
     }
+    .ee-msg-bot strong { color:#fff; font-weight:700; }
+    .ee-msg-bot em { color:rgba(255,215,0,0.85); font-style:italic; }
+    .ee-msg-bot ul, .ee-msg-bot ol { margin:6px 0 6px 16px; padding:0; }
+    .ee-msg-bot li { margin:3px 0; }
+    .ee-msg-bot code { background:rgba(255,255,255,0.08); padding:1px 6px; border-radius:4px; font-size:0.82em; }
+    .ee-msg-bot .ee-md-heading { font-weight:800; font-size:0.9rem; color:#fff; margin:8px 0 4px; display:block; }
+    .ee-msg-bot .ee-md-divider { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:8px 0; }
     .ee-msg-user {
       align-self:flex-end; background:rgba(255,215,0,0.11);
-      color:#fff; border-radius:14px 14px 4px 14px;
+      color:#fff; border-radius:16px 16px 4px 16px;
       border:1px solid rgba(255,215,0,0.15);
     }
     .ee-typing { display:flex; gap:5px; align-items:center; padding:4px 2px; }
@@ -99,25 +106,38 @@
     }
     .ee-sugg:hover { border-color:rgba(255,215,0,0.3); color:#ffd700; }
     #ee-bot-input-row {
-      display:flex; gap:8px; padding:10px 12px 12px; flex-shrink:0;
+      display:flex; flex-direction:column; gap:0;
+      padding:10px 12px 12px; flex-shrink:0;
       border-top:1px solid rgba(255,255,255,0.05);
+    }
+    #ee-bot-input-wrap {
+      display:flex; gap:8px; align-items:flex-end;
     }
     #ee-bot-input {
       flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-      border-radius:10px; padding:9px 12px; font-size:0.84rem; color:#fff;
+      border-radius:14px; padding:10px 14px; font-size:0.84rem; color:#fff;
       font-family:inherit; outline:none; transition:border-color 0.2s;
+      resize:none; line-height:1.45; max-height:120px; min-height:40px;
+      overflow-y:auto;
     }
     #ee-bot-input:focus { border-color:rgba(255,215,0,0.38); }
     #ee-bot-input::placeholder { color:rgba(255,255,255,0.2); }
     #ee-bot-send {
-      width:38px; height:38px; border-radius:10px; border:none; cursor:pointer;
+      width:38px; height:38px; border-radius:12px; border:none; cursor:pointer;
       background:linear-gradient(135deg,#b8860b,#ffd700);
       color:#000; font-size:1.1rem; font-weight:900;
       display:flex; align-items:center; justify-content:center;
-      flex-shrink:0; transition:opacity 0.18s; font-family:inherit;
+      flex-shrink:0; transition:opacity 0.18s, transform 0.15s; font-family:inherit;
+      align-self:flex-end;
     }
-    #ee-bot-send:hover { opacity:0.85; }
-    #ee-bot-send:disabled { opacity:0.3; cursor:default; }
+    #ee-bot-send:hover { opacity:0.85; transform:scale(1.05); }
+    #ee-bot-send:disabled { opacity:0.3; cursor:default; transform:none; }
+    #ee-bot-enter-hint {
+      font-size:0.6rem; color:rgba(255,255,255,0.15); text-align:right;
+      margin-top:5px; letter-spacing:0.05em; transition:color 0.2s;
+    }
+    #ee-bot-input:focus ~ #ee-bot-enter-hint,
+    #ee-bot-input-wrap:focus-within + #ee-bot-enter-hint { color:rgba(255,255,255,0.3); }
     @media(max-width:400px){
       #ee-bot-panel { right:10px; bottom:84px; width:calc(100vw - 20px); }
       #ee-bot-fab { right:14px; bottom:16px; }
@@ -152,14 +172,17 @@
       <div id="ee-bot-page-badge"></div>
       <div id="ee-bot-messages"></div>
       <div id="ee-bot-suggestions">
-        <button class="ee-sugg">Build my full plan</button>
-        <button class="ee-sugg">Recommend an ebook</button>
+        <button class="ee-sugg">Build my plan</button>
         <button class="ee-sugg">Help with discipline</button>
+        <button class="ee-sugg">Recommend an ebook</button>
         <button class="ee-sugg">How do I cancel?</button>
       </div>
       <div id="ee-bot-input-row">
-        <input id="ee-bot-input" type="text" placeholder="Ask anything..." autocomplete="off">
-        <button id="ee-bot-send" aria-label="Send">↑</button>
+        <div id="ee-bot-input-wrap">
+          <textarea id="ee-bot-input" rows="1" placeholder="Message Empire AI..." autocomplete="off"></textarea>
+          <button id="ee-bot-send" aria-label="Send">&#10148;</button>
+        </div>
+        <div id="ee-bot-enter-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
       </div>
     </div>
     <button id="ee-bot-fab" aria-label="Open Empire AI">
@@ -176,17 +199,11 @@
 
   /* ── Page detection ──────────────────────────────────────── */
   const PAGE_LABELS = {
-    'index.html': 'Home page',
-    'login.html': 'Login page',
-    'onboarding.html': 'Onboarding / Goal Setup',
-    'plan.html': 'Subscription & Plans page',
     'dashboard.html': 'Member Dashboard',
-    'privacy-policy.html': 'Privacy Policy page',
-    'terms.html': 'Terms of Service page',
   };
 
   function getCurrentPage() {
-    const file = (window.location.pathname.split('/').pop() || 'index.html');
+    const file = (window.location.pathname.split('/').pop() || 'dashboard.html');
     let label = PAGE_LABELS[file] || document.title || 'Ethos Empire';
     if (file === 'dashboard.html') {
       const tab = document.querySelector('.db-tab.active');
@@ -210,25 +227,106 @@
     return null;
   }
 
+  /* ── Markdown renderer ───────────────────────────────────── */
+  function parseMarkdown(raw) {
+    // Escape HTML
+    let s = String(raw || '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+
+    // Bold **text**
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    // Italic *text* (single, not double)
+    s = s.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>');
+    // Inline code `text`
+    s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+    // Process line by line
+    const lines = s.split('\n');
+    let html = '';
+    let inUl = false;
+    let inOl = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      // Horizontal rule ---
+      if (/^---+$/.test(line.trim())) {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (inOl) { html += '</ol>'; inOl = false; }
+        html += '<hr class="ee-md-divider">';
+        continue;
+      }
+      // Headings ## or ###
+      const hMatch = line.match(/^#{1,3} (.+)/);
+      if (hMatch) {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (inOl) { html += '</ol>'; inOl = false; }
+        html += `<span class="ee-md-heading">${hMatch[1]}</span>`;
+        continue;
+      }
+      // Unordered list - item or * item or • item
+      const ulMatch = line.match(/^[\-\*•] (.+)/);
+      if (ulMatch) {
+        if (inOl) { html += '</ol>'; inOl = false; }
+        if (!inUl) { html += '<ul>'; inUl = true; }
+        html += `<li>${ulMatch[1]}</li>`;
+        continue;
+      }
+      // Ordered list 1. item
+      const olMatch = line.match(/^\d+\. (.+)/);
+      if (olMatch) {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (!inOl) { html += '<ol>'; inOl = true; }
+        html += `<li>${olMatch[1]}</li>`;
+        continue;
+      }
+      // Close lists on non-list lines
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (inOl) { html += '</ol>'; inOl = false; }
+      // Empty line = paragraph break
+      if (line.trim() === '') {
+        html += '<br>';
+      } else {
+        html += line + '<br>';
+      }
+    }
+    if (inUl) html += '</ul>';
+    if (inOl) html += '</ol>';
+
+    // Clean up: max 2 consecutive breaks, trim trailing break
+    html = html.replace(/(<br>\s*){3,}/g, '<br><br>');
+    html = html.replace(/(<br>)+$/, '');
+    return html;
+  }
+
   /* ── Render messages ─────────────────────────────────────── */
   function renderMessages() {
     const el = document.getElementById('ee-bot-messages');
     if (!el) return;
     if (messages.length === 0) {
-      const name = window.EE_USER?.name || window.EE_PLAN_PROFILE?.name || '';
-      el.innerHTML = `<div class="ee-msg ee-msg-bot">Hey${name ? ' ' + name.split(' ')[0] : ''} 👋 I'm Empire AI — your personal Ethos Empire coach. Ask me anything, or tap a suggestion below.</div>`;
+      const name = window.EE_USER?.name || '';
+      const firstName = name ? ' ' + name.split(' ')[0] : '';
+      el.innerHTML = `<div class="ee-msg ee-msg-bot">Hey${firstName}! I'm <strong>Empire AI</strong> — your personal Ethos Empire coach.<br><br>Ask me anything about your goals, schedule, fitness, mindset, ebooks, or your account. I'm here to help you build.</div>`;
       return;
     }
-    el.innerHTML = messages.map(m =>
-      `<div class="ee-msg ee-msg-${m.role === 'user' ? 'user' : 'bot'}">${escapeHtml(m.content)}</div>`
-    ).join('');
+    el.innerHTML = messages.map(m => {
+      if (m.role === 'user') {
+        return `<div class="ee-msg ee-msg-user">${escText(m.content)}</div>`;
+      }
+      return `<div class="ee-msg ee-msg-bot">${parseMarkdown(m.content)}</div>`;
+    }).join('');
     el.scrollTop = el.scrollHeight;
   }
 
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;');
+  function escText(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ── Auto-resize textarea ────────────────────────────────── */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
   }
 
   /* ── Send message ────────────────────────────────────────── */
@@ -237,7 +335,9 @@
     if (!text || sending) return;
     sending = true;
 
-    document.getElementById('ee-bot-input').value = '';
+    const inp = document.getElementById('ee-bot-input');
+    inp.value = '';
+    inp.style.height = 'auto';
     document.getElementById('ee-bot-send').disabled = true;
     document.getElementById('ee-bot-suggestions').style.display = 'none';
 
@@ -269,7 +369,7 @@
           planProfile: window.EE_PLAN_PROFILE || {},
           weekData,
           currentPage: getCurrentPage(),
-          userName: window.EE_USER?.name || window.EE_PLAN_PROFILE?.name || ''
+          userName: window.EE_USER?.name || ''
         })
       });
 
@@ -278,27 +378,25 @@
       let reply;
       if (res.ok) {
         const data = await res.json().catch(() => ({}));
-        reply = data.reply || 'Try again in a moment.';
+        reply = data.reply || "I didn't get a response. Try again.";
       } else {
-        // Non-200 from the function itself (rare — function now returns 200 even on Gemini errors)
         const errData = await res.json().catch(() => ({}));
-        reply = errData.reply || errData.error || 'Try again in a moment. If this keeps happening, contact info.ethosempire@gmail.com.';
+        reply = errData.reply || errData.error || "Something went wrong. Try again in a moment.";
       }
       messages.push({ role: 'assistant', content: reply });
 
-    } catch (err) {
-      // Only fires when the network request itself fails (offline, DNS, etc.)
+    } catch {
       typing.remove();
-      console.error('Empire AI network error:', err.message);
       messages.push({
         role: 'assistant',
-        content: 'Could not connect to Empire AI. Check your internet connection and try again.'
+        content: "Can't reach Empire AI right now — check your connection and try again."
       });
     }
 
     renderMessages();
     document.getElementById('ee-bot-send').disabled = false;
     sending = false;
+    inp.focus();
   }
 
   /* ── Open / close ────────────────────────────────────────── */
@@ -326,9 +424,14 @@
     sendMessage(document.getElementById('ee-bot-input').value);
   });
 
-  document.getElementById('ee-bot-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') sendMessage(e.target.value);
+  const inputEl = document.getElementById('ee-bot-input');
+  inputEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(e.target.value);
+    }
   });
+  inputEl.addEventListener('input', () => autoResize(inputEl));
 
   document.querySelectorAll('.ee-sugg').forEach(btn => {
     btn.addEventListener('click', () => sendMessage(btn.textContent));
