@@ -126,50 +126,95 @@
     .plan-week-lbl { font-size:0.68rem; font-weight:900; letter-spacing:0.18em; color:rgba(255,255,255,0.38); margin-bottom:8px; }
 
     /* ── PLANNER TAB ── */
-    .cal-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:18px; padding:20px; margin-bottom:20px; }
-    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .cal-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:18px; padding:20px; margin-bottom:18px; }
+    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
     .cal-month-label { font-size:1rem; font-weight:800; color:var(--gold-3); letter-spacing:0.06em; }
-    .cal-arrow { background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--gold-3); padding:7px 14px; border-radius:8px; font-size:0.9rem; font-weight:700; transition:background 0.2s; }
+    .cal-arrow { background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--gold-3); padding:7px 14px; border-radius:8px; font-size:0.9rem; font-weight:700; transition:background 0.2s; cursor:pointer; }
     .cal-arrow:hover { background:rgba(255,215,0,0.1); }
+    .cal-legend { display:flex; gap:14px; margin-bottom:12px; flex-wrap:wrap; }
+    .cal-legend-item { display:flex; align-items:center; gap:5px; font-size:0.6rem; color:rgba(255,255,255,0.3); font-weight:700; letter-spacing:0.05em; }
+    .cal-legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
     .cal-day-hdrs { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:8px; }
     .cal-day-hdr { text-align:center; font-size:0.62rem; font-weight:700; letter-spacing:0.08em; color:rgba(255,255,255,0.28); padding:4px 0; }
     .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-    .cal-cell { position:relative; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px; font-size:0.82rem; font-weight:600; color:rgba(255,255,255,0.5); cursor:pointer; border:1px solid transparent; transition:all 0.15s; user-select:none; }
+    .cal-cell { position:relative; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:5px; border-radius:10px; font-size:0.82rem; font-weight:600; color:rgba(255,255,255,0.5); cursor:pointer; border:1px solid transparent; transition:all 0.15s; user-select:none; overflow:hidden; }
     .cal-cell:not(.empty):hover { background:rgba(255,255,255,0.07); color:#fff; }
     .cal-cell.empty { cursor:default; pointer-events:none; }
     .cal-cell.is-today { background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3); color:var(--gold-3); font-weight:800; }
     .cal-cell.is-selected { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; font-weight:800; border-color:transparent; }
     .cal-cell.is-selected.is-today { background:linear-gradient(135deg,var(--gold-2),var(--gold-3)); }
-    .cal-dot { position:absolute; bottom:5px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--gold-2); }
-    .cal-cell.is-selected .cal-dot { background:rgba(0,0,0,0.5); }
+    .cal-cell.has-holiday { border-color:rgba(255,120,120,0.25) !important; }
+    .cal-cell.has-holiday:not(.is-selected) { background:rgba(255,100,100,0.06); }
+    .cal-hol-strip { font-size:0.32rem; font-weight:800; color:#ff9090; letter-spacing:0.03em; text-align:center; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px; line-height:1.2; }
+    .cal-cell.is-selected .cal-hol-strip { color:rgba(0,0,0,0.55); }
+    .cal-event-dots { display:flex; gap:2px; justify-content:center; position:absolute; bottom:3px; left:0; right:0; }
+    .cal-evt-dot { width:4px; height:4px; border-radius:50%; flex-shrink:0; }
+    .cal-cell.is-selected .cal-evt-dot { opacity:0.55; }
 
-    .day-planner-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    /* Quick task adder */
+    .plan-adder { background:rgba(255,215,0,0.03); border:1px solid rgba(255,215,0,0.14); border-radius:18px; padding:18px 20px; margin-bottom:20px; }
+    .plan-adder-title { font-size:0.6rem; font-weight:900; letter-spacing:0.22em; color:var(--gold-2); margin-bottom:12px; }
+    .plan-adder-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .plan-adder-input { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; font-size:0.85rem; color:#fff; font-family:inherit; transition:border-color 0.2s; box-sizing:border-box; }
+    .plan-adder-input:focus { border-color:rgba(255,215,0,0.4); outline:none; }
+    .plan-adder-input::placeholder { color:rgba(255,255,255,0.2); }
+    .plan-adder-date { width:140px; flex-shrink:0; }
+    .plan-adder-time { width:100px; flex-shrink:0; }
+    .plan-adder-text { flex:1; min-width:150px; }
+    .adder-cats { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+    .adder-cat { padding:5px 12px; border-radius:20px; font-size:0.68rem; font-weight:800; letter-spacing:0.05em; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.3); background:none; cursor:pointer; font-family:inherit; transition:all 0.18s; }
+    .adder-cat:hover { border-color:rgba(255,255,255,0.25); color:rgba(255,255,255,0.6); }
+    .adder-cat.selected { border-color:transparent; color:#000; }
+    .adder-cat[data-cat="work"].selected    { background:#4d96ff; }
+    .adder-cat[data-cat="health"].selected  { background:#6bcb77; }
+    .adder-cat[data-cat="learn"].selected   { background:#cc5de8; }
+    .adder-cat[data-cat="personal"].selected{ background:#ffd700; }
+    .adder-cat[data-cat="finance"].selected { background:#c9952a; }
+    .adder-preview { margin-top:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,215,0,0.15); border-radius:12px; padding:12px 16px; display:none; }
+    .adder-preview-time { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.28); letter-spacing:0.08em; margin-bottom:3px; }
+    .adder-preview-task { font-size:0.95rem; font-weight:800; color:#fff; }
+    .adder-preview-cat { display:inline-block; margin-top:6px; font-size:0.56rem; font-weight:900; letter-spacing:0.08em; padding:2px 9px; border-radius:8px; }
+    .adder-add-btn { margin-top:12px; width:100%; padding:12px; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; font-weight:900; font-size:0.82rem; letter-spacing:0.12em; border:none; border-radius:12px; cursor:pointer; font-family:inherit; transition:opacity 0.18s; }
+    .adder-add-btn:hover { opacity:0.88; }
+
+    /* Day view header */
+    .day-planner-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:10px; }
     .day-planner-date { font-size:1rem; font-weight:800; color:#fff; }
     .day-progress-row { display:flex; align-items:center; gap:10px; font-size:0.78rem; color:var(--text-dim); }
     .day-progress-row .progress-bar-wrap { width:100px; margin:0; }
 
-    .day-section-hdr { margin:22px 0 10px; padding:13px 16px; background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.1); border-radius:12px; }
-    .day-section-label { font-size:0.72rem; font-weight:800; letter-spacing:0.18em; color:var(--gold-2); margin-bottom:4px; }
-    .day-section-sub { font-size:0.78rem; color:rgba(255,255,255,0.35); line-height:1.5; }
+    /* Holiday notice */
+    .holiday-notice { background:rgba(255,100,100,0.07); border:1px solid rgba(255,100,100,0.2); border-radius:14px; padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+    .holiday-notice-icon { font-size:1.2rem; flex-shrink:0; }
+    .holiday-notice-text { font-size:0.82rem; font-weight:700; color:rgba(255,180,180,0.9); }
 
-    .day-block { display:flex; gap:14px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
-    .day-block:last-child { border-bottom:none; }
-    .day-block.is-done .day-task-input { text-decoration:line-through; color:rgba(255,255,255,0.28) !important; }
-    .day-block-time { font-size:0.68rem; font-weight:800; color:rgba(255,255,255,0.28); width:52px; flex-shrink:0; padding-top:10px; letter-spacing:0.03em; }
-    .day-block-body { flex:1; min-width:0; }
-    .day-task-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); border-radius:0; padding:8px 0; font-size:0.9rem; color:rgba(255,255,255,0.65); transition:border-color 0.2s,color 0.2s; }
-    .day-task-input:focus { border-bottom-color:var(--gold-2); color:#fff; outline:none; }
-    .day-task-input.has-val { color:#fff; }
-    .day-block-actions { display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap; }
-    .day-cat-badge { font-size:0.64rem; font-weight:700; padding:3px 10px; border-radius:20px; border:1px solid; letter-spacing:0.06em; }
-    .day-cat-sel { padding:5px 8px; font-size:0.75rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:rgba(255,255,255,0.45); cursor:pointer; }
-    .day-cat-sel:focus { border-color:var(--gold-2); color:#fff; }
-    .day-notes-btn { padding:5px 10px; background:transparent; border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.72rem; color:rgba(255,255,255,0.38); transition:all 0.2s; }
-    .day-notes-btn:hover { border-color:rgba(255,215,0,0.3); color:var(--gold-3); }
-    .day-done-btn { margin-left:auto; width:28px; height:28px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.2); background:transparent; flex-shrink:0; transition:all 0.2s; display:flex; align-items:center; justify-content:center; font-size:0.78rem; color:transparent; }
-    .day-done-btn.done { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); border-color:transparent; color:#000; font-weight:900; }
-    .day-notes-area { width:100%; min-height:68px; margin-top:10px; font-size:0.84rem; resize:vertical; line-height:1.65; border-radius:10px; padding:10px 12px; }
-    .day-notes-area.hidden { display:none; }
+    /* Auto-plan items */
+    .day-sec-hdr { font-size:0.6rem; font-weight:900; letter-spacing:0.2em; color:rgba(255,255,255,0.2); margin:16px 0 8px; display:flex; align-items:center; gap:10px; }
+    .day-sec-hdr::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+    .day-auto-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); margin-bottom:5px; cursor:pointer; transition:all 0.18s; }
+    .day-auto-item:hover { background:rgba(255,255,255,0.04); }
+    .day-auto-item.is-auto-done { opacity:0.33; }
+    .day-auto-check { width:20px; height:20px; border-radius:6px; border:1.5px solid rgba(255,255,255,0.13); background:transparent; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:transparent; transition:all 0.2s; }
+    .day-auto-item.is-auto-done .day-auto-check { background:rgba(107,203,119,0.2); border-color:rgba(107,203,119,0.4); color:#6bcb77; }
+    .day-auto-icon { font-size:0.95rem; flex-shrink:0; width:20px; text-align:center; }
+    .day-auto-time { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.22); width:54px; flex-shrink:0; }
+    .day-auto-title { font-size:0.84rem; font-weight:700; color:rgba(255,255,255,0.52); flex:1; }
+    .day-auto-item.is-auto-done .day-auto-title { text-decoration:line-through; }
+    .day-auto-cat-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; opacity:0.7; }
+
+    /* User task cards */
+    .day-task-card { display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); margin-bottom:7px; transition:border-color 0.18s; }
+    .day-task-card:hover { border-color:rgba(255,215,0,0.12); }
+    .day-task-card.is-done { opacity:0.4; }
+    .day-task-card.is-done .day-task-card-text { text-decoration:line-through; }
+    .day-task-check { width:22px; height:22px; border-radius:7px; border:1.5px solid rgba(255,255,255,0.18); background:transparent; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.78rem; color:transparent; cursor:pointer; transition:all 0.2s; }
+    .day-task-check.done { background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); border-color:transparent; color:#000; font-weight:900; }
+    .day-task-time-lbl { font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.22); width:54px; flex-shrink:0; }
+    .day-task-cat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .day-task-card-text { font-size:0.88rem; font-weight:600; color:rgba(255,255,255,0.7); flex:1; }
+    .day-task-del { background:none; border:none; color:rgba(255,255,255,0.14); font-size:0.85rem; cursor:pointer; padding:0 4px; transition:color 0.18s; font-family:inherit; }
+    .day-task-del:hover { color:rgba(255,80,80,0.55); }
+    .day-no-tasks { text-align:center; padding:20px; font-size:0.82rem; color:rgba(255,255,255,0.18); }
 
     /* ── CONTENT TAB ── */
     .content-category-bar { display:flex; gap:8px; margin-bottom:24px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; }
@@ -653,11 +698,17 @@
 
   <!-- PLANNER -->
   <div class="db-panel" id="tab-planner">
+    <!-- Calendar -->
     <div class="cal-section">
       <div class="cal-nav">
         <button class="cal-arrow" id="calPrev">←</button>
         <div class="cal-month-label" id="calMonthLabel"></div>
         <button class="cal-arrow" id="calNext">→</button>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ffd700;opacity:0.75;"></div>Your Plan</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#6bcb77;"></div>Tasks Added</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ff8080;"></div>Holiday</div>
       </div>
       <div class="cal-day-hdrs">
         <div class="cal-day-hdr">SUN</div><div class="cal-day-hdr">MON</div><div class="cal-day-hdr">TUE</div>
@@ -665,12 +716,35 @@
       </div>
       <div class="cal-grid" id="calGrid"></div>
     </div>
+    <!-- Quick task adder -->
+    <div class="plan-adder">
+      <div class="plan-adder-title">+ ADD TO CALENDAR</div>
+      <div class="plan-adder-row">
+        <input class="plan-adder-input plan-adder-date" type="date" id="adderDate">
+        <input class="plan-adder-input plan-adder-time" type="time" id="adderTime">
+        <input class="plan-adder-input plan-adder-text" type="text" id="adderTask" placeholder="Task, goal, or event...">
+      </div>
+      <div class="adder-cats">
+        <button class="adder-cat" data-cat="work">💼 Work</button>
+        <button class="adder-cat" data-cat="health">💪 Health</button>
+        <button class="adder-cat" data-cat="learn">📚 Learn</button>
+        <button class="adder-cat" data-cat="personal">🌟 Personal</button>
+        <button class="adder-cat" data-cat="finance">💰 Finance</button>
+      </div>
+      <div class="adder-preview" id="adderPreview"></div>
+      <button class="adder-add-btn" id="adderAddBtn">ADD TO CALENDAR</button>
+    </div>
+    <!-- Day view -->
     <div class="day-planner-hdr">
       <div class="day-planner-date" id="dayPlannerDate"></div>
       <div class="day-progress-row">
-        <span id="dayProgressLabel">No tasks yet</span>
+        <span id="dayProgressLabel">Nothing planned</span>
         <div class="progress-bar-wrap"><div class="progress-bar-fill" id="dayProgressBar" style="width:0%"></div></div>
       </div>
+    </div>
+    <div id="holidayNotice" class="holiday-notice" style="display:none;">
+      <div class="holiday-notice-icon">🎉</div>
+      <div class="holiday-notice-text" id="holidayNoticeText"></div>
     </div>
     <div id="dayBlocks"></div>
   </div>
@@ -1083,7 +1157,7 @@
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (btn.dataset.tab === 'today')    renderToday();
       if (btn.dataset.tab === 'myplan')   renderMyPlan(window.EE_PLAN_PROFILE);
-      if (btn.dataset.tab === 'planner')  { renderCalendar(); renderDayBlocks(); }
+      if (btn.dataset.tab === 'planner')  { renderCalendar(); renderDayBlocks(); initAdder(); }
       if (btn.dataset.tab === 'library')  renderLibraryGrid();
       if (btn.dataset.tab === 'settings') { renderSettingsGoals((window.EE_PLAN_PROFILE || {}).goals || []); renderSchedSummary(); }
     });
@@ -1716,10 +1790,94 @@
     el.innerHTML = items.map(item => `<div class="focus-item"><span class="focus-dot">→</span><span>${escHtml(item)}</span></div>`).join('');
   };
 
-  /* ─ PLANNER — Calendar ─ */
+  /* ─ PLANNER — Calendar, Tasks & Auto-Plan ─ */
   let calViewDate = new Date(); calViewDate.setDate(1); calViewDate.setHours(0,0,0,0);
   let plannerDate = new Date(); plannerDate.setHours(0,0,0,0);
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const CAT_COLORS = { work:'#4d96ff', health:'#6bcb77', learn:'#cc5de8', personal:'#ffd700', finance:'#c9952a' };
+  const CAT_LABELS = { work:'Work', health:'Health', learn:'Learn', personal:'Personal', finance:'Finance' };
+
+  // US Federal & Major Holidays 2025–2026
+  const US_HOLIDAYS = {
+    '2025-01-01':"New Year's Day",'2025-01-20':'MLK Day','2025-02-14':'Valentine\'s Day',
+    '2025-02-17':"Presidents' Day",'2025-04-18':'Good Friday','2025-04-20':'Easter Sunday',
+    '2025-05-11':'Mother\'s Day','2025-05-26':'Memorial Day','2025-06-15':'Father\'s Day',
+    '2025-06-19':'Juneteenth','2025-07-04':'Independence Day','2025-09-01':'Labor Day',
+    '2025-10-13':'Columbus Day','2025-10-31':'Halloween','2025-11-11':'Veterans Day',
+    '2025-11-27':'Thanksgiving','2025-12-25':'Christmas','2025-12-31':"New Year's Eve",
+    '2026-01-01':"New Year's Day",'2026-01-19':'MLK Day','2026-02-14':'Valentine\'s Day',
+    '2026-02-16':"Presidents' Day",'2026-04-03':'Good Friday','2026-04-05':'Easter Sunday',
+    '2026-05-10':'Mother\'s Day','2026-05-25':'Memorial Day','2026-06-19':'Juneteenth',
+    '2026-06-21':'Father\'s Day','2026-07-04':'Independence Day','2026-09-07':'Labor Day',
+    '2026-10-12':'Columbus Day','2026-10-31':'Halloween','2026-11-11':'Veterans Day',
+    '2026-11-26':'Thanksgiving','2026-12-25':'Christmas',
+  };
+
+  // Helper time utils
+  function addMinsToTime(t, mins) {
+    const [h, m] = t.split(':').map(Number);
+    const total = Math.max(0, Math.min(h*60+m+mins, 23*60+59));
+    return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
+  }
+  function midTimeStr(t1, t2) {
+    const [h1,m1]=t1.split(':').map(Number), [h2,m2]=t2.split(':').map(Number);
+    const mid = Math.floor(((h1*60+m1)+(h2*60+m2))/2);
+    return `${String(Math.floor(mid/60)).padStart(2,'0')}:${String(mid%60).padStart(2,'0')}`;
+  }
+  function fmtTime12(t) {
+    if (!t) return '';
+    const [h,m] = t.split(':').map(Number);
+    const ap = h<12?'AM':'PM', dh = h>12?h-12:h===0?12:h;
+    return `${dh}:${String(m).padStart(2,'0')} ${ap}`;
+  }
+
+  // Generate auto-plan items for a given date from plan profile
+  function getPlanForDay(date, pp) {
+    if (!pp || !pp.workSchedule) return [];
+    const dow = date.getDay();
+    const dayNames = ['sun','mon','tue','wed','thu','fri','sat'];
+    const has = g => (pp.goals||[]).includes(g);
+    const ws = pp.workSchedule;
+    const isWorkDay = ws.type !== 'none' && (!ws.days || ws.days.length===0 || ws.days.includes(dayNames[dow]));
+    const trainAM = has('fitness') || has('weight');
+    const wake = ws.wake || '05:30';
+    const sleep = ws.sleep || '22:00';
+    const wStart = ws.start || '09:00';
+    const wEnd = ws.end || '17:00';
+    const commuteMins = parseInt(ws.commute)||0;
+    const workouts = ['Rest & Recovery','Push — Chest, Shoulders, Triceps','Pull — Back & Biceps',
+      'Legs — Quads, Hamstrings, Glutes','Push (Variation)','Pull (Variation)','Cardio / Active Recovery'];
+    const items = [];
+    items.push({ time:wake,                         title:'Wake Up — No Snooze',        cat:'health',   icon:'⏰' });
+    items.push({ time:addMinsToTime(wake,5),         title:'500ml Water First',           cat:'health',   icon:'💧' });
+    if (trainAM) {
+      items.push({ time:addMinsToTime(wake,15),      title:`Training — ${workouts[dow]}`, cat:'health',   icon:'💪' });
+      items.push({ time:addMinsToTime(wake,75),      title:'Cold Shower',                 cat:'health',   icon:'🚿' });
+      items.push({ time:addMinsToTime(wake,90),      title:'High-Protein Breakfast',      cat:'health',   icon:'🥚' });
+    } else {
+      items.push({ time:addMinsToTime(wake,15),      title:'Morning Walk / Movement',     cat:'health',   icon:'🚶' });
+      items.push({ time:addMinsToTime(wake,40),      title:'Cold Shower',                 cat:'health',   icon:'🚿' });
+      items.push({ time:addMinsToTime(wake,55),      title:'Breakfast',                   cat:'health',   icon:'🍳' });
+    }
+    items.push({ time:addMinsToTime(wake,100),       title:'3-2-1 Morning Journal',       cat:'personal', icon:'📔' });
+    if (isWorkDay) {
+      if (commuteMins>0) items.push({ time:addMinsToTime(wStart,-commuteMins), title:`Commute (${commuteMins} min)`, cat:'work', icon:'🚗' });
+      items.push({ time:wStart,                      title:'Work Begins',                 cat:'work',     icon:'💼' });
+      items.push({ time:midTimeStr(wStart,wEnd),     title:'Lunch + 10-Min Walk',         cat:'health',   icon:'🥗' });
+      items.push({ time:wEnd,                        title:'Work Ends — Shutdown',         cat:'work',     icon:'✅' });
+      if (commuteMins>0) items.push({ time:addMinsToTime(wEnd,commuteMins), title:'Home', cat:'personal', icon:'🏠' });
+    } else {
+      items.push({ time:addMinsToTime(wake,120),     title:'Deep Work Block',             cat:'work',     icon:'🧠' });
+      items.push({ time:addMinsToTime(wake,210),     title:'Break + 10-Min Walk',         cat:'health',   icon:'🚶' });
+      if (has('career')) items.push({ time:addMinsToTime(wake,225), title:'Skill Development', cat:'learn', icon:'📖' });
+    }
+    if (has('finance')) items.push({ time:'18:00',   title:'Daily Finance Review',        cat:'finance',  icon:'💰' });
+    items.push({ time:'19:30',                       title:'Dinner + Wind Down',          cat:'personal', icon:'🍽️' });
+    items.push({ time:'20:30',                       title:'Reading — 30 Pages',          cat:'learn',    icon:'📚' });
+    items.push({ time:'21:30',                       title:'Evening Journal',             cat:'personal', icon:'📔' });
+    items.push({ time:sleep,                         title:'Lights Out',                  cat:'health',   icon:'😴' });
+    return items.sort((a,b) => a.time.localeCompare(b.time));
+  }
 
   function renderCalendar() {
     const year = calViewDate.getFullYear();
@@ -1728,181 +1886,215 @@
     const daysInMonth = new Date(year, month+1, 0).getDate();
     document.getElementById('calMonthLabel').textContent = `${MONTHS[month]} ${year}`;
     const tasks = load('tasks', {});
-    const taskDays = new Set(Object.keys(tasks).filter(dk => Object.values(tasks[dk]).some(t => t.task)));
+    const pp = window.EE_PLAN_PROFILE;
     let html = '';
     for (let i = 0; i < firstDow; i++) html += `<div class="cal-cell empty"></div>`;
     for (let d = 1; d <= daysInMonth; d++) {
       const dk = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const isToday = dk === todayKey();
       const isSelected = dk === dateKey(plannerDate);
-      const hasTasks = taskDays.has(dk);
-      html += `<div class="cal-cell${isToday?' is-today':''}${isSelected?' is-selected':''}" data-date="${dk}">
-        <span>${d}</span>${hasTasks ? '<em class="cal-dot"></em>' : ''}
+      const holiday = US_HOLIDAYS[dk];
+      const hasTasks = tasks[dk] && Object.values(tasks[dk]).some(t => t&&t.task);
+      let dots = '';
+      if (pp) dots += `<div class="cal-evt-dot" style="background:#ffd700;opacity:0.65;"></div>`;
+      if (hasTasks) dots += `<div class="cal-evt-dot" style="background:#6bcb77;"></div>`;
+      if (holiday) dots += `<div class="cal-evt-dot" style="background:#ff8080;"></div>`;
+      html += `<div class="cal-cell${isToday?' is-today':''}${isSelected?' is-selected':''}${holiday?' has-holiday':''}" data-date="${dk}">
+        <span>${d}</span>
+        ${holiday ? `<div class="cal-hol-strip">${holiday.split(' ')[0].toUpperCase()}</div>` : ''}
+        ${dots ? `<div class="cal-event-dots">${dots}</div>` : ''}
       </div>`;
     }
     document.getElementById('calGrid').innerHTML = html;
   }
 
-  document.getElementById('calPrev').addEventListener('click', () => {
-    calViewDate.setMonth(calViewDate.getMonth() - 1);
-    renderCalendar();
-  });
-  document.getElementById('calNext').addEventListener('click', () => {
-    calViewDate.setMonth(calViewDate.getMonth() + 1);
-    renderCalendar();
-  });
-
-  /* ─ PLANNER — Day blocks ─ */
-  const CAT_COLORS = { work:'#4d96ff', health:'#6bcb77', learn:'#cc5de8', personal:'#ffd700', finance:'#c9952a' };
-  const CAT_LABELS = { work:'Work', health:'Health', learn:'Learning', personal:'Personal', finance:'Finance' };
-  const SECTIONS = [
-    { label:'🌅 MORNING', sub:'5:00 AM – 11:30 AM · Your peak focus window. Guard this time — it is your most valuable asset.', hours:[5,6,7,8,9,10,11] },
-    { label:'☀️ AFTERNOON', sub:'12:00 PM – 4:30 PM · Execution mode. Output over input. Stay in the work.', hours:[12,13,14,15,16] },
-    { label:'🌙 EVENING', sub:'5:00 PM – 9:30 PM · Wind down intentionally. Review, plan tomorrow, and recover fully.', hours:[17,18,19,20,21] },
-  ];
-
   function renderDayBlocks() {
     const dk = dateKey(plannerDate);
-    const dayTasks = (load('tasks', {}))[dk] || {};
-    document.getElementById('dayPlannerDate').textContent = plannerDate.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+    const dayTasks = load('tasks', {})[dk] || {};
+    const pp = window.EE_PLAN_PROFILE;
+    const holiday = US_HOLIDAYS[dk];
+
+    document.getElementById('dayPlannerDate').textContent =
+      plannerDate.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+    // Holiday notice
+    const hn = document.getElementById('holidayNotice');
+    if (hn) {
+      if (holiday) { hn.style.display='flex'; document.getElementById('holidayNoticeText').textContent = `${holiday} — Enjoy the holiday!`; }
+      else hn.style.display = 'none';
+    }
+
+    const autoPlan = getPlanForDay(plannerDate, pp);
+    const autoChecks = (load('autocheck', {}))[dk] || {};
     let html = '';
-    SECTIONS.forEach(sec => {
-      html += `<div class="day-section-hdr"><div class="day-section-label">${sec.label}</div><div class="day-section-sub">${sec.sub}</div></div>`;
-      sec.hours.forEach(hh => {
-        [0, 30].forEach(mm => {
-          if (hh === 21 && mm === 30) return;
-          const sid = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-          const t = dayTasks[sid] || { task:'', done:false, cat:'', notes:'' };
-          const isDone = t.done && t.task;
-          const p = hh < 12 ? 'AM' : 'PM'; const dh = hh > 12 ? hh-12 : hh===0 ? 12 : hh;
-          const timeLabel = `${dh}:${String(mm).padStart(2,'0')} ${p}`;
-          const catColor = t.cat ? (CAT_COLORS[t.cat] || null) : null;
-          const catBadge = t.cat ? `<span class="day-cat-badge" style="background:${catColor}22;color:${catColor};border-color:${catColor}44">${CAT_LABELS[t.cat]||t.cat}</span>` : '';
-          html += `<div class="day-block${isDone?' is-done':''}" id="block-${sid}" data-slot="${sid}">
-            <div class="day-block-time">${timeLabel}</div>
-            <div class="day-block-body">
-              <input class="day-task-input${t.task?' has-val':''}" type="text" placeholder="Add task, meeting, or goal..." value="${escHtml(t.task)}" data-slot="${sid}">
-              ${catBadge}
-              <div class="day-block-actions">
-                <select class="day-cat-sel" data-slot="${sid}">
-                  <option value="">+ Tag</option>
-                  <option value="work"${t.cat==='work'?' selected':''}>💼 Work</option>
-                  <option value="health"${t.cat==='health'?' selected':''}>💪 Health</option>
-                  <option value="learn"${t.cat==='learn'?' selected':''}>📚 Learning</option>
-                  <option value="personal"${t.cat==='personal'?' selected':''}>🌟 Personal</option>
-                  <option value="finance"${t.cat==='finance'?' selected':''}>💰 Finance</option>
-                </select>
-                <button class="day-notes-btn" data-slot="${sid}">${t.notes ? '📝 Notes' : '+ Notes'}</button>
-                <button class="day-done-btn${isDone?' done':''}" data-slot="${sid}">${isDone?'✓':''}</button>
-              </div>
-              <textarea class="day-notes-area${t.notes?'':' hidden'}" data-slot="${sid}" placeholder="Details, prep notes, context, reminders...">${escHtml(t.notes||'')}</textarea>
-            </div>
-          </div>`;
-        });
+
+    // Auto-plan section
+    html += `<div class="day-sec-hdr">YOUR PLAN FOR TODAY</div>`;
+    if (autoPlan.length === 0) {
+      html += `<div class="day-no-tasks">Set your schedule in My Plan to see your daily routine here.</div>`;
+    } else {
+      autoPlan.forEach((item, idx) => {
+        const done = !!autoChecks[idx];
+        const color = CAT_COLORS[item.cat] || '#ffd700';
+        html += `<div class="day-auto-item${done?' is-auto-done':''}" data-auto="${idx}">
+          <div class="day-auto-check">${done?'✓':''}</div>
+          <div class="day-auto-icon">${item.icon}</div>
+          <div class="day-auto-time">${fmtTime12(item.time)}</div>
+          <div class="day-auto-title">${item.title}</div>
+          <div class="day-auto-cat-dot" style="background:${color};"></div>
+        </div>`;
       });
-    });
+    }
+
+    // User tasks section
+    html += `<div class="day-sec-hdr">YOUR TASKS</div>`;
+    const entries = Object.entries(dayTasks).filter(([,t])=>t&&t.task).sort((a,b)=>(a[1].time||a[0]).localeCompare(b[1].time||b[0]));
+    if (entries.length === 0) {
+      html += `<div class="day-no-tasks">No tasks yet — use the adder above to schedule one.</div>`;
+    } else {
+      entries.forEach(([sid, t]) => {
+        const color = t.cat ? (CAT_COLORS[t.cat]||null) : null;
+        html += `<div class="day-task-card${t.done?' is-done':''}" data-slot="${sid}">
+          <div class="day-task-check${t.done?' done':''}" data-check="${sid}">${t.done?'✓':''}</div>
+          <div class="day-task-time-lbl">${t.time ? fmtTime12(t.time) : ''}</div>
+          ${color?`<div class="day-task-cat-dot" style="background:${color};"></div>`:''}
+          <div class="day-task-card-text">${escHtml(t.task)}</div>
+          <button class="day-task-del" data-del="${sid}">✕</button>
+        </div>`;
+      });
+    }
+
     document.getElementById('dayBlocks').innerHTML = html;
     updateDayProgress(dk);
   }
 
   function updateDayProgress(dk) {
-    const dayTasks = (load('tasks', {}))[dk] || {};
+    const dayTasks = load('tasks', {})[dk] || {};
+    const autoChecks = (load('autocheck', {}))[dk] || {};
+    const autoPlan = getPlanForDay(plannerDate, window.EE_PLAN_PROFILE);
     let done=0, total=0;
-    Object.values(dayTasks).forEach(t => { if(t.task){ total++; if(t.done) done++; } });
+    Object.values(dayTasks).forEach(t => { if(t&&t.task){ total++; if(t.done) done++; } });
+    autoPlan.forEach((_,idx) => { total++; if(autoChecks[idx]) done++; });
     const pct = total > 0 ? Math.round(done/total*100) : 0;
     const lbl = document.getElementById('dayProgressLabel');
     const bar = document.getElementById('dayProgressBar');
-    if (lbl) lbl.textContent = total > 0 ? `${done} of ${total} tasks done` : 'No tasks yet';
+    if (lbl) lbl.textContent = total > 0 ? `${done}/${total} done · ${pct}%` : 'Nothing planned';
     if (bar) bar.style.width = pct + '%';
   }
 
-  // All planner interactions via event delegation
-  const dayBlocksEl = document.getElementById('dayBlocks');
+  // ── Quick Task Adder ──
+  let adderCat = '';
 
-  dayBlocksEl.addEventListener('input', e => {
-    const inp = e.target.closest('.day-task-input');
-    if (inp) inp.classList.toggle('has-val', inp.value.trim().length > 0);
-  });
+  function syncAdderPreview() {
+    const task = document.getElementById('adderTask')?.value?.trim();
+    const time = document.getElementById('adderTime')?.value;
+    const preview = document.getElementById('adderPreview');
+    if (!preview) return;
+    if (!task) { preview.style.display='none'; return; }
+    const color = adderCat ? (CAT_COLORS[adderCat]||null) : null;
+    preview.style.display = 'block';
+    preview.innerHTML = `
+      <div class="adder-preview-time">${time ? fmtTime12(time) : 'No time set'}</div>
+      <div class="adder-preview-task">${escHtml(task)}</div>
+      ${color ? `<span class="adder-preview-cat" style="background:${color}22;color:${color};border:1px solid ${color}44;">${CAT_LABELS[adderCat]||adderCat}</span>` : ''}`;
+  }
 
-  dayBlocksEl.addEventListener('change', e => {
-    const inp = e.target.closest('.day-task-input');
-    if (inp) {
-      const dk = dateKey(plannerDate);
+  function initAdder() {
+    const dateEl = document.getElementById('adderDate');
+    const timeEl = document.getElementById('adderTime');
+    const taskEl = document.getElementById('adderTask');
+    const addBtn = document.getElementById('adderAddBtn');
+    if (!dateEl || !addBtn) return;
+    dateEl.value = dateKey(plannerDate);
+    timeEl.value = ''; taskEl.value = ''; adderCat = '';
+    document.querySelectorAll('.adder-cat').forEach(b => b.classList.remove('selected'));
+    document.getElementById('adderPreview').style.display = 'none';
+
+    // Remove old listeners by cloning
+    const newTask = taskEl.cloneNode(true); taskEl.parentNode.replaceChild(newTask, taskEl);
+    const newTime = timeEl.cloneNode(true); timeEl.parentNode.replaceChild(newTime, timeEl);
+    const newBtn  = addBtn.cloneNode(true); addBtn.parentNode.replaceChild(newBtn, addBtn);
+
+    document.getElementById('adderTask').addEventListener('input', syncAdderPreview);
+    document.getElementById('adderTime').addEventListener('change', syncAdderPreview);
+
+    document.querySelectorAll('.adder-cat').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.cat;
+        adderCat = adderCat===cat ? '' : cat;
+        document.querySelectorAll('.adder-cat').forEach(b => b.classList.remove('selected'));
+        if (adderCat) btn.classList.add('selected');
+        syncAdderPreview();
+      });
+    });
+
+    document.getElementById('adderAddBtn').addEventListener('click', () => {
+      const taskVal = document.getElementById('adderTask').value.trim();
+      const dateVal = document.getElementById('adderDate').value;
+      const timeVal = document.getElementById('adderTime').value;
+      if (!taskVal) { const t=document.getElementById('adderTask'); t.style.borderColor='rgba(255,100,100,0.5)'; t.focus(); setTimeout(()=>t.style.borderColor='',1200); return; }
+      if (!dateVal) { document.getElementById('adderDate').focus(); return; }
       const tasks = load('tasks', {});
-      if (!tasks[dk]) tasks[dk] = {};
-      const sid = inp.dataset.slot;
-      if (!tasks[dk][sid]) tasks[dk][sid] = { task:'', done:false, cat:'', notes:'' };
-      tasks[dk][sid].task = inp.value.trim();
+      if (!tasks[dateVal]) tasks[dateVal] = {};
+      const sid = timeVal || ('u'+Date.now().toString(36));
+      tasks[dateVal][sid] = { task:taskVal, done:false, cat:adderCat, time:timeVal||'' };
       save('tasks', tasks);
-      updateDayProgress(dk);
-      patchTodayStats();
+      document.getElementById('adderTask').value = '';
+      document.getElementById('adderTime').value = '';
+      adderCat = ''; document.querySelectorAll('.adder-cat').forEach(b=>b.classList.remove('selected'));
+      document.getElementById('adderPreview').style.display = 'none';
+      if (dateVal === dateKey(plannerDate)) renderDayBlocks();
       renderCalendar();
-      return;
-    }
-    const sel = e.target.closest('.day-cat-sel');
-    if (sel) {
+      patchTodayStats?.();
+    });
+  }
+
+  // ── Event delegation ──
+  const dayBlocksEl = document.getElementById('dayBlocks');
+  dayBlocksEl.addEventListener('click', e => {
+    // Auto-plan check toggle
+    const autoItem = e.target.closest('.day-auto-item');
+    if (autoItem && autoItem.dataset.auto !== undefined) {
+      const idx = parseInt(autoItem.dataset.auto);
       const dk = dateKey(plannerDate);
-      const tasks = load('tasks', {});
-      if (!tasks[dk]) tasks[dk] = {};
-      const sid = sel.dataset.slot;
-      if (!tasks[dk][sid]) tasks[dk][sid] = { task:'', done:false, cat:'', notes:'' };
-      tasks[dk][sid].cat = sel.value;
-      save('tasks', tasks);
+      const ac = load('autocheck', {});
+      if (!ac[dk]) ac[dk] = {};
+      ac[dk][idx] = !ac[dk][idx];
+      save('autocheck', ac);
       renderDayBlocks();
       return;
     }
-    const notes = e.target.closest('.day-notes-area');
-    if (notes) {
-      const dk = dateKey(plannerDate);
+    // User task check
+    const checkEl = e.target.closest('.day-task-check');
+    if (checkEl?.dataset.check) {
+      const sid = checkEl.dataset.check, dk = dateKey(plannerDate);
       const tasks = load('tasks', {});
-      if (!tasks[dk]) tasks[dk] = {};
-      const sid = notes.dataset.slot;
-      if (!tasks[dk][sid]) tasks[dk][sid] = { task:'', done:false, cat:'', notes:'' };
-      tasks[dk][sid].notes = notes.value;
-      save('tasks', tasks);
-    }
-  });
-
-  dayBlocksEl.addEventListener('click', e => {
-    const doneBtn = e.target.closest('.day-done-btn');
-    if (doneBtn) {
-      const sid = doneBtn.dataset.slot;
-      const dk = dateKey(plannerDate);
-      const tasks = load('tasks', {});
-      if (!tasks[dk]) tasks[dk] = {};
-      if (!tasks[dk][sid]) tasks[dk][sid] = { task:'', done:false, cat:'', notes:'' };
-      if (!tasks[dk][sid].task) return;
-      tasks[dk][sid].done = !tasks[dk][sid].done;
-      save('tasks', tasks);
-      const isDone = tasks[dk][sid].done;
-      const block = document.getElementById('block-'+sid);
-      if (block) block.classList.toggle('is-done', isDone);
-      doneBtn.classList.toggle('done', isDone);
-      doneBtn.textContent = isDone ? '✓' : '';
-      updateDayProgress(dk);
-      patchTodayStats();
+      if (tasks[dk]?.[sid]) { tasks[dk][sid].done = !tasks[dk][sid].done; save('tasks', tasks); patchTodayStats?.(); renderDayBlocks(); renderCalendar(); }
       return;
     }
-    const notesBtn = e.target.closest('.day-notes-btn');
-    if (notesBtn) {
-      const sid = notesBtn.dataset.slot;
-      const block = document.getElementById('block-'+sid);
-      const area = block ? block.querySelector('.day-notes-area') : null;
-      if (area) {
-        const hidden = area.classList.toggle('hidden');
-        notesBtn.textContent = hidden ? '+ Notes' : '📝 Notes';
-        if (!hidden) area.focus();
-      }
+    // Delete task
+    const delBtn = e.target.closest('.day-task-del');
+    if (delBtn?.dataset.del) {
+      const sid = delBtn.dataset.del, dk = dateKey(plannerDate);
+      const tasks = load('tasks', {});
+      if (tasks[dk]) { delete tasks[dk][sid]; save('tasks', tasks); }
+      renderDayBlocks(); renderCalendar();
       return;
     }
+    // Calendar cell click
     const calCell = e.target.closest('.cal-cell[data-date]');
     if (calCell) {
       plannerDate = new Date(calCell.dataset.date + 'T12:00:00');
       plannerDate.setHours(0,0,0,0);
+      const adderDate = document.getElementById('adderDate');
+      if (adderDate) adderDate.value = calCell.dataset.date;
       renderCalendar();
       renderDayBlocks();
     }
   });
+
+  document.getElementById('calPrev').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()-1); renderCalendar(); });
+  document.getElementById('calNext').addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth()+1); renderCalendar(); });
 
   /* ─ Schedule Builder ─ */
   let schedData = {};
