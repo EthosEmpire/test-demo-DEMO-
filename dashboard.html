@@ -1592,9 +1592,12 @@
 
   <!-- ══ Plan Builder Logic (n8n webhook) ══ -->
   <script>
+  // ── n8n HTTPS endpoint — update after deploying Cloudflare Worker ──
+  window.EE_BRAIN_WEBHOOK = 'https://api.ethosempire.org/webhook/ethos-brain';
+  </script>
+  <script>
   (function() {
-    // ── Set your n8n webhook URL here ──
-    var N8N_WEBHOOK = '/.netlify/functions/plan-builder-proxy';
+    var N8N_WEBHOOK = window.EE_BRAIN_WEBHOOK || 'https://api.ethosempire.org/webhook/ethos-brain';
 
     var pbState = {};
     var pbSessionId = 'sess_' + Date.now();
@@ -1662,11 +1665,19 @@
       var timedOut = false;
       var timeoutId;
 
-      var fetchPromise = fetch(N8N_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: uid, message: message })
-      });
+      var fetchPromise = (async function() {
+        var idToken = '';
+        try {
+          if (window.EE_USER && window.EE_USER.firebaseUser && window.EE_USER.firebaseUser.getIdToken) {
+            idToken = await window.EE_USER.firebaseUser.getIdToken();
+          }
+        } catch(_) {}
+        return fetch(N8N_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: uid, idToken: idToken, message: message, page: 'plan_builder', sessionId: pbSessionId })
+        });
+      })();
       var timeoutPromise = new Promise(function(_, reject) {
         timeoutId = setTimeout(function() { timedOut = true; reject(new Error('timeout')); }, 20000);
       });
@@ -1687,7 +1698,7 @@
           typingRow.remove();
           var errMsg = timedOut
             ? 'The plan builder timed out. Make sure your n8n workflow is active and try again.'
-            : 'Could not reach the plan builder. Check that your n8n workflow is running and the webhook URL is set correctly.';
+            : 'Could not reach the plan builder. Make sure the n8n workflow is active and the Cloudflare Worker is deployed.';
           addAiBubble(errMsg, ['Try Again']);
         })
         .then(function() {
@@ -3079,17 +3090,16 @@
     document.getElementById('aiChatMessages').scrollTop = 9999;
 
     try {
-      let token = null;
-      try { if (window.EE_USER?.firebaseUser?.getIdToken) token = await window.EE_USER.firebaseUser.getIdToken(); } catch(_) {}
-      const weekData = getWeekData().map(d => ({ day: d.day, pct: d.pct ?? 0 }));
-      const activeTab = document.querySelector('.db-tab.active');
-      const currentPage = 'Dashboard — ' + (activeTab ? activeTab.textContent.replace(/[^\w\s]/g,'').trim() : 'Planner') + ' tab';
+      let idToken = '';
+      try { if (window.EE_USER?.firebaseUser?.getIdToken) idToken = await window.EE_USER.firebaseUser.getIdToken(); } catch(_) {}
+      const uid = window.EE_USER?.uid || '';
+      const sessionId = window._aiSessionId || (window._aiSessionId = 'ais_' + Date.now());
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 12000);
-      const resp = await fetch('/.netlify/functions/ai-chat', {
+      const timer = setTimeout(() => controller.abort(), 20000);
+      const resp = await fetch(window.EE_BRAIN_WEBHOOK || 'https://api.ethosempire.org/webhook/ethos-brain', {
         method: 'POST',
-        headers: { 'Content-Type':'application/json', ...(token ? { Authorization:'Bearer '+token } : {}) },
-        body: JSON.stringify({ messages: aiMessages.map(m=>({role:m.role,content:m.content})), planProfile: window.EE_PLAN_PROFILE || {}, weekData, currentPage, userName: window.EE_USER?.name || '' }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid, idToken, message: text, page: 'ai_coach', sessionId }),
         signal: controller.signal
       });
       clearTimeout(timer);
@@ -3102,7 +3112,7 @@
       const isAbort = err && err.name === 'AbortError';
       aiMessages.push({ role:'assistant', content: isAbort
         ? 'That took too long. Check your connection and try again.'
-        : 'Empire AI needs the local server running. In your terminal: npx netlify-cli dev — then reload.' });
+        : 'Could not reach the AI coach. Make sure the Cloudflare Worker is deployed and n8n is active.' });
     }
     renderAiMessages();
     document.getElementById('aiChatSend').disabled = false;
