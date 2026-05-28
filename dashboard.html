@@ -598,9 +598,93 @@
     .ebook-price { font-size:0.82rem; font-weight:900; color:var(--gold-3); }
     .ebook-btn { padding:9px; border:none; border-radius:9px; background:linear-gradient(135deg,var(--gold-1),var(--gold-2)); color:#000; font-size:0.76rem; font-weight:900; letter-spacing:0.08em; cursor:pointer; font-family:inherit; transition:opacity 0.2s; }
     .ebook-btn:hover { opacity:0.85; }
+
+    /* ── Futuristic Background FX ── */
+    @keyframes auroraFloat {
+      0%,100%{transform:translate(0,0) scale(1);}
+      33%{transform:translate(40px,-30px) scale(1.08);}
+      66%{transform:translate(-30px,40px) scale(0.94);}
+    }
+    @keyframes auroraFloat2 {
+      0%,100%{transform:translate(0,0) scale(1);}
+      40%{transform:translate(-50px,20px) scale(1.1);}
+      70%{transform:translate(25px,-35px) scale(0.92);}
+    }
+    @keyframes streakSlide {
+      0%{transform:translateX(-120%) scaleX(0.6);opacity:0;}
+      8%{opacity:1;}
+      92%{opacity:0.7;}
+      100%{transform:translateX(110vw) scaleX(1.4);opacity:0;}
+    }
+    @keyframes gridPulse {
+      0%,100%{opacity:0.025;}
+      50%{opacity:0.05;}
+    }
+    .db-bg { position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse 80% 60% at 70% 20%,rgba(30,20,60,0.7),transparent),radial-gradient(ellipse 60% 80% at 20% 80%,rgba(15,25,50,0.6),transparent),#050505; }
+    .db-aurora { position:absolute;border-radius:50%;filter:blur(90px);will-change:transform; }
+    .db-aurora-1 { width:700px;height:700px;top:-250px;right:-150px;background:radial-gradient(circle,rgba(66,133,244,0.18),transparent 70%);animation:auroraFloat 16s ease-in-out infinite; }
+    .db-aurora-2 { width:500px;height:500px;bottom:-150px;left:-120px;background:radial-gradient(circle,rgba(171,71,188,0.14),transparent 70%);animation:auroraFloat2 20s ease-in-out infinite; }
+    .db-aurora-3 { width:350px;height:350px;top:45%;right:15%;background:radial-gradient(circle,rgba(255,215,0,0.07),transparent 70%);animation:auroraFloat 24s ease-in-out infinite reverse; }
+    .db-aurora-4 { width:280px;height:280px;top:20%;left:10%;background:radial-gradient(circle,rgba(38,166,154,0.09),transparent 70%);animation:auroraFloat2 18s ease-in-out infinite; }
+    .db-streak { position:absolute;height:1px;width:200px;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.2),rgba(255,215,0,0.08),transparent);animation:streakSlide var(--dur,12s) linear infinite;animation-delay:var(--delay,0s); }
+    .db-grid { position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:60px 60px;animation:gridPulse 8s ease-in-out infinite; }
+
+    /* ── Progress Tab ── */
+    .prog-hero { display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:22px; }
+    .prog-stat { background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px 12px;text-align:center; }
+    .prog-stat-num { font-size:2rem;font-weight:900;color:var(--gold-3);line-height:1;margin-bottom:6px; }
+    .prog-stat-lbl { font-size:0.6rem;letter-spacing:0.12em;color:rgba(255,255,255,0.3); }
+    .prog-ring-wrap { display:flex;justify-content:center;margin-bottom:24px; }
+    .prog-ring-svg { transform:rotate(-90deg); }
+    .prog-ring-bg { fill:none;stroke:rgba(255,255,255,0.06);stroke-width:8; }
+    .prog-ring-fill { fill:none;stroke:url(#progGrad);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease; }
+    .prog-ring-label { text-anchor:middle;dominant-baseline:middle;transform:rotate(90deg);transform-origin:50% 50%; }
+    .prog-bar-item { margin-bottom:14px; }
+    .prog-bar-top { display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px; }
+    .prog-bar-name { font-size:0.82rem;font-weight:700;color:rgba(255,255,255,0.72); }
+    .prog-bar-pct { font-size:0.72rem;font-weight:900;color:var(--gold-3); }
+    .prog-bar-track { height:6px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden; }
+    .prog-bar-fill { height:100%;border-radius:4px;transition:width 1s ease; }
+
+    /* ── Habits Tab ── */
+    .habit-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:22px; }
+    .habit-card { background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px; }
+    .habit-card-top { display:flex;align-items:center;gap:10px;margin-bottom:12px; }
+    .habit-card-icon { font-size:1.4rem;flex-shrink:0; }
+    .habit-card-name { font-size:0.9rem;font-weight:800;color:#fff; }
+    .habit-card-streak { font-size:0.62rem;font-weight:800;letter-spacing:0.08em;color:var(--gold-2);margin-top:2px; }
+    .habit-week { display:flex;gap:5px; }
+    .habit-day-dot { flex:1;aspect-ratio:1;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:rgba(255,255,255,0.2);font-weight:800; }
+    .habit-day-dot.done { background:rgba(107,203,119,0.18);border-color:rgba(107,203,119,0.35);color:#6bcb77; }
+    .habit-day-dot.today { border-color:rgba(255,215,0,0.4); }
+    .habit-add-card { background:rgba(255,215,0,0.03);border:1px dashed rgba(255,215,0,0.15);border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:all 0.2s;font-size:0.85rem;font-weight:700;color:rgba(255,255,255,0.3); }
+    .habit-add-card:hover { border-color:rgba(255,215,0,0.35);color:var(--gold-3);background:rgba(255,215,0,0.05); }
+
+    /* ── Dashboard tab visibility toggle ── */
+    .tab-toggle-row { display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05); }
+    .tab-toggle-row:last-child { border-bottom:none; }
+    .tab-toggle-label { font-size:0.86rem;font-weight:600;color:rgba(255,255,255,0.65); }
+    .tab-toggle-switch { position:relative;width:42px;height:24px;flex-shrink:0; }
+    .tab-toggle-switch input { opacity:0;width:0;height:0; }
+    .tab-switch-track { position:absolute;inset:0;background:rgba(255,255,255,0.1);border-radius:30px;cursor:pointer;transition:background 0.25s; }
+    .tab-toggle-switch input:checked + .tab-switch-track { background:rgba(255,215,0,0.5); }
+    .tab-switch-thumb { position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.25s;pointer-events:none; }
+    .tab-toggle-switch input:checked + .tab-switch-track .tab-switch-thumb { transform:translateX(18px); }
   </style>
 </head>
 <body>
+
+  <!-- ── Futuristic Background ── -->
+  <div class="db-bg" aria-hidden="true">
+    <div class="db-grid"></div>
+    <div class="db-aurora db-aurora-1"></div>
+    <div class="db-aurora db-aurora-2"></div>
+    <div class="db-aurora db-aurora-3"></div>
+    <div class="db-aurora db-aurora-4"></div>
+    <div class="db-streak" style="top:18%;--dur:14s;--delay:0s;"></div>
+    <div class="db-streak" style="top:42%;--dur:18s;--delay:-6s;width:280px;opacity:0.7;"></div>
+    <div class="db-streak" style="top:72%;--dur:22s;--delay:-11s;width:160px;opacity:0.5;"></div>
+  </div>
 
   <!-- Schedule Builder Modal -->
   <div class="sched-modal hidden" id="schedModal">
@@ -849,6 +933,8 @@
   <nav class="db-tabs" role="tablist">
     <button class="db-tab active" data-tab="today" role="tab">Today</button>
     <button class="db-tab" data-tab="myplan" role="tab">📋 My Plan</button>
+    <button class="db-tab" data-tab="progress" role="tab" id="tab-btn-progress">📊 Progress</button>
+    <button class="db-tab" data-tab="habits" role="tab" id="tab-btn-habits">✅ Habits</button>
     <button class="db-tab" data-tab="planner" role="tab">📅 Planner</button>
     <button class="db-tab" data-tab="library" role="tab">📖 Library</button>
     <button class="db-tab" data-tab="settings" role="tab">⚙️ Settings</button>
@@ -1181,6 +1267,40 @@
       <button id="resetPlanBtn" style="padding:10px 20px;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.2);border-radius:10px;color:rgba(255,165,0,0.85);font-size:0.82rem;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s;">Rebuild My Plan</button>
     </div>
 
+    <!-- Dashboard Layout -->
+    <div class="db-card">
+      <div class="card-label">DASHBOARD TABS</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-bottom:16px;">Choose which tabs appear in your dashboard navigation.</div>
+      <div class="tab-toggle-row">
+        <span class="tab-toggle-label">📊 Progress</span>
+        <label class="tab-toggle-switch">
+          <input type="checkbox" id="toggleProgress" checked>
+          <div class="tab-switch-track"><div class="tab-switch-thumb"></div></div>
+        </label>
+      </div>
+      <div class="tab-toggle-row">
+        <span class="tab-toggle-label">✅ Habits</span>
+        <label class="tab-toggle-switch">
+          <input type="checkbox" id="toggleHabits" checked>
+          <div class="tab-switch-track"><div class="tab-switch-thumb"></div></div>
+        </label>
+      </div>
+      <div class="tab-toggle-row">
+        <span class="tab-toggle-label">📅 Planner</span>
+        <label class="tab-toggle-switch">
+          <input type="checkbox" id="togglePlanner" checked>
+          <div class="tab-switch-track"><div class="tab-switch-thumb"></div></div>
+        </label>
+      </div>
+      <div class="tab-toggle-row">
+        <span class="tab-toggle-label">📖 Library</span>
+        <label class="tab-toggle-switch">
+          <input type="checkbox" id="toggleLibrary" checked>
+          <div class="tab-switch-track"><div class="tab-switch-thumb"></div></div>
+        </label>
+      </div>
+    </div>
+
     <!-- Sign out -->
     <div class="db-card" style="border-color:rgba(255,80,80,0.12);">
       <div class="card-label" style="color:rgba(255,80,80,0.5);">SESSION</div>
@@ -1188,6 +1308,102 @@
     </div>
 
     <div class="settings-save-msg" id="settingsSaveMsg">Changes saved successfully.</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="db-panel" id="tab-progress">
+    <div style="font-size:0.65rem;font-weight:900;letter-spacing:0.22em;color:var(--gold-2);margin-bottom:20px;">YOUR PROGRESS</div>
+    <div class="prog-hero" id="progStats">
+      <div class="prog-stat"><div class="prog-stat-num" id="progStreak">0</div><div class="prog-stat-lbl">DAY STREAK 🔥</div></div>
+      <div class="prog-stat"><div class="prog-stat-num" id="progDaysActive">0</div><div class="prog-stat-lbl">DAYS ACTIVE</div></div>
+      <div class="prog-stat"><div class="prog-stat-num" id="progDaysPlan">0</div><div class="prog-stat-lbl">DAYS INTO PLAN</div></div>
+      <div class="prog-stat"><div class="prog-stat-num" id="progDaysLeft">—</div><div class="prog-stat-lbl">DAYS LEFT</div></div>
+    </div>
+
+    <!-- Ring chart -->
+    <div class="db-card" style="text-align:center;">
+      <div class="card-label">PLAN COMPLETION</div>
+      <div class="prog-ring-wrap">
+        <svg class="prog-ring-svg" width="160" height="160" viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#FFD700"/>
+              <stop offset="100%" style="stop-color:#FFA500"/>
+            </linearGradient>
+          </defs>
+          <circle class="prog-ring-bg" cx="80" cy="80" r="68"/>
+          <circle class="prog-ring-fill" cx="80" cy="80" r="68" id="progRingFill" stroke-dasharray="427" stroke-dashoffset="427"/>
+          <text class="prog-ring-label" x="80" y="80" fill="#FFD700" font-size="28" font-weight="900" id="progRingPct">0%</text>
+          <text class="prog-ring-label" x="80" y="100" fill="rgba(255,255,255,0.35)" font-size="11" id="progRingLbl">complete</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Weekly breakdown -->
+    <div class="db-card">
+      <div class="card-label">THIS WEEK</div>
+      <div id="progWeekBars">
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.25);text-align:center;padding:20px;">Start checking off daily tasks to track your weekly progress.</div>
+      </div>
+    </div>
+
+    <!-- Plan pillars -->
+    <div class="db-card">
+      <div class="card-label">PILLAR PROGRESS</div>
+      <div id="progPillars">
+        <div class="prog-bar-item">
+          <div class="prog-bar-top"><span class="prog-bar-name">Body & Fitness</span><span class="prog-bar-pct" id="pp-body">—</span></div>
+          <div class="prog-bar-track"><div class="prog-bar-fill" id="ppb-body" style="width:0%;background:linear-gradient(to right,#6bcb77,#4caf50);"></div></div>
+        </div>
+        <div class="prog-bar-item">
+          <div class="prog-bar-top"><span class="prog-bar-name">Wealth & Finance</span><span class="prog-bar-pct" id="pp-finance">—</span></div>
+          <div class="prog-bar-track"><div class="prog-bar-fill" id="ppb-finance" style="width:0%;background:linear-gradient(to right,#FFD700,#FFA500);"></div></div>
+        </div>
+        <div class="prog-bar-item">
+          <div class="prog-bar-top"><span class="prog-bar-name">Mindset & Discipline</span><span class="prog-bar-pct" id="pp-mind">—</span></div>
+          <div class="prog-bar-track"><div class="prog-bar-fill" id="ppb-mind" style="width:0%;background:linear-gradient(to right,#ab47bc,#7b1fa2);"></div></div>
+        </div>
+        <div class="prog-bar-item">
+          <div class="prog-bar-top"><span class="prog-bar-name">Faith & Spirit</span><span class="prog-bar-pct" id="pp-faith">—</span></div>
+          <div class="prog-bar-track"><div class="prog-bar-fill" id="ppb-faith" style="width:0%;background:linear-gradient(to right,#74c0fc,#4285F4);"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HABITS -->
+  <div class="db-panel" id="tab-habits">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:0.65rem;font-weight:900;letter-spacing:0.22em;color:var(--gold-2);">YOUR HABITS</div>
+      <button id="addHabitBtn" class="btn-add" style="font-size:0.72rem;padding:7px 16px;">+ Add Habit</button>
+    </div>
+
+    <!-- Add habit form (hidden by default) -->
+    <div id="addHabitForm" style="display:none;background:rgba(255,215,0,0.03);border:1px solid rgba(255,215,0,0.14);border-radius:16px;padding:18px;margin-bottom:18px;">
+      <div style="font-size:0.62rem;font-weight:900;letter-spacing:0.2em;color:var(--gold-2);margin-bottom:12px;">NEW HABIT</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input type="text" id="newHabitName" placeholder="Habit name (e.g. Morning workout)" style="flex:1;min-width:180px;">
+        <select id="newHabitIcon" style="width:90px;padding:10px 8px;">
+          <option value="💪">💪 Body</option>
+          <option value="💰">💰 Money</option>
+          <option value="📖">📖 Learn</option>
+          <option value="🙏">🙏 Faith</option>
+          <option value="🧘">🧘 Mind</option>
+          <option value="🌿">🌿 Health</option>
+          <option value="⏰">⏰ Routine</option>
+          <option value="✍️">✍️ Journal</option>
+        </select>
+        <button id="saveHabitBtn" class="btn-add">Save</button>
+      </div>
+    </div>
+
+    <div class="habit-grid" id="habitGrid">
+      <!-- Populated by JS -->
+    </div>
+    <div id="habitsEmpty" style="display:none;text-align:center;padding:48px 24px;">
+      <div style="font-size:2rem;margin-bottom:12px;">✅</div>
+      <div style="font-size:0.88rem;color:rgba(255,255,255,0.28);">No habits yet. Add your first one above and start tracking your streak.</div>
+    </div>
   </div>
 
   <!-- ══ Firebase Auth + Guard ══ -->
@@ -1662,6 +1878,8 @@
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (btn.dataset.tab === 'today')    renderToday();
       if (btn.dataset.tab === 'myplan')   renderMyPlan(window.EE_PLAN_PROFILE);
+      if (btn.dataset.tab === 'progress') renderProgress();
+      if (btn.dataset.tab === 'habits')   loadHabits();
       if (btn.dataset.tab === 'planner')  { renderCalendar(); renderDayBlocks(); initAdder(); initWeekReport(); initAiChat(); }
       if (btn.dataset.tab === 'library')  renderLibraryGrid();
       if (btn.dataset.tab === 'settings') { renderSettingsGoals((window.EE_PLAN_PROFILE || {}).goals || []); renderSchedSummary(); }
@@ -2994,7 +3212,22 @@
 
   /* ─ Monthly Check-in ─ */
   function checkMonthlyCheckin() {
-    const ws = (window.EE_PLAN_PROFILE||{}).workSchedule;
+    const pp = window.EE_PLAN_PROFILE || {};
+    const today = new Date().toISOString().split('T')[0];
+
+    // Check if 30-day plan has ended
+    if (pp.planEndDate && today >= pp.planEndDate) {
+      const modal = document.getElementById('monthModal');
+      modal.querySelector('.month-title').textContent = 'Your 30-day plan is complete!';
+      modal.querySelector('.month-sub').innerHTML = 'You made it 30 days. It is time to review your progress and decide — do you want to build a new plan or keep pushing with this one?';
+      document.getElementById('monthUpdate').textContent = 'Build a New Plan';
+      document.getElementById('monthKeep').textContent = 'Continue This Plan';
+      modal.classList.remove('hidden');
+      return;
+    }
+
+    // Check work-schedule month change
+    const ws = pp.workSchedule;
     if (!ws) return;
     const savedMonth = ws.month || '';
     const thisMonth = new Date().toISOString().slice(0,7);
@@ -3002,10 +3235,27 @@
       document.getElementById('monthModal').classList.remove('hidden');
     }
   }
-  document.getElementById('monthUpdate').onclick = () => { document.getElementById('monthModal').classList.add('hidden'); openSchedModal(); };
+  document.getElementById('monthUpdate').onclick = () => {
+    document.getElementById('monthModal').classList.add('hidden');
+    const pp = window.EE_PLAN_PROFILE || {};
+    if (pp.planEndDate) {
+      // Plan ended — rebuild plan
+      document.dispatchEvent(new CustomEvent('ee:showPlanBuilder', { detail: { name: (window.EE_USER && window.EE_USER.name) || '' } }));
+    } else {
+      openSchedModal();
+    }
+  };
   document.getElementById('monthKeep').onclick = async () => {
     document.getElementById('monthModal').classList.add('hidden');
-    const pp = { ...(window.EE_PLAN_PROFILE||{}), workSchedule: { ...(window.EE_PLAN_PROFILE.workSchedule||{}), month: new Date().toISOString().slice(0,7) } };
+    const pp = { ...(window.EE_PLAN_PROFILE||{}) };
+    if (pp.planEndDate) {
+      // Extend plan another 30 days
+      const newEnd = new Date();
+      newEnd.setDate(newEnd.getDate()+30);
+      pp.planEndDate = newEnd.toISOString().split('T')[0];
+    } else {
+      pp.workSchedule = { ...(pp.workSchedule||{}), month: new Date().toISOString().slice(0,7) };
+    }
     if (window.EE_SAVE_PROFILE) await window.EE_SAVE_PROFILE({ planProfile: pp });
     window.EE_PLAN_PROFILE = pp;
   };
@@ -3522,11 +3772,191 @@
     if (card) renderLibraryCat(card.dataset.cat);
   });
 
+  /* ─ Progress Tab ─ */
+  function renderProgress() {
+    const pp = window.EE_PLAN_PROFILE || {};
+    const userData = window.EE_USER || {};
+    const today = new Date().toISOString().split('T')[0];
+
+    // Streak from local storage (reuse existing streak logic)
+    const streak = parseInt(localStorage.getItem('ee_streak') || '0');
+    const daysActive = parseInt(localStorage.getItem('ee_days_active') || '0');
+    const elStreak = document.getElementById('progStreak');
+    const elActive = document.getElementById('progDaysActive');
+    if (elStreak) elStreak.textContent = streak;
+    if (elActive) elActive.textContent = daysActive;
+
+    // Days into plan / days left
+    if (pp.planStartDate && pp.planEndDate) {
+      const start = new Date(pp.planStartDate);
+      const end = new Date(pp.planEndDate);
+      const now = new Date();
+      const daysIn = Math.max(0, Math.floor((now - start)/(1000*60*60*24)));
+      const daysLeft = Math.max(0, Math.floor((end - now)/(1000*60*60*24)));
+      const total = 30;
+      const pct = Math.min(100, Math.round((daysIn/total)*100));
+      const el = document.getElementById('progDaysPlan'); if(el) el.textContent = daysIn;
+      const elL = document.getElementById('progDaysLeft'); if(elL) elL.textContent = daysLeft;
+      // Ring
+      const ring = document.getElementById('progRingFill');
+      const ringPct = document.getElementById('progRingPct');
+      const ringLbl = document.getElementById('progRingLbl');
+      if (ring) {
+        const circumference = 427;
+        ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
+      }
+      if (ringPct) ringPct.textContent = pct + '%';
+      if (ringLbl) ringLbl.textContent = daysIn + ' of 30 days';
+    }
+
+    // Weekly bars from task data
+    const taskData = JSON.parse(localStorage.getItem('ee_task_data') || '{}');
+    const weekBarsEl = document.getElementById('progWeekBars');
+    if (weekBarsEl) {
+      const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const now = new Date();
+      let barsHtml = '';
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now); d.setDate(d.getDate() - i);
+        const key = d.toISOString().split('T')[0];
+        const done = (taskData[key] && taskData[key].done) || 0;
+        const total2 = (taskData[key] && taskData[key].total) || 0;
+        const pctDay = total2 > 0 ? Math.round((done/total2)*100) : 0;
+        const isToday2 = key === today;
+        const isFuture = d > now;
+        const color = pctDay >= 80 ? '#6bcb77' : pctDay >= 50 ? '#FFD700' : pctDay > 0 ? '#FFA500' : 'rgba(255,255,255,0.1)';
+        barsHtml += `<div class="week-day-row${isToday2?' is-today':''}${isFuture?' is-future':''}">
+          <div class="week-day-lbl">${days[d.getDay()]}</div>
+          <div class="week-day-date">${d.getMonth()+1}/${d.getDate()}</div>
+          <div class="week-bar-wrap"><div class="week-bar-fill" style="width:${isFuture?0:pctDay}%;background:${color};"></div></div>
+          <div class="week-day-pct" style="color:${color}">${isFuture?'—':pctDay+'%'}</div>
+          <div class="week-day-emoji">${isFuture?'':pctDay>=80?'🔥':pctDay>=50?'💪':pctDay>0?'📈':'—'}</div>
+        </div>`;
+      }
+      weekBarsEl.innerHTML = barsHtml;
+    }
+
+    // Pillar progress based on goal type
+    const gt = pp.goalType || 'general';
+    const pillarMap = {
+      weight_loss:  {body:streak>0?Math.min(100,streak*4):0, finance:0, mind:streak>0?Math.min(100,streak*3):0, faith:0},
+      muscle_gain:  {body:streak>0?Math.min(100,streak*4):0, finance:0, mind:streak>0?Math.min(100,streak*2):0, faith:0},
+      discipline:   {body:streak>0?Math.min(100,streak*3):0, finance:0, mind:streak>0?Math.min(100,streak*5):0, faith:0},
+      finance:      {body:0, finance:streak>0?Math.min(100,streak*4):0, mind:streak>0?Math.min(100,streak*2):0, faith:0},
+      faith:        {body:0, finance:0, mind:streak>0?Math.min(100,streak*2):0, faith:streak>0?Math.min(100,streak*5):0},
+      general:      {body:streak>0?Math.min(100,streak*2):0, finance:streak>0?Math.min(100,streak*2):0, mind:streak>0?Math.min(100,streak*2):0, faith:streak>0?Math.min(100,streak):0}
+    };
+    const pillars = pillarMap[gt] || pillarMap['general'];
+    ['body','finance','mind','faith'].forEach(p => {
+      const v = pillars[p];
+      const pEl = document.getElementById('pp-'+p); if(pEl) pEl.textContent = v+'%';
+      const bEl = document.getElementById('ppb-'+p); if(bEl) bEl.style.width = v+'%';
+    });
+  }
+
+  /* ─ Habits Tab ─ */
+  function loadHabits() {
+    const stored = JSON.parse(localStorage.getItem('ee_habits') || '[]');
+    const grid = document.getElementById('habitGrid');
+    const empty = document.getElementById('habitsEmpty');
+    if (!grid) return;
+    if (!stored.length) { grid.innerHTML=''; if(empty)empty.style.display='block'; return; }
+    if(empty)empty.style.display='none';
+    const days = ['S','M','T','W','T','F','S'];
+    const now = new Date();
+    grid.innerHTML = stored.map((h,idx) => {
+      const streak = h.streak || 0;
+      let weekHtml = '';
+      for(let i=6;i>=0;i--) {
+        const d = new Date(now); d.setDate(d.getDate()-i);
+        const key = d.toISOString().split('T')[0];
+        const isDone = (h.done||{})[key];
+        const isToday = i===0;
+        weekHtml += `<div class="habit-day-dot${isDone?' done':''}${isToday?' today':''}" data-idx="${idx}" data-key="${key}">${isDone?'✓':days[d.getDay()]}</div>`;
+      }
+      return `<div class="habit-card">
+        <div class="habit-card-top">
+          <div class="habit-card-icon">${h.icon||'💪'}</div>
+          <div><div class="habit-card-name">${h.name}</div><div class="habit-card-streak">${streak} DAY STREAK 🔥</div></div>
+        </div>
+        <div class="habit-week">${weekHtml}</div>
+      </div>`;
+    }).join('');
+    // Toggle done on click
+    grid.querySelectorAll('.habit-day-dot').forEach(dot => {
+      dot.addEventListener('click', () => {
+        const habits = JSON.parse(localStorage.getItem('ee_habits')||'[]');
+        const i = parseInt(dot.dataset.idx);
+        const k = dot.dataset.key;
+        if (!habits[i]) return;
+        if (!habits[i].done) habits[i].done = {};
+        habits[i].done[k] = !habits[i].done[k];
+        // Recalc streak
+        let s=0; const n2=new Date();
+        for(let d=0;d<60;d++){const dk=new Date(n2);dk.setDate(n2.getDate()-d);const dkey=dk.toISOString().split('T')[0];if(habits[i].done[dkey])s++;else if(d>0)break;}
+        habits[i].streak = s;
+        localStorage.setItem('ee_habits', JSON.stringify(habits));
+        loadHabits();
+      });
+    });
+    // Add empty slot
+    grid.innerHTML += `<div class="habit-add-card" id="habitAddSlot">+ Add another habit</div>`;
+    document.getElementById('habitAddSlot').onclick = () => { document.getElementById('addHabitBtn').click(); };
+  }
+
+  document.getElementById('addHabitBtn').addEventListener('click', () => {
+    const form = document.getElementById('addHabitForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('saveHabitBtn').addEventListener('click', () => {
+    const name = document.getElementById('newHabitName').value.trim();
+    const icon = document.getElementById('newHabitIcon').value;
+    if (!name) return;
+    const habits = JSON.parse(localStorage.getItem('ee_habits')||'[]');
+    habits.push({ name, icon, streak:0, done:{} });
+    localStorage.setItem('ee_habits', JSON.stringify(habits));
+    document.getElementById('newHabitName').value = '';
+    document.getElementById('addHabitForm').style.display = 'none';
+    loadHabits();
+  });
+
+  /* ─ Tab Visibility Toggles ─ */
+  const TAB_KEYS = { toggleProgress:'progress', toggleHabits:'habits', togglePlanner:'planner', toggleLibrary:'library' };
+  function applyTabVisibility() {
+    Object.entries(TAB_KEYS).forEach(([toggleId, tabId]) => {
+      const saved = localStorage.getItem('ee_tab_'+tabId);
+      const isOn = saved === null ? true : saved === '1';
+      const toggle = document.getElementById(toggleId);
+      if (toggle) toggle.checked = isOn;
+      const btnId = tabId === 'progress' ? 'tab-btn-progress' : tabId === 'habits' ? 'tab-btn-habits' : null;
+      // For named tabs by data-tab
+      document.querySelectorAll(`[data-tab="${tabId}"]`).forEach(btn => {
+        btn.style.display = isOn ? '' : 'none';
+      });
+    });
+  }
+  Object.entries(TAB_KEYS).forEach(([toggleId, tabId]) => {
+    const el = document.getElementById(toggleId);
+    if (!el) return;
+    el.addEventListener('change', () => {
+      localStorage.setItem('ee_tab_'+tabId, el.checked ? '1' : '0');
+      applyTabVisibility();
+      // If hidden tab is currently active, switch to Today
+      const activePanel = document.querySelector('.db-panel.active');
+      if (activePanel && activePanel.id === 'tab-'+tabId && !el.checked) {
+        document.querySelector('[data-tab="today"]').click();
+      }
+    });
+  });
+  applyTabVisibility();
+
   /* ─ Init ─ */
   renderToday();
   renderCalendar();
   renderDayBlocks();
   renderLibraryGrid();
+  renderProgress();
+  loadHabits();
   setTimeout(() => {
     checkMonthlyCheckin();
     const ws = (window.EE_PLAN_PROFILE||{}).workSchedule;
