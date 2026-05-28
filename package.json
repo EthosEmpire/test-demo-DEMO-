@@ -8,7 +8,7 @@
     "dev": "echo \"Use VS Code Live Server or upload to GitHub Pages to preview the site.\""
   },
   "dependencies": {
-    "firebase-admin": "^12.3.0",
-    "stripe": "^16.0.0"
+    "firebase-admin": "^12.7.0",
+    "stripe": "^16.12.0"
   }
 }

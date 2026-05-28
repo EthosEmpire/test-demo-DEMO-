@@ -1449,7 +1449,7 @@
       var fetchPromise = fetch(N8N_WEBHOOK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: uid, message: message, sessionId: pbSessionId, state: pbState })
+        body: JSON.stringify({ uid: uid, message: message })
       });
       var timeoutPromise = new Promise(function(_, reject) {
         timeoutId = setTimeout(function() { timedOut = true; reject(new Error('timeout')); }, 20000);
