@@ -1657,21 +1657,23 @@
     }
 
     function sendToN8n(message) {
+      if (!window.EE_USER || !window.EE_USER.uid) {
+        window.location.replace('login.html'); return;
+      }
       pbSending = true;
       pbLastMsg = message;
       setInputDisabled(true);
       var typingRow = showTyping();
-      var uid = (window.EE_USER && window.EE_USER.uid) ? window.EE_USER.uid : '';
+      var uid = window.EE_USER.uid;
       var timedOut = false;
       var timeoutId;
 
       var fetchPromise = (async function() {
         var idToken = '';
         try {
-          if (window.EE_USER && window.EE_USER.firebaseUser && window.EE_USER.firebaseUser.getIdToken) {
-            idToken = await window.EE_USER.firebaseUser.getIdToken();
-          }
+          idToken = await window.EE_USER.firebaseUser.getIdToken(true);
         } catch(_) {}
+        if (!idToken) { window.location.replace('login.html'); return Promise.reject(new Error('no_token')); }
         return fetch(N8N_WEBHOOK, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1690,15 +1692,19 @@
         })
         .then(function(data) {
           typingRow.remove();
+          if (data.error === 'invalid_token' || data.error === 'auth_required') {
+            window.location.replace('login.html'); return;
+          }
           if (data.state) pbState = data.state;
           if (data.plan) pbPendingPlan = data.plan;
           if (data.reply) addAiBubble(data.reply, data.buttons || []);
         })
-        .catch(function() {
+        .catch(function(err) {
           typingRow.remove();
+          if (err && err.message === 'no_token') return;
           var errMsg = timedOut
             ? 'The plan builder timed out. Make sure your n8n workflow is active and try again.'
-            : 'Could not reach the plan builder. Make sure the n8n workflow is active and the Cloudflare Worker is deployed.';
+            : 'Could not reach the plan builder. Check your connection and try again.';
           addAiBubble(errMsg, ['Try Again']);
         })
         .then(function() {
@@ -3089,10 +3095,14 @@
     document.getElementById('aiChatMessages').appendChild(typingEl);
     document.getElementById('aiChatMessages').scrollTop = 9999;
 
+    if (!window.EE_USER || !window.EE_USER.uid) {
+      window.location.replace('login.html'); return;
+    }
     try {
       let idToken = '';
-      try { if (window.EE_USER?.firebaseUser?.getIdToken) idToken = await window.EE_USER.firebaseUser.getIdToken(); } catch(_) {}
-      const uid = window.EE_USER?.uid || '';
+      try { idToken = await window.EE_USER.firebaseUser.getIdToken(true); } catch(_) {}
+      if (!idToken) { window.location.replace('login.html'); return; }
+      const uid = window.EE_USER.uid;
       const sessionId = window._aiSessionId || (window._aiSessionId = 'ais_' + Date.now());
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 20000);
@@ -3105,6 +3115,9 @@
       clearTimeout(timer);
       const data = await resp.json();
       typingEl.remove();
+      if (data.error === 'invalid_token' || data.error === 'auth_required') {
+        window.location.replace('login.html'); return;
+      }
       const reply = data.reply || 'No response. Try again.';
       aiMessages.push({ role:'assistant', content: reply });
     } catch (err) {
@@ -3112,7 +3125,7 @@
       const isAbort = err && err.name === 'AbortError';
       aiMessages.push({ role:'assistant', content: isAbort
         ? 'That took too long. Check your connection and try again.'
-        : 'Could not reach the AI coach. Make sure the Cloudflare Worker is deployed and n8n is active.' });
+        : 'Could not reach the AI coach. Check your connection and try again.' });
     }
     renderAiMessages();
     document.getElementById('aiChatSend').disabled = false;
