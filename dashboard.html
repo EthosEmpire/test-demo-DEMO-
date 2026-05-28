@@ -1670,10 +1670,10 @@
 
       var fetchPromise = (async function() {
         var idToken = '';
-        try {
-          idToken = await window.EE_USER.firebaseUser.getIdToken(true);
-        } catch(_) {}
-        if (!idToken) { window.location.replace('login.html'); return Promise.reject(new Error('no_token')); }
+        try { idToken = await window.EE_USER.firebaseUser.getIdToken(true); } catch(_) {}
+        if (!idToken) {
+          try { idToken = await window.EE_USER.firebaseUser.getIdToken(); } catch(_) {}
+        }
         return fetch(N8N_WEBHOOK, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1701,7 +1701,6 @@
         })
         .catch(function(err) {
           typingRow.remove();
-          if (err && err.message === 'no_token') return;
           var errMsg = timedOut
             ? 'The plan builder timed out. Make sure your n8n workflow is active and try again.'
             : 'Could not reach the plan builder. Check your connection and try again.';
@@ -3101,7 +3100,9 @@
     try {
       let idToken = '';
       try { idToken = await window.EE_USER.firebaseUser.getIdToken(true); } catch(_) {}
-      if (!idToken) { window.location.replace('login.html'); return; }
+      if (!idToken) {
+        try { idToken = await window.EE_USER.firebaseUser.getIdToken(); } catch(_) {}
+      }
       const uid = window.EE_USER.uid;
       const sessionId = window._aiSessionId || (window._aiSessionId = 'ais_' + Date.now());
       const controller = new AbortController();
