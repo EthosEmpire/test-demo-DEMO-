@@ -3,9 +3,13 @@
 // Proxies HTTPS requests from the frontend to HTTP n8n server
 // Deploy at: Workers & Pages → Create Worker → paste this code
 // Route:     api.ethosempire.org/* → this worker
+//
+// DNS REQUIRED: Add an A record in Cloudflare DNS:
+//   Name: n8n  |  Value: 163.192.34.151  |  Proxy: OFF (gray cloud)
+// Cloudflare Workers cannot fetch raw IP addresses — must use hostname.
 // ═══════════════════════════════════════════════════════════════
 
-const N8N_BASE = 'http://163.192.34.151:5678';
+const N8N_BASE = 'http://n8n.ethosempire.org:5678';
 
 export default {
   async fetch(request, env) {
