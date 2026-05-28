@@ -726,12 +726,8 @@
       @keyframes pb-glow-spin{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
       @keyframes pb-dot-bounce{0%,80%,100%{transform:scale(0.4);opacity:.3}40%{transform:scale(1);opacity:1}}
       @keyframes pb-fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-      @keyframes pb-check-pop{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
-      @keyframes pb-orbit{to{transform:rotate(360deg)}}
       #pbWelcomeScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px 80px;text-align:center;max-width:700px;margin:0 auto;}
       #pbChatScreen{display:none;flex-direction:column;height:100vh;max-width:700px;margin:0 auto;}
-      #pbBuildingScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;text-align:center;}
-      #pbReadyScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;text-align:center;}
       .pb-logo-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:44px;}
       .pb-logo-row img{width:36px;height:36px;border-radius:9px;}
       .pb-logo-row span{font-size:.72rem;font-weight:900;letter-spacing:.22em;color:var(--gold-3);}
@@ -770,10 +766,6 @@
       .pb-step-chip:disabled{opacity:.4;pointer-events:none;}
       .pb-cta-chip{background:rgba(255,215,0,.08)!important;border-color:rgba(255,215,0,.3)!important;color:var(--gold-3)!important;}
       .pb-chat-foot{padding:12px 20px 28px;border-top:1px solid rgba(255,255,255,.05);flex-shrink:0;}
-      .pb-orbit{width:72px;height:72px;border-radius:50%;border:3px solid transparent;border-top-color:var(--gold-3);border-right-color:rgba(66,133,244,.45);animation:pb-orbit 1.1s linear infinite;margin:0 auto 32px;}
-      .pb-check-circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 28px;animation:pb-check-pop .5s cubic-bezier(.34,1.56,.64,1);}
-      .pb-enter-btn{margin-top:36px;padding:16px 52px;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:50px;color:#000;font-size:.95rem;font-weight:900;letter-spacing:.1em;cursor:pointer;transition:transform .2s,opacity .2s;font-family:inherit;}
-      .pb-enter-btn:hover{transform:translateY(-2px);opacity:.9;}
     </style>
 
     <!-- Welcome Screen -->
@@ -817,20 +809,6 @@
       </div>
     </div>
 
-    <!-- Building Screen -->
-    <div id="pbBuildingScreen">
-      <div class="pb-orbit"></div>
-      <div style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:14px;">Building your Empire plan...</div>
-      <div id="pbBuildMsg" style="font-size:.9rem;color:rgba(255,255,255,.38);max-width:340px;line-height:1.7;min-height:48px;"></div>
-    </div>
-
-    <!-- Ready Screen -->
-    <div id="pbReadyScreen">
-      <div class="pb-check-circle">✓</div>
-      <div style="font-size:1.9rem;font-weight:900;color:#fff;margin-bottom:14px;">Your plan is ready.</div>
-      <div id="pbReadyMsg" style="font-size:.92rem;color:rgba(255,255,255,.48);max-width:500px;line-height:1.75;"></div>
-      <button class="pb-enter-btn" id="pbEnterBtn">Enter Your Dashboard &#10148;</button>
-    </div>
   </div>
 
   <!-- Paused/inactive banner -->
@@ -1396,256 +1374,195 @@
     });
   </script>
 
-  <!-- ══ Plan Builder Logic ══ -->
+  <!-- ══ Plan Builder Logic (n8n webhook) ══ -->
   <script>
   (function() {
-    const STEPS = [
-      {
-        key: 'goals',
-        msg: (n) => `Hey ${n || 'there'}! I\'m your Ethos Empire AI Coach.\n\nI\'m going to build your complete personalized plan right now. What are you here to build? Pick everything that applies — you can choose more than one.`,
-        chips: ['Full Life Transformation','Body & Fitness','Wealth & Finance','Mindset & Discipline','Faith & Purpose','Relationships'],
-        multi: true,
-        cta: 'These are my goals →'
-      },
-      {
-        key: 'experience',
-        msg: () => 'Got it! Now tell me — where are you starting from right now?',
-        chips: ['Just getting started','Tried before but struggled','Have some good habits','Consistent — want to level up'],
-        multi: false
-      },
-      {
-        key: 'wakeTime',
-        msg: () => 'Perfect. What time do you usually wake up?',
-        chips: ['5–6 AM — Early riser','7–8 AM — Standard morning','9–10 AM — Late start','No fixed routine yet'],
-        multi: false
-      },
-      {
-        key: 'mainGoal',
-        msg: () => 'Last one — what\'s your #1 goal in the next 90 days? Be specific.',
-        type: 'text',
-        placeholder: 'e.g. Lose 20 lbs, save $5,000, build a daily routine...'
-      }
-    ];
+    // ── Set your n8n webhook URL here ──
+    var N8N_WEBHOOK = 'https://YOUR-N8N-INSTANCE.app.n8n.cloud/webhook/plan-builder';
 
-    let pbStep = 0;
-    const pbData = { goals: [], experience: '', wakeTime: '', mainGoal: '' };
+    var pbState = {};
+    var pbSessionId = 'sess_' + Date.now();
+    var pbPendingPlan = null;
+    var pbSending = false;
+    var pbLastMsg = '';
 
     function initPB(name) {
-      const ov = document.getElementById('pbOverlay');
+      var ov = document.getElementById('pbOverlay');
       if (!ov) return;
       ov.style.display = 'block';
-
-      const el = document.getElementById('pbGreetName');
+      var el = document.getElementById('pbGreetName');
       if (el) el.textContent = (name || 'there').split(' ')[0];
 
       document.getElementById('pbWelcomeSend').onclick = sendFromWelcome;
-      document.getElementById('pbWelcomeInput').addEventListener('keydown', (e) => {
+      document.getElementById('pbWelcomeInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendFromWelcome(); }
       });
-      document.getElementById('pbWelcomeChips').addEventListener('click', (e) => {
-        const chip = e.target.closest('.pb-welcome-chip');
+      document.getElementById('pbWelcomeChips').addEventListener('click', function(e) {
+        var chip = e.target.closest('.pb-welcome-chip');
         if (!chip) return;
-        pbData.goals = [chip.dataset.val];
-        gotoChat(chip.dataset.val);
-        pbStep = 1;
-        setTimeout(() => showStep(pbStep), 900);
+        var val = chip.dataset.val;
+        gotoChat(val, function() { sendToN8n(val); });
       });
       document.getElementById('pbChatSend').onclick = sendChatMsg;
-      document.getElementById('pbChatInput').addEventListener('keydown', (e) => {
+      document.getElementById('pbChatInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
       });
-      document.getElementById('pbEnterBtn').onclick = pbEnterDash;
     }
 
     function sendFromWelcome() {
-      const txt = document.getElementById('pbWelcomeInput').value.trim();
+      var txt = document.getElementById('pbWelcomeInput').value.trim();
       if (!txt) return;
-      gotoChat(txt);
-      pbStep = 0;
-      setTimeout(() => showStep(pbStep), 900);
+      document.getElementById('pbWelcomeInput').value = '';
+      gotoChat(txt, function() { sendToN8n(txt); });
     }
 
-    function gotoChat(firstMsg) {
-      const ws = document.getElementById('pbWelcomeScreen');
+    function sendChatMsg() {
+      if (pbSending) return;
+      var inp = document.getElementById('pbChatInput');
+      var val = inp.value.trim();
+      if (!val) return;
+      inp.value = '';
+      addUserBubble(val);
+      sendToN8n(val);
+    }
+
+    function gotoChat(firstMsg, callback) {
+      var ws = document.getElementById('pbWelcomeScreen');
       ws.style.cssText = 'opacity:0;transition:opacity .3s;pointer-events:none;display:flex;';
-      setTimeout(() => {
+      setTimeout(function() {
         ws.style.display = 'none';
         document.getElementById('pbChatScreen').style.display = 'flex';
         addUserBubble(firstMsg);
+        if (callback) callback();
       }, 300);
     }
 
-    function showStep(idx) {
-      const s = STEPS[idx];
-      if (!s) { pbBuild(); return; }
-      showTyping().then(() => {
-        const n = (window.EE_USER?.name || '').split(' ')[0];
-        addAiBubble(s.msg(n), s);
-        if (s.type === 'text') {
-          const inp = document.getElementById('pbChatInput');
-          inp.placeholder = s.placeholder || 'Type your answer...';
-          inp.focus();
-        }
+    function sendToN8n(message) {
+      pbSending = true;
+      pbLastMsg = message;
+      setInputDisabled(true);
+      var typingRow = showTyping();
+      var uid = (window.EE_USER && window.EE_USER.uid) ? window.EE_USER.uid : '';
+      var timedOut = false;
+      var timeoutId;
+
+      var fetchPromise = fetch(N8N_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: uid, message: message, sessionId: pbSessionId, state: pbState })
       });
+      var timeoutPromise = new Promise(function(_, reject) {
+        timeoutId = setTimeout(function() { timedOut = true; reject(new Error('timeout')); }, 20000);
+      });
+
+      Promise.race([fetchPromise, timeoutPromise])
+        .then(function(res) {
+          clearTimeout(timeoutId);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(data) {
+          typingRow.remove();
+          if (data.state) pbState = data.state;
+          if (data.plan) pbPendingPlan = data.plan;
+          if (data.reply) addAiBubble(data.reply, data.buttons || []);
+        })
+        .catch(function() {
+          typingRow.remove();
+          var errMsg = timedOut
+            ? 'The plan builder timed out. Make sure your n8n workflow is active and try again.'
+            : 'Could not reach the plan builder. Check that your n8n workflow is running and the webhook URL is set correctly.';
+          addAiBubble(errMsg, ['Try Again']);
+        })
+        .then(function() {
+          pbSending = false;
+          setInputDisabled(false);
+        });
     }
 
     function showTyping() {
-      return new Promise(res => {
-        const msgs = document.getElementById('pbMsgs');
-        const row = document.createElement('div');
-        row.className = 'pb-row-ai'; row.id = 'pbTypingRow';
-        row.innerHTML = '<div class="pb-avatar">EE</div><div class="pb-typing"><div class="pb-dot"></div><div class="pb-dot"></div><div class="pb-dot"></div></div>';
-        msgs.appendChild(row); pbScroll();
-        setTimeout(() => { const t = document.getElementById('pbTypingRow'); if (t) t.remove(); res(); }, 1100);
-      });
+      var msgs = document.getElementById('pbMsgs');
+      var row = document.createElement('div');
+      row.className = 'pb-row-ai';
+      row.innerHTML = '<div class="pb-avatar">EE</div><div class="pb-typing"><div class="pb-dot"></div><div class="pb-dot"></div><div class="pb-dot"></div></div>';
+      msgs.appendChild(row);
+      pbScroll();
+      return row;
     }
 
     function pbMd(raw) {
-      let s = String(raw||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      var s = String(raw || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       s = s.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');
       s = s.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
       s = s.replace(/`([^`\n]+)`/g,'<code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;font-size:0.85em;">$1</code>');
-      const lines = s.split('\n');
-      let html = '', inUl = false, inOl = false;
-      for (const line of lines) {
-        const ul = line.match(/^[\-\*•] (.+)/), ol = line.match(/^\d+\. (.+)/), h = line.match(/^#{1,3} (.+)/);
-        if (ul) { if (!inUl){html+='<ul style="margin:5px 0 5px 16px;padding:0;">'; inUl=true;} if(inOl){html+='</ol>';inOl=false;} html+=`<li>${ul[1]}</li>`; }
-        else if (ol) { if (!inOl){html+='<ol style="margin:5px 0 5px 16px;padding:0;">'; inOl=true;} if(inUl){html+='</ul>';inUl=false;} html+=`<li>${ol[1]}</li>`; }
-        else { if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} html += h ? `<div style="font-weight:800;color:#fff;margin:8px 0 3px;">${h[1]}</div>` : line.trim()==='' ? '<br>' : line+'<br>'; }
+      var lines = s.split('\n');
+      var html = '', inUl = false, inOl = false;
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var ul = line.match(/^[\-\*•] (.+)/), ol = line.match(/^\d+\. (.+)/), h = line.match(/^#{1,3} (.+)/);
+        if (ul) { if (!inUl){html+='<ul style="margin:5px 0 5px 16px;padding:0;">'; inUl=true;} if(inOl){html+='</ol>';inOl=false;} html+='<li>'+ul[1]+'</li>'; }
+        else if (ol) { if (!inOl){html+='<ol style="margin:5px 0 5px 16px;padding:0;">'; inOl=true;} if(inUl){html+='</ul>';inUl=false;} html+='<li>'+ol[1]+'</li>'; }
+        else { if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} html += h ? '<div style="font-weight:800;color:#fff;margin:8px 0 3px;">'+h[1]+'</div>' : line.trim()==='' ? '<br>' : line+'<br>'; }
       }
       if(inUl)html+='</ul>'; if(inOl)html+='</ol>';
       return html.replace(/(<br>\s*){3,}/g,'<br><br>').replace(/(<br>)+$/,'');
     }
 
-    function addAiBubble(text, s) {
-      const msgs = document.getElementById('pbMsgs');
-      const row = document.createElement('div');
+    function addAiBubble(text, buttons) {
+      var msgs = document.getElementById('pbMsgs');
+      var row = document.createElement('div');
       row.className = 'pb-row-ai';
-      let chips = '';
-      if (s?.chips) {
-        chips = `<div class="pb-step-chips" data-key="${s.key}" data-multi="${!!s.multi}">
-          ${s.chips.map(c => `<button class="pb-step-chip" data-val="${esc(c)}">${esc(c)}</button>`).join('')}
-          ${s.multi ? `<button class="pb-step-chip pb-cta-chip">${s.cta || 'Continue →'}</button>` : ''}
-        </div>`;
+      var btnsHtml = '';
+      if (buttons && buttons.length) {
+        btnsHtml = '<div class="pb-step-chips" style="margin-top:12px;">' +
+          buttons.map(function(b) {
+            var cls = 'pb-step-chip' + (b === 'Execute Plan' ? ' pb-cta-chip' : '');
+            return '<button class="' + cls + '" data-action="' + esc(b) + '">' + esc(b) + '</button>';
+          }).join('') + '</div>';
       }
-      row.innerHTML = `<div class="pb-avatar">EE</div><div><div class="pb-bubble">${pbMd(text)}</div>${chips}</div>`;
-      const cc = row.querySelector('.pb-step-chips');
-      if (cc) cc.addEventListener('click', onChip);
-      msgs.appendChild(row); pbScroll();
+      row.innerHTML = '<div class="pb-avatar">EE</div><div><div class="pb-bubble">' + pbMd(text) + '</div>' + btnsHtml + '</div>';
+      row.querySelectorAll('.pb-step-chip').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (pbSending) return;
+          var action = btn.dataset.action;
+          row.querySelectorAll('.pb-step-chip').forEach(function(b) { b.disabled = true; });
+          btn.classList.add('pb-sel');
+          if (action === 'Execute Plan') {
+            addUserBubble('Execute Plan');
+            executePlan(btn);
+          } else if (action === 'Try Again') {
+            sendToN8n(pbLastMsg);
+          } else {
+            addUserBubble(action);
+            sendToN8n(action);
+          }
+        });
+      });
+      msgs.appendChild(row);
+      pbScroll();
     }
 
-    function onChip(e) {
-      const chip = e.target.closest('.pb-step-chip');
-      if (!chip || chip.disabled) return;
-      const cc = e.currentTarget;
-      const isMulti = cc.dataset.multi === 'true';
-      const isCta = chip.classList.contains('pb-cta-chip');
-      const key = cc.dataset.key;
-      if (isCta) {
-        const sel = [...cc.querySelectorAll('.pb-sel')].map(c => c.dataset.val);
-        if (!sel.length) return;
-        pbData[key] = sel;
-        lockChips(cc); addUserBubble(sel.join(', '));
-        pbStep++; setTimeout(() => showStep(pbStep), 800);
-      } else if (isMulti) {
-        chip.classList.toggle('pb-sel');
-      } else {
-        pbData[key] = chip.dataset.val;
-        lockChips(cc); chip.classList.add('pb-sel');
-        addUserBubble(chip.dataset.val);
-        pbStep++; setTimeout(() => showStep(pbStep), 800);
+    async function executePlan(btn) {
+      if (!pbPendingPlan) {
+        addAiBubble('No plan found yet — please complete the full flow first.', ['Restart']);
+        return;
       }
-    }
-
-    function lockChips(cc) { cc.querySelectorAll('.pb-step-chip').forEach(c => { c.disabled = true; }); }
-
-    function addUserBubble(txt) {
-      const msgs = document.getElementById('pbMsgs');
-      const row = document.createElement('div');
-      row.className = 'pb-row-user';
-      row.innerHTML = `<div class="pb-bubble">${esc(txt)}</div>`;
-      msgs.appendChild(row); pbScroll();
-    }
-
-    function sendChatMsg() {
-      const s = STEPS[pbStep];
-      if (!s || s.type !== 'text') return;
-      const val = document.getElementById('pbChatInput').value.trim();
-      if (!val) return;
-      document.getElementById('pbChatInput').value = '';
-      pbData[s.key] = val;
-      addUserBubble(val);
-      pbStep++;
-      setTimeout(pbBuild, 400);
-    }
-
-    function pbScroll() {
-      const m = document.getElementById('pbMsgs');
-      if (m) setTimeout(() => { m.scrollTop = m.scrollHeight; }, 60);
-    }
-
-    function esc(s) {
-      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    async function pbBuild() {
-      document.getElementById('pbChatScreen').style.display = 'none';
-      const bs = document.getElementById('pbBuildingScreen');
-      bs.style.display = 'flex';
-      const msgs = ['Analyzing your goals...','Mapping your schedule...','Calibrating your roadmap...','Finalizing your plan...'];
-      let i = 0;
-      const el = document.getElementById('pbBuildMsg');
-      const iv = setInterval(() => { if (el && i < msgs.length) el.textContent = msgs[i++]; }, 900);
-
-      const planProfile = {
-        goals: pbData.goals.length ? pbData.goals : ['Full Life Transformation'],
-        experience: pbData.experience,
-        wakeTime: pbData.wakeTime,
-        mainGoal: pbData.mainGoal,
-        builtAt: new Date().toISOString()
-      };
-
-      let readyMsg = 'Your personalized Empire plan is built and locked in. Every part of your dashboard is now calibrated to your goals. It\'s time to get to work.';
-      try {
-        const token = window.EE_USER?.firebaseUser?.getIdToken ? await window.EE_USER.firebaseUser.getIdToken().catch(() => null) : null;
-        const res = await Promise.race([
-          fetch('/.netlify/functions/ai-chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-            body: JSON.stringify({
-              messages: [{ role: 'user', content: `My goals: ${planProfile.goals.join(', ')}. Experience: ${planProfile.experience}. Wake time: ${planProfile.wakeTime}. 90-day goal: ${planProfile.mainGoal}. Write 2 motivating sentences about the specific Empire plan you just built for me. Be direct and specific to my goals.` }],
-              userName: (window.EE_USER?.name || '').split(' ')[0],
-              planProfile
-            })
-          }),
-          new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 5000))
-        ]);
-        if (res.ok) { const d = await res.json(); if (d.reply) readyMsg = d.reply; }
-      } catch {}
-
+      btn.textContent = 'Saving...';
       try {
         if (window.EE_SAVE_PROFILE) {
-          await window.EE_SAVE_PROFILE({ planProfile });
-          window.EE_PLAN_PROFILE = planProfile;
+          await window.EE_SAVE_PROFILE({ planProfile: pbPendingPlan });
+          window.EE_PLAN_PROFILE = pbPendingPlan;
         }
-      } catch {}
-
-      clearInterval(iv);
-      setTimeout(() => {
-        bs.style.display = 'none';
-        const rs = document.getElementById('pbReadyScreen');
-        const rm = document.getElementById('pbReadyMsg');
-        if (rm) rm.textContent = readyMsg;
-        rs.style.display = 'flex';
-      }, 800);
+      } catch(err) {}
+      setTimeout(function() { pbEnterDash(); }, 600);
     }
 
     function pbEnterDash() {
-      const ov = document.getElementById('pbOverlay');
+      var ov = document.getElementById('pbOverlay');
       if (!ov) return;
       ov.style.transition = 'opacity .5s';
       ov.style.opacity = '0';
-      setTimeout(() => {
+      setTimeout(function() {
         ov.remove();
         if (typeof window.renderMyPlan === 'function') window.renderMyPlan(window.EE_PLAN_PROFILE);
         if (typeof window.renderTodayFocus === 'function') window.renderTodayFocus();
@@ -1653,7 +1570,32 @@
       }, 500);
     }
 
-    document.addEventListener('ee:showPlanBuilder', (e) => { initPB(e.detail?.name || ''); });
+    function addUserBubble(txt) {
+      var msgs = document.getElementById('pbMsgs');
+      var row = document.createElement('div');
+      row.className = 'pb-row-user';
+      row.innerHTML = '<div class="pb-bubble">' + esc(txt) + '</div>';
+      msgs.appendChild(row);
+      pbScroll();
+    }
+
+    function pbScroll() {
+      var m = document.getElementById('pbMsgs');
+      if (m) setTimeout(function() { m.scrollTop = m.scrollHeight; }, 60);
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function setInputDisabled(disabled) {
+      var send = document.getElementById('pbChatSend');
+      var inp = document.getElementById('pbChatInput');
+      if (send) send.disabled = disabled;
+      if (inp) inp.disabled = disabled;
+    }
+
+    document.addEventListener('ee:showPlanBuilder', function(e) { initPB(e.detail ? e.detail.name : ''); });
   })();
   </script>
 

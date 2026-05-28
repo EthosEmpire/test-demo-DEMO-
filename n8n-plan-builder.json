@@ -1,0 +1,86 @@
+{
+  "name": "Empire Plan Builder",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "plan-builder",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "ee-webhook-001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "ee-plan-builder"
+    },
+    {
+      "parameters": {
+        "jsCode": "var inputData = $input.first().json;\nvar body = (inputData.body !== undefined) ? inputData.body : inputData;\nvar message = body.message || '';\nvar uid = body.uid || '';\nvar inState = body.state || {};\nvar NL = '\\n';\n\nvar state = {\n  step: inState.step || null,\n  goals: inState.goals || [],\n  experience: inState.experience || '',\n  wakeTime: inState.wakeTime || '',\n  mainGoal: inState.mainGoal || '',\n  goalType: inState.goalType || 'general',\n  builtAt: inState.builtAt || ''\n};\n\nfunction detectGoalType(text) {\n  var t = (text || '').toLowerCase();\n  if (t.indexOf('weight') !== -1 || t.indexOf('fat') !== -1 || t.indexOf('slim') !== -1) return 'weight_loss';\n  if (t.indexOf('muscle') !== -1 || t.indexOf('gym') !== -1 || t.indexOf('bulk') !== -1 || t.indexOf('fitness') !== -1 || t.indexOf('body') !== -1) return 'muscle_gain';\n  if (t.indexOf('discipline') !== -1 || t.indexOf('habit') !== -1 || t.indexOf('routine') !== -1 || t.indexOf('mindset') !== -1) return 'discipline';\n  if (t.indexOf('financ') !== -1 || t.indexOf('money') !== -1 || t.indexOf('wealth') !== -1 || t.indexOf('invest') !== -1) return 'finance';\n  if (t.indexOf('faith') !== -1 || t.indexOf('god') !== -1 || t.indexOf('spirit') !== -1 || t.indexOf('purpose') !== -1) return 'faith';\n  if (t.indexOf('relationship') !== -1 || t.indexOf('love') !== -1 || t.indexOf('social') !== -1) return 'relationship';\n  if (t.indexOf('skin') !== -1 || t.indexOf('glow') !== -1 || t.indexOf('beauty') !== -1 || t.indexOf('hair') !== -1) return 'glow_up';\n  return 'general';\n}\n\nvar GOAL_CHIPS = {\n  weight_loss: ['Lose 10-20 lbs', 'Lose 20-50 lbs', 'Maintain and tone', 'Full body recomp'],\n  muscle_gain: ['Build muscle mass', 'Increase strength', 'Athletic performance', 'Body transformation'],\n  discipline: ['Morning routine', 'Eliminate bad habits', 'Daily schedule', 'Mental toughness'],\n  finance: ['Save $1,000-$5,000', 'Pay off debt', 'Build emergency fund', 'Start investing'],\n  faith: ['Daily prayer', 'Study scripture', 'Find community', 'Live with purpose'],\n  relationship: ['Improve communication', 'Meet new people', 'Strengthen bonds', 'Self-love first'],\n  glow_up: ['Clear my skin', 'Build a style', 'Hair and body care', 'Confidence upgrade'],\n  general: ['Body and Fitness', 'Wealth and Finance', 'Mindset and Discipline', 'Faith and Purpose', 'Relationships', 'Glow Up']\n};\n\nvar EXP_CHIPS = ['Just getting started', 'Tried before, but struggled', 'Have some good habits', 'Consistent - want to level up'];\nvar WAKE_CHIPS = ['5-6 AM - Early riser', '7-8 AM - Standard morning', '9-10 AM - Late start', 'No fixed routine yet'];\n\nfunction generatePlan(s) {\n  var gt = s.goalType || 'general';\n  var early = (s.wakeTime || '').indexOf('5') !== -1;\n  var beginner = (s.experience || '').toLowerCase().indexOf('start') !== -1 || (s.experience || '').toLowerCase().indexOf('struggle') !== -1;\n  var wake = early ? '5:30 AM' : '7:00 AM';\n  var mins = beginner ? '10-15' : '20-30';\n\n  if (gt === 'weight_loss') {\n    return ['**Your 90-Day Weight Loss Empire Plan**', '',\n      '**Morning Block** (' + wake + ')',\n      '- 20-30 min fasted cardio or brisk walk',\n      '- High-protein breakfast: eggs, Greek yogurt, or protein shake',\n      '- 16 oz water immediately on wake', '',\n      '**Training** (4x per week)',\n      '- Mon and Thu: Compound strength - squats, deadlifts, rows',\n      '- Tue and Sat: Cardio - HIIT 20 min or steady-state 40 min',\n      '- Progressive overload every week', '',\n      '**Nutrition**',\n      '- 300-500 calorie deficit daily',\n      '- Protein: 0.8-1g per lb of bodyweight',\n      '- Meal prep every Sunday',\n      '- Eliminate liquid calories', '',\n      '**Evening**',\n      '- 10-min walk after dinner',\n      '- Sleep by 10:30 PM - recovery drives fat loss',\n      '- Log your wins each night'].join(NL);\n  }\n  if (gt === 'muscle_gain') {\n    return ['**Your 90-Day Muscle Building Empire Plan**', '',\n      '**Training Split** (4-5x per week)',\n      '- Day 1 - Push: chest, shoulders, triceps',\n      '- Day 2 - Pull: back, biceps',\n      '- Day 3 - Legs: quads, hamstrings, glutes',\n      '- Day 4 - Rest or active recovery',\n      '- Day 5 - Full body or weak-point focus', '',\n      '**Nutrition**',\n      '- 250-300 calorie surplus above TDEE',\n      '- Protein: 1g per lb of bodyweight - non-negotiable',\n      '- Pre-workout meal 60-90 min before lifting',\n      '- Post-workout protein within 30 min', '',\n      '**Recovery**',\n      '- Sleep 7-9 hours - muscle is built while you rest',\n      '- 1 gallon of water daily',\n      '- Deload week every 6-8 weeks'].join(NL);\n  }\n  if (gt === 'discipline') {\n    return ['**Your 90-Day Discipline Empire Plan**', '',\n      '**Morning Stack** (' + wake + ')',\n      '- Same wake time every day - no snooze, ever',\n      '- Make your bed immediately',\n      '- ' + mins + ' min of movement',\n      '- Cold shower - wake up your nervous system',\n      '- Journal: 3 priorities before you check your phone', '',\n      '**Deep Work Protocol**',\n      '- No social media before noon',\n      '- 90-min focused work blocks (phone in another room)',\n      '- One hard task completed before 10 AM every day', '',\n      '**Evening**',\n      '- Review the day: what did you build? What did you avoid?',\n      '- Set tomorrow priorities tonight',\n      '- Same bedtime every night'].join(NL);\n  }\n  if (gt === 'finance') {\n    return ['**Your 90-Day Wealth Building Empire Plan**', '',\n      '**Week 1-2: Audit Everything**',\n      '- Track every dollar for 14 days',\n      '- Cancel unused subscriptions',\n      '- Open a high-yield savings account', '',\n      '**Month 1: Foundation**',\n      '- Build $1,000 emergency starter fund',\n      '- Automate savings on payday - pay yourself first',\n      '- Cut your top 3 unnecessary expenses', '',\n      '**Month 2: Momentum**',\n      '- Side hustle target: $200-500 extra income this month',\n      '- Open a Roth IRA if eligible',\n      '- Start index fund investing ($25/mo minimum)', '',\n      '**Month 3: Systems**',\n      '- Emergency fund growing toward $3,000',\n      '- All bills on autopay',\n      '- Net worth tracked monthly'].join(NL);\n  }\n  if (gt === 'faith') {\n    return ['**Your 90-Day Faith and Purpose Empire Plan**', '',\n      '**Daily Practice**',\n      '- Morning: 10-15 min prayer or meditation',\n      '- Read one chapter of scripture or devotional',\n      '- Write 3 specific gratitudes', '',\n      '**Weekly Rhythm**',\n      '- Attend service or community gathering',\n      '- Faith journaling on Sundays',\n      '- One intentional act of service per week', '',\n      '**90-Day Journey**',\n      '- Month 1: Lock in your daily prayer habit',\n      '- Month 2: Deep-study one book of scripture',\n      '- Month 3: Lead or mentor someone else'].join(NL);\n  }\n  if (gt === 'relationship') {\n    return ['**Your 90-Day Relationship Empire Plan**', '',\n      '**Daily Habits**',\n      '- One genuine phone-free conversation per day',\n      '- Express specific appreciation to someone',\n      '- 5-min self-check: how are you showing up?', '',\n      '**Weekly Actions**',\n      '- Intentional quality time (phones away)',\n      '- Reach out to someone you have been distant from',\n      '- Journal: what kind of partner or friend am I building?', '',\n      '**90-Day Arc**',\n      '- Month 1: Communication audit',\n      '- Month 2: Vulnerability practice',\n      '- Month 3: Deepen 2-3 key relationships intentionally'].join(NL);\n  }\n  if (gt === 'glow_up') {\n    return ['**Your 90-Day Glow Up Empire Plan**', '',\n      '**Skin Routine**',\n      '- AM: Cleanser - Vitamin C serum - SPF 30+',\n      '- PM: Cleanser - Retinol (2-3x per week) - Moisturizer',\n      '- 8+ glasses of water daily', '',\n      '**Body**',\n      '- 3-4 movement sessions per week',\n      '- Sleep 7-9 hours',\n      '- Reduce sugar, alcohol, and processed food', '',\n      '**Style**',\n      '- Month 1: Wardrobe edit - remove what no longer fits the new you',\n      '- Month 2: Build 5 powerful core outfits',\n      '- Month 3: Hair, grooming, posture, full upgrade', '',\n      '**Mindset**',\n      '- Daily affirmation practice',\n      '- Document your transformation'].join(NL);\n  }\n  return ['**Your Full Life Transformation Empire Plan**', '',\n    '**Morning Stack** (' + wake + ')',\n    '- Consistent wake time - no exceptions',\n    '- 16 oz water first thing',\n    '- ' + mins + ' min movement before checking anything',\n    '- Journal: who are you becoming today?',\n    '- No phone until morning ritual is complete', '',\n    '**The Four Pillars**', '',\n    '**Body** - Train 4x per week. Hit protein targets. Sleep 7-9 hours. Non-negotiable.', '',\n    '**Money** - Automate savings today. Track spending. Start investing, even $25 per month.', '',\n    '**Mind** - Journal daily. Read 10 pages. Protect your attention. No mindless scrolling.', '',\n    '**Spirit** - Daily gratitude. Weekly purpose check-in. Serve others.', '',\n    '**Milestones**',\n    '- Day 30: Baseline habits locked in',\n    '- Day 60: Momentum is undeniable',\n    '- Day 90: Unrecognizable from where you started'].join(NL);\n}\n\nvar reply = '';\nvar buttons = [];\nvar completed = false;\nvar plan = null;\nvar step = state.step;\n\nif (!step) {\n  var gt = detectGoalType(message);\n  state.goalType = gt;\n  state.step = 'goals';\n  var chips = GOAL_CHIPS[gt] || GOAL_CHIPS['general'];\n  reply = 'I see you — you are here to build something real.' + NL + NL + 'Let me customize your plan. Which of these best describes your specific focus?';\n  buttons = chips;\n} else if (step === 'goals') {\n  var rawGoals = message.split(',');\n  state.goals = rawGoals.map(function(g) { return g.trim(); }).filter(function(g) { return g.length > 0; });\n  if (!state.goals.length) state.goals = [message.trim()];\n  state.step = 'experience';\n  reply = 'Locked in. Now tell me — where are you starting from right now?';\n  buttons = EXP_CHIPS;\n} else if (step === 'experience') {\n  state.experience = message;\n  state.step = 'wakeTime';\n  reply = 'Got it. What time do you usually wake up?';\n  buttons = WAKE_CHIPS;\n} else if (step === 'wakeTime') {\n  state.wakeTime = message;\n  state.step = 'mainGoal';\n  reply = 'Last one — be specific:' + NL + NL + 'What is your top goal for the next 90 days? This is what your plan will be built around.';\n  buttons = [];\n} else if (step === 'mainGoal') {\n  state.mainGoal = message;\n  state.step = 'complete';\n  state.builtAt = new Date().toISOString();\n  plan = { goals: state.goals, experience: state.experience, wakeTime: state.wakeTime, mainGoal: state.mainGoal, goalType: state.goalType, builtAt: state.builtAt };\n  var planText = generatePlan(state);\n  completed = true;\n  reply = '**Your Empire Plan is built.**' + NL + NL + 'Here is your personalized 90-day roadmap:' + NL + NL + planText;\n  buttons = ['Execute Plan', 'Adjust Plan', 'Restart'];\n} else if (step === 'complete') {\n  if (message === 'Restart') {\n    state.step = null;\n    state.goals = [];\n    state.experience = '';\n    state.wakeTime = '';\n    state.mainGoal = '';\n    reply = 'No problem. Let us start fresh. What are you here to build?';\n    buttons = ['Full Life Transformation', 'Body and Fitness', 'Wealth and Finance', 'Mindset and Discipline', 'Faith and Purpose', 'Relationships'];\n  } else if (message === 'Adjust Plan') {\n    state.step = 'mainGoal';\n    reply = 'What would you like to change? Tell me your revised top goal for the next 90 days.';\n    buttons = [];\n  } else {\n    plan = { goals: state.goals, experience: state.experience, wakeTime: state.wakeTime, mainGoal: state.mainGoal, goalType: state.goalType, builtAt: state.builtAt };\n    reply = 'Your plan is locked in. The work starts now.';\n    buttons = ['Execute Plan'];\n    completed = true;\n  }\n} else {\n  state.step = null;\n  reply = 'Let us start fresh. What are you here to build?';\n  buttons = ['Full Life Transformation', 'Body and Fitness', 'Wealth and Finance', 'Mindset and Discipline', 'Faith and Purpose', 'Relationships'];\n}\n\nreturn [{ json: { reply: reply, step: state.step, goalType: state.goalType, completed: completed, plan: plan, buttons: buttons, state: state } }];"
+      },
+      "id": "ee-code-001",
+      "name": "Plan Builder Brain",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "ee-respond-001",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [760, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Plan Builder Brain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan Builder Brain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
