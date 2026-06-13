@@ -1,0 +1,76 @@
+{
+  "moduleId": "science",
+  "version": "1.0",
+  "title": "Science",
+  "subtitle": "Think clearly, understand the world, learn the fundamentals",
+  "emoji": "🔬",
+  "category": "education",
+  "type": "learning_path",
+  "description": "Science is not a collection of facts — it is a way of thinking. This module builds your scientific intuition through daily reading, simple lessons, and practice. Start with how science works, then move into physics and biology basics.",
+  "keywords": ["science", "physics", "biology", "chemistry", "scientific thinking", "experiment", "hypothesis"],
+  "planLengths": ["30 days", "90 days"],
+  "features": {
+    "hasChapters": true,
+    "hasSkills": true,
+    "hasDailyChecklist": true,
+    "hasRoutine": false,
+    "hasTimeline": false,
+    "hasDailyReading": true,
+    "hasDefinitions": true,
+    "hasProgress": true
+  },
+  "preview": {
+    "enabled": true,
+    "freeChapters": 1,
+    "freeSkills": 1
+  },
+  "chapters": [
+    {
+      "id": "01-scientific-thinking",
+      "title": "How to Think Like a Scientist",
+      "file": "chapters/01-scientific-thinking.html",
+      "preview": true,
+      "duration": "8 min"
+    },
+    {
+      "id": "02-physics-basics",
+      "title": "Physics — Forces, Energy & Motion",
+      "file": "chapters/02-physics-basics.html",
+      "preview": false,
+      "duration": "10 min"
+    },
+    {
+      "id": "03-biology-basics",
+      "title": "Biology — The Science of Life",
+      "file": "chapters/03-biology-basics.html",
+      "preview": false,
+      "duration": "9 min"
+    }
+  ],
+  "skills": [
+    {
+      "id": "how-to-study-concepts",
+      "title": "How to Study Concepts (Not Memorize)",
+      "file": "skills/how-to-study-concepts.html",
+      "preview": true,
+      "duration": "5 min"
+    },
+    {
+      "id": "how-to-ask-better-questions",
+      "title": "How to Ask Better Questions",
+      "file": "skills/how-to-ask-better-questions.html",
+      "preview": false,
+      "duration": "5 min"
+    },
+    {
+      "id": "feynman-technique",
+      "title": "The Feynman Technique",
+      "file": "skills/feynman-technique.html",
+      "preview": false,
+      "duration": "6 min"
+    }
+  ],
+  "dashboardSections": ["overview", "chapters", "skills", "checklist", "definitions"],
+  "color": "#a8d5ff",
+  "accentColor": "rgba(168,213,255,0.12)"
+}

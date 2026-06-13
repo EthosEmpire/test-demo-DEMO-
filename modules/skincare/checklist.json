@@ -1,0 +1,18 @@
+{
+  "daily": [
+    { "id": "sk-am-cleanse", "text": "Cleanse face in the morning", "time": "AM" },
+    { "id": "sk-am-moisturize", "text": "Apply moisturizer", "time": "AM" },
+    { "id": "sk-am-spf", "text": "Apply SPF 30+ sunscreen (even indoors)", "time": "AM" },
+    { "id": "sk-pm-cleanse", "text": "Cleanse face at night to remove buildup", "time": "PM" },
+    { "id": "sk-pm-treat", "text": "Apply treatment (retinol / niacinamide / serum)", "time": "PM" },
+    { "id": "sk-pm-moisturize", "text": "Apply night moisturizer", "time": "PM" },
+    { "id": "sk-water", "text": "Drink 8+ glasses of water", "time": "ALL DAY" },
+    { "id": "sk-no-touch", "text": "No picking or touching face unnecessarily", "time": "ALL DAY" }
+  ],
+  "weekly": [
+    { "id": "sk-w-pillowcase", "text": "Change pillowcase", "frequency": "2x per week" },
+    { "id": "sk-w-exfoliate", "text": "Exfoliate gently (AHA or BHA)", "frequency": "2-3x per week" },
+    { "id": "sk-w-mask", "text": "Use a face mask if desired", "frequency": "1x per week" },
+    { "id": "sk-w-review", "text": "Review skin progress and note any changes", "frequency": "Weekly" }
+  ]
+}

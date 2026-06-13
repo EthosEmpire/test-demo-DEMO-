@@ -1,0 +1,77 @@
+{
+  "moduleId": "learning-skills",
+  "version": "1.0",
+  "title": "Learning Skills",
+  "subtitle": "Learn how to learn — the skill that compounds all others",
+  "emoji": "🧠",
+  "category": "skills",
+  "type": "skill_path",
+  "description": "Master the science of learning itself — how memory works, how to retain information, how to read effectively, and how to acquire any skill faster.",
+  "keywords": ["learning", "memory", "reading", "retention", "skills", "study", "knowledge", "mental models"],
+  "planLengths": ["30 days", "60 days", "90 days"],
+  "features": {
+    "hasChapters": true,
+    "hasSkills": true,
+    "hasDailyChecklist": true,
+    "hasRoutine": false,
+    "hasTimeline": false,
+    "hasDailyReading": true,
+    "hasDefinitions": true
+  },
+  "preview": {
+    "enabled": true,
+    "freeChapters": 1,
+    "freeSkills": 1
+  },
+  "chapters": [
+    {
+      "id": "01-how-memory-works",
+      "title": "How Memory Actually Works",
+      "file": "chapters/01-how-memory-works.html",
+      "preview": true,
+      "duration": "8 min"
+    },
+    {
+      "id": "02-how-to-read-effectively",
+      "title": "How to Read Effectively",
+      "file": "chapters/02-how-to-read-effectively.html",
+      "preview": false,
+      "duration": "8 min"
+    },
+    {
+      "id": "03-skill-acquisition",
+      "title": "How to Acquire Any Skill",
+      "file": "chapters/03-skill-acquisition.html",
+      "preview": false,
+      "duration": "9 min"
+    }
+  ],
+  "skills": [
+    {
+      "id": "active-recall",
+      "title": "Active Recall",
+      "file": "skills/active-recall.html",
+      "preview": true,
+      "duration": "4 min"
+    },
+    {
+      "id": "feynman-technique",
+      "title": "The Feynman Technique",
+      "file": "skills/feynman-technique.html",
+      "preview": false,
+      "duration": "5 min"
+    },
+    {
+      "id": "spaced-repetition",
+      "title": "Spaced Repetition",
+      "file": "skills/spaced-repetition.html",
+      "preview": false,
+      "duration": "5 min"
+    }
+  ],
+  "checklist": "checklist.json",
+  "definitions": "definitions.json",
+  "dashboardSections": ["overview", "chapters", "skills", "checklist", "definitions"],
+  "color": "#99e6e6",
+  "accentColor": "rgba(153,230,230,0.15)"
+}

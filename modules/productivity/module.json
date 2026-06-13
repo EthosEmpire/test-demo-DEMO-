@@ -1,0 +1,77 @@
+{
+  "moduleId": "productivity",
+  "version": "1.0",
+  "title": "Productivity",
+  "subtitle": "Do more of what matters — less of what doesn't",
+  "emoji": "⚙️",
+  "category": "skills",
+  "type": "habit_tracker",
+  "description": "Build systems that make you consistently effective — time management, task prioritization, deep work, and eliminating wasted effort.",
+  "keywords": ["productivity", "time management", "focus", "tasks", "systems", "output", "efficiency", "planning"],
+  "planLengths": ["30 days", "60 days", "90 days"],
+  "features": {
+    "hasChapters": true,
+    "hasSkills": true,
+    "hasDailyChecklist": true,
+    "hasRoutine": false,
+    "hasTimeline": false,
+    "hasDailyReading": true,
+    "hasDefinitions": true
+  },
+  "preview": {
+    "enabled": true,
+    "freeChapters": 1,
+    "freeSkills": 1
+  },
+  "chapters": [
+    {
+      "id": "01-what-productivity-is",
+      "title": "What Productivity Actually Is",
+      "file": "chapters/01-what-productivity-is.html",
+      "preview": true,
+      "duration": "7 min"
+    },
+    {
+      "id": "02-time-and-attention",
+      "title": "Managing Time vs. Managing Attention",
+      "file": "chapters/02-time-and-attention.html",
+      "preview": false,
+      "duration": "8 min"
+    },
+    {
+      "id": "03-systems-over-willpower",
+      "title": "Systems Over Willpower",
+      "file": "chapters/03-systems-over-willpower.html",
+      "preview": false,
+      "duration": "8 min"
+    }
+  ],
+  "skills": [
+    {
+      "id": "daily-planning",
+      "title": "The 10-Minute Daily Plan",
+      "file": "skills/daily-planning.html",
+      "preview": true,
+      "duration": "4 min"
+    },
+    {
+      "id": "time-blocking",
+      "title": "Time Blocking",
+      "file": "skills/time-blocking.html",
+      "preview": false,
+      "duration": "5 min"
+    },
+    {
+      "id": "weekly-review",
+      "title": "The Weekly Review",
+      "file": "skills/weekly-review.html",
+      "preview": false,
+      "duration": "5 min"
+    }
+  ],
+  "checklist": "checklist.json",
+  "definitions": "definitions.json",
+  "dashboardSections": ["overview", "chapters", "skills", "checklist", "definitions"],
+  "color": "#c4b5fd",
+  "accentColor": "rgba(196,181,253,0.15)"
+}

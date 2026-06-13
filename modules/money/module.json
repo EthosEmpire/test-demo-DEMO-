@@ -1,0 +1,77 @@
+{
+  "moduleId": "money",
+  "version": "1.0",
+  "title": "Money",
+  "subtitle": "Build financial clarity and control from the ground up",
+  "emoji": "💰",
+  "category": "finance",
+  "type": "learning_path",
+  "description": "Understand how money actually works — budgeting, saving, investing, and building long-term wealth without the jargon.",
+  "keywords": ["money", "finance", "budget", "saving", "investing", "wealth", "debt", "income"],
+  "planLengths": ["30 days", "60 days", "90 days"],
+  "features": {
+    "hasChapters": true,
+    "hasSkills": true,
+    "hasDailyChecklist": true,
+    "hasRoutine": false,
+    "hasTimeline": false,
+    "hasDailyReading": true,
+    "hasDefinitions": true
+  },
+  "preview": {
+    "enabled": true,
+    "freeChapters": 1,
+    "freeSkills": 1
+  },
+  "chapters": [
+    {
+      "id": "01-how-money-works",
+      "title": "How Money Actually Works",
+      "file": "chapters/01-how-money-works.html",
+      "preview": true,
+      "duration": "8 min"
+    },
+    {
+      "id": "02-budgeting-basics",
+      "title": "Budgeting Without Restriction",
+      "file": "chapters/02-budgeting-basics.html",
+      "preview": false,
+      "duration": "9 min"
+    },
+    {
+      "id": "03-investing-fundamentals",
+      "title": "Investing — Start Before You Feel Ready",
+      "file": "chapters/03-investing-fundamentals.html",
+      "preview": false,
+      "duration": "10 min"
+    }
+  ],
+  "skills": [
+    {
+      "id": "zero-based-budget",
+      "title": "Zero-Based Budget",
+      "file": "skills/zero-based-budget.html",
+      "preview": true,
+      "duration": "5 min"
+    },
+    {
+      "id": "emergency-fund",
+      "title": "Building Your Emergency Fund",
+      "file": "skills/emergency-fund.html",
+      "preview": false,
+      "duration": "4 min"
+    },
+    {
+      "id": "index-fund-basics",
+      "title": "How to Start Investing in Index Funds",
+      "file": "skills/index-fund-basics.html",
+      "preview": false,
+      "duration": "6 min"
+    }
+  ],
+  "checklist": "checklist.json",
+  "definitions": "definitions.json",
+  "dashboardSections": ["overview", "chapters", "skills", "checklist", "definitions"],
+  "color": "#b8f0a0",
+  "accentColor": "rgba(184,240,160,0.15)"
+}

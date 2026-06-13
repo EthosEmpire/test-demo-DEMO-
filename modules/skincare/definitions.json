@@ -1,0 +1,22 @@
+{
+  "epidermis": "The outermost layer of skin. It is the part you can see and touch. It acts as a barrier against bacteria, UV rays, and moisture loss.",
+  "dermis": "The middle layer of skin beneath the epidermis. It contains collagen, elastin, hair follicles, sweat glands, and blood vessels.",
+  "sebum": "The natural oil your skin produces. It protects and moisturizes the skin. Too much sebum leads to oily skin; too little leads to dry skin.",
+  "sebaceous gland": "A small gland in the skin that produces sebum. Found at the base of hair follicles.",
+  "pH balance": "A measure of how acidic or alkaline the skin surface is. Healthy skin is slightly acidic (around pH 4.5 to 5.5). Disrupting pH leads to breakouts and irritation.",
+  "skin barrier": "The outermost protective layer of the epidermis. It prevents water from escaping and protects against bacteria, allergens, and UV damage.",
+  "SPF": "Sun Protection Factor. A measure of how well a sunscreen protects against UVB rays. SPF 30 blocks about 97% of UVB rays.",
+  "UVB": "Ultraviolet B rays from the sun. They cause sunburn and contribute to skin cancer. Blocked by most sunscreens.",
+  "UVA": "Ultraviolet A rays from the sun. They cause skin aging and wrinkles. Penetrate deeper than UVB. Look for 'broad spectrum' sunscreen to block both.",
+  "exfoliation": "Removing dead skin cells from the surface of the skin. Can be done physically (scrubs) or chemically (AHAs, BHAs).",
+  "AHA": "Alpha Hydroxy Acid. A water-soluble acid used in skincare to exfoliate the skin surface. Examples: glycolic acid, lactic acid.",
+  "BHA": "Beta Hydroxy Acid. An oil-soluble acid that penetrates into pores to clear buildup. Salicylic acid is the most common BHA.",
+  "retinol": "A form of Vitamin A used in skincare. It speeds up skin cell turnover, reduces wrinkles, and helps with acne. Start slowly — it can cause irritation.",
+  "hyaluronic acid": "A molecule found naturally in the skin that holds up to 1,000 times its weight in water. Used in skincare to hydrate and plump skin.",
+  "niacinamide": "A form of Vitamin B3. It reduces pore appearance, evens skin tone, controls oil production, and strengthens the skin barrier.",
+  "comedogenic": "Describes ingredients that tend to clog pores and cause blackheads or acne. Look for 'non-comedogenic' on product labels if you have acne-prone skin.",
+  "transepidermal water loss": "The process by which water passes through the skin and evaporates. High TEWL means the skin barrier is compromised and the skin is losing moisture.",
+  "cleanser": "A product used to remove dirt, oil, makeup, and bacteria from the skin. Should be used twice daily without stripping the skin's natural moisture.",
+  "toner": "A liquid applied after cleansing to rebalance skin pH, remove remaining impurities, and prep skin for moisturizer.",
+  "moisturizer": "A product that hydrates the skin and prevents water loss. Contains humectants (draw in water), emollients (soften skin), and occlusives (seal moisture in)."
+}

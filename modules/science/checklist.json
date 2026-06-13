@@ -1,0 +1,15 @@
+{
+  "daily": [
+    { "id": "sc-read", "text": "Read today's chapter or lesson (15 min)", "time": "ANY" },
+    { "id": "sc-define", "text": "Write down 3 key terms from today's reading", "time": "ANY" },
+    { "id": "sc-question", "text": "Write one question about what you read", "time": "ANY" },
+    { "id": "sc-explain", "text": "Explain today's concept to yourself in plain English", "time": "ANY" },
+    { "id": "sc-review", "text": "Review yesterday's notes for 5 minutes", "time": "ANY" }
+  ],
+  "weekly": [
+    { "id": "sc-w-feynman", "text": "Pick one concept and teach it to someone (or write it out)", "frequency": "Weekly" },
+    { "id": "sc-w-connect", "text": "Find one real-world example of something you learned", "frequency": "Weekly" },
+    { "id": "sc-w-quiz", "text": "Quiz yourself on the week's key terms without looking", "frequency": "Weekly" },
+    { "id": "sc-w-progress", "text": "Mark chapters and skills completed this week", "frequency": "Weekly" }
+  ]
+}

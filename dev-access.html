@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Access | Ethos Empire</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="48x48" href="images/favicon-48x48.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #030303;
+      color: #f0f0f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dev-card {
+      width: 100%;
+      max-width: 360px;
+      padding: 40px 32px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,215,0,0.12);
+      border-radius: 20px;
+    }
+    .dev-icon { font-size: 2.2rem; text-align: center; margin-bottom: 14px; }
+    .dev-title {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      color: rgba(240,192,64,0.75);
+      margin-bottom: 30px;
+    }
+    input {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: monospace;
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+      letter-spacing: 0.05em;
+    }
+    input:focus { border-color: rgba(240,192,64,0.45); }
+    input::placeholder { color: rgba(255,255,255,0.18); letter-spacing: 0; font-size: 0.85rem; font-family: inherit; }
+    .dev-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #b8860b, #d4a018);
+      color: #000;
+      font-size: 0.85rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .dev-btn:hover { opacity: 0.85; }
+    .dev-error {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(255,80,80,0.09);
+      border: 1px solid rgba(255,80,80,0.22);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: #ff8080;
+      text-align: center;
+    }
+    .dev-error.show { display: block; }
+    .dev-hint {
+      margin-top: 22px;
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.18);
+      text-align: center;
+      letter-spacing: 0.05em;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dev-card">
+    <div class="dev-icon">🔐</div>
+    <div class="dev-title">DEVELOPER ACCESS</div>
+    <input type="password" id="devKeyInput" placeholder="Enter developer key" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="dev-btn" id="devAccessBtn">ACCESS DASHBOARD</button>
+    <div class="dev-error" id="devError">Invalid key. Access denied.</div>
+    <div class="dev-hint">This page is not linked anywhere.<br>To revoke: open browser console → <code style="color:rgba(255,255,255,0.35)">localStorage.removeItem('ee_dev_token')</code></div>
+  </div>
+
+  <script>
+    var TOKEN_KEY   = 'ee_dev_token';
+    var VALID_TOKEN = 'EthosEmpire-DEV-X9K2-2026'; // CHANGE THIS to something private
+
+    // Already authorized — go straight in
+    if (localStorage.getItem(TOKEN_KEY) === VALID_TOKEN) {
+      window.location.replace('dashboard/dashboard.html');
+    }
+
+    document.getElementById('devKeyInput').focus();
+
+    function tryAccess() {
+      var key = document.getElementById('devKeyInput').value.trim();
+      var errEl = document.getElementById('devError');
+      errEl.classList.remove('show');
+      if (key === VALID_TOKEN) {
+        localStorage.setItem(TOKEN_KEY, VALID_TOKEN);
+        window.location.replace('dashboard/dashboard.html');
+      } else {
+        errEl.classList.add('show');
+        document.getElementById('devKeyInput').value = '';
+        document.getElementById('devKeyInput').focus();
+      }
+    }
+
+    document.getElementById('devAccessBtn').addEventListener('click', tryAccess);
+    document.getElementById('devKeyInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') tryAccess();
+    });
+  </script>
+
+</body>
+</html>

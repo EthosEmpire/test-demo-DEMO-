@@ -1,0 +1,76 @@
+{
+  "moduleId": "skincare",
+  "version": "1.0",
+  "title": "Skincare",
+  "subtitle": "Build clear skin habits that actually last",
+  "emoji": "✨",
+  "category": "health",
+  "type": "routine_timeline",
+  "description": "Learn how your skin works, build a consistent morning and night routine, and develop the daily habits that lead to clear, healthy skin over time. No expensive products required — just the right knowledge and consistency.",
+  "keywords": ["skincare", "skin", "acne", "routine", "moisturizer", "cleanser", "sunscreen", "glow", "complexion", "breakout"],
+  "planLengths": ["30 days", "60 days", "90 days"],
+  "features": {
+    "hasChapters": true,
+    "hasSkills": true,
+    "hasDailyChecklist": true,
+    "hasRoutine": true,
+    "hasTimeline": true,
+    "hasDailyReading": false,
+    "hasDefinitions": true,
+    "hasProgress": true
+  },
+  "preview": {
+    "enabled": true,
+    "freeChapters": 1,
+    "freeSkills": 1
+  },
+  "chapters": [
+    {
+      "id": "01-skin-basics",
+      "title": "How Your Skin Actually Works",
+      "file": "chapters/01-skin-basics.html",
+      "preview": true,
+      "duration": "7 min"
+    },
+    {
+      "id": "02-building-routine",
+      "title": "Building Your First Real Routine",
+      "file": "chapters/02-building-routine.html",
+      "preview": false,
+      "duration": "10 min"
+    },
+    {
+      "id": "03-acne-and-habits",
+      "title": "Acne, Habits & What Actually Causes Breakouts",
+      "file": "chapters/03-acne-and-habits.html",
+      "preview": false,
+      "duration": "9 min"
+    }
+  ],
+  "skills": [
+    {
+      "id": "morning-routine",
+      "title": "Morning Routine",
+      "file": "skills/morning-routine.html",
+      "preview": true,
+      "duration": "4 min"
+    },
+    {
+      "id": "night-routine",
+      "title": "Night Routine",
+      "file": "skills/night-routine.html",
+      "preview": false,
+      "duration": "4 min"
+    },
+    {
+      "id": "sunscreen-basics",
+      "title": "Sunscreen — The One Non-Negotiable",
+      "file": "skills/sunscreen-basics.html",
+      "preview": false,
+      "duration": "5 min"
+    }
+  ],
+  "dashboardSections": ["overview", "chapters", "skills", "checklist", "definitions"],
+  "color": "#f5c5a3",
+  "accentColor": "rgba(245,197,163,0.15)"
+}

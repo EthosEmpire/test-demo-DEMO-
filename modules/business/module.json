@@ -1,0 +1,77 @@
+{
+  "moduleId": "business",
+  "version": "1.0",
+  "title": "Business",
+  "subtitle": "Think like a builder — how businesses actually work",
+  "emoji": "🏗️",
+  "category": "career",
+  "type": "learning_path",
+  "description": "Learn the fundamentals of business — how value is created, how companies make money, and how to think like an entrepreneur or operator.",
+  "keywords": ["business", "entrepreneurship", "startup", "marketing", "revenue", "customer", "product", "brand"],
+  "planLengths": ["30 days", "60 days", "90 days"],
+  "features": {
+    "hasChapters": true,
+    "hasSkills": true,
+    "hasDailyChecklist": true,
+    "hasRoutine": false,
+    "hasTimeline": false,
+    "hasDailyReading": true,
+    "hasDefinitions": true
+  },
+  "preview": {
+    "enabled": true,
+    "freeChapters": 1,
+    "freeSkills": 1
+  },
+  "chapters": [
+    {
+      "id": "01-what-business-is",
+      "title": "What a Business Actually Is",
+      "file": "chapters/01-what-business-is.html",
+      "preview": true,
+      "duration": "8 min"
+    },
+    {
+      "id": "02-customer-and-value",
+      "title": "Customers and Value Creation",
+      "file": "chapters/02-customer-and-value.html",
+      "preview": false,
+      "duration": "9 min"
+    },
+    {
+      "id": "03-revenue-and-margins",
+      "title": "Revenue, Costs, and Margins",
+      "file": "chapters/03-revenue-and-margins.html",
+      "preview": false,
+      "duration": "8 min"
+    }
+  ],
+  "skills": [
+    {
+      "id": "value-proposition",
+      "title": "Write a Value Proposition",
+      "file": "skills/value-proposition.html",
+      "preview": true,
+      "duration": "5 min"
+    },
+    {
+      "id": "unit-economics",
+      "title": "Understand Unit Economics",
+      "file": "skills/unit-economics.html",
+      "preview": false,
+      "duration": "6 min"
+    },
+    {
+      "id": "validate-an-idea",
+      "title": "Validate an Idea Before Building",
+      "file": "skills/validate-an-idea.html",
+      "preview": false,
+      "duration": "5 min"
+    }
+  ],
+  "checklist": "checklist.json",
+  "definitions": "definitions.json",
+  "dashboardSections": ["overview", "chapters", "skills", "checklist", "definitions"],
+  "color": "#ffd6a0",
+  "accentColor": "rgba(255,214,160,0.15)"
+}
