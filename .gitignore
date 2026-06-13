@@ -2,3 +2,9 @@
 .env.local
 node_modules/
 .netlify/
+
+# macOS AppleDouble metadata
+._*
+
+# Unused Deno lockfile (project uses Node)
+deno.lock
