@@ -11,6 +11,9 @@
 
 const N8N_BASE = 'http://n8n.ethosempire.org:5678';
 
+// Only allow proxying images from these domains (prevents abuse)
+const ALLOWED_IMAGE_HOSTS = ['image.pollinations.ai', 'pollinations.ai'];
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -21,6 +24,42 @@ export default {
         status: 204,
         headers: corsHeaders()
       });
+    }
+
+    // Image proxy: GET /img?url=https://image.pollinations.ai/...
+    if (request.method === 'GET' && url.pathname === '/img') {
+      const imageUrl = url.searchParams.get('url');
+      if (!imageUrl) {
+        return new Response('Missing url parameter', { status: 400 });
+      }
+      let parsed;
+      try {
+        parsed = new URL(imageUrl);
+      } catch {
+        return new Response('Invalid url parameter', { status: 400 });
+      }
+      if (!ALLOWED_IMAGE_HOSTS.some(h => parsed.hostname === h || parsed.hostname.endsWith('.' + h))) {
+        return new Response('Image host not allowed', { status: 403 });
+      }
+      try {
+        const upstream = await fetch(imageUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; EthosEmpireBot/1.0)' }
+        });
+        if (!upstream.ok) {
+          return new Response('Image fetch failed', { status: 502 });
+        }
+        const contentType = upstream.headers.get('content-type') || 'image/jpeg';
+        return new Response(upstream.body, {
+          status: 200,
+          headers: {
+            'Content-Type': contentType,
+            'Cache-Control': 'public, max-age=3600',
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+      } catch (err) {
+        return new Response('Gateway error: ' + err.message, { status: 502 });
+      }
     }
 
     // Only proxy POST to /webhook/*
