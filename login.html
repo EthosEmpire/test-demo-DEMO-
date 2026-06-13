@@ -290,6 +290,23 @@
         <button id="backToSignIn" style="display:block;width:100%;margin-top:14px;background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;letter-spacing:0.08em;font-family:inherit;transition:color 0.2s;padding:8px;" onmouseover="this.style.color='var(--gold-3)'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">← Back to Sign In</button>
       </div>
 
+      <!-- Email Verification Sent Screen -->
+      <div class="auth-form" id="formVerify" style="text-align:center;">
+        <div style="font-size:2.6rem;margin-bottom:14px;">📬</div>
+        <div style="font-weight:900;font-size:1.05rem;letter-spacing:0.06em;color:#fff;margin-bottom:10px;">Check Your Email</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.45);line-height:1.65;margin-bottom:6px;">We sent a verification link to</div>
+        <div id="verifyEmailDisplay" style="font-size:0.88rem;font-weight:700;color:var(--gold-3);margin-bottom:20px;word-break:break-all;"></div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.38);line-height:1.7;margin-bottom:24px;">Click the link in the email to verify your account.<br>Then come back here and sign in.</div>
+        <div id="verifySuccess" style="display:none;background:rgba(80,200,120,0.1);border:1px solid rgba(80,200,120,0.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;">
+          <div style="font-size:0.82rem;font-weight:700;color:#6fdc9c;">Verification email sent again ✓</div>
+        </div>
+        <div id="verifyError" style="display:none;background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;">
+          <div class="verify-err-msg" style="font-size:0.82rem;color:#ff8a8a;"></div>
+        </div>
+        <button class="auth-btn" id="goSignInBtn" style="margin-bottom:12px;">Open Sign In</button>
+        <button id="resendVerifyBtn" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.78rem;cursor:pointer;letter-spacing:0.06em;font-family:inherit;transition:color 0.2s;padding:8px;display:block;width:100%;" onmouseover="this.style.color='var(--gold-3)'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">Didn't get it? Resend email</button>
+      </div>
+
       <a href="index.html" class="auth-back">← Back to Ethos Empire</a>
     </div>
   </div>
@@ -305,7 +322,10 @@
       signInWithPopup,
       GoogleAuthProvider,
       onAuthStateChanged,
-      sendPasswordResetEmail
+      signOut,
+      sendPasswordResetEmail,
+      sendEmailVerification,
+      updateProfile
     } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
     import {
       getFirestore,
@@ -361,6 +381,12 @@
       btn.textContent = loading ? 'Please wait...' : btn.dataset.label;
     }
 
+    // Show warning if redirected from dashboard because email was not verified
+    if (params.get('unverified') === '1') {
+      showError('Please verify your email before accessing the dashboard. Check your inbox for the verification link.');
+      history.replaceState(null, '', window.location.pathname);
+    }
+
     // Post-payment flow: save plan profile to Firestore + call verify-checkout
     async function handleCheckoutFlow(user) {
       const pending = JSON.parse(localStorage.getItem('ee_pending_profile') || 'null');
@@ -414,13 +440,21 @@
 
       localStorage.removeItem('ee_pending_profile');
       pendingName = null;
-      window.location.replace('dashboard.html');
+      window.location.replace('dashboard/dashboard.html');
     }
 
     // Standard post-auth redirect for non-checkout logins
     async function redirectAfterAuth(user) {
       const userRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userRef);
+
+      // Email/password users must verify their email before accessing the dashboard
+      const isEmailPassword = user.providerData && user.providerData.some(p => p.providerId === 'password');
+      if (isEmailPassword && !user.emailVerified) {
+        await signOut(auth);
+        showError('Please verify your email before signing in. Click the link we sent to your inbox, then try again.');
+        return;
+      }
 
       // Developer account — auto-provision full access and go straight to dashboard
       if (user.email === 'dev@ethosempire.org') {
@@ -437,7 +471,7 @@
           lastLogin: serverTimestamp(),
           updatedAt: serverTimestamp()
         }, { merge: true });
-        window.location.replace('dashboard.html');
+        window.location.replace('dashboard/dashboard.html');
         return;
       }
 
@@ -466,16 +500,15 @@
         window.location.replace('onboarding.html');
         return;
       }
-      if (profile.subscriptionStatus === 'active' || profile.subscriptionStatus === 'trialing') {
-        window.location.replace('dashboard.html');
-        return;
-      }
-      window.location.replace('plan.html');
+      // All onboarded users enter the dashboard.
+      // Free vs Pro access is controlled inside dashboard.html — not here.
+      window.location.replace('dashboard/dashboard.html');
     }
 
     // Fires on page load if already signed in, and after any auth action
     onAuthStateChanged(auth, async (user) => {
       if (!user) return;
+      if (pendingSignup) return; // createBtn flow is managing the user — don't interfere
       if (isCheckout && sessionId) {
         await handleCheckoutFlow(user);
       } else {
@@ -552,9 +585,19 @@
     // Sign In
     document.getElementById('signInBtn').addEventListener('click', async () => {
       clearError();
-      const email = document.getElementById('siEmail').value.trim();
+      const email    = document.getElementById('siEmail').value.trim();
       const password = document.getElementById('siPassword').value;
       if (!email || !password) return showError('Please fill in all fields.');
+
+      // Developer bypass — type these credentials to skip Firebase + Stripe entirely
+      const DEV_EMAIL = 'dev@ethosempire.org';        // CHANGE to your private dev email
+      const DEV_PASS  = 'EthosEmpire-DEV-X9K2-2026'; // CHANGE to your private dev password (must match dashboard.html)
+      if (email === DEV_EMAIL && password === DEV_PASS) {
+        localStorage.setItem('ee_dev_token', DEV_PASS);
+        window.location.replace('dashboard/dashboard.html');
+        return;
+      }
+
       const btn = document.getElementById('signInBtn');
       setLoading(btn, true);
       try {
@@ -566,22 +609,105 @@
     });
 
     // Create Account — set pendingName then create user; onAuthStateChanged handles the rest
+    // Track the last created user so resend button works
+    let pendingVerifyUser = null;
+    let pendingSignup = false; // true while createBtn async flow is running — suppresses onAuthStateChanged redirect
+
     document.getElementById('createBtn').addEventListener('click', async () => {
       clearError();
-      const name = document.getElementById('caName').value.trim();
-      const email = document.getElementById('caEmail').value.trim();
+      const name     = document.getElementById('caName').value.trim();
+      const email    = document.getElementById('caEmail').value.trim();
       const password = document.getElementById('caPassword').value;
-      if (!name || !email || !password) return showError('Please fill in all fields.');
+      if (!name)              return showError('Please enter your full name.');
+      if (!email)             return showError('Please enter your email address.');
       if (password.length < 6) return showError('Password must be at least 6 characters.');
       const btn = document.getElementById('createBtn');
       setLoading(btn, true);
       try {
         pendingName = name;
-        await createUserWithEmailAndPassword(auth, email, password);
+        pendingSignup = true; // Prevent onAuthStateChanged from redirecting during signup
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const user = cred.user;
+
+        // Set display name immediately
+        await updateProfile(user, { displayName: name });
+
+        // Create Firestore document (unverified state)
+        await setDoc(doc(db, 'users', user.uid), {
+          uid:                user.uid,
+          name,
+          email:              user.email || '',
+          stripeCustomerId:   null,
+          subscriptionStatus: 'none',
+          plan:               null,
+          planProfile:        null,
+          onboardingComplete: false,
+          emailVerified:      false,
+          createdAt:          serverTimestamp(),
+          lastLogin:          serverTimestamp(),
+          updatedAt:          serverTimestamp()
+        });
+
+        // Send Firebase verification email
+        await sendEmailVerification(user);
+
+        // Store user so resend button can use it
+        pendingVerifyUser = user;
+        pendingName = null;
+        pendingSignup = false;
+
+        // Show verification screen — do NOT auto-redirect
+        showVerifyScreen(email);
+
       } catch (err) {
         pendingName = null;
+        pendingSignup = false;
         setLoading(btn, false);
         showError(friendlyError(err.code));
+      }
+    });
+
+    function showVerifyScreen(email) {
+      // Hide all forms
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      // Hide tabs
+      document.querySelector('.auth-tabs').style.display = 'none';
+      // Show verification screen
+      document.getElementById('formVerify').classList.add('active');
+      document.getElementById('verifyEmailDisplay').textContent = email;
+      document.getElementById('verifySuccess').style.display = 'none';
+      document.getElementById('verifyError').style.display   = 'none';
+    }
+
+    document.getElementById('goSignInBtn').addEventListener('click', () => {
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.querySelector('.auth-tabs').style.display = '';
+      document.getElementById('tabSignIn').classList.add('active');
+      document.getElementById('tabCreate').classList.remove('active');
+      document.getElementById('formSignIn').classList.add('active');
+      clearError();
+    });
+
+    document.getElementById('resendVerifyBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('resendVerifyBtn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      document.getElementById('verifySuccess').style.display = 'none';
+      document.getElementById('verifyError').style.display   = 'none';
+      try {
+        const userToResend = pendingVerifyUser || auth.currentUser;
+        if (!userToResend) throw new Error('No user session found. Please sign in first.');
+        await sendEmailVerification(userToResend);
+        document.getElementById('verifySuccess').style.display = 'block';
+      } catch (err) {
+        const errEl = document.getElementById('verifyError');
+        errEl.querySelector('.verify-err-msg').textContent =
+          err.code === 'auth/too-many-requests'
+            ? 'Too many requests. Wait a few minutes before trying again.'
+            : (err.message || 'Could not resend. Please try again shortly.');
+        errEl.style.display = 'block';
+      } finally {
+        setTimeout(() => { btn.disabled = false; btn.textContent = 'Didn\'t get it? Resend email'; }, 4000);
       }
     });
 
