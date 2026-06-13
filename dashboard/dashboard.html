@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empire Builder | Ethos Empire</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="48x48" href="../images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
+  <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
+  <link rel="stylesheet" href="dashboard.css?v=p21">
+</head>
+<body>
+
+  <!-- ══ Auth Overlay (required — DO NOT REMOVE) ══ -->
+  <div id="authOverlay">
+    <img src="../images/ethos-empire-logo.webp" width="46" height="46" style="border-radius:10px;opacity:0.8;" alt="Ethos Empire">
+    <div id="overlayMsg" style="color:#f5c542;font-size:0.72rem;font-weight:900;letter-spacing:0.24em;margin-top:4px;">LOADING...</div>
+    <div id="overlaySub"  style="color:rgba(255,255,255,0.26);font-size:0.68rem;letter-spacing:0.1em;"></div>
+  </div>
+
+  <!-- ══ AI Plan Builder Overlay (preserved — DO NOT MODIFY) ══ -->
+  <div id="pbOverlay" style="display:none;position:fixed;inset:0;background:#080808;z-index:9998;overflow-y:auto;">
+    <div id="pbWelcomeScreen">
+      <div class="pb-logo-row">
+        <img src="../images/ethos-empire-logo.webp" alt="EE">
+        <span>ETHOS EMPIRE</span>
+      </div>
+      <h1 class="pb-heading">Hey <span id="pbGreetName" class="pb-grad">there</span>,<br>what are we building?</h1>
+      <p class="pb-subtext">Tell me what you want to build or improve — money, fitness, discipline, business, mindset, confidence — and I'll create your personalized Empire plan.</p>
+      <div class="pb-glow-ring">
+        <div class="pb-glow-inner">
+          <textarea class="pb-glow-textarea" id="pbWelcomeInput" rows="2" placeholder="What do you want to build? Type or choose below..."></textarea>
+          <div class="pb-glow-row"><button class="pb-send" id="pbWelcomeSend">&#10148;</button></div>
+        </div>
+      </div>
+      <div class="pb-welcome-chips" id="pbWelcomeChips">
+        <button class="pb-welcome-chip" data-val="Financial Freedom">💰 Financial</button>
+        <button class="pb-welcome-chip" data-val="Fitness &amp; Health">💪 Health</button>
+        <button class="pb-welcome-chip" data-val="Mindset &amp; Discipline">🧠 Mindset</button>
+        <button class="pb-welcome-chip" data-val="Build a Business">🏢 Business</button>
+        <button class="pb-welcome-chip" data-val="Confidence &amp; Presence">👑 Confidence</button>
+        <button class="pb-welcome-chip" data-val="Self-Mastery">🎯 Self-Mastery</button>
+        <button class="pb-welcome-chip" data-val="Write an Ebook">📖 Ebooks</button>
+        <button class="pb-welcome-chip" data-val="Use AI to grow">🤖 AI Tools</button>
+      </div>
+    </div>
+    <div id="pbChatScreen">
+      <div class="pb-chat-header">
+        <img src="../images/ethos-empire-logo.webp" alt="EE">
+        <span>EMPIRE AI PLAN BUILDER</span>
+      </div>
+      <div class="pb-msgs" id="pbMsgs"></div>
+      <div class="pb-chat-foot">
+        <div class="pb-glow-ring" style="margin-bottom:0;">
+          <div class="pb-glow-inner" style="padding:12px 16px 10px;">
+            <textarea class="pb-glow-textarea" id="pbChatInput" rows="1" style="min-height:32px;" placeholder="Type your answer..."></textarea>
+            <div class="pb-glow-row" style="margin-top:6px;"><button class="pb-send" id="pbChatSend">&#10148;</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD LAYOUT — Phase 3: 3D Globe ══ -->
+  <div id="dashRoot" style="visibility:hidden;">
+
+    <!-- TOP BAR -->
+    <header id="dashTopBar">
+      <div class="tb-brand">
+        <img src="../images/ethos-empire-logo.webp" width="26" height="26" alt="EE">
+        <span class="tb-brand-name">ETHOS EMPIRE</span>
+      </div>
+      <div class="tb-center">
+        <div class="tb-context">
+          <span class="tb-title" id="tbTitle">Knowledge Graph</span>
+          <span class="tb-subtitle" id="tbSubtitle">Live Map</span>
+        </div>
+        <div class="tb-live-dot" id="tbLiveDot"></div>
+      </div>
+      <div class="tb-right">
+        <!-- Search -->
+        <div class="tb-srch-wrap" id="tbSrchWrap">
+          <span class="tb-srch-icon">⌕</span>
+          <input class="tb-srch-input" id="tbSrchInput" type="text" placeholder="Search worlds &amp; lessons…" autocomplete="off" spellcheck="false">
+          <kbd class="tb-srch-kbd">⌘K</kbd>
+          <div class="tb-srch-drop" id="tbSrchDrop" aria-hidden="true"></div>
+        </div>
+        <!-- Profile -->
+        <div class="tb-prof-wrap" id="tbProfWrap">
+          <button class="tb-prof-btn" id="tbProfBtn" aria-label="Profile menu">
+            <div class="tb-prof-av" id="tbProfAv">EE</div>
+            <svg class="tb-prof-caret" viewBox="0 0 10 6" fill="none">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="tb-prof-drop" id="tbProfDrop" aria-hidden="true"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside id="dashSidebar">
+      <button id="sidebarCollapseBtn" class="sidebar-collapse-btn" type="button" aria-label="Collapse sidebar" aria-pressed="false" title="Collapse sidebar">
+        <span class="sb-collapse-icon" aria-hidden="true">&lsaquo;</span>
+      </button>
+      <div class="sb-section-label">Navigate</div>
+      <ul class="sb-nav">
+        <li class="sb-item active" data-view="graph" data-tip="Graph View">
+          <span class="sb-icon">◈</span><span class="sb-label">Graph View</span><span class="sb-dot"></span>
+        </li>
+        <li class="sb-item" data-view="plan-packs" data-tip="Plan Packs"><span class="sb-icon">⚡</span><span class="sb-label">Plan Packs</span><span class="sb-badge-new">PRO</span></li>
+        <li class="sb-item" data-view="active-plan" data-tip="My Active Plan"><span class="sb-icon">★</span><span class="sb-label">My Active Plan</span></li>
+        <li class="sb-item" data-view="notes" data-tip="Notes"><span class="sb-icon">📝</span><span class="sb-label">Notes</span></li>
+        <li class="sb-item" data-view="daily" data-tip="Daily Log"><span class="sb-icon">📅</span><span class="sb-label">Daily Log</span></li>
+        <li class="sb-item" data-view="tasks" data-tip="Tasks"><span class="sb-icon">✓</span><span class="sb-label">Tasks</span></li>
+        <li class="sb-item" data-view="templates" data-tip="Templates"><span class="sb-icon">⊞</span><span class="sb-label">Templates</span></li>
+      </ul>
+      <div class="sb-section-label">Tools</div>
+      <ul class="sb-nav">
+        <li class="sb-item" data-view="dataview" data-tip="Dataview"><span class="sb-icon">⋮⋮</span><span class="sb-label">Dataview</span></li>
+        <li class="sb-item" data-view="calendar" data-tip="Calendar"><span class="sb-icon">◻</span><span class="sb-label">Calendar</span></li>
+        <li class="sb-item" data-view="tags" data-tip="Tags"><span class="sb-icon">#</span><span class="sb-label">Tags</span></li>
+        <li class="sb-item" data-view="settings" data-tip="Settings"><span class="sb-icon">⚙</span><span class="sb-label">Settings</span></li>
+      </ul>
+      <div class="sb-spacer"></div>
+      <div class="sb-vault" data-tip="Active Vault">
+        <div class="sb-vault-mini" aria-hidden="true">◈</div>
+        <div class="sb-vault-full">
+          <div class="sb-vault-label">Active Vault</div>
+          <div class="sb-vault-name" id="sbVaultName">Empire Builder</div>
+          <div class="sb-vault-bar-wrap"><div class="sb-vault-bar"></div></div>
+          <div class="sb-vault-meta"><span>Synced</span><span id="sbNodeCount">39 worlds</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER GRAPH CANVAS — 3D Globe -->
+    <main id="dashCanvas">
+      <!-- Single canvas: stars + orbit circles + mini nodes + line particles -->
+      <canvas id="bgCanvas"></canvas>
+
+      <!-- ── Sidebar Panel — z:55, slides in from left ── -->
+      <div id="dashPanel" aria-hidden="true"></div>
+
+      <!-- SVG: connection lines only (JS creates + updates endpoints) -->
+      <svg id="graphSvg"></svg>
+
+      <!-- All node elements — JS projects + positions each frame -->
+      <div id="graphNodes">
+
+        <!-- EMPIRE CORE — always canvas center, JS keeps it anchored -->
+        <div class="gn-wrap gn-core" id="gnCore"
+             style="--nc:212,175,55;--ic:rgba(212,175,55,0.95);--ic-hi:#f5c542;--lc:rgba(212,175,55,0.88);">
+          <div class="gn-node-head" style="width:96px;height:96px;">
+            <div class="gn-ring gn-ring-1" style="width:130px;height:130px;--rc:rgba(212,175,55,0.28);"></div>
+            <div class="gn-ring gn-ring-2" style="width:166px;height:166px;--rc:rgba(212,175,55,0.12);"></div>
+            <div class="gn-ring gn-ring-3" style="width:204px;height:204px;--rc:rgba(212,175,55,0.06);"></div>
+            <div class="gn-circle"
+                 style="--gd:rgba(212,175,55,0.32);--gb:rgba(212,175,55,0.6);background:radial-gradient(circle at 38% 32%,rgba(212,175,55,0.26),rgba(160,114,26,0.06));border:2px solid rgba(212,175,55,0.52);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 20h20"/><path d="M5 20l2-8 5 5 5-9 2 12"/>
+              </svg>
+            </div>
+          </div>
+          <div class="gn-label">EMPIRE CORE</div>
+          <div class="gn-sub">The Anchor</div>
+        </div>
+
+        <!-- DISCIPLINE -->
+        <div class="gn-wrap gn-node" id="gnDiscipline" data-node="discipline"
+             style="--nc:168,85,247;--ic:rgba(168,85,247,0.9);--ic-hi:#c084fc;--lc:rgba(168,85,247,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(168,85,247,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(168,85,247,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(168,85,247,0.24);--gb:rgba(168,85,247,0.52);background:radial-gradient(circle at 38% 32%,rgba(168,85,247,0.22),transparent);border:1.5px solid rgba(168,85,247,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">DISCIPLINE</div><div class="gn-sub">Focus &amp; Grit</div>
+        </div>
+
+        <!-- MASTERY -->
+        <div class="gn-wrap gn-node" id="gnMastery" data-node="mastery"
+             style="--nc:59,130,246;--ic:rgba(59,130,246,0.9);--ic-hi:#60a5fa;--lc:rgba(59,130,246,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(59,130,246,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(59,130,246,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(59,130,246,0.24);--gb:rgba(59,130,246,0.52);background:radial-gradient(circle at 38% 32%,rgba(59,130,246,0.22),transparent);border:1.5px solid rgba(59,130,246,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1"/><line x1="12" y1="3" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="3" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="21" y2="12"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">MASTERY</div><div class="gn-sub">Inner Mastery</div>
+        </div>
+
+        <!-- MINDSET -->
+        <div class="gn-wrap gn-node" id="gnMindset" data-node="mindset"
+             style="--nc:236,72,153;--ic:rgba(236,72,153,0.9);--ic-hi:#f472b6;--lc:rgba(236,72,153,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(236,72,153,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(236,72,153,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(236,72,153,0.24);--gb:rgba(236,72,153,0.52);background:radial-gradient(circle at 38% 32%,rgba(236,72,153,0.22),transparent);border:1.5px solid rgba(236,72,153,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/><path d="M5 3l.8 2.2L8 6l-2.2.8L5 9l-.8-2.2L2 6l2.2-.8z"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">MINDSET</div><div class="gn-sub">Clarity &amp; Power</div>
+        </div>
+
+        <!-- LEGACY -->
+        <div class="gn-wrap gn-node" id="gnLegacy" data-node="legacy"
+             style="--nc:20,184,166;--ic:rgba(20,184,166,0.9);--ic-hi:#2dd4bf;--lc:rgba(20,184,166,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(20,184,166,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(20,184,166,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(20,184,166,0.24);--gb:rgba(20,184,166,0.52);background:radial-gradient(circle at 38% 32%,rgba(20,184,166,0.22),transparent);border:1.5px solid rgba(20,184,166,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M4 20V9l8-7 8 7v11"/><line x1="9" y1="20" x2="9" y2="12"/><line x1="12" y1="20" x2="12" y2="12"/><line x1="15" y1="20" x2="15" y2="12"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">LEGACY</div><div class="gn-sub">Lasting Impact</div>
+        </div>
+
+        <!-- HEALTH -->
+        <div class="gn-wrap gn-node" id="gnHealth" data-node="health"
+             style="--nc:6,182,212;--ic:rgba(6,182,212,0.9);--ic-hi:#22d3ee;--lc:rgba(6,182,212,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(6,182,212,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(6,182,212,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(6,182,212,0.24);--gb:rgba(6,182,212,0.52);background:radial-gradient(circle at 38% 32%,rgba(6,182,212,0.22),transparent);border:1.5px solid rgba(6,182,212,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">HEALTH</div><div class="gn-sub">Body &amp; Energy</div>
+        </div>
+
+        <!-- BUSINESS -->
+        <div class="gn-wrap gn-node" id="gnBusiness" data-node="business"
+             style="--nc:244,114,182;--ic:rgba(244,114,182,0.9);--ic-hi:#f9a8d4;--lc:rgba(244,114,182,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(244,114,182,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(244,114,182,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(244,114,182,0.24);--gb:rgba(244,114,182,0.52);background:radial-gradient(circle at 38% 32%,rgba(244,114,182,0.22),transparent);border:1.5px solid rgba(244,114,182,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">BUSINESS</div><div class="gn-sub">Build &amp; Scale</div>
+        </div>
+
+        <!-- MONEY -->
+        <div class="gn-wrap gn-node" id="gnMoney" data-node="money"
+             style="--nc:245,197,66;--ic:rgba(245,197,66,0.9);--ic-hi:#fcd34d;--lc:rgba(245,197,66,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(245,197,66,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(245,197,66,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(245,197,66,0.24);--gb:rgba(245,197,66,0.52);background:radial-gradient(circle at 38% 32%,rgba(245,197,66,0.22),transparent);border:1.5px solid rgba(245,197,66,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">MONEY</div><div class="gn-sub">Wealth Flow</div>
+        </div>
+
+        <!-- AI & TECH -->
+        <div class="gn-wrap gn-node" id="gnAi" data-node="ai"
+             style="--nc:99,102,241;--ic:rgba(99,102,241,0.9);--ic-hi:#818cf8;--lc:rgba(99,102,241,0.82);">
+          <div class="gn-node-head">
+            <div class="gn-ring gn-ring-1" style="width:82px;height:82px;--rc:rgba(99,102,241,0.3);"></div>
+            <div class="gn-ring gn-ring-2" style="width:102px;height:102px;--rc:rgba(99,102,241,0.13);"></div>
+            <div class="gn-circle" style="--gd:rgba(99,102,241,0.24);--gb:rgba(99,102,241,0.52);background:radial-gradient(circle at 38% 32%,rgba(99,102,241,0.22),transparent);border:1.5px solid rgba(99,102,241,0.46);">
+              <svg class="gn-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="2" x2="9" y2="4"/><line x1="15" y1="2" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="22"/><line x1="15" y1="20" x2="15" y2="22"/><line x1="20" y1="9" x2="22" y2="9"/><line x1="20" y1="14" x2="22" y2="14"/><line x1="2" y1="9" x2="4" y2="9"/><line x1="2" y1="14" x2="4" y2="14"/></svg>
+            </div>
+          </div>
+          <div class="gn-label">AI & TECH</div><div class="gn-sub">Systems &amp; AI</div>
+        </div>
+
+      </div><!-- /graphNodes -->
+
+      <!-- ── World View Overlay — z:60, fills dashCanvas ── -->
+      <div id="worldView" aria-hidden="true">
+        <button id="wvBack">← Back to Map</button>
+        <div id="wvHeader">
+          <div id="wvTitle"></div>
+          <div id="wvSubtitle">Inner World</div>
+          <div id="wvDesc"></div>
+        </div>
+        <div id="wvStage">
+          <div id="wvOrbitRing"></div>
+          <div id="wvPlanet"></div>
+          <!-- .wv-bubble elements injected by JS -->
+        </div>
+        <div id="wvCard">
+          <div id="wvCardPlanet" class="wc-planet-preview"></div>
+          <div class="wc-title" id="wvCardTitle"></div>
+          <div class="wc-desc"  id="wvCardDesc"></div>
+          <div class="wc-progress-label">PROGRESS</div>
+          <div class="wc-progress-bar"><div class="wc-progress-fill" id="wvProgressFill"></div></div>
+          <div class="wc-progress-pct">0%</div>
+          <div class="wc-areas-label">KEY AREAS</div>
+          <ul class="wc-areas" id="wvAreas"></ul>
+          <button class="wc-cta">Continue Learning</button>
+        </div>
+        <!-- ── Lesson Panel — slides in over world view ── -->
+        <div id="lessonPanel" aria-hidden="true">
+          <div id="lpNav">
+            <button id="lpBack">← Back to World</button>
+            <div id="lpProgressBadge"><span id="lpProgressText"></span></div>
+          </div>
+          <div id="lpContent">
+            <!-- injected by JS -->
+          </div>
+        </div>
+      </div><!-- /worldView -->
+
+      <!-- ── Core Library — Centered Modal — z:65 ── -->
+      <div id="coreLibrary" aria-hidden="true">
+        <div id="clTop">
+          <div id="clTitleRow">
+            <div id="clHeaderLeft">
+              <div id="clHeaderIcon">⬡</div>
+              <div>
+                <div id="clHeaderTitle">WORLD LIBRARY</div>
+                <div id="clHeaderSub">Manage Empire Core connections</div>
+              </div>
+            </div>
+            <button id="clClose" aria-label="Close">✕</button>
+          </div>
+          <div id="clFilters">
+            <button class="cl-filter cl-filter-active" data-filter="all">All</button>
+            <button class="cl-filter" data-filter="main">Main</button>
+            <button class="cl-filter" data-filter="outer">Outer</button>
+            <button class="cl-filter" data-filter="linked">Linked</button>
+            <button class="cl-filter" data-filter="unlinked">Unlinked</button>
+          </div>
+        </div>
+        <div id="clStats">
+          <div class="cl-stat"><div class="cl-stat-num" id="clStatTotal">39</div><div class="cl-stat-lbl">Total</div></div>
+          <div class="cl-stat"><div class="cl-stat-num" id="clStatLinked">8</div><div class="cl-stat-lbl">Linked</div></div>
+          <div class="cl-stat"><div class="cl-stat-num" id="clStatAvail">30</div><div class="cl-stat-lbl">Available</div></div>
+        </div>
+        <div id="clSearchWrap"><input type="text" id="clSearchInput" placeholder="Search worlds…" autocomplete="off" spellcheck="false"></div>
+        <div id="clList"></div>
+      </div><!-- /coreLibrary -->
+
+      <!-- ── Stage 31.2D-B: Graph View guidance hint — top-center glass pill.
+           Visibility is tied to #dashRoot.hide-graph-hud (same path as
+           #cameraHud) so workspace switches hide it for free. Fades to
+           subtle 0.28 opacity 6s after auth ready via .gh-faded class
+           added in dashboard.js. pointer-events:none so it can never
+           block planet drag/click. ── -->
+      <div id="graphHint" aria-hidden="true">
+        <span class="gh-desktop">Drag to explore &middot; Click a planet &middot; &#x1F512; worlds need Empire Pro</span>
+        <span class="gh-mobile">Drag &middot; Tap a planet &middot; &#x1F512; = Pro</span>
+      </div>
+
+      <!-- ── Camera Control HUD ── -->
+      <div id="cameraHud">
+        <div class="cam-hud-title">CAMERA</div>
+        <div class="cam-hud-row">
+          <button class="cam-btn cam-btn-primary" id="camCenter" title="Center on selected world">⊙ Center</button>
+          <button class="cam-btn" id="camFree" title="Free look — explore 360">↺ Free</button>
+          <button class="cam-btn cam-btn-danger" id="camReset" title="Reset to Empire Map">⌂ Reset</button>
+        </div>
+        <div class="cam-hud-row cam-hud-zoom-row">
+          <button class="cam-btn cam-zoom-btn" id="camZoomIn">+</button>
+          <button class="cam-btn cam-zoom-btn" id="camZoomOut">−</button>
+          <span class="cam-hint">W A S D / ↑ ← ↓ →</span>
+        </div>
+      </div>
+
+      <!-- ══ Dashboard Workspace — full-screen section views (z:55) ══ -->
+      <section id="dashboardWorkspace" aria-hidden="true">
+        <div class="workspace-shell">
+          <div class="workspace-header" id="workspaceHeader">
+            <div class="workspace-header-left">
+              <button class="workspace-back-btn" id="workspaceBackToGraph" aria-label="Back to Graph View">
+                <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+                  <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Graph View</span>
+              </button>
+            </div>
+            <div class="workspace-header-center">
+              <div class="workspace-kicker" id="workspaceKicker">SECTION</div>
+              <h1 class="workspace-title" id="workspaceTitle">Workspace</h1>
+              <p class="workspace-subtitle" id="workspaceSubtitle"></p>
+            </div>
+            <div class="workspace-header-right"></div>
+          </div>
+          <div class="workspace-content" id="workspaceContent"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT PANEL — Glass Drawer -->
+    <aside id="dashRight">
+      <!-- Toggle strip — always visible -->
+      <button id="rpToggle" aria-label="Toggle analytics panel">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- Floating glass panel -->
+      <div id="rpPanel" aria-hidden="true">
+        <div id="rpScroll">
+
+          <!-- Empire Status -->
+          <div class="rp-block">
+            <div class="rp-lbl">Empire Status</div>
+            <div class="rp-status-row">
+              <div class="rp-status-dot" id="rpDot"></div>
+              <span class="rp-status-text" id="rpStatusText">LIVE</span>
+            </div>
+          </div>
+
+          <!-- World Count -->
+          <div class="rp-block">
+            <div class="rp-lbl">Worlds</div>
+            <div class="rp-world-count">39</div>
+            <div class="rp-world-breakdown">
+              <span class="rp-chip rp-chip-m">8 Main</span>
+              <span class="rp-chip rp-chip-o">30 Outer</span>
+              <span class="rp-chip rp-chip-c">1 Core</span>
+            </div>
+          </div>
+
+          <!-- Selected World -->
+          <div class="rp-block">
+            <div class="rp-lbl">Selected World</div>
+            <div class="rp-sel-empty" id="rpSelEmpty">No World Selected</div>
+            <div class="rp-sel-card" id="rpSelCard" style="display:none">
+              <div class="rp-sel-top">
+                <div class="rp-sel-dot" id="rpSelDot"></div>
+                <div class="rp-sel-info">
+                  <div class="rp-sel-name" id="rpSelName"></div>
+                  <div class="rp-sel-type" id="rpSelType"></div>
+                </div>
+              </div>
+              <div class="rp-prog-row">
+                <div class="rp-prog-bar"><div class="rp-prog-fill" id="rpSelFill"></div></div>
+                <span class="rp-prog-pct" id="rpSelPct">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compact World List -->
+          <div class="rp-block">
+            <div class="rp-lbl">Worlds</div>
+            <div class="rp-filter-row" id="rpFilters">
+              <button class="rp-flt rp-flt-on" data-f="all">All</button>
+              <button class="rp-flt" data-f="main">Main</button>
+              <button class="rp-flt" data-f="outer">Outer</button>
+              <button class="rp-flt" data-f="linked">Linked</button>
+            </div>
+            <div class="rp-wlist" id="rpWList"></div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="rp-block">
+            <div class="rp-lbl">Quick Actions</div>
+            <div class="rp-actions">
+              <button class="rp-act" id="rpActReset">↺ Reset View</button>
+              <button class="rp-act" id="rpActLib">⬡ Open Library</button>
+              <button class="rp-act rp-act-gold" id="rpActLearn">▶ Continue Learning</button>
+            </div>
+          </div>
+
+          <!-- Energy Flow chart -->
+          <div class="rp-block">
+            <div class="rp-block-hdr">
+              <span class="rp-lbl" style="margin:0">Energy Flow</span>
+              <span class="rp-live-badge">LIVE</span>
+            </div>
+            <canvas id="waveCanvas" height="44"></canvas>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    <!-- BOTTOM BAR -->
+    <div id="dashBotBar">
+      <button class="bot-btn"><span class="bot-btn-icon">+</span> New Node</button>
+      <button class="bot-btn" id="btnFocus"><span class="bot-btn-icon">⊡</span> Focus Mode</button>
+      <button class="bot-btn" id="btnZoomOut"><span class="bot-btn-icon">−</span></button>
+      <button class="bot-btn" id="btnZoom100" style="font-size:0.58rem;letter-spacing:0.06em;">100%</button>
+      <button class="bot-btn" id="btnZoomIn"><span class="bot-btn-icon">+</span></button>
+      <div class="bot-spacer"></div>
+      <div class="bot-clock" id="dbClock">--:-- --</div>
+      <div class="bot-minimap" id="botMinimap"></div>
+    </div>
+
+  </div><!-- /dashRoot -->
+
+  <!-- Modal container (empty, ready) -->
+  <div id="dashModal"></div>
+
+  <!-- Upgrade modal (required by auth guard — DO NOT REMOVE) -->
+  <div id="upgradeModal" role="dialog" aria-modal="true">
+    <div class="upgrade-modal-card">
+      <button class="upgrade-modal-close" onclick="window.closeUpgradeModal()" aria-label="Close">✕</button>
+      <div class="upgrade-modal-icon">👑</div>
+      <div class="upgrade-modal-title">Unlock Empire Builder Pro</div>
+      <div class="upgrade-modal-feature" id="upgradeFeatureName">Full Access</div>
+      <div class="upgrade-modal-desc">Upgrade to unlock unlimited plans, AI coaching, the full Empire Map, advanced tools, and complete progress tracking.</div>
+      <div class="upgrade-modal-price">$30<span style="font-size:1rem;font-weight:500;color:rgba(255,255,255,0.3)">/month</span></div>
+      <div class="upgrade-modal-price-sub">CANCEL ANYTIME · INSTANT ACCESS</div>
+      <ul class="upgrade-modal-perks">
+        <li>Unlimited plans and active goals</li>
+        <li>Full Empire Map — all categories and bubbles</li>
+        <li>AI Coach — personalized guidance</li>
+        <li>Full progress tracking across all areas</li>
+        <li>Export and import your data</li>
+      </ul>
+      <div class="upgrade-modal-actions">
+        <button class="upgrade-modal-cta" onclick="window.startProCheckout ? window.startProCheckout() : window.location.href='../plan.html'">Upgrade Now — $30/month</button>
+        <button class="upgrade-modal-later" onclick="window.closeUpgradeModal()">Maybe Later</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Debug badge (required by auth guard — DO NOT REMOVE) -->
+  <div id="debugBadge"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       PROTECTED SCRIPTS — DO NOT MODIFY ANYTHING BELOW
+       Firebase · Auth Guard · Feature Gate · n8n · AI Plan Builder
+  ══════════════════════════════════════════════════════ -->
+
+  <!-- ══ Firebase Auth Guard ══ -->
+  <script type="module">
+    import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey:            "AIzaSyABZ1GlwOK1YizD1LzlGKHOZ6vUsUSW3sI",
+      authDomain:        "ethos-empire.firebaseapp.com",
+      projectId:         "ethos-empire",
+      storageBucket:     "ethos-empire.firebasestorage.app",
+      messagingSenderId: "56025972719",
+      appId:             "1:56025972719:web:7d4f546719980cbe01c01a"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const overlay = document.getElementById('authOverlay');
+
+    const overlayFallbackTimer = setTimeout(() => {
+      if (overlay && overlay.parentNode) {
+        overlay.remove();
+        console.warn('[EE] Auth overlay removed by 12s fallback');
+        window.EE_DEBUG && (document.getElementById('debugBadge').style.display='block', document.getElementById('debugBadge').textContent='⚠ Auth fallback triggered');
+      }
+    }, 12000);
+
+    const isCheckoutReturn = new URLSearchParams(window.location.search).get('checkout') === 'success';
+    if (isCheckoutReturn) {
+      history.replaceState(null, '', window.location.pathname);
+      document.getElementById('overlayMsg').textContent = 'ACTIVATING YOUR PLAN...';
+      document.getElementById('overlaySub').textContent = 'This only takes a moment.';
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      const EE_DEV_TOKEN = 'EthosEmpire-DEV-X9K2-2026';
+      if (localStorage.getItem('ee_dev_token') === EE_DEV_TOKEN) {
+        clearTimeout(overlayFallbackTimer);
+        window.EE_USER = {
+          uid: 'dev_local', firebaseUser: null,
+          isActive: true, isPro: true, plan: 'pro',
+          name: 'Developer', email: 'dev@ethosempire.org',
+          subscriptionStatus: 'active', onboardingComplete: true
+        };
+        window.EE_PLAN_PROFILE        = null;
+        window.EE_SUBSCRIPTION_ACTIVE = true;
+        window.EE_IS_PRO              = true;
+        window.EE_USER_PLAN           = 'pro';
+        window.EE_SAVE_PROFILE  = async () => {};
+        window.EE_SIGN_OUT      = () => { localStorage.removeItem('ee_dev_token'); window.location.replace('../dev-access.html'); };
+        window.EE_OPEN_PORTAL   = (btn) => { if (btn) { const t = btn.textContent; btn.textContent = 'N/A in Dev Mode'; setTimeout(() => { btn.textContent = t; }, 2000); } };
+        overlay.remove();
+        document.dispatchEvent(new CustomEvent('ee:authReady', {
+          detail: { user: window.EE_USER, plan: 'pro', isPro: true, name: 'Developer', timeOfDay: 'morning' }
+        }));
+        return;
+      }
+
+      if (!user) { window.location.replace('../login.html'); return; }
+
+      let userSnap = await getDoc(doc(db, 'users', user.uid));
+      if (!userSnap.exists()) { window.location.replace('../login.html'); return; }
+
+      const isEmailProvider = user.providerData && user.providerData.some(p => p.providerId === 'password');
+      if (isEmailProvider && !user.emailVerified) {
+        window.location.replace('../login.html?unverified=1');
+        return;
+      }
+
+      let profile = userSnap.data();
+
+      if (isCheckoutReturn) {
+        let attempts = 0;
+        while (profile.subscriptionStatus !== 'active' && profile.subscriptionStatus !== 'trialing' && attempts < 10) {
+          await new Promise(r => setTimeout(r, 2000));
+          userSnap = await getDoc(doc(db, 'users', user.uid));
+          profile  = userSnap.data();
+          attempts++;
+        }
+      }
+
+      const status   = profile.subscriptionStatus || 'none';
+      const isActive = status === 'active' || status === 'trialing';
+
+      clearTimeout(overlayFallbackTimer);
+
+      window.EE_USER = {
+        uid: user.uid, firebaseUser: user,
+        isActive, isPro: isActive,
+        plan: isActive ? 'pro' : 'free',
+        ...profile
+      };
+      window.EE_PLAN_PROFILE        = profile.planProfile || null;
+      window.EE_SUBSCRIPTION_ACTIVE = isActive;
+      window.EE_IS_PRO              = isActive;
+      window.EE_USER_PLAN           = isActive ? 'pro' : 'free';
+
+      window.EE_SAVE_PROFILE = async (updates) => {
+        await setDoc(doc(db, 'users', user.uid), { ...updates, updatedAt: serverTimestamp() }, { merge: true });
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists()) {
+          window.EE_USER         = { uid: user.uid, firebaseUser: user, isActive, isPro: isActive, plan: isActive ? 'pro' : 'free', ...snap.data() };
+          window.EE_PLAN_PROFILE = snap.data().planProfile || null;
+        }
+      };
+      window.EE_SIGN_OUT = async () => { await signOut(auth); window.location.replace('../login.html'); };
+      window.EE_OPEN_PORTAL = async (btn) => {
+        const origText = btn ? btn.textContent : '';
+        if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
+        try {
+          const token = await user.getIdToken();
+          const res   = await fetch('/api/create-portal', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+          const data  = await res.json();
+          if (data.url) { window.location.href = data.url; return; }
+          throw new Error(data.error || 'No URL returned');
+        } catch (err) {
+          if (btn) { btn.textContent = origText || 'Manage Billing'; btn.disabled = false; }
+          alert('Could not open billing portal.\n\n' + (err.message || 'Unknown error') + '\n\nContact info.ethosempire@gmail.com if this persists.');
+        }
+      };
+
+      const name      = profile.name || user.displayName || 'Empire Builder';
+      const hour      = new Date().getHours();
+      const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+
+      if (!isActive && typeof window.applyFreeTierState === 'function') {
+        window.applyFreeTierState(status);
+      }
+
+      overlay.remove();
+      console.log('[EE] Auth ready — user:', name, '| plan:', window.EE_USER_PLAN);
+
+      document.dispatchEvent(new CustomEvent('ee:authReady', {
+        detail: { user: window.EE_USER, plan: window.EE_USER_PLAN, isPro: isActive, name, timeOfDay }
+      }));
+    });
+  </script>
+
+  <!-- ══ Feature Gate ══ -->
+  <script>
+  (function () {
+    window.EE_FEATURE_ACCESS = {
+      free: {
+        maxPlans: 1, unlockedBubbles: ['root','financial','discipline','budgeting','morning-routine'],
+        aiCoach: false, customBubbles: false, editDeleteBubbles: false,
+        fullProgress: false, exportMap: false, aiPlanBuilder: 'limited'
+      },
+      pro: {
+        maxPlans: Infinity, unlockedBubbles: 'all',
+        aiCoach: true, customBubbles: true, editDeleteBubbles: true,
+        fullProgress: true, exportMap: true, aiPlanBuilder: true
+      }
+    };
+    window.getUserPlan    = function () { return window.EE_USER_PLAN || 'free'; };
+    window.isUserPro      = function () { return window.EE_IS_PRO === true; };
+    window.isUserLoggedIn = function () { return !!(window.EE_USER && window.EE_USER.uid); };
+    window.canAccessFeature = function (featureId) {
+      var plan = window.getUserPlan();
+      var access = window.EE_FEATURE_ACCESS[plan] || window.EE_FEATURE_ACCESS.free;
+      var val = access[featureId];
+      if (val === true || val === 'all') return true;
+      if (val === false) return false;
+      if (val === 'limited') return 'limited';
+      return false;
+    };
+    window.canAccessBubble = function (bubbleId) {
+      if (window.isUserPro()) return true;
+      return window.EE_FEATURE_ACCESS.free.unlockedBubbles.indexOf(bubbleId) !== -1;
+    };
+    window.showUpgradeModal = function (featureName) {
+      var modal  = document.getElementById('upgradeModal');
+      var nameEl = document.getElementById('upgradeFeatureName');
+      if (!modal) return;
+      if (nameEl) nameEl.textContent = featureName || 'Full Access';
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+    window.closeUpgradeModal = function () {
+      var modal = document.getElementById('upgradeModal');
+      if (modal) modal.style.display = 'none';
+      document.body.style.overflow = '';
+    };
+    document.addEventListener('click', function (e) {
+      var modal = document.getElementById('upgradeModal');
+      if (modal && e.target === modal) window.closeUpgradeModal();
+    });
+    window.applyFreeTierState = function (status) {
+      document.body.classList.add('ee-free-tier');
+    };
+  })();
+  </script>
+
+  <!-- ══ n8n Webhook ══ -->
+  <script>
+  window.EE_BRAIN_WEBHOOK = 'https://api.ethosempire.org/webhook/ethos-brain';
+  </script>
+
+  <!-- ══ AI Plan Builder Logic (preserved exactly) ══ -->
+  <script>
+  (function () {
+    var N8N_WEBHOOK   = window.EE_BRAIN_WEBHOOK || 'https://api.ethosempire.org/webhook/ethos-brain';
+    var pbState       = {};
+    var pbSessionId   = 'sess_' + Date.now();
+    var pbPendingPlan = null;
+    var pbSending     = false;
+    var pbLastMsg     = '';
+
+    function initPB(name) {
+      var ov = document.getElementById('pbOverlay');
+      if (!ov) return;
+      ov.style.display = 'block';
+      var el = document.getElementById('pbGreetName');
+      if (el) el.textContent = (name || 'there').split(' ')[0];
+      document.getElementById('pbWelcomeSend').onclick = sendFromWelcome;
+      document.getElementById('pbWelcomeInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendFromWelcome(); }
+      });
+      document.getElementById('pbWelcomeChips').addEventListener('click', function (e) {
+        var chip = e.target.closest('.pb-welcome-chip');
+        if (!chip) return;
+        var val = chip.dataset.val;
+        gotoChat(val, function () { sendToN8n(val); });
+      });
+      document.getElementById('pbChatSend').onclick = sendChatMsg;
+      document.getElementById('pbChatInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
+      });
+    }
+
+    function sendFromWelcome() {
+      var txt = document.getElementById('pbWelcomeInput').value.trim();
+      if (!txt) return;
+      document.getElementById('pbWelcomeInput').value = '';
+      gotoChat(txt, function () { sendToN8n(txt); });
+    }
+
+    function sendChatMsg() {
+      if (pbSending) return;
+      var inp = document.getElementById('pbChatInput');
+      var val = inp.value.trim();
+      if (!val) return;
+      inp.value = '';
+      addUserBubble(val);
+      sendToN8n(val);
+    }
+
+    function gotoChat(firstMsg, callback) {
+      var ws = document.getElementById('pbWelcomeScreen');
+      ws.style.cssText = 'opacity:0;transition:opacity .3s;pointer-events:none;display:flex;';
+      setTimeout(function () {
+        ws.style.display = 'none';
+        document.getElementById('pbChatScreen').style.display = 'flex';
+        addUserBubble(firstMsg);
+        if (callback) callback();
+      }, 300);
+    }
+
+    function sendToN8n(message) {
+      if (!window.EE_USER || !window.EE_USER.uid) { window.location.replace('../login.html'); return; }
+      pbSending = true; pbLastMsg = message;
+      setInputDisabled(true);
+      var typingRow = showTyping();
+      var uid = window.EE_USER.uid;
+      var timedOut = false, timeoutId;
+
+      var fetchPromise = (async function () {
+        var idToken = '';
+        try { idToken = await window.EE_USER.firebaseUser.getIdToken(true); } catch (_) {}
+        if (!idToken) { try { idToken = await window.EE_USER.firebaseUser.getIdToken(); } catch (_) {} }
+        return fetch(N8N_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid, idToken, message, page: 'plan_builder', sessionId: pbSessionId, pbState })
+        });
+      })();
+      var timeoutPromise = new Promise(function (_, reject) {
+        timeoutId = setTimeout(function () { timedOut = true; reject(new Error('timeout')); }, 20000);
+      });
+
+      Promise.race([fetchPromise, timeoutPromise])
+        .then(function (res) { clearTimeout(timeoutId); if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+        .then(function (data) {
+          typingRow.remove();
+          var d = Array.isArray(data) ? (data[0] || {}) : (data || {});
+          if (d.error === 'invalid_token' || d.error === 'auth_required') { window.location.replace('../login.html'); return; }
+          if (d.state) pbState = d.state;
+          if (d.plan)  pbPendingPlan = d.plan;
+          if (d.reply) addAiBubble(d.reply, d.buttons || []);
+        })
+        .catch(function () {
+          typingRow.remove();
+          var errMsg = timedOut
+            ? 'The plan builder timed out. Make sure your n8n workflow is active and try again.'
+            : 'Could not reach the plan builder. Check your connection and try again.';
+          addAiBubble(errMsg, ['Try Again']);
+        })
+        .then(function () { pbSending = false; setInputDisabled(false); });
+    }
+
+    function showTyping() {
+      var msgs = document.getElementById('pbMsgs');
+      var row  = document.createElement('div');
+      row.className = 'pb-row-ai';
+      row.innerHTML = '<div class="pb-avatar">EE</div><div class="pb-typing"><div class="pb-dot"></div><div class="pb-dot"></div><div class="pb-dot"></div></div>';
+      msgs.appendChild(row);
+      pbScroll();
+      return row;
+    }
+
+    function pbMd(raw) {
+      var s = String(raw || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      s = s.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*\n]+)\*/g,'<em>$1</em>').replace(/`([^`\n]+)`/g,'<code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;font-size:0.85em;">$1</code>');
+      var lines = s.split('\n'), html = '', inUl = false, inOl = false;
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var ul = line.match(/^[\-\*•] (.+)/), ol = line.match(/^\d+\. (.+)/), h = line.match(/^#{1,3} (.+)/);
+        if (ul) { if (!inUl){html+='<ul style="margin:5px 0 5px 16px;padding:0;">';inUl=true;} if(inOl){html+='</ol>';inOl=false;} html+='<li>'+ul[1]+'</li>'; }
+        else if (ol) { if (!inOl){html+='<ol style="margin:5px 0 5px 16px;padding:0;">';inOl=true;} if(inUl){html+='</ul>';inUl=false;} html+='<li>'+ol[1]+'</li>'; }
+        else { if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} html += h ? '<div style="font-weight:800;color:#fff;margin:8px 0 3px;">'+h[1]+'</div>' : line.trim()==='' ? '<br>' : line+'<br>'; }
+      }
+      if(inUl)html+='</ul>'; if(inOl)html+='</ol>';
+      return html.replace(/(<br>\s*){3,}/g,'<br><br>').replace(/(<br>)+$/,'');
+    }
+
+    function addAiBubble(text, buttons) {
+      var msgs = document.getElementById('pbMsgs');
+      var row  = document.createElement('div');
+      row.className = 'pb-row-ai';
+      var btnsHtml = '';
+      if (buttons && buttons.length) {
+        btnsHtml = '<div class="pb-step-chips" style="margin-top:12px;">' +
+          buttons.map(function (b) {
+            var cls = 'pb-step-chip' + (b === 'Execute Plan' ? ' pb-cta-chip' : '');
+            return '<button class="' + cls + '" data-action="' + esc(b) + '">' + esc(b) + '</button>';
+          }).join('') + '</div>';
+      }
+      row.innerHTML = '<div class="pb-avatar">EE</div><div><div class="pb-bubble">' + pbMd(text) + '</div>' + btnsHtml + '</div>';
+      row.querySelectorAll('.pb-step-chip').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (pbSending) return;
+          var action = btn.dataset.action;
+          row.querySelectorAll('.pb-step-chip').forEach(function (b) { b.disabled = true; });
+          btn.classList.add('pb-sel');
+          if (action === 'Execute Plan') { addUserBubble('Execute Plan'); executePlan(btn); }
+          else if (action === 'Try Again') { sendToN8n(pbLastMsg); }
+          else { addUserBubble(action); sendToN8n(action); }
+        });
+      });
+      msgs.appendChild(row);
+      pbScroll();
+    }
+
+    async function executePlan(btn) {
+      if (!pbPendingPlan) { addAiBubble('No plan found yet — please complete the full flow first.', ['Restart']); return; }
+      btn.textContent = 'Saving...';
+      try {
+        if (window.EE_SAVE_PROFILE) {
+          var existingPP = window.EE_PLAN_PROFILE || {};
+          var catGoalMap = { fitness:['fitness'], finance:['finance'], discipline:['discipline'], career:['career'], coding:['career','discipline'], writing:['career'], science:['discipline'], philosophy:['mindset','discipline'] };
+          var cat      = (pbPendingPlan.category || '').toLowerCase();
+          var catGoals = catGoalMap[cat] || [];
+          var merged   = (existingPP.goals || []).concat(catGoals).filter(function (v,i,a) { return a.indexOf(v)===i; });
+          var mergedPlan = Object.assign({}, existingPP, pbPendingPlan, {
+            goals: merged.length ? merged : (pbPendingPlan.goals || existingPP.goals || []),
+            weightKg: pbPendingPlan.weightKg || existingPP.weightKg,
+            heightCm: pbPendingPlan.heightCm || existingPP.heightCm,
+            age:      pbPendingPlan.age      || existingPP.age,
+            bmi:      pbPendingPlan.bmi      || existingPP.bmi,
+            dob:      pbPendingPlan.dob      || existingPP.dob,
+          });
+          await window.EE_SAVE_PROFILE({ planProfile: mergedPlan });
+          window.EE_PLAN_PROFILE = mergedPlan;
+        }
+      } catch (_) {}
+      setTimeout(pbEnterDash, 600);
+    }
+
+    function pbEnterDash() {
+      var ov = document.getElementById('pbOverlay');
+      if (!ov) return;
+      ov.style.transition = 'opacity .5s';
+      ov.style.opacity    = '0';
+      setTimeout(function () {
+        ov.remove();
+        document.dispatchEvent(new CustomEvent('ee:planProfileUpdated', {
+          detail: { profile: window.EE_PLAN_PROFILE }
+        }));
+      }, 500);
+    }
+
+    function addUserBubble(txt) {
+      var msgs = document.getElementById('pbMsgs');
+      var row  = document.createElement('div');
+      row.className = 'pb-row-user';
+      row.innerHTML = '<div class="pb-bubble">' + esc(txt) + '</div>';
+      msgs.appendChild(row);
+      pbScroll();
+    }
+
+    function pbScroll() { var m = document.getElementById('pbMsgs'); if (m) setTimeout(function () { m.scrollTop = m.scrollHeight; }, 60); }
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function setInputDisabled(d) {
+      var send = document.getElementById('pbChatSend'), inp = document.getElementById('pbChatInput');
+      if (send) send.disabled = d; if (inp) inp.disabled = d;
+    }
+
+    document.addEventListener('ee:showPlanBuilder', function (e) { initPB(e.detail ? e.detail.name : ''); });
+  })();
+  </script>
+
+  <!-- ══ Clock ══ -->
+  <script>
+  (function () {
+    function tick() {
+      var el = document.getElementById('dbClock');
+      if (!el) return;
+      var now = new Date(), h = now.getHours(), m = now.getMinutes();
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      el.textContent = h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+    }
+    tick();
+    setInterval(tick, 30000);
+  })();
+  </script>
+
+  <!-- ══ Empire Data ══ -->
+  <script src="../empire-data.js"></script>
+  <!-- <script src="empire-map.js"></script> -->
+
+  <!-- ══ Dashboard Logic ══ -->
+  <script src="dashboard.js?v=p21"></script>
+
+</body>
+</html>

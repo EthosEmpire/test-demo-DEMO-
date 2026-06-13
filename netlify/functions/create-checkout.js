@@ -52,7 +52,7 @@ exports.handler = async (event) => {
       line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
       mode: 'subscription',
       client_reference_id: uid,
-      success_url: `${process.env.URL}/dashboard.html?checkout=success`,
+      success_url: `${process.env.URL}/dashboard/dashboard.html?checkout=success`,
       cancel_url: `${process.env.URL}/plan.html`
     });
 
