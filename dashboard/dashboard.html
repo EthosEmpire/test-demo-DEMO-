@@ -9,6 +9,30 @@
   <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
   <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
   <link rel="stylesheet" href="dashboard.css?v=p25">
+
+  <!-- ══ Stage 33-B-6: dev-environment detection ══
+       Runs before every other script (head, non-deferred) so window.EE_ENV
+       and window.EE_DEV_FLAGS_ALLOWED are visible to dashboard.js helpers
+       AND the inline auth module below. localhost / 127.0.0.1 / ::1 / .local
+       / file: are treated as development; everything else is production.
+       In production every dev/localStorage self-unlock flag is ignored - a
+       DevTools paste can no longer flip a paying user from Core to Pro. -->
+  <script>
+    (function () {
+      function eeIsLocalDevHost() {
+        var host = location.hostname || '';
+        return (
+          location.protocol === 'file:' ||
+          host === 'localhost' ||
+          host === '127.0.0.1' ||
+          host === '[::1]' ||
+          host.endsWith('.local')
+        );
+      }
+      window.EE_ENV               = eeIsLocalDevHost() ? 'development' : 'production';
+      window.EE_DEV_FLAGS_ALLOWED = window.EE_ENV !== 'production';
+    })();
+  </script>
 </head>
 <body>
 
@@ -562,9 +586,31 @@
       document.getElementById('overlaySub').textContent = 'This only takes a moment.';
     }
 
+    /* Stage 33-B-5: single source of truth for the dashboard's plan tier.
+       Reads the Firestore `plan` field that Stage 33-B-4 webhook /
+       verify-checkout now write, gated by subscriptionStatus. Anything that
+       isn't an active/trialing Core or Pro subscription resolves to 'free'.
+       Critically, NO MORE inferring Pro from "any active subscription" - a
+       $30 Core subscriber must not unlock $40 Pro features. */
+    function eeNormalizePlanFromProfile(profile) {
+      profile = profile || {};
+      const ACTIVE_STATUSES = ['active', 'trialing'];
+      const ALLOWED_PLANS   = ['empire-core', 'empire-pro'];
+      const status  = profile.subscriptionStatus || 'none';
+      const rawPlan = profile.plan || 'free';
+      if (ACTIVE_STATUSES.includes(status) && ALLOWED_PLANS.includes(rawPlan)) return rawPlan;
+      return 'free';
+    }
+
     onAuthStateChanged(auth, async (user) => {
       const EE_DEV_TOKEN = 'EthosEmpire-DEV-X9K2-2026';
-      if (localStorage.getItem('ee_dev_token') === EE_DEV_TOKEN) {
+      /* Stage 33-B-6: dev-token branch is now gated by EE_DEV_FLAGS_ALLOWED.
+         On production hostnames the token literal in localStorage is
+         silently ignored - the code falls through to the real Firebase
+         auth path, which derives Pro/Core from the Firestore plan field.
+         On localhost / 127.0.0.1 / ::1 / .local / file: the branch still
+         fires so local testing is unaffected. */
+      if (window.EE_DEV_FLAGS_ALLOWED && localStorage.getItem('ee_dev_token') === EE_DEV_TOKEN) {
         clearTimeout(overlayFallbackTimer);
         window.EE_USER = {
           uid: 'dev_local', firebaseUser: null,
@@ -574,14 +620,42 @@
         };
         window.EE_PLAN_PROFILE        = null;
         window.EE_SUBSCRIPTION_ACTIVE = true;
+        /* Stage 33-B-5: dev-token branch keeps Pro behavior for now (the
+           hardcoded literal is the same self-grant risk flagged in Stage
+           33-B-1; Stage 33-B-6 will gate this behind EE_ENV !== production).
+           EE_USER_PLAN is set to 'dev' so getUserPlanLevel() in dashboard.js
+           can recognise the dev path and downstream helpers can map it to
+           Pro semantics via getDashboardPlanTier(). */
         window.EE_IS_PRO              = true;
-        window.EE_USER_PLAN           = 'pro';
+        window.EE_IS_CORE             = false;
+        window.EE_USER_PLAN           = 'dev';
+        window.EE_SUBSCRIPTION_STATUS = 'active';
         window.EE_SAVE_PROFILE  = async () => {};
         window.EE_SIGN_OUT      = () => { localStorage.removeItem('ee_dev_token'); window.location.replace('../dev-access.html'); };
         window.EE_OPEN_PORTAL   = (btn) => { if (btn) { const t = btn.textContent; btn.textContent = 'N/A in Dev Mode'; setTimeout(() => { btn.textContent = t; }, 2000); } };
+        /* Stage 33-B-3: dev-token branch must NEVER call Stripe. The real
+           checkout helper lives in the production branch below; this stub
+           only acknowledges the click so dev sessions can exercise the UI
+           without touching Stripe. Allowed plan ids mirror the production
+           helper so any usage mismatch surfaces here too. */
+        window.EE_START_CHECKOUT = async (planId) => {
+          const ALLOWED_PLANS = ['empire-core', 'empire-pro'];
+          if (!ALLOWED_PLANS.includes(planId)) { alert('Please choose a valid plan.'); return; }
+          alert('Checkout is disabled in Dev Mode (plan: ' + planId + ').');
+        };
         overlay.remove();
         document.dispatchEvent(new CustomEvent('ee:authReady', {
-          detail: { user: window.EE_USER, plan: 'pro', isPro: true, name: 'Developer', timeOfDay: 'morning' }
+          /* Stage 33-B-5: detail.plan now carries the normalized plan key
+             ('dev' here) so listeners that hydrate from authReady see the
+             same value as window.EE_USER_PLAN. */
+          detail: {
+            user: window.EE_USER,
+            plan: window.EE_USER_PLAN,
+            isPro: window.EE_IS_PRO,
+            subscriptionStatus: window.EE_SUBSCRIPTION_STATUS,
+            name: 'Developer',
+            timeOfDay: 'morning'
+          }
         }));
         return;
       }
@@ -614,23 +688,44 @@
 
       clearTimeout(overlayFallbackTimer);
 
+      /* Stage 33-B-5: derive the plan tier from the Firestore `plan` field
+         (Stage 33-B-4) gated by subscriptionStatus. Replaces the previous
+         "isActive ? 'pro' : 'free'" shortcut which silently upgraded $30
+         Empire Core subscribers to the $40 Pro surface. */
+      const normalizedPlan = eeNormalizePlanFromProfile(profile);
+      const isPro          = normalizedPlan === 'empire-pro';
+      const isCore         = normalizedPlan === 'empire-core';
+
       window.EE_USER = {
         uid: user.uid, firebaseUser: user,
-        isActive, isPro: isActive,
-        plan: isActive ? 'pro' : 'free',
+        isActive, isPro,
+        plan: normalizedPlan,
         ...profile
       };
       window.EE_PLAN_PROFILE        = profile.planProfile || null;
       window.EE_SUBSCRIPTION_ACTIVE = isActive;
-      window.EE_IS_PRO              = isActive;
-      window.EE_USER_PLAN           = isActive ? 'pro' : 'free';
+      window.EE_SUBSCRIPTION_STATUS = status;
+      window.EE_IS_PRO              = isPro;
+      window.EE_IS_CORE             = isCore;
+      window.EE_USER_PLAN           = normalizedPlan;
 
       window.EE_SAVE_PROFILE = async (updates) => {
         await setDoc(doc(db, 'users', user.uid), { ...updates, updatedAt: serverTimestamp() }, { merge: true });
         const snap = await getDoc(doc(db, 'users', user.uid));
         if (snap.exists()) {
-          window.EE_USER         = { uid: user.uid, firebaseUser: user, isActive, isPro: isActive, plan: isActive ? 'pro' : 'free', ...snap.data() };
-          window.EE_PLAN_PROFILE = snap.data().planProfile || null;
+          /* Stage 33-B-5: re-normalize from the fresh snapshot so any
+             webhook-side update to subscriptionStatus / plan that landed in
+             the same Firestore document is reflected on window.EE_USER. */
+          const fresh = snap.data();
+          const freshPlan = eeNormalizePlanFromProfile(fresh);
+          window.EE_USER = {
+            uid: user.uid, firebaseUser: user,
+            isActive: (fresh.subscriptionStatus === 'active' || fresh.subscriptionStatus === 'trialing'),
+            isPro: freshPlan === 'empire-pro',
+            plan: freshPlan,
+            ...fresh
+          };
+          window.EE_PLAN_PROFILE = fresh.planProfile || null;
         }
       };
       window.EE_SIGN_OUT = async () => { await signOut(auth); window.location.replace('../login.html'); };
@@ -648,6 +743,54 @@
           alert('Could not open billing portal.\n\n' + (err.message || 'Unknown error') + '\n\nContact info.ethosempire@gmail.com if this persists.');
         }
       };
+      /* Stage 33-B-3: real Stripe Checkout entry point. Called by
+         dashboard.js startPlanCheckout(planId) for every [data-plan] button
+         on the locked Plan Packs screen, the plan-comparison modal, and the
+         locked Pro planet upgrade card. Sends the signed-in user's Firebase
+         ID token + planId to /api/create-checkout (Stage 33-B-2), which
+         picks the right Stripe price and returns a Checkout Session URL.
+         A double-click guard (window._eeCheckoutInFlight) + per-button
+         disable prevent duplicate sessions while the round-trip is in
+         flight. UI state is only restored when the redirect did NOT happen
+         so the success path doesn't fight the page unload. The bearer
+         token is never logged. */
+      window.EE_START_CHECKOUT = async (planId) => {
+        const ALLOWED_PLANS = ['empire-core', 'empire-pro'];
+        if (!ALLOWED_PLANS.includes(planId)) { alert('Please choose a valid plan.'); return; }
+        if (!user) { alert('Please sign in first.'); return; }
+        if (window._eeCheckoutInFlight) return;
+        window._eeCheckoutInFlight = true;
+
+        const planBtns = Array.from(document.querySelectorAll('[data-plan="' + planId + '"]'));
+        const savedLabels = planBtns.map(b => b.textContent);
+        planBtns.forEach(b => { b.disabled = true; b.textContent = 'Loading...'; });
+        document.body.classList.add('ee-checkout-loading');
+
+        let succeeded = false;
+        try {
+          const token = await user.getIdToken();
+          const res = await fetch('/api/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ planId })
+          });
+          let data = {};
+          try { data = await res.json(); } catch (_) { /* non-JSON body */ }
+          if (!res.ok || !data.url) {
+            throw new Error((data && data.error) || 'Checkout could not be started.');
+          }
+          window.location.href = data.url;
+          succeeded = true;
+        } catch (err) {
+          alert('Could not start checkout.\n\n' + (err.message || 'Unknown error') + '\n\nContact info.ethosempire@gmail.com if this persists.');
+        } finally {
+          if (!succeeded) {
+            window._eeCheckoutInFlight = false;
+            planBtns.forEach((b, i) => { b.disabled = false; b.textContent = savedLabels[i] || 'Start'; });
+            document.body.classList.remove('ee-checkout-loading');
+          }
+        }
+      };
 
       const name      = profile.name || user.displayName || 'Empire Builder';
       const hour      = new Date().getHours();
@@ -661,7 +804,17 @@
       console.log('[EE] Auth ready — user:', name, '| plan:', window.EE_USER_PLAN);
 
       document.dispatchEvent(new CustomEvent('ee:authReady', {
-        detail: { user: window.EE_USER, plan: window.EE_USER_PLAN, isPro: isActive, name, timeOfDay }
+        /* Stage 33-B-5: isPro now reflects the normalized plan, not raw
+           isActive, so a Core subscriber dispatches isPro:false even though
+           their subscription is active. */
+        detail: {
+          user: window.EE_USER,
+          plan: window.EE_USER_PLAN,
+          isPro: window.EE_IS_PRO,
+          subscriptionStatus: window.EE_SUBSCRIPTION_STATUS,
+          name,
+          timeOfDay
+        }
       }));
     });
   </script>
@@ -959,7 +1112,7 @@
   <!-- <script src="empire-map.js"></script> -->
 
   <!-- ══ Dashboard Logic ══ -->
-  <script src="dashboard.js?v=p25"></script>
+  <script src="dashboard.js?v=p27"></script>
 
 </body>
 </html>

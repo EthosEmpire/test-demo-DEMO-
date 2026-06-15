@@ -112,14 +112,26 @@ if (typeof window !== 'undefined') { window._eeCleanupGraphOverlays = _eeCleanup
    schema accordingly. Until then the upgrade button below routes through
    the existing plan-comparison / upgrade modal - no fake checkout. */
 function getDashboardPlanTier() {
-  /* Dev-only override so the lock UI can be visually tested while signed in
-     as a Pro user. Set localStorage.ethos_force_base_tier = '1' to preview
-     the base-tier experience. Remove the flag to restore real state. */
-  try { if (localStorage.getItem('ethos_force_base_tier') === '1') return 'base'; } catch (e) {}
-  if (typeof window !== 'undefined' && window.EE_IS_PRO === true) return 'pro';
-  /* Optional local flag for early adopters who paid before the backend
-     distinguishes tiers - manual unlock at the front-end gate only. */
-  try { if (localStorage.getItem('ethos_empire_pro_unlocked') === 'true') return 'pro'; } catch (e) {}
+  /* Stage 33-B-6: dev flag reads only fire when EE_DEV_FLAGS_ALLOWED is
+     true (localhost / 127.0.0.1 / ::1 / .local / file:). In production
+     all five overrides are ignored at the gate and the function falls
+     through to the real Firestore-derived plan from Stage 33-B-5.
+     Precedence inside dev: force_base_tier > empire_pro_unlocked >
+     real plan level. force_base wins so a Pro tester can still preview
+     the locked state. */
+  var devAllowed = typeof window !== 'undefined' && window.EE_DEV_FLAGS_ALLOWED === true;
+  if (devAllowed) {
+    try { if (localStorage.getItem('ethos_force_base_tier') === '1') return 'base'; } catch (e) {}
+    try { if (localStorage.getItem('ethos_empire_pro_unlocked') === 'true') return 'pro'; } catch (e) {}
+  }
+  /* Stage 33-B-5: wrap getUserPlanLevel() so the Stage 31 Pro-lock and the
+     Stage 2 plan-pack gate share one source of truth. 'empire-pro' and
+     'dev' both behave as the Pro tier; 'empire-core' resolves to 'base'. */
+  if (typeof getUserPlanLevel === 'function') {
+    var level = getUserPlanLevel();
+    if (level === 'empire-pro' || level === 'dev') return 'pro';
+    if (level === 'empire-core' || level === 'free') return 'base';
+  }
   return 'base';
 }
 function isEmpireProUnlocked() { return getDashboardPlanTier() === 'pro'; }
@@ -7954,7 +7966,15 @@ function initSidebar() {
   }
 
   function hasPlanPackAccess() {
-    if (window.EE_IS_PRO === true) return true;
+    /* Stage 33-B-5: route through canAccessPlanPacks() so all "can this
+       user open Plan Packs?" checks share one source of truth.
+       Stage 33-B-6: the ee_plan_pack_access localStorage override now only
+       fires when EE_DEV_FLAGS_ALLOWED is true, so a DevTools paste on
+       production cannot unlock the $40 surface for a $30 / free user. */
+    if (typeof window !== 'undefined' && typeof window.canAccessPlanPacks === 'function'
+        && window.canAccessPlanPacks()) return true;
+    var devAllowed = typeof window !== 'undefined' && window.EE_DEV_FLAGS_ALLOWED === true;
+    if (!devAllowed) return false;
     return localStorage.getItem('ee_plan_pack_access') === 'true';
   }
 
@@ -16438,19 +16458,40 @@ function eeInstallMobileHamburger() {
    ethos_plan_level is unset, but testers can override at will. */
 
 function getUserPlanLevel() {
-  try {
-    if (localStorage.getItem('ee_dev_token') === 'EthosEmpire-DEV-X9K2-2026') return 'dev';
-    var mock = localStorage.getItem('ethos_plan_level');
-    if (mock === 'free' || mock === 'empire-core' || mock === 'empire-pro' || mock === 'dev') return mock;
-  } catch (e) {}
-  /* Fall back to real Stripe state so paying users aren't blocked */
-  if (window.EE_IS_PRO === true) return 'empire-pro';
+  /* Stage 33-B-6: dev/mock self-grant flags only fire when
+     EE_DEV_FLAGS_ALLOWED is true. In production the dev token literal in
+     localStorage is silently ignored even if a user pastes it via DevTools;
+     the function falls through to window.EE_USER_PLAN (the real
+     Firestore-derived plan from Stage 33-B-5). */
+  var devAllowed = typeof window !== 'undefined' && window.EE_DEV_FLAGS_ALLOWED === true;
+  if (devAllowed) {
+    try {
+      if (localStorage.getItem('ee_dev_token') === 'EthosEmpire-DEV-X9K2-2026') return 'dev';
+      var mock = localStorage.getItem('ethos_plan_level');
+      if (mock === 'free' || mock === 'empire-core' || mock === 'empire-pro' || mock === 'dev') return mock;
+    } catch (e) {}
+  }
+  /* Stage 33-B-5: read the already-normalized plan key set by the
+     dashboard.html boot block. That value is derived from the Firestore
+     `plan` field gated by subscriptionStatus (Stage 33-B-4 writes the
+     field, eeNormalizePlanFromProfile gates it on active|trialing). No
+     more inferring Pro from "any active subscription" - a $30 Core user
+     resolves to 'empire-core' here, not 'empire-pro'. */
+  if (typeof window !== 'undefined' && typeof window.EE_USER_PLAN === 'string') {
+    var p = window.EE_USER_PLAN;
+    if (p === 'free' || p === 'empire-core' || p === 'empire-pro' || p === 'dev') return p;
+  }
   return 'free';
 }
 
-function isFreePlan()        { return getUserPlanLevel() === 'free'; }
-function isEmpireCorePlan()  { var l = getUserPlanLevel(); return l === 'empire-core' || l === 'empire-pro' || l === 'dev'; }
-function isEmpireProPlan()   { var l = getUserPlanLevel(); return l === 'empire-pro' || l === 'dev'; }
+/* Stage 33-B-5: isEmpireCorePlan was previously "core OR pro OR dev" -
+   a legacy "Pro implies Core access" shortcut. With the normalized plan
+   key, isEmpireCorePlan now means strictly the $30 Core tier, matching
+   isEmpireProPlan's strict semantics. No callers depended on the old
+   broader meaning (grep: this helper had zero call sites). */
+function isFreePlan()         { return getUserPlanLevel() === 'free'; }
+function isEmpireCorePlan()   { return getUserPlanLevel() === 'empire-core'; }
+function isEmpireProPlan()    { var l = getUserPlanLevel(); return l === 'empire-pro' || l === 'dev'; }
 function canAccessPlanPacks() { return isEmpireProPlan(); }
 
 function setMockPlanLevel(level) {
@@ -16779,9 +16820,12 @@ function renderSettingsTabbed() {
     billingActions = '<div class="ee-settings-note">Developer mode — billing actions are disabled.</div>';
   }
 
-  /* Mock-tier switcher (only visible to dev token; lets you flip levels for testing) */
+  /* Mock-tier switcher (only visible to dev token; lets you flip levels for testing)
+     Stage 33-B-6: also gated behind EE_DEV_FLAGS_ALLOWED so production users
+     never see the switcher even if the localStorage flag is somehow set. */
   var devSwitcher = '';
-  if (level === 'dev' || (function(){ try { return !!localStorage.getItem('ethos_plan_level'); } catch(e){ return false; } })()) {
+  var _devSwitcherAllowed = typeof window !== 'undefined' && window.EE_DEV_FLAGS_ALLOWED === true;
+  if (_devSwitcherAllowed && (level === 'dev' || (function(){ try { return !!localStorage.getItem('ethos_plan_level'); } catch(e){ return false; } })())) {
     devSwitcher = ''
       + '<div class="ee-settings-note ee-settings-dev">'
       +   '<div class="ee-settings-dev-label">Test plan tier (local mock)</div>'
