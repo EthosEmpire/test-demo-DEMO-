@@ -5389,6 +5389,19 @@ function initGlobe() {
        workspace switch path (Stage 30.4 nav). */
     if (btnPack)  btnPack.addEventListener('click', function () {
       if (relSec && typeof window.switchDashboardView === 'function') {
+        /* Stage 32-D: planet -> Plan Packs category bridge. Only set the
+           transient flag when the route lands on plan-packs - other routes
+           (tasks/notes/daily/templates/active-plan) must not be tagged with
+           a world context. Read by renderPackMarketplace via PP_PLANET_TO_CHIP
+           to override the chip filter for this view only; never persisted,
+           never written to window._ppMarketFilter or localStorage. The else
+           branch wipes any stale flag so a previous Health->Plan Packs visit
+           cannot leak into a later Discipline->Tasks visit. */
+        if (relSec === 'plan-packs') {
+          window._ppFromWorld = worldId;
+        } else {
+          window._ppFromWorld = null;
+        }
         clearWorldFocus();
         window.switchDashboardView(relSec);
         return;
@@ -7980,10 +7993,34 @@ function initSidebar() {
     var search = (typeof window !== 'undefined' && window._ppMarketSearch) || '';
     var searchLower = String(search).toLowerCase().trim();
 
+    /* Stage 32-D: planet -> Plan Packs category bridge. When the user opens
+       Plan Packs from a Graph View planet that routes here, render with the
+       planet's category as the effective filter so the marketplace feels
+       connected to that world. The saved filter in window._ppMarketFilter
+       and its localStorage mirror are NOT touched - they survive untouched
+       and resume the moment the bridge is cleared (dismissed via the pill X,
+       overridden by a manual chip click, or naturally on page reload).
+       Only the three planets that already route to 'plan-packs'
+       (gnHealth / gnBusiness / gnMoney) have entries; any other value of
+       window._ppFromWorld is ignored so non-mapped worlds cannot hijack
+       the chip strip. */
+    var PP_PLANET_TO_CHIP = {
+      gnHealth:   'Body',
+      gnBusiness: 'Business',
+      gnMoney:    'Money'
+    };
+    var fromWorldId = (typeof window !== 'undefined'
+                      && window._ppFromWorld
+                      && PP_PLANET_TO_CHIP[window._ppFromWorld])
+                      ? window._ppFromWorld
+                      : null;
+    var bridgedCat      = fromWorldId ? PP_PLANET_TO_CHIP[fromWorldId] : null;
+    var effectiveFilter = bridgedCat || filter;
+
     /* Filtering */
     var filtered = entries.filter(function (e) {
-      if (filter !== 'All') {
-        var inCat = (e.category === filter) || (e.tags && e.tags.indexOf(filter) >= 0);
+      if (effectiveFilter !== 'All') {
+        var inCat = (e.category === effectiveFilter) || (e.tags && e.tags.indexOf(effectiveFilter) >= 0);
         if (!inCat) return false;
       }
       if (searchLower) {
@@ -8039,8 +8076,12 @@ function initSidebar() {
       ? '<div class="pp-grid">' + filtered.map(renderCard).join('') + '</div>'
       : '<div class="pp-empty-result">No packs match your filter.</div>';
 
+    /* Stage 32-D: chip highlight follows the effective (bridged) filter so a
+       Graph View entry visually lands on the matching chip. Picking any chip
+       wipes the bridge inside attachPackEvents, so the user's manual choice
+       always wins. */
     var chipsHtml = categories.map(function (c) {
-      return '<button class="pp-chip' + (c === filter ? ' pp-chip-on' : '') + '" data-cat="' + c + '">' + c + '</button>';
+      return '<button class="pp-chip' + (c === effectiveFilter ? ' pp-chip-on' : '') + '" data-cat="' + c + '">' + c + '</button>';
     }).join('');
 
     /* Stage 30.3 — hero now surfaces an active-pack continue CTA when one
@@ -8064,18 +8105,77 @@ function initSidebar() {
     var heroPrimaryHtml = _activeEntryH
       ? '<button class="pp-hero-cta pp-hero-cta-primary" id="ppHeroContinue">Continue ' + dpEsc(_activeEntryH.title) + ' &rarr;</button>'
       : '<button class="pp-hero-cta pp-hero-cta-primary" id="ppHeroBrowse">Browse Packs</button>';
-    var heroSub = 'Choose a focused system and build momentum day by day. '
-      + entries.length + ' guided transformation packs';
+    /* Stage 32-A: hero identity rewrite. Old copy ("Choose a focused system
+       and build momentum day by day. N guided transformation packs") read as
+       generic SaaS marketplace copy. New copy frames the surface as an
+       Empire Path - a transformation journey - while preserving the dynamic
+       active-pack progress suffix so the hero still feels personalized when
+       a pack is in flight. Pack count moves into the existing Total Packs
+       stat below, so dropping it from the subtitle does not hide it. */
+    var heroSub = 'Pick a focused path, follow the daily system, and turn your goals into visible progress inside your Empire.';
     if (_activeEntryH && _activeCompH && _activeCompH.total) {
       heroSub += ' &middot; ' + _activeCompH.completed + ' of ' + _activeCompH.total
         + ' days done in ' + dpEsc(_activeEntryH.title);
     }
 
+    /* Stage 32-A: hide the "$40/mo - Empire Pro - View" stat chip for users
+       who already have an active Pro subscription. Anyone reaching this
+       marketplace has plan-pack access (hasPlanPackAccess gates the route),
+       but localStorage dev-preview users still benefit from the chip as a
+       way to test the upgrade modal, so we only suppress it for real Pro.
+       Click handler below already guards with `if (statPro)`, so a missing
+       button is safe. */
+    var hideProStatChip = (typeof window !== 'undefined' && window.EE_IS_PRO === true);
+
+    /* Stage 32-C: promote the Today Command Center into Plan Packs so the
+       marketplace also feels like the user's daily execution hub. Only
+       surfaces when the user has at least one started pack OR an active pack
+       - otherwise the page stays a clean marketplace-first discovery surface.
+       Reuses renderTodayDashboard() verbatim so the checklist, streak,
+       missed-yesterday and recently-completed logic stays the single source
+       of truth (also still rendered inside Active Plan - safe because only
+       one workspace is mounted at a time via showWorkspaceView). Events for
+       the embedded buttons (#apTdContinue / #apTdMissedAll / #apTdViewCeremony
+       / .ap-command-row) are wired from attachPackEvents() via the existing
+       window.attachTodayDashboardEvents helper, which already scopes queries
+       to #workspaceContent. */
+    var _startedAnyPP = (typeof getStartedPacks === 'function') ? (getStartedPacks().length > 0) : false;
+    var _activeForBridge = (typeof getActivePack === 'function') ? getActivePack() : null;
+    var showTodayBridge = (_startedAnyPP || !!_activeForBridge) && (typeof renderTodayDashboard === 'function');
+    var todayBridgeHtml = showTodayBridge
+      ? '<div class="pp-today-bridge">'
+        + '<div class="pp-section-head">'
+        +   '<span class="pp-section-kicker">TODAY&rsquo;S PATH</span>'
+        +   '<span class="pp-section-title">Your daily loop</span>'
+        + '</div>'
+        + renderTodayDashboard()
+        + '</div>'
+      : '';
+
+    /* Stage 32-D: "From <World> World" context pill. Surfaces only when the
+       Graph View bridge set window._ppFromWorld to a planet that maps to a
+       chip in PP_PLANET_TO_CHIP. Sits between the Today bridge and the
+       search/chip toolbar so it visually anchors the chip strip it
+       overrides. Dismiss button (#ppFromWorldClose) wired in attachPackEvents
+       wipes the flag and re-renders. World title pulled from WORLD_DATA when
+       available; falls back to "Empire" so the copy never breaks. */
+    var fromWorldPillHtml = '';
+    if (fromWorldId) {
+      var _wd = (typeof WORLD_DATA !== 'undefined' && WORLD_DATA[fromWorldId]) ? WORLD_DATA[fromWorldId] : null;
+      var _wTitle = (_wd && _wd.title) ? _wd.title : 'Empire';
+      fromWorldPillHtml = ''
+        + '<div class="pp-from-world-pill" data-from-world="' + dpEsc(fromWorldId) + '">'
+        +   '<span class="pp-from-world-kicker">FROM</span>'
+        +   '<span class="pp-from-world-name">' + dpEsc(_wTitle) + ' World</span>'
+        +   '<button class="pp-from-world-close" id="ppFromWorldClose" type="button" aria-label="Clear world filter">&times;</button>'
+        + '</div>';
+    }
+
     return ''
       /* Hero */
       + '<div class="pp-hero pp-hero-compact">'
-      +   '<div class="pp-hero-kicker">PLAN PACKS</div>'
-      +   '<h1 class="pp-hero-title">Plan Packs</h1>'
+      +   '<div class="pp-hero-kicker">EMPIRE PATH</div>'
+      +   '<h1 class="pp-hero-title">Choose your next transformation</h1>'
       +   '<p class="pp-hero-sub">' + heroSub + '</p>'
       +   '<div class="pp-hero-actions">'
       +     heroPrimaryHtml
@@ -8083,16 +8183,25 @@ function initSidebar() {
       +     '<button class="pp-hero-cta" id="ppHeroCompare">Compare Plans</button>'
       +   '</div>'
       + '</div>'
-      /* Stats - $40 Pro card is now a real CTA */
+      /* Stats - $40 Pro card is now a real CTA. Stage 32-A: chip suppressed for
+         active Pro users so the page stops reading as an ad to paying users. */
       + '<div class="pp-stats">'
       +   '<div class="pp-stat"><div class="pp-stat-num">' + entries.length + '</div><div class="pp-stat-lbl">Total Packs</div></div>'
       +   '<div class="pp-stat"><div class="pp-stat-num">' + activeCount + '</div><div class="pp-stat-lbl">Active Now</div></div>'
       +   '<div class="pp-stat"><div class="pp-stat-num">' + _completedCount + '</div><div class="pp-stat-lbl">Completed</div></div>'
-      +   '<button class="pp-stat pp-stat-pro pp-stat-cta" id="ppStatPro" type="button" aria-label="View Empire Pro details">'
-      +     '<div class="pp-stat-num">$40<span class="pp-stat-mo">/mo</span></div>'
-      +     '<div class="pp-stat-lbl">Empire Pro &middot; View</div>'
-      +   '</button>'
+      +   (hideProStatChip ? '' :
+            '<button class="pp-stat pp-stat-pro pp-stat-cta" id="ppStatPro" type="button" aria-label="View Empire Pro details">'
+          +     '<div class="pp-stat-num">$40<span class="pp-stat-mo">/mo</span></div>'
+          +     '<div class="pp-stat-lbl">Empire Pro &middot; View</div>'
+          +   '</button>')
       + '</div>'
+      /* Stage 32-C: Today Command Center bridge - daily-loop hub sits above
+         the search/store area when the user has any started/active pack. */
+      + todayBridgeHtml
+      /* Stage 32-D: "From <World> World" context pill - mounts between the
+         Today bridge and the toolbar/search/chip area only when Graph View
+         set window._ppFromWorld to a mapped planet. */
+      + fromWorldPillHtml
       /* Search + chips */
       + '<div class="pp-toolbar">'
       +   '<div class="pp-search-wrap">'
@@ -8643,6 +8752,28 @@ function initSidebar() {
     }
     var ppRoot = document.getElementById('workspaceContent') || document.getElementById('dpContent');
 
+    /* Stage 32-C: wire Today Command Center events when the bridge is mounted
+       inside Plan Packs. attachTodayDashboardEvents scopes its queries to
+       #workspaceContent, so calling it here (after the marketplace is in the
+       DOM) binds the embedded checklist rows, Continue / Missed / View
+       Ceremony CTAs to the same handlers used in Active Plan. Safe no-op when
+       the bridge isn't rendered - the helper only attaches if its IDs exist. */
+    if (ppRoot && ppRoot.querySelector('.pp-today-bridge')
+        && typeof window.attachTodayDashboardEvents === 'function') {
+      window.attachTodayDashboardEvents();
+    }
+
+    /* Stage 32-D: dismiss the "From <World> World" context pill. Wipes the
+       transient bridge flag and re-renders so the marketplace falls back to
+       the user's saved chip filter. window._ppMarketFilter and its
+       localStorage mirror are intentionally never touched here - dismissal
+       only clears the transient override. */
+    var fromWorldCloseBtn = ppRoot ? ppRoot.querySelector('#ppFromWorldClose') : null;
+    if (fromWorldCloseBtn) fromWorldCloseBtn.addEventListener('click', function () {
+      window._ppFromWorld = null;
+      refreshPackPanel();
+    });
+
     /* Stage 3 — Hero actions (Stage 30.3 added ppHeroContinue + ppStatPro) */
     var heroBrowse   = ppRoot ? ppRoot.querySelector('#ppHeroBrowse')   : null;
     var heroContinue = ppRoot ? ppRoot.querySelector('#ppHeroContinue') : null;
@@ -8680,9 +8811,17 @@ function initSidebar() {
       if (window.showUpgradeModal)        { window.showUpgradeModal('Plan Packs'); }
     });
 
-    /* Stage 3 — Category chips */
+    /* Stage 3 — Category chips
+       Stage 32-D: clear the Graph View bridge before applying the manual
+       choice. A user click on any chip is treated as the authoritative
+       intent; the "From <World> World" pill must disappear and the saved
+       filter must update to whatever they picked. _ppMarketFilter is the
+       persisted store (mirrored to localStorage by switchDashboardView via
+       eeSaveUiState), so writing it here preserves the existing Stage 30.3
+       behavior - we only add the transient-flag wipe. */
     Array.prototype.forEach.call(ppRoot ? ppRoot.querySelectorAll('.pp-chip') : [], function (chip) {
       chip.addEventListener('click', function () {
+        window._ppFromWorld = null;
         window._ppMarketFilter = chip.getAttribute('data-cat') || 'All';
         refreshPackPanel();
       });
@@ -11002,6 +11141,12 @@ function renderDailyReminderBanner() {
     + '<div class="daily-reminder-actions">'
     +   '<button class="daily-reminder-btn daily-reminder-btn-primary" data-dr-act="continue">Continue</button>'
     +   '<button class="daily-reminder-btn" data-dr-act="view-active">View Active Plan</button>'
+    /* Stage 32-B: daily-loop shortcut on the pinned banner. Reuses the
+       existing daily-reminder-btn class and event delegation through
+       data-dr-act - no new wiring, no new CSS. Hidden states (complete /
+       in-development) keep their original action rows; only the default
+       continue state surfaces Log Today. */
+    +   '<button class="daily-reminder-btn" data-dr-act="log-today" id="dailyReminderLogTodayBtn">Log Today</button>'
     +   '<button class="daily-reminder-dismiss" data-dr-act="dismiss" aria-label="Dismiss for today" title="Dismiss for today">&times;</button>'
     + '</div>'
     + '</div>';
@@ -11030,6 +11175,14 @@ function attachDailyReminderBannerEvents() {
         if (window.switchDashboardView) window.switchDashboardView('plan-packs');
       } else if (act === 'clear-active') {
         if (window.resetActivePlan) window.resetActivePlan({ alsoProgress: false });
+      } else if (act === 'log-today') {
+        /* Stage 32-B: daily-loop shortcut. Routes to the Daily Log
+           workspace. Same delegation path as the other banner actions. */
+        if (window.switchDashboardView) {
+          window.switchDashboardView('daily');
+        } else if (window.showToast) {
+          window.showToast('Daily Log is unavailable right now.', 'info', 1800);
+        }
       } else if (act === 'dismiss') {
         dismissDailyReminderForToday();
       }
@@ -15526,6 +15679,12 @@ function renderActivePlan() {
       +   '<div class="ap-today-action-text">' + _apDpEsc(nextDay.action || '') + '</div>'
       + '</div>'
       + '<button class="ap-action-primary ap-today-cta" id="apToday">Continue Today</button>'
+      /* Stage 32-B: daily-loop shortcut. Reuses the existing ap-foot-btn
+         secondary style so no new CSS is required. Routes to the Daily Log
+         workspace via the central switchDashboardView - the Daily Log
+         auto-populates today's activity (Stage 25 suggestion + pack-day +
+         task rollup) on mount, so a single click closes the daily loop. */
+      + '<button class="ap-foot-btn" id="activePlanLogTodayBtn" type="button">Log Today</button>'
       + '</div>';
   } else {
     /* Stage 9: stronger Plan Complete state with ceremony entry point */
@@ -15710,6 +15869,18 @@ function attachActivePlanEvents() {
   /* Both #apContinue (hero) and #apToday (today card) trigger the same flow */
   var todayBtn = root.querySelector('#apToday');
   if (todayBtn && todayBtn !== continueBtn) todayBtn.addEventListener('click', continueActivePlan);
+
+  /* Stage 32-B: daily-loop shortcut inside the Today's Focus card. Only
+     rendered when there's a nextDay (active in-flight state); guard with
+     querySelector so plan-complete / in-development states no-op. */
+  var logTodayBtn = root.querySelector('#activePlanLogTodayBtn');
+  if (logTodayBtn) logTodayBtn.addEventListener('click', function () {
+    if (window.switchDashboardView) {
+      window.switchDashboardView('daily');
+    } else if (window.showToast) {
+      window.showToast('Daily Log is unavailable right now.', 'info', 1800);
+    }
+  });
 
   var openDetail = root.querySelector('#apOpenDetail');
   if (openDetail) openDetail.addEventListener('click', function () {

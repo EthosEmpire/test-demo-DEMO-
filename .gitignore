@@ -8,3 +8,6 @@ node_modules/
 
 # Unused Deno lockfile (project uses Node)
 deno.lock
+
+# Local dashboard snapshots — never commit
+dashboard/dashboard-backup.*
