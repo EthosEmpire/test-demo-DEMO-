@@ -8859,7 +8859,7 @@ var PACK_CONTENT_OVERLAY = {
     outcomes: [
       'A one-sentence personal style direction',
       'A neutral working palette you can re-buy in for years',
-      'A small core wardrobe that quietly fits the version of you you are becoming',
+      'A small core wardrobe that quietly fits the version of yourself you are becoming',
       'A defined fit standard you will not compromise on again',
       'A short, intentional shopping list — not a wishlist'
     ],
@@ -10294,7 +10294,7 @@ var PACK_CONTENT_OVERLAY = {
           + '<h3>Update the statements</h3>'
           + '<p>Refine the language. Drop a statement that no longer matters. Add one that emerged. The identity work is dynamic. The statements grow with you.</p>',
         whyItMatters: 'Identity is the substrate underneath every habit. Reviewing it keeps the protocol pointed at the man you are becoming.',
-        keyInsight: 'You become the version of you you practice — out loud, on purpose.',
+        keyInsight: 'You become the version of yourself you practice — out loud, on purpose.',
         example: 'A reader\'s Day 14 statement was "I am calm under pressure." On Day 19 he noted it was now true in three specific situations from the past two weeks. He updated it to a sharper version.',
         actionStep: 'Read your Day 14 statements today. Mark each one true or aspirational. Refine the language.',
         checklist: [
