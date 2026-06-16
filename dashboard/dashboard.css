@@ -2774,27 +2774,47 @@ body {
 .workspace-header-right { display: flex; align-items: center; justify-content: flex-end; }
 .workspace-header-center { text-align: center; }
 
+/* Stage 34-D-HOTFIX-R4: promoted the workspace back button to an
+   Apple-style glass capsule with a soft gold accent so it reads
+   clearly as the primary back/navigation control. Default state
+   keeps a quiet gold tint; hover/focus lift the glow without
+   becoming harsh. */
 .workspace-back-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 10px;
-  color: rgba(255,255,255,0.50);
+  background: rgba(10,12,22,0.42);
+  border: 1px solid rgba(212,175,55,0.22);
+  border-radius: 999px;
+  color: rgba(245,197,66,0.88);
   font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   padding: 8px 14px;
   cursor: pointer;
-  transition: color 0.16s, background 0.16s, border-color 0.16s;
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.22),
+    0 0 0 0 rgba(212,175,55,0);
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
 }
-.workspace-back-btn:hover {
-  color: rgba(255,255,255,0.80);
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.18);
+.workspace-back-btn:hover,
+.workspace-back-btn:focus-visible {
+  color: #f5c542;
+  background: rgba(212,175,55,0.16);
+  border-color: rgba(212,175,55,0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.22),
+    0 0 18px rgba(212,175,55,0.28);
+  outline: none;
 }
+.workspace-back-btn:active { transform: scale(0.97); }
 .workspace-back-btn svg { flex-shrink: 0; }
+.workspace-back-btn:hover svg,
+.workspace-back-btn:focus-visible svg { color: #f5c542; }
 
 .workspace-kicker {
   font-size: 0.48rem;
@@ -2835,11 +2855,20 @@ body {
 /* Scrollable content area */
 .workspace-content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 28px 32px 40px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.10) transparent;
+  /* Stage 34-D-HOTFIX-R3: make wheel/trackpad/touch gestures behave
+     correctly inside the workspace panel. The JS scroll guard at
+     bindWorkspaceScrollGuards() handles stopPropagation; these
+     properties tell the browser the scroll belongs here, keep iOS
+     momentum scrolling, and prevent gesture chaining to the page. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 .workspace-content::-webkit-scrollbar { width: 5px; }
 .workspace-content::-webkit-scrollbar-track { background: transparent; }
@@ -3533,6 +3562,136 @@ body {
   .tb-nav-btn    { padding: 0 9px; min-width: 36px; gap: 0; }
   .tb-menu-drop  { right: 50%; transform: translate(50%, -6px) scale(0.98); min-width: 220px; max-width: calc(100vw - 32px); }
   .tb-menu-drop.is-open { transform: translate(50%, 0) scale(1); }
+}
+
+/* ── Stage 34-D: top-menu primary layout.
+   When #dashRoot carries .layout-top-menus, the old left sidebar is
+   hidden and the grid reclaims the column by zeroing --sidebar-w. All
+   absolute overlays that anchor off calc(var(--sidebar-w) + Xpx)
+   automatically reflow to the new left edge — no per-element rewrites.
+   The sidebar DOM, JS, and CSS remain intact as a fallback so it can
+   be re-shown with disableTopMenuLayoutForDebug() during browser
+   testing. */
+#dashRoot.layout-top-menus {
+  --sidebar-w: 0px;
+  grid-template-columns: 0 1fr var(--right-w);
+}
+#dashRoot.layout-top-menus #dashSidebar {
+  display: none;
+}
+#dashRoot.layout-top-menus #sidebarCollapseBtn {
+  display: none;
+}
+/* Hide mobile hamburger when top-menu layout is the primary navigation -
+   the Explore/Tools dropdowns from Stage 34-C are the mobile entry now.
+   eeInstallMobileHamburger() still runs and the button still exists in
+   the DOM, but it stays out of view. */
+#dashRoot.layout-top-menus ~ .ee-hamburger,
+body:has(#dashRoot.layout-top-menus) .ee-hamburger,
+#dashRoot.layout-top-menus .ee-hamburger {
+  display: none !important;
+}
+
+/* ── Stage 34-D-HOTFIX: top-bar dropdown layering + internal scrolling.
+   Root cause: #dashTopBar had z-index:50 + position:relative, which
+   creates a stacking context capped at 50. Workspace overlays (#dashPanel
+   z:55, #cameraHud z:56, workflow panel z:65) live *outside* that
+   context and therefore painted above the entire topbar — including its
+   dropdowns, no matter how high their inner z-index was (70, 1000, 1100
+   were all trapped under the cap).
+   Fix: lift the topbar's whole stacking context above workspace content
+   (still well below modal layers at 3000/9000/9999/10000/11000). Then
+   make each dropdown panel scroll its own contents instead of pushing
+   the page. Pure CSS — no JS changes, no markup changes. */
+#dashTopBar {
+  z-index: 500;
+  overflow: visible;
+}
+.tb-right,
+.tb-nav-actions,
+.tb-nav-slot,
+.tb-srch-wrap,
+.tb-prof-wrap {
+  overflow: visible;
+}
+
+/* Lift each dropdown above any in-context sibling. The topbar cap is
+   now 500, so 800–1100 here is well-clear of workspace content while
+   leaving headroom under #dashModal (1000) and the toast/upgrade/auth
+   layers. */
+.tb-menu-drop  { z-index: 800; }
+.tb-prof-drop  { z-index: 1100; }
+.tb-srch-drop  { z-index: 1100; }
+
+/* Internal scroll — keep the Apple glass surface, let long lists scroll
+   inside the panel instead of clipping or pushing the page. min(70vh,
+   520px) gives a generous-but-bounded ceiling on tall screens and stays
+   comfortably inside the viewport on shorter ones. overscroll-behavior
+   contain stops scroll-chaining into the dashboard. */
+.tb-menu-drop,
+.tb-prof-drop {
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* Stage 34-D-HOTFIX-R2: hint the browser that vertical pan owns the
+     gesture inside the panel so trackpad/touch input scrolls the
+     dropdown instead of being grabbed by the canvas/graph beneath.
+     scrollbar-gutter: stable keeps the inner gutter from popping when
+     the list grows past the cap. */
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+.tb-srch-drop {
+  max-height: min(70vh, 420px);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+
+/* Apple-style thin scrollbar for these floating glass panels. Stays
+   invisible until hover so the menu reads clean at rest. */
+.tb-menu-drop::-webkit-scrollbar,
+.tb-prof-drop::-webkit-scrollbar,
+.tb-srch-drop::-webkit-scrollbar {
+  width: 6px;
+}
+.tb-menu-drop::-webkit-scrollbar-track,
+.tb-prof-drop::-webkit-scrollbar-track,
+.tb-srch-drop::-webkit-scrollbar-track {
+  background: transparent;
+}
+.tb-menu-drop::-webkit-scrollbar-thumb,
+.tb-prof-drop::-webkit-scrollbar-thumb,
+.tb-srch-drop::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.10);
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.tb-menu-drop:hover::-webkit-scrollbar-thumb,
+.tb-prof-drop:hover::-webkit-scrollbar-thumb,
+.tb-srch-drop:hover::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.20);
+}
+.tb-menu-drop,
+.tb-prof-drop,
+.tb-srch-drop {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.16) transparent;
+}
+
+/* Mobile: keep the same scroll cap; on small screens 70vh is the
+   binding term so menus never push the page. The Stage 34-C centered
+   transform stays — we only enforce the height ceiling. */
+@media (max-width: 540px) {
+  .tb-menu-drop {
+    max-height: min(70vh, 420px);
+  }
+  .tb-prof-drop,
+  .tb-srch-drop {
+    max-height: min(70vh, 380px);
+  }
 }
 
 /* ── Collapse toggle button ── */

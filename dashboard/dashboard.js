@@ -214,6 +214,23 @@ function initDashboard(detail) {
        initHeader so the markup is in the DOM and the profile dropdown
        handlers are already bound (we never reach into them). */
     if (typeof bindTopMenuDropdowns === 'function') bindTopMenuDropdowns();
+    /* Stage 34-D-HOTFIX-R2: arm wheel/trackpad/touch scroll guards for
+       Explore/Tools/Profile/Search dropdowns so their CSS overflow
+       actually scrolls under wheel and trackpad input (idempotent —
+       guarded by _eeScrollGuardBound). Profile + Search panels are
+       mounted by initHeader earlier, so they are already in the DOM. */
+    if (typeof bindDropdownScrollGuards === 'function') bindDropdownScrollGuards();
+    /* Stage 34-D-HOTFIX-R3: arm workspace scroll guards so wheel/trackpad
+       gestures over Plan Packs / Active Plan / Daily Log / Tasks / Notes
+       / Templates / Settings scroll the panel instead of being absorbed
+       by the graph stage's preventDefault wheel handler. Idempotent —
+       _eeWorkspaceScrollGuardBound prevents duplicate listeners. */
+    if (typeof bindWorkspaceScrollGuards === 'function') bindWorkspaceScrollGuards();
+    /* Stage 34-D: promote the top-menu navigation by hiding the old left
+       sidebar via a single layout class. Sidebar markup/JS/CSS remain in
+       place so we can roll back at runtime with
+       window.disableTopMenuLayoutForDebug(). */
+    if (typeof applyTopMenuLayout === 'function') applyTopMenuLayout();
     initSidebarCollapse();
 
     /* Stage 6: install workspace wrappers (empty states, calendar/tags renderers)
@@ -9739,6 +9756,84 @@ function _refreshTopMenuActive(viewId) {
   });
 }
 
+/* Stage 34-D — top-menu primary layout toggle.
+   Adds .layout-top-menus on #dashRoot so the CSS hides the old left
+   sidebar and zeros the --sidebar-w grid column. Sidebar DOM/JS/CSS are
+   left untouched as a fallback. Browser-side rollback uses
+   window.disableTopMenuLayoutForDebug() — no localStorage, no payment-
+   adjacent flags. The default opt-in flag is window.EE_USE_TOP_MENU_LAYOUT
+   (true unless explicitly set false before this runs). */
+function applyTopMenuLayout() {
+  var root = document.getElementById('dashRoot');
+  if (!root) return;
+  var enabled = (window.EE_USE_TOP_MENU_LAYOUT !== false);
+  root.classList.toggle('layout-top-menus', enabled);
+}
+function disableTopMenuLayoutForDebug() {
+  window.EE_USE_TOP_MENU_LAYOUT = false;
+  var root = document.getElementById('dashRoot');
+  if (root) root.classList.remove('layout-top-menus');
+}
+function enableTopMenuLayoutForDebug() {
+  window.EE_USE_TOP_MENU_LAYOUT = true;
+  var root = document.getElementById('dashRoot');
+  if (root) root.classList.add('layout-top-menus');
+}
+
+/* Stage 34-D-HOTFIX-R3 — workspace scroll guards.
+   #workspaceContent (and worldView / lessonPanel) live inside
+   <main id="dashCanvas">, which is the graph "stage" — and stage owns
+   a wheel listener registered with { passive: false } that calls
+   preventDefault() whenever appMode is 'map' (js:~5979). That means
+   wheel events bubbling from a dashboard workspace view (Plan Packs,
+   Active Plan, Daily Log, Tasks, Notes, Templates, Settings) reach the
+   stage and get their default scroll cancelled. The scrollbar works
+   because it scrolls programmatically without dispatching a wheel
+   event; mouse/trackpad gestures hit the stage handler first.
+   Fix: per-surface stopPropagation (same pattern the codebase already
+   uses on panelEl/coreLibEl/rpPanel and the R2 dropdown guard).
+   Passive: true — never preventDefault, so the surface's own native
+   scroll runs untouched. */
+function _protectScrollableSurface(el) {
+  if (!el || el._eeWorkspaceScrollGuardBound) return;
+  el._eeWorkspaceScrollGuardBound = true;
+  var stop = function (e) { e.stopPropagation(); };
+  el.addEventListener('wheel',      stop, { passive: true });
+  el.addEventListener('touchstart', stop, { passive: true });
+  el.addEventListener('touchmove',  stop, { passive: true });
+}
+function bindWorkspaceScrollGuards() {
+  /* Bind once per element. innerHTML swaps inside workspaceContent
+     don't detach the listener (it's on the container, not the children),
+     so this can safely be called from showWorkspaceView on every view
+     change — the flag short-circuits after the first call. */
+  ['workspaceContent', 'dashboardWorkspace', 'worldView', 'lessonPanel'].forEach(function (id) {
+    _protectScrollableSurface(document.getElementById(id));
+  });
+}
+
+/* Stage 34-D-HOTFIX-R2 — wheel / trackpad / touch scroll guards.
+   The dropdowns have CSS-correct max-height + overflow-y, but wheel and
+   touch events were still propagating into background canvas/page
+   handlers (the codebase has the same guard pattern at coreLibEl,
+   panelEl, rpPanel — see js:5841, 7871, 17565). Stop propagation in
+   passive mode so the panel's own native scroll runs normally but the
+   event never reaches downstream graph/page handlers. No preventDefault
+   — that would kill the scroll we are trying to enable. */
+function _protectMenuScroll(el) {
+  if (!el || el._eeScrollGuardBound) return;
+  el._eeScrollGuardBound = true;
+  var stop = function (e) { e.stopPropagation(); };
+  el.addEventListener('wheel',      stop, { passive: true });
+  el.addEventListener('touchstart', stop, { passive: true });
+  el.addEventListener('touchmove',  stop, { passive: true });
+}
+function bindDropdownScrollGuards() {
+  ['tbExploreDrop', 'tbToolsDrop', 'tbProfDrop', 'tbSrchDrop'].forEach(function (id) {
+    _protectMenuScroll(document.getElementById(id));
+  });
+}
+
 function bindTopMenuDropdowns() {
   var explore = document.getElementById('tbExploreBtn');
   var tools   = document.getElementById('tbToolsBtn');
@@ -9753,7 +9848,12 @@ function bindTopMenuDropdowns() {
   /* Item delegation - one handler per dropdown panel. */
   ['tbExploreDrop', 'tbToolsDrop'].forEach(function (id) {
     var drop = document.getElementById(id);
-    if (!drop || drop._eeBound) return;
+    if (!drop) return;
+    /* Stage 34-D-HOTFIX-R2: arm wheel/touch guards here as well so a
+       runtime call to window.bindTopMenuDropdowns() re-arms them after
+       a hot edit. _protectMenuScroll is idempotent. */
+    _protectMenuScroll(drop);
+    if (drop._eeBound) return;
     drop._eeBound = true;
     drop.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -17173,6 +17273,15 @@ function showWorkspaceView(viewId) {
   ws.setAttribute('aria-hidden', 'false');
   ws.classList.add('ws-active');
   updateWorkspaceSidebarState(viewId);
+  /* Stage 34-D-HOTFIX-R3: ensure the workspace scroll guards are armed
+     after the workspace becomes visible. The flag inside
+     _protectScrollableSurface short-circuits if already bound. */
+  if (typeof bindWorkspaceScrollGuards === 'function') bindWorkspaceScrollGuards();
+  /* Stage 34-D-HOTFIX-R4: refresh the back button label so it reflects
+     the new view's context (e.g. "Plan Packs" while in marketplace,
+     "Pack Overview" once a pack is opened, previousView name when
+     coming from a non-graph view). */
+  if (typeof window._updateWorkspaceBackButton === 'function') window._updateWorkspaceBackButton();
 
   /* bind workspace-specific events */
   if (viewId === 'plan-packs' && typeof attachPackEvents === 'function') {
@@ -17222,6 +17331,13 @@ function switchDashboardView(viewId, extraData) {
   if (dashboardState.currentView === 'graph' && viewId !== 'graph') {
     _eeCleanupGraphOverlays();
   }
+  /* Stage 34-D-HOTFIX-R4: track previousView before reassigning so the
+     contextual workspace back button can return to where the user was.
+     Self-transitions don't update previousView (avoids losing real
+     history on incidental re-routes). */
+  if (dashboardState.currentView && dashboardState.currentView !== viewId) {
+    dashboardState.previousView = dashboardState.currentView;
+  }
   dashboardState.currentView = viewId;
 
   updateWorkspaceSidebarState(viewId);
@@ -17269,11 +17385,84 @@ function switchDashboardView(viewId, extraData) {
 }
 
 function initWorkspaceSystem() {
+  /* Stage 34-D-HOTFIX-R4 — contextual workspace back button.
+     The button at the top-left of every workspace view used to hard-route
+     to Graph View. Inside Plan Packs that meant a pack-detail back jumped
+     past the marketplace and dropped the user on the empty graph. New
+     behavior:
+       1. If a pack-internal back exists in the DOM (#ppBackToOverview on
+          day view, #ppBackToMarket on pack overview) — defer to it. That
+          keeps the pack closure in charge of its own filter / category /
+          progress state.
+       2. Else if dashboardState.previousView is set and not the current
+          view — route there (e.g. user went notes → plan-packs, "Back"
+          returns to notes).
+       3. Else fall back to Graph View.
+     The label + aria-label update on every showWorkspaceView and on
+     #workspaceContent mutations (pack-internal nav re-renders inside the
+     same view, so we need a DOM observer in addition to the view-change
+     hook). */
+  function _getWorkspaceBackContext() {
+    var current = (dashboardState && dashboardState.currentView) || 'graph';
+    if (current === 'plan-packs') {
+      var dayBack = document.getElementById('ppBackToOverview');
+      if (dayBack) return {
+        label:    'Pack Overview',
+        ariaText: 'Back to pack overview',
+        handler:  function () { dayBack.click(); }
+      };
+      var marketBack = document.getElementById('ppBackToMarket');
+      if (marketBack) return {
+        label:    'Plan Packs',
+        ariaText: 'Back to Plan Packs',
+        handler:  function () { marketBack.click(); }
+      };
+    }
+    var prev = dashboardState && dashboardState.previousView;
+    if (prev && prev !== current && prev !== 'graph') {
+      var meta = (typeof WS_META !== 'undefined' && WS_META[prev]) || null;
+      var prevLabel = meta ? meta.title : prev;
+      return {
+        label:    prevLabel,
+        ariaText: 'Back to ' + prevLabel,
+        handler:  function () { if (window.switchDashboardView) window.switchDashboardView(prev); }
+      };
+    }
+    return {
+      label:    'Graph View',
+      ariaText: 'Back to Graph View',
+      handler:  function () {
+        if (window.switchDashboardView) window.switchDashboardView('graph');
+        else showGraphView();
+      }
+    };
+  }
+  function _updateWorkspaceBackButton() {
+    var btn = document.getElementById('workspaceBackToGraph');
+    if (!btn) return;
+    var ctx = _getWorkspaceBackContext();
+    var span = btn.querySelector('span');
+    if (span) span.textContent = ctx.label;
+    btn.setAttribute('aria-label', ctx.ariaText);
+  }
   var backBtn = document.getElementById('workspaceBackToGraph');
   if (backBtn) backBtn.addEventListener('click', function () {
-    if (window.switchDashboardView) window.switchDashboardView('graph');
-    else showGraphView();
+    /* Evaluate at click time so pack-internal navigation that happened
+       after the last render is respected. */
+    _getWorkspaceBackContext().handler();
   });
+  /* Observe pack-internal re-renders so the label tracks day-view →
+     pack-overview → marketplace transitions inside the same view. One
+     MutationObserver, cheap, scoped to #workspaceContent's children. */
+  var wsContent = document.getElementById('workspaceContent');
+  if (wsContent && typeof MutationObserver === 'function' && !wsContent._eeBackBtnObserver) {
+    var obs = new MutationObserver(function () { _updateWorkspaceBackButton(); });
+    obs.observe(wsContent, { childList: true, subtree: true });
+    wsContent._eeBackBtnObserver = obs;
+  }
+  /* Expose for showWorkspaceView and external callers. */
+  window._updateWorkspaceBackButton = _updateWorkspaceBackButton;
+  _updateWorkspaceBackButton();
 
   /* expose public API */
   window.dashboardState       = dashboardState;
@@ -17294,6 +17483,17 @@ function initWorkspaceSystem() {
   window.toggleTopMenuDropdown  = toggleTopMenuDropdown;
   window.bindTopMenuDropdowns   = bindTopMenuDropdowns;
   window.handleTopMenuViewClick = handleTopMenuViewClick;
+  /* Stage 34-D-HOTFIX-R2: expose wheel/touch scroll-guard binder for
+     debug + re-arming after late-mounted dropdown DOM. */
+  window.bindDropdownScrollGuards = bindDropdownScrollGuards;
+  /* Stage 34-D-HOTFIX-R3: expose workspace scroll-guard binder so a
+     late-mounted view (or a hot edit) can re-arm guards from the console. */
+  window.bindWorkspaceScrollGuards = bindWorkspaceScrollGuards;
+  /* Stage 34-D: expose layout toggle + debug rollback helpers so a tester
+     can re-show the legacy sidebar at runtime without touching the DOM. */
+  window.applyTopMenuLayout            = applyTopMenuLayout;
+  window.disableTopMenuLayoutForDebug  = disableTopMenuLayoutForDebug;
+  window.enableTopMenuLayoutForDebug   = enableTopMenuLayoutForDebug;
   window.setDashboardBackgroundMode = setDashboardBackgroundMode;
   window.setGraphInteractionEnabled = setGraphInteractionEnabled;
   window.hideGraphHudForWorkspace   = hideGraphHudForWorkspace;
