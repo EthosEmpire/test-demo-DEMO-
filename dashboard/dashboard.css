@@ -9803,3 +9803,341 @@ body.global-search-open .tb-srch-wrap { border-color: rgba(212,175,55,0.50); bac
     bottom: calc(var(--bot-h) + 12px);
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Stage 35-A — Plan Packs premium content + image surfaces
+   ════════════════════════════════════════════════════════════════════════
+   Adds Apple-style image presentation, premium card layout, lesson article
+   typography, and the glossary tooltip popover. All new rules are scoped
+   to .pp-* classes so they override the matching base rules earlier in
+   this file by cascade order, without removing the originals. Pack data
+   that has no image overlay falls back to the existing icon/text layout
+   naturally — these rules degrade cleanly. */
+
+/* ── Marketplace card: lifted glass surface with optional cover image ── */
+.pp-pack-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.04) inset,
+    0 14px 30px rgba(0,0,0,0.30);
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.18s ease, box-shadow 0.25s ease, background 0.18s ease;
+}
+.pp-pack-card:hover {
+  background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+  border-color: rgba(212,175,55,0.32);
+  transform: translateY(-3px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 22px 44px rgba(0,0,0,0.42),
+    0 0 22px rgba(212,175,55,0.10);
+}
+.pp-pack-card-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(212,175,55,0.10), rgba(212,175,55,0.02));
+}
+.pp-pack-card-cover img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.pp-pack-card:hover .pp-pack-card-cover img { transform: scale(1.04); }
+.pp-pack-card-cover::after {
+  /* Subtle vignette + soft bottom gradient so the title above the card body never fights the image. */
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(4,4,12,0.55) 100%);
+  pointer-events: none;
+}
+.pp-pack-card-body {
+  padding: 14px 16px 14px;
+  display: flex; flex-direction: column;
+}
+.pp-pack-card:not(.has-cover) .pp-pack-card-body { padding-top: 16px; }
+.pp-pack-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.pp-pack-icon { font-size: 1.4rem; line-height: 1; opacity: 0.92; }
+.pp-pack-card.has-cover .pp-pack-icon { display: none; }
+.pp-pack-badge {
+  font-size: 0.46rem; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; padding: 4px 9px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 999px; color: rgba(255,255,255,0.58);
+}
+.pp-pack-title {
+  font-size: 0.86rem; font-weight: 800; letter-spacing: 0.005em;
+  color: #fff; margin-bottom: 6px; line-height: 1.25;
+}
+.pp-pack-desc {
+  font-size: 0.66rem; color: rgba(255,255,255,0.56); line-height: 1.55;
+  margin-bottom: 12px;
+}
+.pp-pack-footer { gap: 10px; }
+.pp-pack-days {
+  font-size: 0.52rem; font-weight: 700; letter-spacing: 0.10em;
+  text-transform: uppercase; color: rgba(255,255,255,0.36);
+}
+.pp-pack-start {
+  padding: 7px 14px; border-radius: 999px;
+  background: rgba(212,175,55,0.18);
+  border: 1px solid rgba(212,175,55,0.42);
+  color: #f5c542; font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.06em;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+.pp-pack-start:hover {
+  background: rgba(212,175,55,0.30); color: #fff;
+  border-color: rgba(212,175,55,0.65);
+  box-shadow: 0 0 14px rgba(212,175,55,0.30);
+}
+.pp-pack-start:active { transform: scale(0.97); }
+
+/* Locked / Included-in-Pro variant (replaces the old SOON visual). */
+.pp-pack-card-soon {
+  opacity: 0.86;
+  border-color: rgba(255,255,255,0.08);
+}
+.pp-pack-card-soon .pp-pack-card-cover::after {
+  background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(4,4,12,0.65) 100%);
+}
+.pp-pack-status-soon,
+.pp-pack-start-soon {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.72);
+}
+.pp-pack-start-soon:hover {
+  background: rgba(212,175,55,0.14);
+  border-color: rgba(212,175,55,0.32);
+  color: #f5c542;
+  box-shadow: 0 0 14px rgba(212,175,55,0.18);
+}
+.pp-pack-status,
+.pp-pack-status-soon {
+  font-size: 0.46rem; font-weight: 800; letter-spacing: 0.14em;
+  padding: 4px 10px; border-radius: 999px;
+  text-transform: uppercase;
+}
+.pp-pack-status-active { background: rgba(52,211,153,0.14); border: 1px solid rgba(52,211,153,0.30); color: #6ee7b7; }
+.pp-pack-status-done   { background: rgba(212,175,55,0.16); border: 1px solid rgba(212,175,55,0.40); color: #f5c542; }
+
+/* ── Pack overview hero image ── */
+.pp-overview-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  border-radius: 22px;
+  overflow: hidden;
+  margin: 4px 0 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(135deg, rgba(212,175,55,0.10), rgba(212,175,55,0.02));
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 20px 48px rgba(0,0,0,0.42);
+}
+.pp-overview-hero img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.pp-overview-hero::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(4,4,12,0.55) 100%);
+  pointer-events: none;
+}
+.pp-overview-hero-caption {
+  position: absolute; left: 22px; right: 22px; bottom: 18px;
+  font-size: 0.66rem; color: rgba(255,255,255,0.78);
+  letter-spacing: 0.04em;
+}
+
+/* ── Pack overview narrative blocks ── */
+.pp-overview-long {
+  font-size: 0.82rem; line-height: 1.75;
+  color: rgba(255,255,255,0.78);
+  max-width: 720px;
+  margin: 0 0 20px;
+}
+.pp-overview-section {
+  margin: 18px 0;
+}
+.pp-overview-section-title {
+  font-size: 0.52rem; font-weight: 800; letter-spacing: 0.18em;
+  color: rgba(212,175,55,0.78); text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.pp-outcomes {
+  display: grid; gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0; padding: 0; list-style: none;
+}
+@media (max-width: 720px) {
+  #workspaceContent .pp-outcomes { grid-template-columns: 1fr; }
+}
+.pp-outcomes li {
+  position: relative;
+  padding: 12px 14px 12px 38px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.72rem; color: rgba(255,255,255,0.84); line-height: 1.55;
+}
+.pp-outcomes li::before {
+  content: '✓';
+  position: absolute; left: 14px; top: 11px;
+  width: 18px; height: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(212,175,55,0.18);
+  color: #f5c542; font-size: 0.62rem; font-weight: 800;
+}
+.pp-how-to-use {
+  font-size: 0.74rem; line-height: 1.7;
+  color: rgba(255,255,255,0.72);
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-left: 3px solid rgba(212,175,55,0.55);
+  border-radius: 14px;
+  padding: 14px 18px;
+}
+
+/* ── Lesson page — premium article layout ── */
+.pp-lesson-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 6px 0 22px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(135deg, rgba(212,175,55,0.10), rgba(212,175,55,0.02));
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.05) inset,
+    0 16px 38px rgba(0,0,0,0.38);
+}
+.pp-lesson-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pp-lesson-image::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(4,4,12,0.45) 100%);
+  pointer-events: none;
+}
+.pp-reading {
+  font-size: 0.86rem; line-height: 1.8;
+  color: rgba(255,255,255,0.86);
+  max-width: 720px;
+}
+.pp-reading p { margin: 0 0 14px; }
+.pp-reading strong { color: #fff; font-weight: 700; }
+.pp-reading h3 {
+  font-size: 0.92rem; font-weight: 800; letter-spacing: 0.01em;
+  color: #fff; margin: 22px 0 10px;
+}
+.pp-callout {
+  margin: 18px 0;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.pp-callout-kicker {
+  font-size: 0.50rem; font-weight: 800; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(212,175,55,0.85);
+  margin-bottom: 6px;
+}
+.pp-callout-body {
+  font-size: 0.80rem; line-height: 1.7; color: rgba(255,255,255,0.84);
+}
+.pp-callout-why    { border-left: 3px solid rgba(96,165,250,0.55); }
+.pp-callout-insight{ border-left: 3px solid rgba(212,175,55,0.65); background: rgba(212,175,55,0.06); }
+.pp-callout-example{ border-left: 3px solid rgba(244,114,182,0.55); }
+.pp-action-block {
+  margin: 22px 0;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: linear-gradient(140deg, rgba(212,175,55,0.14), rgba(212,175,55,0.03));
+  border: 1px solid rgba(212,175,55,0.32);
+  box-shadow: 0 0 22px rgba(212,175,55,0.10);
+}
+.pp-action-block-kicker {
+  font-size: 0.54rem; font-weight: 900; letter-spacing: 0.20em;
+  color: #f5c542; text-transform: uppercase; margin-bottom: 8px;
+}
+.pp-action-block-body {
+  font-size: 0.86rem; line-height: 1.65; color: #fff;
+}
+.pp-micro-challenge {
+  margin: 18px 0;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(168,85,247,0.08);
+  border: 1px solid rgba(168,85,247,0.28);
+}
+.pp-micro-challenge-kicker {
+  font-size: 0.50rem; font-weight: 800; letter-spacing: 0.18em;
+  color: rgba(216,180,254,0.95); text-transform: uppercase; margin-bottom: 6px;
+}
+.pp-micro-challenge-body {
+  font-size: 0.78rem; line-height: 1.65; color: rgba(255,255,255,0.88);
+}
+
+/* ── Glossary term inline highlight + Apple-style popover ── */
+.pp-term {
+  position: relative;
+  display: inline;
+  color: #f5c542;
+  background: linear-gradient(180deg, rgba(212,175,55,0) 65%, rgba(212,175,55,0.22) 65%);
+  padding: 0 2px;
+  border-radius: 3px;
+  cursor: help;
+  font-weight: 700;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.pp-term:hover, .pp-term.is-open {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(212,175,55,0) 0%, rgba(212,175,55,0.32) 100%);
+}
+.pp-term-popover {
+  position: fixed;
+  z-index: 1300;
+  min-width: 240px; max-width: 320px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(10,12,22,0.78);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid rgba(212,175,55,0.32);
+  box-shadow:
+    0 22px 56px rgba(0,0,0,0.55),
+    0 0 26px rgba(212,175,55,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0.18s;
+}
+.pp-term-popover.is-open {
+  opacity: 1; transform: translateY(0) scale(1);
+  pointer-events: auto; visibility: visible;
+  transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1), visibility 0s;
+}
+.pp-term-popover-title {
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.10em;
+  text-transform: uppercase; color: #f5c542;
+  margin-bottom: 6px;
+}
+.pp-term-popover-body {
+  font-size: 0.74rem; line-height: 1.65; color: rgba(255,255,255,0.86);
+}
+
+/* Mobile lesson tightening — keep reading roomy but not edge-tight. */
+@media (max-width: 720px) {
+  #workspaceContent .pp-lesson-image  { aspect-ratio: 16 / 9; border-radius: 16px; }
+  #workspaceContent .pp-overview-hero { aspect-ratio: 16 / 9; border-radius: 16px; }
+  #workspaceContent .pp-reading       { font-size: 0.82rem; }
+}

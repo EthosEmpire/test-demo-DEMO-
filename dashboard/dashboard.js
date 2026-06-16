@@ -7507,6 +7507,3328 @@ PLAN_PACKS_DATA.push(
     ] }
 );
 
+/* ════════════════════════════════════════════════════════════════════════
+   Stage 35-A — Plan Packs premium content overlay + glossary
+   ════════════════════════════════════════════════════════════════════════
+   Non-destructive extension of the existing PLAN_PACKS_DATA / PACK_META.
+   The overlay is keyed by pack id and supplies:
+
+     coverImage   - marketplace card cover (images/plan-packs/cards/*.webp)
+     coverAlt     - alt text for cover
+     heroImage    - pack overview hero (images/plan-packs/lessons/*.webp)
+     heroAlt      - alt text for hero
+     overviewLong - multi-paragraph "what this pack is" narrative
+     outcomes     - array of bullet outcomes for the overview page
+     howToUse     - short string explaining the rhythm of the pack
+     dayOverlays  - keyed by day number:
+                      { image, imageAlt,
+                        reading           - multi-paragraph article body
+                        whyItMatters      - short callout
+                        keyInsight        - one-line callout
+                        example           - illustrative anecdote
+                        actionStep        - optional override of day.action
+                        checklist         - optional override of day.checklist
+                        reflection        - optional override of day.reflection
+                        microChallenge    - bonus 10-minute extension
+                        keyTerms          - array of glossary keys to highlight
+                      }
+
+   Renderers fall back to the existing day.task / day.action / day.reflection
+   when an overlay field is absent — no pack is broken by partial coverage.
+   Packs without any overlay entry render with their existing thin content
+   plus (if the cover image file lands) a card cover image. Stage 35-B will
+   extend day-level coverage to the remaining packs. */
+
+var PACK_GLOSSARY = {
+  audience:            { title: 'Audience',             body: 'The specific group of people you want to reach — defined by their problem, language, and goals rather than demographics. A clear audience makes every offer, hook, and outreach choice easier.' },
+  niche:               { title: 'Niche',                body: 'The narrow intersection of your skills, your audience, and a problem worth solving. A real niche is small enough to win in and big enough to matter.' },
+  offer:               { title: 'Offer',                body: 'The specific outcome you sell, the price, and the terms. A strong offer is not your service description — it is the result a buyer can imagine clearly enough to say yes.' },
+  positioning:         { title: 'Positioning',          body: 'How a buyer mentally files you compared to alternatives. Good positioning makes "why you" feel obvious before any conversation begins.' },
+  consistency:         { title: 'Consistency',          body: 'Showing up on a schedule you can sustain — not on the days when motivation is high. Consistency compounds because it produces the data you need to improve.' },
+  recovery:            { title: 'Recovery',             body: 'The work your body does between training sessions to rebuild and adapt. Without it, training stops producing results and starts costing them.' },
+  'calorie-deficit':   { title: 'Calorie Deficit',      body: 'A sustained period where energy intake is below energy expenditure. Modest, patient deficits are how lean body composition is built without burning out the rest of life.' },
+  discipline:          { title: 'Discipline',           body: 'The trained ability to follow through on a decision after the feeling that produced it has faded. Built in small, low-stakes reps before it is needed in big ones.' },
+  confidence:          { title: 'Confidence',           body: 'Earned trust in your own ability to handle the next step. Built by collecting honest evidence, not by manufacturing a feeling.' },
+  routine:             { title: 'Routine',              body: 'A repeatable sequence that removes decisions from a moment so your attention can land on what actually matters that day.' },
+  leverage:            { title: 'Leverage',             body: 'A multiplier between input and output. Capital, code, content, and people are the four kinds — used well, they let small effort produce large results.' },
+  system:              { title: 'System',               body: 'A pattern that produces a result without needing willpower each time. Goals point at the destination; systems are the roads that get you there.' },
+  'emotional-regulation':{ title: 'Emotional Regulation', body: 'The skill of noticing a feeling, naming it, and choosing a response instead of reacting from it. The base layer of stable performance.' },
+  reflection:          { title: 'Reflection',           body: 'A short, honest review of what just happened — what worked, what did not, what to repeat. Reflection without action is journaling; reflection with action compounds.' },
+  execution:           { title: 'Execution',            body: 'The act of finishing the work in front of you to the standard you committed to. Most plans fail in execution, not in design.' },
+  momentum:            { title: 'Momentum',             body: 'The compounding feeling that the next step is easier because the last one was completed. Protected by small daily wins.' },
+  hook:                { title: 'Hook',                 body: 'The first 1–3 seconds of a piece of content. Its only job is to make a viewer stay long enough to learn whether the rest is for them.' },
+  retention:           { title: 'Retention',            body: 'How long viewers keep watching. Algorithms reward it more than anything else because it is the single best proxy for "this was worth their time."' },
+  CTA:                 { title: 'Call to Action',       body: 'The specific next step you ask a viewer or reader to take. Without one, attention you earned dissipates instead of compounding.' },
+  grooming:            { title: 'Grooming',              body: 'The small set of daily and weekly habits that keep your hair, skin, beard, and nails in a consistently presentable state. Less about products, more about a repeatable routine.' },
+  scalp:               { title: 'Scalp',                 body: 'The skin under your hair. Hair quality is mostly downstream of scalp condition — circulation, oil balance, irritation, and cleanliness all show up first on the scalp, then in the hair.' },
+  fit:                 { title: 'Fit',                   body: 'How a garment sits on your specific body — shoulders, chest, waist, hem. Fit is the single most visible signal of considered dress; a $30 alteration usually beats a $300 new piece.' },
+  automation:          { title: 'Automation',            body: 'A repeatable workflow that runs without you having to remember each step. In modern operators, automation is the silent multiplier between someone who works hard and someone whose hard work compounds.' },
+  'cash-flow':         { title: 'Cash Flow',             body: 'Money in minus money out, measured over a period. Profit is a number on paper; cash flow is whether the business actually pays you and your bills this month.' }
+};
+
+var PACK_CONTENT_OVERLAY = {
+  /* ─────────────────────────────────────────────────────────────
+     ACTIVE PACKS — cover images for all; full lesson content for
+     side-business and youtube-launch (priority packs for Stage 35-A).
+     The remaining packs keep their existing thin task/action/reflection
+     and will gain lesson overlays in Stage 35-B. */
+  /* Morning Mastery is fully expanded in Stage 35-B at the bottom of this map. */
+  /* Clear Skin + Hair Care expanded below — short cover-only entries
+     removed so the renderer hits the full overlays. */
+  /* Business Idea Pack is fully expanded in Stage 35-B at the bottom of this map. */
+  /* Stage 35-A — content-plan, focus-builder, style-foundations, and
+     clear-skin are expanded into full overlays below (after the cover-only
+     list) so the renderer reaches them via the same single lookup. The
+     short cover-only entries for them are intentionally removed; the full
+     entries below carry coverImage / coverAlt and the additional overlay
+     fields. */
+  /* Coming-soon packs get cover images so the marketplace looks finished. */
+  /* Stage 35-B: financial-blueprint, mindset-reboot, body-architect,
+     business-builder, and social-mastery are expanded to overview-level
+     polish at the bottom of this map. Their day-overlays are intentionally
+     omitted because the marketplace click handler returns early for
+     coming-soon packs — users cannot reach the day pages — so day-level
+     writing would be invisible work. */
+  /* social-mastery: see Stage 35-B overview-level entry at the bottom. */
+  /* Teaser packs (visual only) — cover image filenames match script. */
+  'lose-weight':        { coverImage: 'lose-weight-cover.webp',        coverAlt: 'A bright kitchen with fresh whole foods.' },
+  'money-system':       { coverImage: 'money-system-cover.webp',       coverAlt: 'A clean ledger and a calm pen.' },
+  'confidence-builder': { coverImage: 'confidence-builder-cover.webp', coverAlt: 'A confident silhouette walking forward in soft light.' },
+  'ai-toolbelt':        { coverImage: 'ai-toolbelt-cover.webp',        coverAlt: 'A laptop showing an elegant automation workflow.' },
+
+  /* ─────────────────────────────────────────────────────────────
+     SIDE BUSINESS SPRINT — full 14-day deep content. */
+  'side-business': {
+    coverImage:  'side-business-cover.webp',
+    coverAlt:    'A focused side-business workspace at golden hour.',
+    heroImage:   'side-business-hero.webp',
+    heroAlt:     'A laptop, notebook, and warm coffee on a focused work desk.',
+    overviewLong:
+        'Most side-business attempts die in vague intention. People research for months, then quit because nothing real was ever shipped. '
+      + 'This pack is built around the opposite shape: fourteen days of small, specific, irreversible commitments that turn a fuzzy idea into a paying customer, or kill it cleanly so you can move on without guilt.\n\n'
+      + 'You will spend the first week clarifying what you are actually selling, to whom, and why. The second week is execution — building a small offer, talking to real humans, and asking for money. '
+      + 'Nothing in this pack is theoretical. Every day ends with a step a reasonable person can finish in under 45 minutes, and a checklist to prove you did it.',
+    outcomes: [
+      'A one-sentence offer you can say out loud without flinching',
+      'A defined audience of 100 reachable people — not a vague avatar',
+      'A landing page or DM script you can send the same day you read it',
+      'Conversations with at least 5 real prospects who could buy',
+      'At least one paid pilot booked, or a clean decision to pivot'
+    ],
+    howToUse: 'One lesson per day, in order. Do not read ahead. Spend 20 minutes on the reading and 25 on the action — that is the design. The reflection is for you, not for posting; it is where the real compounding happens.',
+    dayOverlays: {
+      1: {
+        image: 'side-business-day-01.webp',
+        imageAlt: 'A blank notebook page beside a fresh coffee.',
+        keyTerms: ['niche', 'audience', 'leverage'],
+        reading:
+            '<p>The single most common reason side businesses fail is that they were never decided. People keep three or four ideas alive in the back of their head, doing a little research on each, and never put weight behind any of them. The result feels like progress and produces nothing.</p>'
+          + '<p>Today’s job is to make one decision. You are going to choose the single idea you will work on for the next 14 days — and you are going to write down, in one sentence, who it is for and what change it produces in their life. That sentence is your only deliverable today.</p>'
+          + '<p>The bar is low on quality and high on commitment. The idea does not need to be brilliant. It needs to be specific enough that you can take action on it tomorrow without first doing more thinking. "Help freelance designers raise their rates" is a sentence you can act on. "Something with AI" is not.</p>'
+          + '<p>This is also the day to identify your <span class="pp-term" data-term="audience">audience</span>. Not a demographic — a group you can reach. If you cannot name five real people who fit your audience and you could text today, the audience is too vague.</p>',
+        whyItMatters: 'Every later day depends on this one. Vague ideas produce vague work; specific ones produce specific results, including useful failure.',
+        keyInsight: 'A wrong decision made fast can be corrected in days. An undecided idea wastes years.',
+        example: 'A user who picked "Help mid-career engineers prepare for system-design interviews" had their first paying customer by Day 11. The same person had been "thinking about coaching" for two years before that sentence existed.',
+        checklist: [
+          'Write your one-sentence offer (who + outcome)',
+          'List five real people you could reach this week',
+          'Close every other idea tab — literally',
+          'Tell one person what you decided'
+        ],
+        microChallenge: 'Say your one-sentence offer out loud, alone, three times. Notice which words you stumble on — those are the parts that are still vague.',
+        reflection: 'Which of my old ideas am I most afraid to close — and what would change if I closed it today?'
+      },
+      2: {
+        image: 'side-business-day-02.webp',
+        imageAlt: 'A notebook page with arrows and circled keywords.',
+        keyTerms: ['niche', 'positioning'],
+        reading:
+            '<p>Yesterday you picked an idea. Today you make sure it is narrow enough to win in. Most ideas are abandoned not because they are bad but because they are too broad — the work to reach a general audience is enormous, and the message has no edge.</p>'
+          + '<p>The shortcut is a real <span class="pp-term" data-term="niche">niche</span>: a tight intersection of who you are talking to, what specific problem you solve, and the situation they are in when they need it. "Marketers" is a market. "Solo marketing consultants billing under $5k who want to land a first retainer" is a niche.</p>'
+          + '<p>Narrowing feels like losing customers. It is the opposite. A narrow audience makes your message specific, your outreach trivial, and your work portfolio compound faster. You can always widen later — almost no one ever needs to.</p>',
+        whyItMatters: 'Specificity is the cheat code for a small team or a one-person business. It lets you compete on relevance instead of budget.',
+        keyInsight: 'You do not need a bigger audience. You need a narrower one.',
+        example: 'A photographer pivoted from "weddings" to "second-marriage backyard weddings in the Pacific Northwest." Within a year she had a wait list and was charging double.',
+        checklist: [
+          'Write your audience as a specific role, situation, and stuck point',
+          'Cross out any word that could be replaced by a synonym',
+          'Test the sentence on one person — do they immediately know who it is for?',
+          'Save the niche statement somewhere you will see it daily'
+        ],
+        microChallenge: 'Find a search query your niche would type at 11pm on a Tuesday. That is the language you will write in for the next 12 days.',
+        reflection: 'Where am I still trying to keep the audience wide because narrowing feels final?'
+      },
+      3: {
+        image: 'side-business-day-03.webp',
+        imageAlt: 'A whiteboard with a single offer sketched out.',
+        keyTerms: ['offer', 'positioning'],
+        reading:
+            '<p>An idea is not an offer. An <span class="pp-term" data-term="offer">offer</span> is a specific outcome, a price, and a way to start. The first version of yours will be ugly — that is fine. You can only improve a real offer; you cannot improve an imagined one.</p>'
+          + '<p>The simplest version: a clear result, a short timeframe, a price your buyer can compare to something they already pay for, and one sentence that explains the difference between your version and the alternative. Skip features. Buyers do not buy features; they buy the version of themselves on the other side of the result.</p>'
+          + '<p>Pricing right now is a guess, and that is OK. Pick a number that does not embarrass you to say but is small enough that a serious prospect can decide on the spot. Anchor it to an outcome, not to your time.</p>',
+        whyItMatters: 'Without an offer, every conversation drifts into vague consulting. With one, conversations have a yes or no on the table.',
+        keyInsight: 'The first offer is a hypothesis, not a contract. You are testing whether the result is buyable, not whether it is perfect.',
+        example: 'A new copywriter sold "One landing page, written and shipped in 7 days, $750, 1 revision." She closed three in the first month. Six months later, the same offer was $2,400 and unchanged otherwise.',
+        checklist: [
+          'Write the outcome in one sentence (the change in the buyer)',
+          'Set a starter price and a timeframe',
+          'Write one sentence on what is different vs. the obvious alternative',
+          'Read it aloud — if it sounds vague, cut every adjective'
+        ],
+        microChallenge: 'Imagine a buyer pays today. Write the first message you would send them. That message tells you whether the offer is real.',
+        reflection: 'What is the smallest version of this offer that still produces the real outcome?'
+      },
+      4: {
+        image: 'side-business-day-04.webp',
+        imageAlt: 'A clean Notion page with three audience profiles.',
+        keyTerms: ['audience', 'reflection'],
+        reading:
+            '<p>You have an offer. Now you need to make sure it actually fits the audience you wrote yesterday. The way to know is to talk to them — not to sell yet, but to listen for the words they use about the problem.</p>'
+          + '<p>Pick three real people who match your niche. They do not need to be strangers. Send each one a short, honest message: you are working on something small, you would value 15 minutes of their time, and you have one specific question. The question is "What does this problem actually cost you right now?"</p>'
+          + '<p>Take notes on the exact language they use. The copy on every page you ever write for this offer will come straight out of those notes.</p>',
+        whyItMatters: 'The single biggest lift in conversion comes from describing the problem in the buyer’s own words. You cannot guess them.',
+        keyInsight: 'Buyers cannot tell you what to build. They can tell you what it is costing them today — and that is the only thing you need.',
+        example: 'A founder building an HR tool changed one headline from "Streamline performance reviews" to "Stop dreading the Monday review window." Conversion roughly tripled. Both came from a single 15-minute call.',
+        checklist: [
+          'Send three short conversation requests',
+          'Write your one question down before the call',
+          'Take notes in their language, not yours',
+          'After the calls, circle three exact phrases you will reuse'
+        ],
+        microChallenge: 'If no one responds, send three more. Volume is the answer; tone is the lever.',
+        reflection: 'Where am I tempted to pitch when I should be listening?'
+      },
+      5: {
+        image: 'side-business-day-05.webp',
+        imageAlt: 'A clean, single-page website draft on a laptop screen.',
+        keyTerms: ['offer', 'CTA'],
+        reading:
+            '<p>Today you build the smallest possible landing page. One page, one offer, one button. The page exists for one purpose: to give a serious buyer enough to say yes, and to give an unserious one a fast exit.</p>'
+          + '<p>Keep the structure simple. A headline that names the outcome. A subhead that names the audience. Three lines on what is included. A price. A <span class="pp-term" data-term="CTA">CTA</span> button that goes to a calendar link, a payment link, or a typeform — whatever closes the loop with the least friction.</p>'
+          + '<p>No bio. No history. No "trusted by." If you have testimonials, one is enough. If you do not, leave it out. The goal of the first version is not to impress; it is to give a real buyer something to act on.</p>',
+        whyItMatters: 'A page makes the offer real outside your head. It also forces every fuzzy claim to commit to specific language.',
+        keyInsight: 'A working ugly page beats a beautiful page that does not exist yet.',
+        example: 'One side-business launched on a single Carrd page with three lines and a Stripe button. The whole site took 90 minutes and pulled in $4,800 in the first ten days.',
+        checklist: [
+          'Pick a tool you can ship in under two hours',
+          'Write the headline last, after the body is in place',
+          'Add one CTA — not three',
+          'Send the link to one trusted person and ask "What do you think this is?"'
+        ],
+        microChallenge: 'Time yourself. If the page takes more than three hours, you are designing instead of shipping.',
+        reflection: 'What am I leaving on the page because I am scared to cut it?'
+      },
+      6: {
+        image: 'side-business-day-06.webp',
+        imageAlt: 'A phone showing a thoughtful outreach DM draft.',
+        keyTerms: ['audience', 'consistency'],
+        reading:
+            '<p>The page is up. Now you need traffic, and the cheapest, fastest, most useful traffic is the people you already know who fit the audience. Today you write a short outreach message and send it to ten of them.</p>'
+          + '<p>The message has three parts. One: a specific reason you are messaging this person, not a mass blast. Two: one honest sentence about what you are building and who it is for. Three: a low-pressure ask — "would you take a look and tell me whether this would have been useful to you a year ago?"</p>'
+          + '<p>Do not sell. Most replies will be useful even when they are not buyers. A few will be buyers. Your job is to get the page in front of the people most likely to recognize themselves on it.</p>',
+        whyItMatters: 'The first ten conversations are worth more than the next thousand. They tell you whether the offer is alive.',
+        keyInsight: 'Outreach feels harder than it is because people imagine the worst response. The actual worst is a quiet no, which costs nothing.',
+        example: 'A new coach sent ten DMs and got two replies that became paid clients within a week. The other eight were not bad outcomes — they were data.',
+        checklist: [
+          'List ten people who fit the niche',
+          'Personalize the first sentence for each',
+          'Send them today, before reading any further',
+          'Track replies in a simple sheet'
+        ],
+        microChallenge: 'Send a thank-you message to the last person who replied, even if they did not buy. Future audiences are built on memory.',
+        reflection: 'Whose attention am I afraid to ask for, and why?'
+      },
+      7: {
+        image: 'side-business-day-07.webp',
+        imageAlt: 'A weekly review notebook with a green pen.',
+        keyTerms: ['reflection', 'momentum'],
+        reading:
+            '<p>This is a review day. You are halfway through. The goal is to look honestly at what is working, what is stalled, and where the next week’s leverage actually lives.</p>'
+          + '<p>Pull up your niche statement, your offer, your page, and your outreach notes. Read them in order. Ask three questions: which of these is producing real signal? Which one is the bottleneck right now? What would happen if I doubled down on the one that is working?</p>'
+          + '<p>Do not start the second week with the same plan as the first week. The point of testing is to update.</p>',
+        whyItMatters: 'Without weekly review, the second week recycles the first week’s assumptions. With it, the second week compounds them.',
+        keyInsight: 'You can almost always identify the bottleneck honestly in 15 minutes. The hard part is being willing to change in response.',
+        example: 'A founder noticed that outreach was strong but the page was killing the lead. He spent Day 8 rewriting two sentences and saw a 4x lift on the same outreach volume.',
+        checklist: [
+          'Score Week 1 honestly out of 10 on three lines: clarity, page, outreach',
+          'Write the one bottleneck in one sentence',
+          'Decide what the first action on Day 8 will be',
+          'Close the laptop and rest for the day'
+        ],
+        microChallenge: 'Take one full evening off after the review. Momentum is built by rhythm, not grind.',
+        reflection: 'If I could only fix one thing next week, what is it?'
+      },
+      8: {
+        image: 'side-business-day-08.webp',
+        imageAlt: 'A clean schedule showing back-to-back conversations.',
+        keyTerms: ['execution', 'consistency'],
+        reading:
+            '<p>Second week is about conversations. You have an offer and a page; today you start running a structured loop with the people who replied to your outreach last week.</p>'
+          + '<p>Book three calls if possible. Keep them short — 20 minutes is more than enough. The structure is one third of the call learning their situation in their own words, one third describing how the offer would change it, and one third asking for the decision.</p>'
+          + '<p>You will be tempted to leave the third part out. Do not. The whole loop only works if someone says yes or no, in plain language, before they leave the call.</p>',
+        whyItMatters: 'A "maybe" is the most expensive thing in a side business. It costs time and produces nothing. Conversations that end in a clean answer compound; ones that drift do not.',
+        keyInsight: 'You earn the right to ask for a decision by making the offer specific enough that a yes is risk-free and a no is honest.',
+        example: 'A new designer started ending calls with "Want to start with the first sprint next Monday — yes or no, no pressure?" Three of seven said yes that week.',
+        checklist: [
+          'Book three short calls',
+          'Write your one decision question down before each',
+          'Take notes immediately after',
+          'Send a thank-you note before the end of the day, regardless of outcome'
+        ],
+        microChallenge: 'If someone says no, ask one short follow-up: "What would have made this a yes?" The answer is gold.',
+        reflection: 'What about asking for the decision still feels like asking for too much?'
+      },
+      9: {
+        image: 'side-business-day-09.webp',
+        imageAlt: 'A laptop with a draft proposal on screen.',
+        keyTerms: ['offer', 'execution'],
+        reading:
+            '<p>Today is for the first paid pilot. If yesterday’s calls produced a yes, this is where you turn it into work. If they did not yet, you still build the proposal — the act of building it sharpens every future call.</p>'
+          + '<p>The proposal is short. Three sections: what you will deliver and by when, what the buyer is responsible for, the price and how to pay. No filler. If you want a contract, a one-page agreement is plenty. The point is to remove all friction between yes and starting.</p>'
+          + '<p>Send the proposal the same day you say yes. The longer it sits, the more chances reality finds to delay it.</p>',
+        whyItMatters: 'The gap between yes and starting is where most deals quietly die. Tight proposals close it.',
+        keyInsight: 'Speed is a competitive advantage no one can take from you in the early days.',
+        example: 'A new operator landed a $3k pilot inside 48 hours of the first call by sending the proposal during the call itself. The buyer signed before either of them left the meeting.',
+        checklist: [
+          'Write the proposal in one page',
+          'Send it within 24 hours of the yes',
+          'Use a payment link that works in two clicks',
+          'Confirm a clear start date'
+        ],
+        microChallenge: 'Write your proposal template once, today, so the next four sales close in minutes, not days.',
+        reflection: 'What can I make easier for the buyer so saying yes is the obvious choice?'
+      },
+      10: {
+        image: 'side-business-day-10.webp',
+        imageAlt: 'A clean morning workspace with a focused mood.',
+        keyTerms: ['execution', 'consistency'],
+        reading:
+            '<p>Whether or not you have a customer yet, today is execution. If you do, you start the work and deliver more than expected. If you do not, you build the second version of your offer based on everything the first seven days told you.</p>'
+          + '<p>Either way, the trap to avoid is overthinking. The second version does not need to be a redesign. It probably needs one sharper sentence at the top and one more concrete deliverable in the body.</p>'
+          + '<p>Spend 45 focused minutes. No music with words, no tabs, no second screen. The whole sprint is built on the idea that a small daily block of real attention beats a large weekly block of distracted effort.</p>',
+        whyItMatters: 'The middle of any sprint is where energy dips. Protected daily blocks are how you cross it without losing the gains.',
+        keyInsight: 'Excellence in the first 30 days is mostly about cutting the noise around the work, not adding more work.',
+        example: 'An indie operator measured his time across one week and found he was doing 27 minutes of real focused work per day under 6 hours of "working." He cut everything but the 27 minutes and started shipping more.',
+        checklist: [
+          'Block 45 focused minutes',
+          'Pick one thing to ship today',
+          'Close every other app',
+          'Mark when you start and when you stop'
+        ],
+        microChallenge: 'After the block, write down what made the focus possible. That becomes your future template.',
+        reflection: 'What kept me from real focus today, and what would I change tomorrow?'
+      },
+      11: {
+        image: 'side-business-day-11.webp',
+        imageAlt: 'A hand writing in a small notebook of testimonials.',
+        keyTerms: ['confidence', 'positioning'],
+        reading:
+            '<p>Trust accelerates everything. Today you collect proof — early outcomes, customer words, even a single screenshot of someone saying "this helped." Even if you have not landed a paid pilot yet, you have signal: someone said this would be useful, someone agreed the framing was right, someone took the next call.</p>'
+          + '<p>Write those down in a single place. As your offer grows, you will paste lines from this file onto every page, every DM, every proposal. <span class="pp-term" data-term="confidence">Confidence</span> in your own offer is built by reading the file back, not by manufacturing a feeling.</p>',
+        whyItMatters: 'A growing operator who looks at their own evidence weekly tells a stronger story without inventing anything.',
+        keyInsight: 'The most persuasive testimonial is one short sentence in the buyer’s exact words. Polish it less, not more.',
+        example: 'A new productivity coach kept a single notes file titled "real quotes." Eighteen months later it became the entire copy of her best-converting page.',
+        checklist: [
+          'Open a new notes file titled "evidence"',
+          'Paste every honest line a prospect said about the problem',
+          'Add the names or initials so it stays real',
+          'Pick one line and put it on your page today'
+        ],
+        microChallenge: 'Send a short thank-you note to the most useful conversation of the sprint so far.',
+        reflection: 'Where is real evidence already sitting that I have not yet looked at?'
+      },
+      12: {
+        image: 'side-business-day-12.webp',
+        imageAlt: 'A simple spreadsheet of weekly metrics.',
+        keyTerms: ['system', 'reflection'],
+        reading:
+            '<p>You are inside two days of a full cycle. The temptation now is to celebrate or to drift. Both are fine for an evening. Neither is a strategy. The work today is to convert what is rough and personal in your sprint into something repeatable.</p>'
+          + '<p>Look at how outreach, calls, and proposals actually happened. Where did time go? What broke? What worked even when you were tired? Turn the answers into a one-page <span class="pp-term" data-term="system">system</span> — a small playbook of "next time, do this."</p>'
+          + '<p>The first version will be short. That is fine. Each loop you run from here on improves it.</p>',
+        whyItMatters: 'Operators with a written one-page system outgrow those with twice the talent and no system. Memory is unreliable; pages are not.',
+        keyInsight: 'You build systems out of the surprises in the work, not out of the work itself.',
+        example: 'A founder wrote down every "weird detail" of his first three pilots. Two months later that document made the fourth pilot trivial to deliver.',
+        checklist: [
+          'Open one document called "playbook"',
+          'List the steps from idea to deal in the order they happened',
+          'Mark where it broke and why',
+          'Save it where you will see it next sprint'
+        ],
+        microChallenge: 'Walk for 20 minutes after writing it. Distance is where good systems get refined.',
+        reflection: 'What part of the sprint do I want to never repeat by memory again?'
+      },
+      13: {
+        image: 'side-business-day-13.webp',
+        imageAlt: 'A clean budget plan with simple categories.',
+        keyTerms: ['offer', 'execution'],
+        reading:
+            '<p>Today is for honest math. Pull up your numbers for the sprint. How many people did you reach? How many replied? How many called? How many bought? What is each step’s rate?</p>'
+          + '<p>The point is not to be impressed or disappointed by the absolute number. It is to find the one rate that, if you doubled it next sprint, would change everything. That is the rate you train against.</p>'
+          + '<p>Most operators find the answer obvious once they see it on paper. Outreach to reply is almost never the problem. Reply to booked call almost always is.</p>',
+        whyItMatters: 'Numbers cut through stories. Once a rate is on paper, it stops being a feeling and starts being a target.',
+        keyInsight: 'Find the one rate. Train against it. Ignore everything else for a sprint.',
+        example: 'A growing operator found his "reply to call" rate was 8%. He spent a week rewriting only the reply message and pushed it to 31%. Nothing else changed.',
+        checklist: [
+          'Count contacts, replies, calls, offers, sales',
+          'Compute the rate at each step',
+          'Circle the one rate to target next sprint',
+          'Stop measuring everything else for two weeks'
+        ],
+        microChallenge: 'Save the spreadsheet template. You will reuse it for years.',
+        reflection: 'Which of my numbers was I afraid to see, and why?'
+      },
+      14: {
+        image: 'side-business-day-14.webp',
+        imageAlt: 'A folded notebook closed at sunset.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<p>Last day. The work is to design the next sprint before the energy of this one fades. You will not have momentum forever, and the first action of the next 14 days is the only one that actually compounds.</p>'
+          + '<p>Look at the playbook, the metrics, and the evidence file. Pick one improvement for each: one outreach refinement, one offer tweak, one delivery upgrade. Write the first action of the next sprint and put it on the calendar before you sleep.</p>'
+          + '<p>You did not just run a side business. You ran a small, complete operating loop. The loop is the asset. Everything else compounds from here.</p>',
+        whyItMatters: 'The first action of the next sprint, scheduled today, is worth more than another week of planning.',
+        keyInsight: 'You owe yourself the next sprint. The compounding is in the second loop, not the first.',
+        example: 'A solo operator finishes 14 days, picks one rate to improve, and books her first Day 1 block before sleep. Twelve months later she runs the same loop weekly and the business is real.',
+        checklist: [
+          'Choose one improvement in outreach',
+          'Choose one improvement in the offer',
+          'Choose one improvement in delivery',
+          'Schedule the first action of Sprint 2'
+        ],
+        microChallenge: 'Tell someone what you shipped. Saying it out loud makes the next sprint feel inevitable.',
+        reflection: 'Who am I after this sprint that I was not before — and what does that person do next?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     YOUTUBE LAUNCH — full 14-day deep content. */
+  'youtube-launch': {
+    coverImage:  'youtube-launch-cover.webp',
+    coverAlt:    'A creator desk lit by warm key lights, camera ready.',
+    heroImage:   'youtube-launch-hero.webp',
+    heroAlt:     'A camera lens framed against a warm-lit creator studio.',
+    overviewLong:
+        'A YouTube channel is one of the highest-leverage assets a single person can build today — a piece of content can earn for years, reach people you will never meet, and compound into a business. '
+      + 'But most launches fail in week one because the creator did not decide who they were making content for, did not build a structure, and burned out before the algorithm had any data to work with.\n\n'
+      + 'This pack is a 14-day foundation. Not a viral hack. By the end you will have a channel position, a content pillar plan, three videos in different stages of production, and a weekly rhythm you can hold without losing your job, your sleep, or your interest.',
+    outcomes: [
+      'A clear channel position you can say in one sentence',
+      'A defined audience you make videos for, not a vague demographic',
+      'Three concrete video ideas with hooks written',
+      'A repeatable production rhythm (idea → script → film → edit → publish)',
+      'A first video published, or a clean schedule to do so'
+    ],
+    howToUse: 'Each day is one focused step. Do not skip ahead — early days set the angle the later days build on. The hardest part is publishing the first video; the second hardest is the second.',
+    dayOverlays: {
+      1: {
+        image: 'youtube-launch-day-01.webp',
+        imageAlt: 'A blank notebook with a single line: "Who is this for?"',
+        keyTerms: ['audience', 'positioning'],
+        reading:
+            '<p>You will not make videos that work until you decide who they are for. The most common mistake on YouTube is to start with the topic ("I want to make finance content") instead of the viewer ("a 28-year-old engineer with no money habits who feels behind"). The first version is a channel. The second is an actual audience.</p>'
+          + '<p>Today’s deliverable is one sentence: who specifically is your channel for, and what do they want that they cannot get elsewhere? Be specific enough that if a stranger read the sentence, they could guess three of your video titles.</p>'
+          + '<p>You can change this later. You will, in fact, refine it weekly. But you cannot start without it. Every choice from here — title, hook, length, thumbnail, music, framing — flows from that sentence.</p>',
+        whyItMatters: 'Algorithms reward channels that satisfy a specific viewer. They cannot reward a channel that does not know who its viewer is.',
+        keyInsight: 'A channel is a promise to a specific kind of person. The promise comes before the camera.',
+        example: 'A creator pivoted from "personal finance" to "money basics for first-job engineers." Same exact videos, retitled and re-thumbnailed. Subs grew 7x in 90 days.',
+        checklist: [
+          'Write the sentence: who + what they want',
+          'Test it on one friend — can they predict your titles?',
+          'Save it on a single page of your notes',
+          'Read it before every video for the next month'
+        ],
+        microChallenge: 'Rewrite the sentence three times, each shorter than the last. The shortest one is closest to the real thing.',
+        reflection: 'Who am I afraid to name as my viewer, and what would change if I named them?'
+      },
+      2: {
+        image: 'youtube-launch-day-02.webp',
+        imageAlt: 'A wall of post-it notes grouping content into themes.',
+        keyTerms: ['niche', 'consistency'],
+        reading:
+            '<p>You cannot make videos in 200 directions. Today you choose your content pillars — three to five themes the channel will keep returning to. Pillars are the angle, not the format. "Engineer money mistakes" is a pillar. "Tutorials" is not.</p>'
+          + '<p>Good pillars are narrow enough that every video sharpens the channel’s identity, and broad enough that you will not run out of ideas in eight weeks. Three to five is the sweet spot. Fewer feels repetitive; more feels scattered.</p>'
+          + '<p>Make sure every pillar is something you can keep speaking about for a year without bitterness. Channels die when the creator runs out of internal energy long before they run out of ideas.</p>',
+        whyItMatters: 'A clear pillar set is the difference between a channel that compounds and a channel that drifts.',
+        keyInsight: 'Repetition with variation is the algorithm’s favorite pattern. Pillars are how you serve it without sounding stuck.',
+        example: 'A creator with three pillars (money basics, career, lifestyle systems) crossed 100k subs in a year. A talented friend without pillars stayed at 4k.',
+        checklist: [
+          'Write 3–5 pillars in one or two words each',
+          'Sanity-check: each can have 12+ videos over the next year',
+          'Make sure none of them feels like a chore to talk about',
+          'Pin them somewhere you will see daily'
+        ],
+        microChallenge: 'Write 10 working video ideas across your pillars. Do not edit them yet. You will return.',
+        reflection: 'Which pillar excites me even on bad days?'
+      },
+      3: {
+        image: 'youtube-launch-day-03.webp',
+        imageAlt: 'A simple notebook with three video titles handwritten.',
+        keyTerms: ['hook', 'retention'],
+        reading:
+            '<p>The single highest-leverage skill on YouTube is the <span class="pp-term" data-term="hook">hook</span>: the first 1–3 seconds and the first 15 seconds of your video. They decide whether viewers stay. Algorithms watch <span class="pp-term" data-term="retention">retention</span> more than anything else.</p>'
+          + '<p>Today you write three hooks. Just openings. Each one should do three things in 15 seconds: name the viewer, name the outcome of the video, and make a small promise that pays off later. The exact wording matters less than the structure.</p>'
+          + '<p>You will throw most of them away. That is fine. Today’s job is to learn the shape, not to nail the script.</p>',
+        whyItMatters: 'You cannot grow on a flat retention curve. The hook is where almost all the gains hide.',
+        keyInsight: 'A great hook makes staying feel free. A poor one makes the rest of the video invisible.',
+        example: 'A creator A/B tested two hooks for the same video. The first kept 38% of viewers at 30 seconds; the rewritten one kept 71%. Same video.',
+        checklist: [
+          'Pick three working ideas',
+          'Write a 15-second opening for each',
+          'Read each aloud and time it',
+          'Mark the one you would click'
+        ],
+        microChallenge: 'Watch the opening 15 seconds of five high-retention videos in your space. Note the structure, not the words.',
+        reflection: 'What promise can my hook honestly make that the video will keep?'
+      },
+      4: {
+        image: 'youtube-launch-day-04.webp',
+        imageAlt: 'A clean script outline on a paper page.',
+        keyTerms: ['execution', 'system'],
+        reading:
+            '<p>Today you turn one hook into a full script. Skip cinematic ambitions. You are building a system, not a film.</p>'
+          + '<p>A simple structure that wins: hook (15 seconds), promise (the specific thing the viewer will know by the end), three or four numbered points (each one short), a payoff that returns to the hook, and a clear <span class="pp-term" data-term="CTA">CTA</span>. That is it. Twelve minutes max for the first one.</p>'
+          + '<p>Write it tighter than feels comfortable. You will cut more in the edit. Length is not value.</p>',
+        whyItMatters: 'A repeatable script template is the difference between making one video and making 50.',
+        keyInsight: 'Scripts are systems. The template is the asset, not any single script.',
+        example: 'A creator with a 5-section script template shipped a video a week for a year. Friends with no template shipped four total.',
+        checklist: [
+          'Write the script in one sitting',
+          'Read it out loud — cut anything that feels written',
+          'Mark the points where you naturally pause',
+          'Save the template, not just the script'
+        ],
+        microChallenge: 'Time the read aloud. If it is longer than 9 minutes spoken, the video will sag. Cut.',
+        reflection: 'What is the smallest version of this video that still keeps its promise?'
+      },
+      5: {
+        image: 'youtube-launch-day-05.webp',
+        imageAlt: 'A simple home recording setup with one lamp and a phone.',
+        keyTerms: ['execution', 'discipline'],
+        reading:
+            '<p>Today you film. The single trap for new creators is gear. You do not need a cinema camera. A phone, a single soft light source, a quiet room, and clear audio is plenty. Audio matters more than picture; viewers tolerate average video and abandon bad sound instantly.</p>'
+          + '<p>Set up in 20 minutes. Film for 40. Do as many takes as you need but cap the session at one hour. The point is to get a workable raw recording and learn what is wrong with your delivery — not to wait until everything is "ready."</p>'
+          + '<p>Everything that bothers you on watchback is information for next time. You are running a loop, not a launch.</p>',
+        whyItMatters: 'The first recording is the most expensive one only if you spend forever on it. A 60-minute version that ships beats a perfect one that does not.',
+        keyInsight: 'Equipment is not the bottleneck. Reps are.',
+        example: 'A creator filmed her first eight videos on a $0 setup — a kitchen lamp, an old phone, and a closet for sound. Her 9th was on a $400 mic. Almost no one noticed when she upgraded.',
+        checklist: [
+          'Set up the room and audio',
+          'Film the full script once, end to end',
+          'Cap the session at one hour',
+          'Save raw files in a clearly named folder'
+        ],
+        microChallenge: 'Watch the first 30 seconds on mute. Then on audio only. Note where each falls apart — those are next time’s lessons.',
+        reflection: 'What part of filming felt heavier than it needs to be?'
+      },
+      6: {
+        image: 'youtube-launch-day-06.webp',
+        imageAlt: 'A laptop with a clean video editor timeline open.',
+        keyTerms: ['execution', 'retention'],
+        reading:
+            '<p>Today you edit. Keep it ruthless. New creators over-cut for craft; the algorithm rewards pace and clarity, not transitions. The default rule of thumb: cut anything that does not earn its place on a second watch.</p>'
+          + '<p>Tighten the hook. Remove rambling. If you said something three times, leave only the strongest one. Add basic captions — a huge percentage of viewers watch without sound at some point.</p>'
+          + '<p>If editing takes more than three times the runtime, your script needed another pass. That is data for the next loop.</p>',
+        whyItMatters: 'Editing is where retention is made or lost. Pace is more important than polish.',
+        keyInsight: 'Most edits are made better by removing things, not adding them.',
+        example: 'A creator cut a 14-minute first edit down to 8.5 minutes and saw retention rise from 27% to 44% on the published version.',
+        checklist: [
+          'Make a rough cut following the script structure',
+          'Tighten transitions and dead air',
+          'Add basic captions',
+          'Do one final watch at 1.25x to find slow spots'
+        ],
+        microChallenge: 'Watch the final cut alongside someone unfamiliar with the topic. Their face is the only feedback that matters.',
+        reflection: 'What did I keep because I love it rather than because the viewer needs it?'
+      },
+      7: {
+        image: 'youtube-launch-day-07.webp',
+        imageAlt: 'A clean Notion review with simple metrics.',
+        keyTerms: ['reflection', 'momentum'],
+        reading:
+            '<p>Mid-sprint review. Look at the position, pillars, script template, recording, and edit. Score them honestly out of 10. One score will be much lower than the rest — that is the bottleneck for next week.</p>'
+          + '<p>Do not aim to fix everything. Aim to make next week’s version of the weakest piece 30% better. Compounding does not need perfection; it needs steady direction.</p>',
+        whyItMatters: 'A review without a single targeted change is journaling. Compounding requires a fix.',
+        keyInsight: 'The bottleneck always moves. Your job is to find the new one each week.',
+        example: 'A creator found his editing was the bottleneck on Week 1 and his hook was the bottleneck on Week 2. He chased one at a time and shipped weekly for a year.',
+        checklist: [
+          'Score five elements honestly',
+          'Pick the lowest',
+          'Decide one specific change for next week',
+          'Take a real evening off'
+        ],
+        microChallenge: 'Tell someone the next change you committed to. Public lightweight accountability is enough.',
+        reflection: 'Where am I willing to be honest this week that I was not last week?'
+      },
+      8: {
+        image: 'youtube-launch-day-08.webp',
+        imageAlt: 'A row of three thumbnail mockups on a screen.',
+        keyTerms: ['hook', 'positioning'],
+        reading:
+            '<p>Today is title and thumbnail. The combination is the only thing most viewers see. A great video with a weak title and thumbnail dies. A modest video with a strong combo gets a chance.</p>'
+          + '<p>Write five titles. Make at least one curiosity-driven, at least one outcome-driven, and at least one challenge-driven. Pair each with a thumbnail concept in one sentence. Pick the combo where the title and thumbnail say the same thing two different ways.</p>'
+          + '<p>Avoid clickbait that the video does not pay off. The algorithm punishes mismatches harder than weak openings.</p>',
+        whyItMatters: 'The CTR-to-AVD loop is where channels grow. Title and thumbnail are the leverage points.',
+        keyInsight: 'Title sells the click. Thumbnail sells the curiosity. The video sells the next subscribe.',
+        example: 'A creator retitled an old 1,000-view video and pushed it to 80,000 views in three months. Same exact content.',
+        checklist: [
+          'Write five titles in different angles',
+          'Sketch three thumbnail concepts',
+          'Pair the matching ones',
+          'Pick the one you would click yourself'
+        ],
+        microChallenge: 'Show three of the combos to a friend without context. Ask which one they would click. That is the answer.',
+        reflection: 'What is the honest promise this title and thumbnail are making?'
+      },
+      9: {
+        image: 'youtube-launch-day-09.webp',
+        imageAlt: 'A simple publish-checklist on a notebook page.',
+        keyTerms: ['execution', 'CTA'],
+        reading:
+            '<p>Today you publish. Build a small publish checklist so the act is mechanical, not emotional. Upload the file. Add the chosen title and thumbnail. Write a 1–3 sentence description with one link. Add tags lightly. Set the publish time to a moment you will be near a screen for the first hour.</p>'
+          + '<p>Watch the first 24 hours of analytics with curiosity, not anxiety. The numbers are weather for one video. The data you actually use shows up across the next three.</p>',
+        whyItMatters: 'Most new creators delay publishing for reasons they cannot defend. A working publish checklist removes the delay forever.',
+        keyInsight: 'Publishing is a habit. Treat it like brushing teeth, not like a ceremony.',
+        example: 'A creator publishes every Tuesday at 4pm regardless of how she feels about the video. Two years in, 120 published videos, 70k subs.',
+        checklist: [
+          'Run the publish checklist',
+          'Set a fixed publish time you can keep weekly',
+          'Watch the first hour calmly',
+          'Open the next script the same evening'
+        ],
+        microChallenge: 'Tell three people the channel exists today. Not to brag — to start the smallest possible audience.',
+        reflection: 'What scared me about publishing — and what did it cost me to publish anyway?'
+      },
+      10: {
+        image: 'youtube-launch-day-10.webp',
+        imageAlt: 'A notebook with three concentric circles labeled hook / promise / payoff.',
+        keyTerms: ['retention', 'audience'],
+        reading:
+            '<p>Today you read your own analytics with adult eyes. Where did viewers leave? Where did the curve flatten? Where did it spike? Pull the retention chart and circle the drop-offs. Each one is a precise piece of feedback about your scripting or pacing.</p>'
+          + '<p>You are not looking for views. You are looking for the lesson. Even a 200-view video has a complete retention story.</p>',
+        whyItMatters: 'The retention curve is the most honest critic you will ever have, and the cheapest.',
+        keyInsight: 'Treat each video as a draft for the next one. Compounding is in the chain, not in any single piece.',
+        example: 'A creator noticed every video lost 50% of viewers at 1:30 — the moment he transitioned from hook to body. He fixed the transition and held viewers past 4:00 in the next three uploads.',
+        checklist: [
+          'Open the retention curve on your latest video',
+          'Circle three drop-offs',
+          'For each, write one sentence on what caused it',
+          'Apply one of the lessons to the next script'
+        ],
+        microChallenge: 'Watch your own video at 1.5x. Where did your face change because you got bored? Cut that next time.',
+        reflection: 'What story am I telling myself about the numbers, and is it accurate?'
+      },
+      11: {
+        image: 'youtube-launch-day-11.webp',
+        imageAlt: 'A second creator desk arranged for repeat filming.',
+        keyTerms: ['system', 'consistency'],
+        reading:
+            '<p>Today you build the production system. The goal is not to make filming easier in absolute terms; it is to remove the decisions that drain you between videos. Pick a fixed weekly day for ideas, one for scripting, one for filming, one for editing, one for publishing.</p>'
+          + '<p>If the time blocks are not on the calendar by the end of today, the system does not exist. The system is the calendar.</p>',
+        whyItMatters: 'The single most consistent predictor of channel growth at the early stage is whether the calendar protects production.',
+        keyInsight: 'You do not need willpower if the system is doing the deciding for you.',
+        example: 'A creator filmed three videos in a row on Saturdays for a year. The schedule, not the talent, was the difference.',
+        checklist: [
+          'Block five fixed times this week',
+          'Repeat the blocks for the next four weeks',
+          'Defend them like meetings',
+          'Adjust the rhythm after four weeks, not before'
+        ],
+        microChallenge: 'On a small whiteboard or note, list the five steps. See it every morning.',
+        reflection: 'What in my life keeps interrupting the production rhythm, and is it real?'
+      },
+      12: {
+        image: 'youtube-launch-day-12.webp',
+        imageAlt: 'A coffee and notebook reflecting on small refinements.',
+        keyTerms: ['hook', 'execution'],
+        reading:
+            '<p>Today is for the second video. The big leap is publishing the first; the big habit is publishing the second within a defined window. Loose this and the channel quietly dies.</p>'
+          + '<p>Use the script template. Take one lesson from the first retention curve and apply it to the new script. Aim for tighter, not longer. New creators almost always make better videos by cutting more, not by adding more.</p>',
+        whyItMatters: 'A second video, shipped on schedule, makes the channel real to you. A first video alone does not.',
+        keyInsight: 'The number you optimize for in month one is "did I publish the next video on time?" Nothing else matters yet.',
+        example: 'A creator who shipped three videos a month for a year crossed 50k subs. A friend who shipped one viral hit and went silent stayed at 4k.',
+        checklist: [
+          'Pick the next idea from your bank',
+          'Apply one retention lesson to the script',
+          'Film and edit within the calendar blocks',
+          'Publish on the same fixed day as the first'
+        ],
+        microChallenge: 'Time yourself end-to-end. Note where it dragged. That is next week’s improvement.',
+        reflection: 'What would my channel look like in a year if I never broke the publishing day?'
+      },
+      13: {
+        image: 'youtube-launch-day-13.webp',
+        imageAlt: 'A small simple analytics dashboard.',
+        keyTerms: ['reflection', 'positioning'],
+        reading:
+            '<p>Time to look at the channel as a whole, not at any single video. Open the channel page in the eyes of a stranger. Read the description. Read three titles. Look at three thumbnails. Does the same voice come through? Does it look like a place a viewer would return to?</p>'
+          + '<p>If yes, defend it. If no, write one sentence that ties it together and use it to align the next three videos.</p>',
+        whyItMatters: 'Coherence beats brilliance. Channels that feel like one person grow faster than channels with brilliant orphan videos.',
+        keyInsight: 'The channel is the brand. Each video is a chapter, not a book.',
+        example: 'A creator audited his channel after 20 videos and found three "experiments" that were dragging average impressions down. He hid them and the channel’s CTR rose 18%.',
+        checklist: [
+          'View your channel as a stranger',
+          'Identify any video that does not fit the position',
+          'Decide what to do with each (hide, replace thumbnail, keep)',
+          'Write one alignment sentence for the next month'
+        ],
+        microChallenge: 'Pin a single video that best represents the channel’s promise.',
+        reflection: 'What is the channel about in one sentence — and would that sentence hold up next month?'
+      },
+      14: {
+        image: 'youtube-launch-day-14.webp',
+        imageAlt: 'A neat list of three working video ideas.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<p>Final day. The asset of this 14-day sprint is not the videos. It is the loop: position, pillars, hook, script, film, edit, publish, review. You now have a working version of every step. The next 90 days are about running the loop calmly, not adding new steps.</p>'
+          + '<p>Block your next month of publish days. Drop the next three ideas into the calendar. Promise yourself one thing: that you will not redesign the channel before you have shipped five more videos. Most channels die in redesigns.</p>',
+        whyItMatters: 'A loop you can run for 90 days is worth more than a brilliant video you cannot replicate.',
+        keyInsight: 'Channels are built in chains, not in spikes. Protect the chain.',
+        example: 'A creator who shipped 50 videos in a year started getting 50k+ views per upload — a number that looked impossible after his first three uploads each got fewer than 1k.',
+        checklist: [
+          'Block the next four publish days',
+          'Drop three ideas into the calendar',
+          'Save your script template to a permanent place',
+          'Promise no redesign before 5 more uploads'
+        ],
+        microChallenge: 'Write a short note to future you about why the channel started. You will need it on a slow month.',
+        reflection: 'Who am I after 14 days that I was not before — and what would the next 14 days look like if I kept going?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     CONTENT PLAN PACK — overview + first 5 lessons deep. */
+  'content-plan': {
+    coverImage:  'content-plan-cover.webp',
+    coverAlt:    'A clean editorial calendar and a writer’s desk.',
+    heroImage:   'content-plan-cover.webp',
+    heroAlt:     'A focused workspace organized around weekly content production.',
+    overviewLong:
+        'Most creators do not have a content problem. They have a system problem. Ideas show up in scattered notes, hooks are written and forgotten, posting is reactive, and the whole loop runs on willpower. Within a few weeks, willpower runs out and the channel goes quiet.\n\n'
+      + 'This pack builds a small, repeatable workflow you can run from a busy week without breaking. By the end you will have a clear content goal, a defined viewer, three pillars, a hook bank, a weekly idea inventory, a publishing rhythm, and a one-page playbook so the next 30 days do not depend on motivation.',
+    outcomes: [
+      'A single 30-day content goal stated in one sentence',
+      'A specific viewer profile in their own language',
+      'Three pillars you can keep posting about for a year',
+      'A live hook bank you can pull from on tired days',
+      'A repeatable weekly rhythm (ideas → drafts → publish → review)'
+    ],
+    howToUse: 'One lesson per day. Most of the work is in the doing — 20 minutes of reading sets up 25 of execution. Do not skip the reflection: it is where the system gets sharper each week.',
+    dayOverlays: {
+      1: {
+        image: 'content-plan-day-01.webp',
+        imageAlt: 'A single goal written in a clean notebook.',
+        keyTerms: ['system', 'reflection'],
+        reading:
+            '<p>Most content fails because the creator never decided what it was for. They post because posting feels like progress; they measure whatever number is loudest; and a few months later they cannot tell whether anything is working.</p>'
+          + '<p>Today you fix that. Pick one primary goal for the next 30 days — audience growth, audience trust, sales, education, or community — and write it where you will see it daily. The goal is not a slogan; it is the lens you will use to decide what to post and what to skip.</p>'
+          + '<p>You can change goals later. You cannot operate without one. Every later day of this pack depends on the answer you choose today.</p>',
+        whyItMatters: 'A clear goal turns every later decision into a yes or no. Without one, every decision becomes a debate.',
+        keyInsight: 'You are not creating content. You are running a small system in service of one goal.',
+        example: 'A creator switched her goal from "grow followers" to "earn trust as the calm voice in money advice." She posted half as much, but the right people started replying.',
+        checklist: [
+          'Pick the single 30-day goal',
+          'Write it where you will see it every morning',
+          'Cross out the goals you are not chasing right now',
+          'Tell one person what you decided'
+        ],
+        microChallenge: 'Rewrite the goal in one sentence shorter than the first version.',
+        reflection: 'Why do I actually want to create content right now, separate from what I think I should want?'
+      },
+      2: {
+        image: 'content-plan-day-02.webp',
+        imageAlt: 'A page describing one specific viewer.',
+        keyTerms: ['audience', 'positioning'],
+        reading:
+            '<p>You are not making content for "everyone." You are making it for one specific viewer. The clearer their face, problem, and language are in your head, the easier every decision downstream becomes — title, opening line, length, tone.</p>'
+          + '<p>Today, write one paragraph describing your <span class="pp-term" data-term="audience">audience</span>. Their situation, what they want, what they have already tried, what they say when they describe the problem to a friend. If you cannot put their exact words in quotes, you do not know them well enough yet.</p>',
+        whyItMatters: 'A specific viewer is the cheat code for new creators. The internet is huge; relevance is rare.',
+        keyInsight: 'You can guess what to say only after you know who is listening.',
+        example: 'A finance creator wrote a viewer paragraph from a real Reddit comment. Every post for the next month referenced that exact stuck point — and that month produced his first 1,000 followers.',
+        checklist: [
+          'Write the viewer paragraph in their language',
+          'Include one quote you have actually heard',
+          'Name what they have already tried',
+          'Pin the paragraph to your screen'
+        ],
+        microChallenge: 'Find one real comment online from someone who fits your viewer. Save it.',
+        reflection: 'Who needs my message most, and what gap can I fill that they cannot fill on their own?'
+      },
+      3: {
+        image: 'content-plan-day-03.webp',
+        imageAlt: 'Three pillars sketched on paper with short descriptions.',
+        keyTerms: ['niche', 'consistency'],
+        reading:
+            '<p>Three <span class="pp-term" data-term="niche">pillars</span> give a channel structure without rigidity. They cover the topic you teach, the personality you bring, and the proof that makes you trustable. Together they decide whether the channel feels like one consistent voice or like a random feed.</p>'
+          + '<p>Today you pick three. They should be narrow enough to be specific and broad enough to have at least a year of ideas each. Write one sentence per pillar so you stop debating them every week.</p>',
+        whyItMatters: 'Pillars are how the algorithm and a returning viewer both recognize the channel quickly. Coherence beats brilliance.',
+        keyInsight: 'You do not need new ideas every week. You need new angles on three solid pillars.',
+        example: 'A creator with pillars "money for new earners," "honest mistakes," and "small habits that compound" produced a year of content from those three with almost no repetition.',
+        checklist: [
+          'Pick three pillars',
+          'Write a one-sentence description per pillar',
+          'Test: do you have 10+ ideas under each?',
+          'Keep them visible while you work'
+        ],
+        microChallenge: 'List five video or post ideas under each pillar. See which feels easiest — that is where to start.',
+        reflection: 'Which pillar feels strongest, and which one am I unsure about?'
+      },
+      4: {
+        image: 'content-plan-day-04.webp',
+        imageAlt: 'A list of 20 hook openers in a notebook.',
+        keyTerms: ['hook', 'retention'],
+        reading:
+            '<p>A good <span class="pp-term" data-term="hook">hook</span> earns you the right to be read or watched. Most posts fail not in the body but in the opening, where viewers decide whether to keep going.</p>'
+          + '<p>Today you build a hook bank: 20 hooks across categories — bold claim, surprising number, contrarian take, before-and-after, question, mistake-to-avoid, story open. You will not use all of them. The exercise is the asset; the bank itself will save you on slow days for months.</p>',
+        whyItMatters: 'Hooks are reusable. A great one earns content for years.',
+        keyInsight: 'Most "writer’s block" is hook block. Solving the opening unlocks everything else.',
+        example: 'A creator who built one hook bank that month used three of those exact openings in the four highest-performing pieces of his first year.',
+        checklist: [
+          'Write 20 hooks across categories',
+          'Read each aloud — keep the ones that sound human',
+          'Mark the three you would click on yourself',
+          'Save the bank in a permanent place'
+        ],
+        microChallenge: 'Steal the structure (not the words) of three hooks from your favorite creators. Note why each works.',
+        reflection: 'Which 3 hooks would make me stop scrolling if I saw them in my own feed?'
+      },
+      5: {
+        image: 'content-plan-day-05.webp',
+        imageAlt: 'Seven post ideas listed by day of the week.',
+        keyTerms: ['system', 'execution'],
+        reading:
+            '<p>A bank of ready ideas means you never start a content session from zero. Inventory is the quiet secret behind consistent creators — they are not more inspired, they are simply not starting empty every day.</p>'
+          + '<p>Today you build seven ideas for the next seven days, one tied to each pillar where possible. Each idea is a working title plus one sentence on the angle. Do not write the posts yet. Today’s job is to make execution easy for tomorrow-you.</p>',
+        whyItMatters: 'Most missed posts are caused by a missing idea on the day of the deadline. Inventory removes the gap.',
+        keyInsight: 'Schedule decisions on a calm day. Execute on a busy one.',
+        example: 'A creator who started every Sunday by writing seven titles for the week shipped 50 posts in his first quarter. Friends without the routine shipped 7.',
+        checklist: [
+          'Write 7 working titles for the next 7 days',
+          'Pair each with the relevant pillar',
+          'Write one sentence on the angle per idea',
+          'Calendar the publishing days now'
+        ],
+        microChallenge: 'Pick one of the seven and write its first sentence. Then close the laptop. Future-you will finish it.',
+        reflection: 'What kept me from a content rhythm before — and what would change if the next 7 ideas were already decided?'
+      },
+      6: {
+        image: 'content-plan-day-06.webp',
+        imageAlt: 'A clean calendar with three weekly content blocks highlighted.',
+        keyTerms: ['system', 'consistency', 'routine'],
+        reading:
+            '<h3>Stop drafting on publish day</h3>'
+          + '<p>Most creators fail because they write on the same day they post. That is the single most expensive content mistake on the internet. By the time the deadline arrives, energy is low, judgement is rushed, and the post leaves the building looking like a draft instead of a finished piece.</p>'
+          + '<p>The fix is a small calendar. Three named blocks per week, repeated. One block for ideas and research. One block for drafting. One block for editing and publishing. The blocks do not need to be long; they need to be on the calendar and protected like real meetings.</p>'
+          + '<h3>How to design the blocks</h3>'
+          + '<p>Pick days that you already know are calmer than the rest. Mornings beat evenings — judgement and editing both decay across the day. Forty-five minutes per block is plenty at the start; you can extend later when the rhythm holds. Keep the blocks in the same slots each week so your nervous system stops asking when the next one is.</p>'
+          + '<p>If your week is chaotic, start with one weekly block and a single mid-week catch-up. A small <span class="pp-term" data-term="system">system</span> that survives a busy week is worth more than a perfect schedule you abandon by Thursday.</p>',
+        whyItMatters: 'A working content calendar is the difference between a creator who lasts twelve weeks and one who lasts twelve years.',
+        keyInsight: 'You do not need more time. You need the time you already have to belong to specific kinds of work.',
+        example: 'A coach moved from "I write when I can" to "Tuesday 7:30 ideas, Thursday 7:30 drafts, Sunday 8:00 publish." She shipped 38 posts in 90 days, after shipping 7 in the prior 90.',
+        actionStep: 'Open your calendar right now and create three repeating events: Ideas, Drafts, Publish. Color them the same. Defend them.',
+        checklist: [
+          'Pick three weekly time slots',
+          'Title each block by its job',
+          'Make them recurring for 8 weeks',
+          'Tell one person they are now blocked time'
+        ],
+        microChallenge: 'Open the next 7 days. Move one social call out of a Drafts block. Notice the resistance — that is the real cost.',
+        reflection: 'What weekly time am I already wasting that could become my Ideas block?'
+      },
+      7: {
+        image: 'content-plan-day-07.webp',
+        imageAlt: 'A small batch of drafts on a quiet desk.',
+        keyTerms: ['execution', 'leverage'],
+        reading:
+            '<h3>Batching is the cheat code</h3>'
+          + '<p>Switching between modes — researching, writing, editing, designing, scheduling — costs more energy than any single mode costs by itself. Most creators feel "tired" not because they wrote too much but because they switched modes too many times. Batching solves it cleanly.</p>'
+          + '<p>Today you draft three posts in a single sitting. Not perfect. Not edited. Three rough drafts that have a hook, a body, and a close. The point is to learn what your real drafting capacity feels like when you are not also context-switching to a dozen other things.</p>'
+          + '<h3>The batching rule</h3>'
+          + '<p>One mode per block. While drafting, you do not edit. While editing, you do not research. While scheduling, you do not write. The penalty for breaking the rule is high; the reward for keeping it is days of saved time across a year.</p>',
+          whyItMatters: 'Batching turns the same hour into two hours of usable output. Compounding starts there.',
+          keyInsight: 'Switching is the silent tax on creative work. You can pay it or you can build around it.',
+          example: 'A solo founder batched four pieces every Sunday and never wrote on a weekday again. His weekday energy went to delivery and his channel still grew.',
+          actionStep: 'Block 60 minutes today. Draft three posts in a row, end-to-end. Resist editing until all three are done.',
+          checklist: [
+            'Pick three ideas from the bank',
+            'Draft each rough, end-to-end',
+            'Do not stop to edit',
+            'Save them in one place'
+          ],
+          microChallenge: 'After the batch, walk for ten minutes. Then read them and mark one improvement per post. That is your edit pass.',
+          reflection: 'Where do I keep switching modes when I could be batching the same kind of work?'
+      },
+      8: {
+        image: 'content-plan-day-08.webp',
+        imageAlt: 'A simple two-line hook printed neatly on white paper.',
+        keyTerms: ['hook', 'retention'],
+        reading:
+            '<h3>Hooks decide everything</h3>'
+          + '<p>The opening of a piece of content does most of the work. A great <span class="pp-term" data-term="hook">hook</span> earns the click and the first ten seconds; everything else gets to exist because of it. A weak hook makes the rest of your work invisible.</p>'
+          + '<p>Today you rewrite the hooks on your three drafts from yesterday. Three versions of each. One that names the outcome, one that opens with a sharp number or claim, one that uses a small story. Read them aloud. Pick the version you would click on yourself.</p>'
+          + '<h3>What a real hook does</h3>'
+          + '<p>A hook does three things in 1–2 lines: names the reader, names the change they want, and promises something specific in the body. If your hook does only two of those, it leaks viewers. If it does all three, even an average body keeps people reading.</p>',
+        whyItMatters: 'Most content does not fail in the body. It fails before the body is reached.',
+        keyInsight: 'A great hook makes the rest of the post feel free.',
+        example: 'A creator rewrote one hook three times. The third version doubled the read-through rate on the same body of text.',
+        actionStep: 'Rewrite the hooks on yesterday\'s three drafts. Pick the strongest. Save the rejected versions — they become future hooks.',
+        checklist: [
+          'Write three hook variants per draft',
+          'Read each aloud',
+          'Pick the version you would click',
+          'Save the rejects in your hook bank'
+        ],
+        microChallenge: 'Open your favorite three creators. Read only their hooks for ten minutes. Note the structure, not the words.',
+        reflection: 'What promise am I willing to make in the hook that the body must absolutely keep?'
+      },
+      9: {
+        image: 'content-plan-day-09.webp',
+        imageAlt: 'A short revision pass on a printed draft.',
+        keyTerms: ['execution', 'reflection'],
+        reading:
+            '<h3>Edit with rules, not feelings</h3>'
+          + '<p>New creators edit by re-reading until they feel uncomfortable enough to publish. That is exhausting and inconsistent. A short rule-based edit pass is faster, calmer, and produces better work.</p>'
+          + '<p>The rule set has four passes. One: read aloud, cut any line that sounds written. Two: tighten the hook. Three: check the close — does it tell the reader what to do next? Four: cut one paragraph that does not earn its place. Almost every piece improves when you cut one paragraph.</p>'
+          + '<h3>The two-cycle edit</h3>'
+          + '<p>Edit twice, never three times. The first pass for structure. The second pass for line-level polish. A third pass usually adds nothing and often introduces fragility. Ship.</p>',
+        whyItMatters: 'A repeatable edit pass turns drafting from a feeling into a process.',
+        keyInsight: 'Most edits are made better by removing things, not adding them.',
+        example: 'A consultant cut one paragraph per post for a month. Average read-through climbed steadily; bounce rate dropped 40%.',
+        actionStep: 'Run the four-pass edit on one draft today. Time yourself. Note the parts that drag.',
+        checklist: [
+          'Read aloud once',
+          'Tighten the hook',
+          'Verify the close has a CTA',
+          'Cut one paragraph that does not earn its place'
+        ],
+        microChallenge: 'Time the edit. If it takes more than 30 minutes for a 600-word post, your draft needs more time, not your edit.',
+        reflection: 'What part of editing am I doing that is really just procrastination dressed up as polish?'
+      },
+      10: {
+        image: 'content-plan-day-10.webp',
+        imageAlt: 'A small analytics screen showing simple post performance.',
+        keyTerms: ['retention', 'reflection'],
+        reading:
+            '<h3>Look at your own data</h3>'
+          + '<p>You cannot improve content by guessing. Today you look at the three most recent posts you shipped and find the patterns. Which one did best, which one did worst, and what was different about each — the topic, the hook, the length, the time of day, the format.</p>'
+          + '<p>You are not chasing virality. You are looking for the small consistent signal: "posts with a story open keep people longer," or "posts under 500 words convert better on Wednesdays." That signal is the asset.</p>'
+          + '<h3>Honest math, not narrative</h3>'
+          + '<p>It is tempting to invent a story to explain why a post under-performed. Resist it. Write down the numbers and let the next two posts be experiments that test the theory.</p>',
+        whyItMatters: 'Data turns "I felt like this worked" into "this works for my specific audience."',
+        keyInsight: 'Most creators have all the data they need; they just refuse to look at it for ten minutes a week.',
+        example: 'A creator found her best posts had a one-sentence first paragraph. She standardized that rule and the next ten posts averaged double engagement.',
+        actionStep: 'Open the analytics on three recent posts. Write down the metric that mattered most. Form one hypothesis to test next week.',
+        checklist: [
+          'Pick three recent posts',
+          'Compare hook, length, format, time',
+          'Write one sentence on the pattern',
+          'Plan one test to confirm it'
+        ],
+        microChallenge: 'For the next two posts, change only one variable. Hold everything else constant.',
+        reflection: 'What story am I telling myself about my content that the numbers do not actually support?'
+      },
+      11: {
+        image: 'content-plan-day-11.webp',
+        imageAlt: 'A small whiteboard with a quarterly publishing rhythm.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>Build the recurring template</h3>'
+          + '<p>Every post you publish should be cheaper to make than the one before it. The way that happens is templates. A repeatable shape — opening, three points, a close — that you fill with different ideas. You are not being formulaic; you are removing structural decisions from each post so your energy lands on the content itself.</p>'
+          + '<p>Today you write one template. Title pattern. Opening sentence shape. Number of sections. Length range. Close shape. Save it where you draft. Use it next week.</p>'
+          + '<h3>Templates are not cages</h3>'
+          + '<p>You can break them whenever a piece needs a different shape. The template just removes the cost of starting from blank.</p>',
+        whyItMatters: 'A working template doubles output without doubling effort.',
+        keyInsight: 'Most "writer\'s block" is structural. Templates remove the structural barrier.',
+        example: 'An operator wrote one 4-section template and reused it 50 times in a year. His weekly drafting time fell by half and quality stayed steady.',
+        actionStep: 'Write your first template today. Title shape, opening shape, three body slots, close shape. Save it permanently.',
+        checklist: [
+          'Define the title pattern',
+          'Define the opening shape',
+          'Define the number of sections',
+          'Define the close pattern'
+        ],
+        microChallenge: 'Use the template on your next draft. Time how much faster the start of the draft is.',
+        reflection: 'Where am I starting from blank every week when I could be starting from a shape?'
+      },
+      12: {
+        image: 'content-plan-day-12.webp',
+        imageAlt: 'A reading list and a small notebook of curated insights.',
+        keyTerms: ['leverage', 'consistency'],
+        reading:
+            '<h3>The reading habit</h3>'
+          + '<p>Creators who keep producing good ideas are almost always reading more than the average operator. Reading is the cheap, asymmetric raw material that lets you compound. Without it, you eventually run out of things to say.</p>'
+          + '<p>Today you build a small reading routine. Three sources you trust, one of which is outside your field. Twenty minutes a day. A note file where you jot the lines that strike you. Most of your future posts will be born inside that file.</p>'
+          + '<h3>Read like a creator</h3>'
+          + '<p>Underline. Mark the structure of arguments, not just the conclusions. The shape of how someone teaches is often more useful than the lesson itself.</p>',
+        whyItMatters: 'Reading is the only daily habit that compounds your creative output indefinitely.',
+        keyInsight: 'Producing without reading is borrowing from a savings account you never fund.',
+        example: 'A solo creator kept a "best lines I read this week" doc for a year. Half her best-performing posts started as lines in that file.',
+        actionStep: 'Pick three sources you trust. Read for 20 minutes today. Save two underlined lines.',
+        checklist: [
+          'Choose 3 trusted sources',
+          'Read 20 minutes today',
+          'Underline the lines that strike you',
+          'Save them in one note file'
+        ],
+        microChallenge: 'Pick one line from your file and write a 60-word post about it tomorrow.',
+        reflection: 'What am I letting into my head every day that becomes the raw material for what comes out?'
+      },
+      13: {
+        image: 'content-plan-day-13.webp',
+        imageAlt: 'A clean monthly review template printed and marked up.',
+        keyTerms: ['reflection', 'system'],
+        reading:
+            '<h3>Monthly content review</h3>'
+          + '<p>At the end of each month, sit down for 30 minutes and ask three questions. What worked? What did not? What experiment am I running next month? Write the answers. Most creators do this in their head and forget it within a week. The page is what makes the review real.</p>'
+          + '<p>The point is not to redesign the channel. The point is to make one specific change. One pillar to lean into. One format to shelve. One new experiment with a clear yes-or-no after 30 days.</p>'
+          + '<h3>Compounding lives in the small change</h3>'
+          + '<p>A 5% improvement in retention, compounded across a year of weekly posts, is a completely different channel by month twelve.</p>',
+        whyItMatters: 'Without a written review, every month is the same month repeated.',
+        keyInsight: 'You do not need a big change. You need a small change applied consistently.',
+        example: 'A creator ran a monthly review for a year and tracked one variable per month. By month twelve his average post was twice as long-lived as month one.',
+        actionStep: 'Block 30 minutes at the end of this month. Run the review. Write the answers. Pick one change to test next month.',
+        checklist: [
+          'Block the review time now',
+          'Answer the three questions on paper',
+          'Pick one specific change',
+          'Commit to testing it for 30 days'
+        ],
+        microChallenge: 'Re-read your three best posts of the month. Note what they share.',
+        reflection: 'What pattern in my content do I keep noticing but refuse to act on?'
+      },
+      14: {
+        image: 'content-plan-day-14.webp',
+        imageAlt: 'A clean one-page content playbook on a desk.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>Lock the playbook</h3>'
+          + '<p>You now have a goal, a viewer, three pillars, a hook bank, a draft template, a calendar, an edit pass, and a monthly review. Today you put all of it on a single page. The playbook.</p>'
+          + '<p>Keep it short. A page you can read in two minutes. The rules of the game for the next 90 days. Where the work happens, when it happens, what the formats are, how you edit, how you measure. The page is the asset.</p>'
+          + '<h3>Run the loop</h3>'
+          + '<p>The next 90 days are not about adding more steps. They are about running the loop you already designed and letting it compound. Most creators redesign before they have run a system long enough to learn anything from it. You do not need a better plan. You need to run this one.</p>',
+        whyItMatters: 'A 90-day loop you run patiently is worth more than a brilliant strategy you abandon in week three.',
+        keyInsight: 'Compounding is in the chain, not in any single piece.',
+        example: 'A creator who held the same playbook for 90 days crossed 10k followers. A more talented friend who redesigned every two weeks stayed at 1k for the same year.',
+        actionStep: 'Write the playbook today on a single page. Save it where you will see it weekly.',
+        checklist: [
+          'Goal, viewer, pillars, hook bank',
+          'Calendar, template, edit pass',
+          'Monthly review block',
+          'One page total'
+        ],
+        microChallenge: 'Pin the playbook to your wall. Read it every Monday morning for the next 12 weeks.',
+        reflection: 'Who am I becoming after 14 days of this work — and what does that person ship next month?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     FOCUS BUILDER — overview + first 5 lessons deep. */
+  'focus-builder': {
+    coverImage:  'focus-builder-cover.webp',
+    coverAlt:    'A minimalist deep-work desk with a single notebook and pen.',
+    heroImage:   'focus-builder-cover.webp',
+    heroAlt:     'A quiet desk arranged for protected deep work.',
+    overviewLong:
+        'Attention is the most undertrained asset modern operators own. Most people spend their day reacting to inputs, then call it work. Real focus is a skill — you can train it the same way you train cardio: small protected reps, on a schedule, with honest data afterward.\n\n'
+      + 'This pack is fourteen days of progressively harder attention work, starting with a single 25-minute block and ending with a daily focus protocol you can hold without willpower. By the end you will know what your real attention budget is and how to protect the part of the day where the meaningful work actually happens.',
+    outcomes: [
+      'A measured baseline of your current focus capacity',
+      'A daily protected block you can hold for 30+ days',
+      'A short list of personal attention thieves you have actually removed',
+      'A simple environment template for deep work',
+      'A weekly rhythm of focus and recovery you can sustain'
+    ],
+    howToUse: 'One lesson per day. The reading is short on purpose — the work is in the blocks. Track honestly: a 22-minute distracted block does not count as a 25-minute focused one.',
+    dayOverlays: {
+      1: {
+        image: 'focus-builder-day-01.webp',
+        imageAlt: 'A timer on a calm desk showing 25 minutes.',
+        keyTerms: ['system', 'discipline'],
+        reading:
+            '<p>You cannot improve what you have not measured. Today is a baseline day. You will run one single 25-minute focus block on a real piece of work and record honestly what happened — when your attention drifted, what triggered it, how it felt when you returned.</p>'
+          + '<p>The baseline matters more than the result. Tomorrow’s block will only be useful as a comparison if you have an honest snapshot of today.</p>',
+        whyItMatters: 'Without a baseline, you will mistake good days for progress and bad days for failure. Both are noise without data.',
+        keyInsight: 'The single rep is the practice. The protocol is built across many of them.',
+        example: 'A founder who began with two 25-minute blocks per day reached 6 hours of true focused work per day within ten weeks. None of those blocks were longer than 50 minutes.',
+        checklist: [
+          'Choose one real piece of work',
+          'Set a 25-minute timer',
+          'Note every distraction in the margin',
+          'Score the block 1–10 on honest focus'
+        ],
+        microChallenge: 'After the block, write a one-line "what would I change next time?" That is the smallest useful protocol.',
+        reflection: 'When did I last focus on one thing for 25 minutes without checking anything?'
+      },
+      2: {
+        image: 'focus-builder-day-02.webp',
+        imageAlt: 'A phone face-down beside a closed laptop.',
+        keyTerms: ['discipline', 'momentum'],
+        reading:
+            '<p>The fastest gain in focus comes from removing one source of interruption, not from adding willpower. Today you find your single biggest attention thief and put a friction step between you and it.</p>'
+          + '<p>Common ones: phone on the desk, two screens, an open chat tab, a notification banner. You do not need to fix everything. Pick the worst one. Make it slightly harder to reach for. Run another focus block and compare to yesterday.</p>',
+        whyItMatters: 'A small environment change beats a large willpower investment. Discipline is what you do when the environment is right, not what you do to survive a bad one.',
+        keyInsight: 'You do not need to remove the temptation entirely. You need to add three seconds of friction.',
+        example: 'A developer moved his phone to another room and the average length of a real focus block doubled inside one week.',
+        checklist: [
+          'Name the single biggest distraction',
+          'Add a friction step (out of reach, logged out, notification off)',
+          'Run a 25-minute block',
+          'Note the difference vs. yesterday'
+        ],
+        microChallenge: 'Tonight, decide where tomorrow’s phone will live during your first block.',
+        reflection: 'Which distraction have I tolerated because I thought I "could handle it"?'
+      },
+      3: {
+        image: 'focus-builder-day-03.webp',
+        imageAlt: 'A simple two-block schedule on paper.',
+        keyTerms: ['routine', 'system'],
+        reading:
+            '<p>Yesterday was about removal. Today is about structure. Schedule two specific focus blocks on tomorrow’s calendar — one in the morning and one in the early afternoon. They do not need to be long; they need to be on the calendar.</p>'
+          + '<p>The point is to remove the daily decision of "when will I focus?" The calendar is now deciding for you. Your only job tomorrow is to start.</p>',
+        whyItMatters: 'Decisions cost attention. A scheduled block costs none.',
+        keyInsight: 'Real <span class="pp-term" data-term="routine">routines</span> protect the work from the day, not the day from the work.',
+        example: 'A writer who put 9:00 and 14:00 on her calendar every weekday for three months shipped more first drafts in that quarter than in the prior year.',
+        checklist: [
+          'Block 9:00 and 14:00 tomorrow',
+          'Treat them like meetings',
+          'Do not stack them with anything else',
+          'Show up'
+        ],
+        microChallenge: 'Send yourself an invite for both blocks now, with the work to be done in the title.',
+        reflection: 'Which time of day do I do my best thinking, honestly?'
+      },
+      4: {
+        image: 'focus-builder-day-04.webp',
+        imageAlt: 'A small desk with one notebook, one pen, and a candle.',
+        keyTerms: ['routine', 'discipline'],
+        reading:
+            '<p>Today is the environment template. The space your blocks happen in should be designed once and reused without thought. The fewer decisions you make at the start of a focus block, the more attention is left for the work.</p>'
+          + '<p>Decide: where do you sit, which tabs are open, which apps are closed, what audio (if any) plays, what is within arm’s reach, what is not. Write the list. Tomorrow, set the room up the same way before the first block.</p>',
+        whyItMatters: 'Environment is invisible discipline. A clean setup makes focus feel free.',
+        keyInsight: 'You are not building motivation. You are building a stage that makes the work look obvious.',
+        example: 'A consultant decided on a single template: one chair, two tabs, headphones, water bottle. He never opened the laptop in a different configuration again. His focus block average rose 40% in a month.',
+        checklist: [
+          'Write the environment template once',
+          'Set the room up the same way tomorrow',
+          'Remove one thing you wish you had not been touching',
+          'Note what the room feels like once it is right'
+        ],
+        microChallenge: 'Take a single photo of the ready environment. Use it as a reference next time it drifts.',
+        reflection: 'What in my workspace is silently negotiating with me right now?'
+      },
+      5: {
+        image: 'focus-builder-day-05.webp',
+        imageAlt: 'A small handwritten focus protocol pinned to the wall.',
+        keyTerms: ['system', 'reflection'],
+        reading:
+            '<p>You have five real focus blocks behind you. Today, turn the lessons into a one-page protocol: how long, when, where, what to remove, how to start, how to stop, how to score.</p>'
+          + '<p>The protocol is not a contract. It is a working version that will improve with every loop. The point is that next month’s focus is not depending on a fresh decision each morning.</p>',
+        whyItMatters: 'A written protocol is the difference between a habit and an accident.',
+        keyInsight: 'Your future focus depends mostly on what you decide today, not on what you feel later.',
+        example: 'A coach wrote a one-page protocol after his fifth block and ran it three months. He stopped writing it and the habit lasted a year.',
+        checklist: [
+          'Write the one-page protocol',
+          'Define the start ritual and the stop ritual',
+          'Keep it visible while you work',
+          'Promise to review it weekly, not daily'
+        ],
+        microChallenge: 'Read the protocol out loud once. Cross out anything that sounds aspirational rather than realistic.',
+        reflection: 'Which version of the protocol is the one I will actually run on a tired Tuesday?'
+      },
+      6: {
+        image: 'focus-builder-day-06.webp',
+        imageAlt: 'A clean schedule showing two protected work blocks per day.',
+        keyTerms: ['system', 'discipline', 'routine'],
+        reading:
+            '<h3>Stretch the block</h3>'
+          + '<p>You have run a 25-minute block reliably. Today you stretch it to 45. This is not arbitrary — 45 minutes is roughly the natural length of one full attention cycle for an adult who is rested. Anything shorter is a warm-up; anything longer asks you to push through diminishing returns.</p>'
+          + '<p>Run two 45-minute blocks today, separated by a real break — walk outside, drink water, do not check anything. The break is part of the protocol. If you skip it, the second block degrades and you learn the wrong lesson.</p>'
+          + '<h3>What the second block teaches</h3>'
+          + '<p>The first block of the day usually feels strong. The second block teaches you whether your <span class="pp-term" data-term="discipline">discipline</span> is real or whether you were just operating on morning energy. Most operators do not realize their second block is where the growth actually lives.</p>',
+        whyItMatters: 'The capacity to do two solid blocks in a row, calmly, is the capacity that compounds into real output.',
+        keyInsight: 'Recovery between blocks is not a luxury. It is the mechanism that lets the next one work.',
+        example: 'A designer extended his afternoon block from 30 to 45 minutes by adding a strict 15-minute walk before it. His afternoon output doubled inside two weeks.',
+        actionStep: 'Block two 45-minute focus periods today, separated by a real break. Run both. Note what changed in the second one.',
+        checklist: [
+          'Block 1: 45 minutes in the morning',
+          'Real break: 15 minutes, no screens',
+          'Block 2: 45 minutes in the afternoon',
+          'Score each block 1–10'
+        ],
+        microChallenge: 'During the break, do not pick up the phone. Sit, walk, or stretch. Notice the urge — that is the data.',
+        reflection: 'Which block today felt harder, and what does that tell me about how I structure my afternoons?'
+      },
+      7: {
+        image: 'focus-builder-day-07.webp',
+        imageAlt: 'A reflective notebook on a desk at the end of a focused week.',
+        keyTerms: ['reflection', 'momentum'],
+        reading:
+            '<h3>Week one review</h3>'
+          + '<p>You have six honest data points. Pull them together. How long can you focus, where does drift begin, what does drift cost you in the next block, and which time of day is your real best window?</p>'
+          + '<p>Write a single page with these answers. Pin it next to your desk. The page is the protocol upgrade — it tells you what your real focus rhythm looks like, not what you wish it looked like.</p>'
+          + '<h3>Compounding starts in week two</h3>'
+          + '<p>Week one teaches you the shape of your attention. Week two builds the system around that shape. Most people skip the review and never get past the warm-up. You will not.</p>',
+        whyItMatters: 'Without a written review, every week is the same week repeated with different excuses.',
+        keyInsight: 'You do not need a different protocol. You need a clear picture of which one matches your actual day.',
+        example: 'A founder ran a written review at the end of week one and realized his peak window was 6–8am — not 9–11 like he assumed. He moved his hardest work and shipped twice as much by week four.',
+        actionStep: 'Block 30 minutes tonight. Review your week-one data. Write the page. Make one concrete protocol change for week two.',
+        checklist: [
+          'List the six blocks and their scores',
+          'Identify your peak window honestly',
+          'Pick one protocol change for week two',
+          'Commit it to the calendar'
+        ],
+        microChallenge: 'Take a real evening off after the review. Recovery is the system, too.',
+        reflection: 'What did this week prove about my real focus capacity — and what was the story I was telling myself before?'
+      },
+      8: {
+        image: 'focus-builder-day-08.webp',
+        imageAlt: 'A calm desk with a single open notebook and no devices.',
+        keyTerms: ['system', 'emotional-regulation'],
+        reading:
+            '<h3>The pre-block ritual</h3>'
+          + '<p>Today you build a three-minute ritual that triggers focus on demand. Same actions, same order, every time you start a block. The repeated sequence becomes a cue for your nervous system that "this is when we work."</p>'
+          + '<p>Common rituals: close all tabs except one, put the phone in another room, write the single sentence of what this block is for, breathe for 30 seconds. The exact moves matter less than the repetition.</p>'
+          + '<h3>Why rituals beat motivation</h3>'
+          + '<p>Motivation is weather. Rituals are climate. A working pre-block ritual means you do not have to feel like working in order to start. Over a few weeks, the start of the block becomes almost automatic.</p>',
+        whyItMatters: 'The hardest part of focus is the first 90 seconds. A ritual removes them as a decision.',
+        keyInsight: 'You are training a switch, not a feeling.',
+        example: 'A writer designed a 90-second ritual — close tabs, write the block goal, three slow breaths, start the timer. Three weeks later, starting a block felt as automatic as starting the car.',
+        actionStep: 'Design your three-minute ritual. Write it down. Use it at the start of your next block today.',
+        checklist: [
+          'List four short actions',
+          'Put them in a fixed order',
+          'Use the ritual today',
+          'Refine after the second use'
+        ],
+        microChallenge: 'Time the ritual. If it takes longer than three minutes, you are over-designing.',
+        reflection: 'Which part of starting a focus block has been costing me the most — and what would happen if it became automatic?'
+      },
+      9: {
+        image: 'focus-builder-day-09.webp',
+        imageAlt: 'A clean to-do list with one item circled in gold.',
+        keyTerms: ['execution', 'leverage'],
+        reading:
+            '<h3>One thing per block</h3>'
+          + '<p>A focus block with two goals is two half-blocks with extra context switching. Today you assign one specific deliverable to each block. Not "work on the report." A specific, finishable deliverable: "draft the first two sections of the report."</p>'
+          + '<p>If the deliverable is too big to finish in the block, slice it smaller. The point is not to be ambitious; the point is to give your attention a single shape to take. Specific tasks are easier to start, easier to finish, and produce more reliable output.</p>'
+          + '<h3>What "finishable" means</h3>'
+          + '<p>You should be able to say "done" or "not done" by the end of the block without negotiating with yourself. Vague goals make every block feel like incomplete work, even when the time was used well.</p>',
+        whyItMatters: 'Specific tasks finish. Vague tasks linger. Finished work compounds.',
+        keyInsight: 'You cannot focus on a category. You focus on a deliverable.',
+        example: 'A developer changed every block label from "work on feature" to "ship endpoint X." His weekly merged-PR count doubled.',
+        actionStep: 'Before each block today, write the one finishable deliverable. Mark it done or not done at the end.',
+        checklist: [
+          'Define the deliverable before the block starts',
+          'Make it small enough to finish',
+          'Run the block',
+          'Mark done / not done honestly'
+        ],
+        microChallenge: 'If a deliverable did not finish, ask: was the slice too big, or was the block too distracted?',
+        reflection: 'How often do I run a block with no specific deliverable — and what does that cost me?'
+      },
+      10: {
+        image: 'focus-builder-day-10.webp',
+        imageAlt: 'A sealed door and a clean workspace beyond it.',
+        keyTerms: ['discipline', 'system'],
+        reading:
+            '<h3>Defend the block</h3>'
+          + '<p>The single biggest threat to a focus block is not your phone. It is other people\'s requests. Today you build a small defense: a status, a phrase, and a follow-up rule.</p>'
+          + '<p>Status: set a "do not disturb" signal that everyone in your environment recognizes. A closed door, a slack status, headphones. Phrase: a calm, repeatable reply to interruptions — "I\'ll be free at 11; let\'s talk then." Follow-up rule: always come back. People respect the defense once they see it holds and that you do return when you say you will.</p>'
+          + '<h3>Why defense matters more than offense</h3>'
+          + '<p>You can buy better tools, design better rituals, and pick better hours. None of it survives a daily interruption pattern. The defense is what makes the rest of the protocol stick.</p>',
+        whyItMatters: 'The deepest cost of interruptions is not the minutes lost; it is the entry effort you have to pay again.',
+        keyInsight: 'Saying "I\'ll be free at 11" is not rude. It is professional.',
+        example: 'A consultant set a closed-door rule from 9–11 every weekday for a month. The first week was rough; by week three his team had learned the rhythm and his deep work tripled.',
+        actionStep: 'Pick the visual signal, the phrase, and the follow-up time. Use all three at your next block.',
+        checklist: [
+          'Set a "do not disturb" signal',
+          'Write the calm phrase',
+          'Decide your follow-up time',
+          'Honor the follow-up'
+        ],
+        microChallenge: 'Tell one person in advance that 9–11 belongs to focused work for the next two weeks.',
+        reflection: 'Whose interruptions am I allowing because I am afraid to say "later"?'
+      },
+      11: {
+        image: 'focus-builder-day-11.webp',
+        imageAlt: 'A calm bedroom with low warm light at night.',
+        keyTerms: ['recovery', 'routine'],
+        reading:
+            '<h3>Sleep is the focus drug</h3>'
+          + '<p>You cannot train focus on a body that has not slept. The single biggest predictor of your block quality tomorrow is the quality of your sleep tonight — not your motivation, not your morning routine, not your coffee.</p>'
+          + '<p>Today you build a small sleep protocol. A fixed wind-down time. No screens 60 minutes before sleep. A dark, cool room. The same lights-out time within a 30-minute window every weeknight. Your focus blocks tomorrow will tell you whether it worked.</p>'
+          + '<h3>The compounding effect</h3>'
+          + '<p>A consistent 7+ hour sleep window for two weeks usually changes the experience of focus more than any productivity tool ever will. Most people skip the protocol and then complain about their concentration.</p>',
+        whyItMatters: 'Sleep is the silent multiplier behind every other focus practice.',
+        keyInsight: 'Rest is part of the system, not a break from it.',
+        example: 'A creator added a 10pm wind-down rule for two weeks and his afternoon block average rose from 38 to 52 minutes of real focus. He changed nothing else.',
+        actionStep: 'Set a fixed wind-down time tonight. Remove screens from the last hour. Note tomorrow\'s first block.',
+        checklist: [
+          'Pick a wind-down time',
+          'Remove screens from the last 60 minutes',
+          'Cool, dark room',
+          'Same lights-out within 30 min for a week'
+        ],
+        microChallenge: 'Track your sleep window honestly for seven nights. Compare your average to the prior month.',
+        reflection: 'Where am I trading sleep for hours that produce less than the sleep would have produced?'
+      },
+      12: {
+        image: 'focus-builder-day-12.webp',
+        imageAlt: 'A short journal entry and a green pen.',
+        keyTerms: ['reflection', 'emotional-regulation'],
+        reading:
+            '<h3>The distraction journal</h3>'
+          + '<p>Today you start a short distraction journal. For one week, write a single line every time a focus block breaks. What was the trigger, what was the feeling, what did you do. The pattern will surprise you.</p>'
+          + '<p>Most distractions are not random. They cluster around a few feelings — boredom, frustration, anxiety, social pull. Once you can name yours, you can plan around them. Awareness is half the protocol.</p>'
+          + '<h3>Naming beats fixing</h3>'
+          + '<p>You do not need to eliminate a distraction the day you notice it. You just need to name it without judgment. The fix arrives once the pattern is on paper.</p>',
+        whyItMatters: 'You cannot fix a distraction pattern you have never written down.',
+        keyInsight: 'The trigger is more useful information than the distraction itself.',
+        example: 'A founder noticed his phone pulls clustered around the same 30-minute mid-afternoon window. He moved a walk into that window and the pattern disappeared.',
+        actionStep: 'Start the journal today. One line per drift, for seven days.',
+        checklist: [
+          'Open a single note file',
+          'One line per drift: trigger, feeling, action',
+          'No editing, no judgment',
+          'Re-read on day seven'
+        ],
+        microChallenge: 'Pick the most common trigger of the week and design one small environment fix for it.',
+        reflection: 'What feeling have I been treating as a distraction when it was actually a signal?'
+      },
+      13: {
+        image: 'focus-builder-day-13.webp',
+        imageAlt: 'A weekly schedule template laid out in clean blocks.',
+        keyTerms: ['system', 'routine'],
+        reading:
+            '<h3>Design the weekly rhythm</h3>'
+          + '<p>You have data, a protocol, a defense, a sleep window, and a distraction map. Today you put it on one weekly template. Where the deep blocks live. Where the shallow blocks live. Where rest lives. Saturday and Sunday matter — recovery is what makes Monday possible.</p>'
+          + '<p>The template should fit on a single sheet. Five weekdays, two weekend rows, the same shape every week. You are not designing a single week; you are designing the default week your future months snap to.</p>'
+          + '<h3>One template, many weeks</h3>'
+          + '<p>The point of the template is that you stop redesigning your week every Sunday night. Most operators waste hours every month on planning that the template would have made automatic.</p>',
+        whyItMatters: 'A weekly template removes Sunday-night re-planning and Monday-morning friction in one move.',
+        keyInsight: 'A working default schedule is the closest thing modern operators have to a force multiplier.',
+        example: 'A coach drew a single weekly template, ran it for a quarter, and never planned a week from scratch again. Her output went up; her stress went down.',
+        actionStep: 'Draw the template today. One page. Pin it where you plan from.',
+        checklist: [
+          'Five weekday rows',
+          'Deep + shallow blocks marked',
+          'Sleep and recovery marked',
+          'Saturday and Sunday included'
+        ],
+        microChallenge: 'Run the template for one week without modification. Then refine.',
+        reflection: 'What about my current week am I redesigning every seven days that I could just decide once?'
+      },
+      14: {
+        image: 'focus-builder-day-14.webp',
+        imageAlt: 'A single open notebook on a clean desk in soft light.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>Run the loop for 30 days</h3>'
+          + '<p>You have built every piece. Protocol, ritual, defense, sleep window, weekly template, distraction journal. Today the work is to commit to running it for 30 days without redesigning anything.</p>'
+          + '<p>The temptation will be to keep tinkering. Resist. A system you run for 30 unmodified days teaches you more than a system you keep editing every week. Most operators never get past the design phase and then wonder why nothing compounds.</p>'
+          + '<h3>After 30 days</h3>'
+          + '<p>At day 31, sit down for one hour and look at the data honestly. Then change one thing for the next 30 days. That is how attention training compounds for years.</p>',
+        whyItMatters: 'Compounding only happens through unmodified repetition. The compounding starts after the design.',
+        keyInsight: 'Discipline is what you do after the design feels boring.',
+        example: 'A founder ran the same focus protocol unmodified for six months and crossed 4 hours of true deep work per day. Most peers were still redesigning their first protocol.',
+        actionStep: 'Block 30 days on the calendar. Commit not to redesign during that window. Schedule the day-31 review now.',
+        checklist: [
+          'Lock the protocol for 30 days',
+          'Schedule the day-31 review',
+          'Promise one change after the review',
+          'Tell someone you committed'
+        ],
+        microChallenge: 'On day 31, before opening any data, write down what you expect to find. Then look. Note the gap.',
+        reflection: 'Who am I after 14 days of focus training — and what does that person finish in the next 30?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     STYLE FOUNDATIONS — overview + first 5 lessons deep. */
+  'style-foundations': {
+    coverImage:  'style-foundations-cover.webp',
+    coverAlt:    'A curated, neutral wardrobe in soft daylight.',
+    heroImage:   'style-foundations-cover.webp',
+    heroAlt:     'A small considered closet in warm morning light.',
+    overviewLong:
+        'Most wardrobes are accidental — items collected over years, none of which were chosen for the version of you that exists right now. The result is fine on average days and exhausting on important ones. The goal of this pack is not to make you into a different person. It is to build a small considered wardrobe that quietly tells the truth about you.\n\n'
+      + 'Across fourteen days you will audit what you own, decide the role each piece plays, build a working palette, fix fit, and shop with intention for the small handful of items that genuinely upgrade the system. By the end you will know exactly what to wear on a busy morning, on an important meeting, and on a quiet evening — without overthinking any of them.',
+    outcomes: [
+      'A one-sentence personal style direction',
+      'A neutral working palette you can re-buy in for years',
+      'A small core wardrobe that quietly fits the version of you you are becoming',
+      'A defined fit standard you will not compromise on again',
+      'A short, intentional shopping list — not a wishlist'
+    ],
+    howToUse: 'One lesson per day. Some days are physical — closet audits, mirror checks, simple tailoring. Treat them like the lab work they are.',
+    dayOverlays: {
+      1: {
+        image: 'style-foundations-day-01.webp',
+        imageAlt: 'An open wardrobe of considered, well-fitting clothes.',
+        keyTerms: ['positioning', 'confidence'],
+        reading:
+            '<p>Today’s job is not to shop. It is to look honestly at what you already own. Take everything out of the closet and lay it in three piles: pieces you actually wear, pieces you keep meaning to wear, pieces you do not.</p>'
+          + '<p>The honest second pile is the most informative. It tells you the gap between who you are buying for and who you actually are. Take notes — what was bought to be someone slightly different, what was bought on impulse, what was bought right.</p>',
+        whyItMatters: 'A real audit is the cheapest style improvement available. It costs zero and reveals the entire pattern.',
+        keyInsight: 'The pieces you do not wear are the cost of every future mistake you avoid by knowing yourself.',
+        example: 'A founder who did one honest audit got rid of half his closet and built six trustworthy outfits from what was left. He bought nothing new for six months and felt better dressed every day.',
+        checklist: [
+          'Empty the closet completely',
+          'Sort into three honest piles',
+          'Note one pattern per pile',
+          'Decide what leaves the house this week'
+        ],
+        microChallenge: 'Photograph the "actually wear" pile. That is your current style, no matter what you wish it were.',
+        reflection: 'Whose closet did I buy half of this for — and is that still who I am?'
+      },
+      2: {
+        image: 'style-foundations-day-02.webp',
+        imageAlt: 'A small wardrobe in three neutral tones.',
+        keyTerms: ['positioning'],
+        reading:
+            '<p>A working palette is the operating system of a wardrobe. Pick three or four base colours that flatter you and combine without thinking. Neutrals you can wear on any day, paired with one or two signature colours that sit next to them well.</p>'
+          + '<p>The palette is not about taste. It is about reducing morning decisions. Every future piece you buy is tested against it before it enters the closet.</p>',
+        whyItMatters: 'A consistent palette is the difference between a wardrobe and a collection.',
+        keyInsight: 'You do not need more options. You need a small set that always works together.',
+        example: 'An operator built a palette of charcoal, white, navy, and warm tan. Three years later he had spent less than half on clothes and looked sharper than peers.',
+        checklist: [
+          'Pick 3 base neutrals',
+          'Add 1–2 signature colours',
+          'Test the existing closet against the palette',
+          'Mark the off-palette pieces honestly'
+        ],
+        microChallenge: 'Lay out three full outfits using only the palette. Photograph each.',
+        reflection: 'Which colour is silently working against me in most of my old purchases?'
+      },
+      3: {
+        image: 'style-foundations-day-03.webp',
+        imageAlt: 'A simple tailor’s tape measure on a clean surface.',
+        keyTerms: ['execution'],
+        reading:
+            '<p>Fit is the single most visible signal of considered dress. Today you set your standard. Stand in front of a real mirror in three different pieces. Look at the shoulders, the hem, the rise of the trouser. Note where the line breaks and where it does not.</p>'
+          + '<p>You do not need new clothes to improve fit. You need a tailor and a willingness to spend a little money on what you already own.</p>',
+        whyItMatters: 'Fit is the silent multiplier of every other style choice you make.',
+        keyInsight: 'A $30 alteration on a $200 item is worth more than a new $200 item.',
+        example: 'A user took three pieces he already owned to a tailor for under $90. He looked noticeably different in every photo for the next six months.',
+        checklist: [
+          'Try on three pieces in good light',
+          'Mark where the fit breaks',
+          'Book a tailor appointment',
+          'Pick the one piece to alter first'
+        ],
+        microChallenge: 'Walk three minutes in each piece. Bad fit is most visible in motion.',
+        reflection: 'What am I willing to spend $30 to fix today that I have been ignoring for years?'
+      },
+      4: {
+        image: 'style-foundations-day-04.webp',
+        imageAlt: 'A short considered shopping list on a notebook.',
+        keyTerms: ['execution', 'system'],
+        reading:
+            '<p>Today you build a shopping list — not a wishlist. The difference: a wishlist is what you want to own; a shopping list is what your current wardrobe needs to become a working system.</p>'
+          + '<p>Look at the palette. Look at the audit. Find the gaps. Write a short list of specific items — not categories. "A navy crewneck sweater in merino, mid-weight, slim through the chest" is a real item. "Some sweaters" is not.</p>',
+        whyItMatters: 'Most style mistakes are bought in moments of vague want. A specific list buys correctly.',
+        keyInsight: 'A short list, written calmly, beats a long one written in a hurry.',
+        example: 'A reader’s shopping list had four items. He bought all four over a year and threw out a dozen impulse buys from the year before.',
+        checklist: [
+          'Write 3–6 specific items',
+          'Match each to a wardrobe gap',
+          'Note the price ceiling for each',
+          'Promise no buys outside the list'
+        ],
+        microChallenge: 'For each item, write the exact outfit it completes. If you cannot, the item is not on the list.',
+        reflection: 'What have I been buying that I do not need — and what have I been avoiding that I do?'
+      },
+      5: {
+        image: 'style-foundations-day-05.webp',
+        imageAlt: 'A clean morning outfit prepared the night before.',
+        keyTerms: ['routine', 'momentum'],
+        reading:
+            '<p>You now have the palette, the audit, the fit standard, and a real shopping list. Today you remove one final cost: morning decisions. Pick tomorrow’s outfit tonight. Lay it out.</p>'
+          + '<p>Do it for three nights in a row. The point is not the outfit; it is the experience of waking up to a decision already made. Your mornings start to belong to your day instead of to the closet.</p>',
+        whyItMatters: 'Decision cost is the single biggest style killer in busy lives. Pre-deciding removes it.',
+        keyInsight: 'You are not lazy in the morning. You are tired. Plan from a rested place.',
+        example: 'A user who laid out three nights’ outfits during a stressful work week stayed sharp for every meeting and never felt rushed.',
+        checklist: [
+          'Pick tomorrow’s outfit tonight',
+          'Lay it out somewhere visible',
+          'Repeat for 3 nights',
+          'Note what changed in the morning'
+        ],
+        microChallenge: 'Photograph the prepared outfit. You are training your eye, not just your closet.',
+        reflection: 'What does a deliberate morning look like — and how do I keep it from drifting?'
+      },
+      6: {
+        image: 'style-foundations-day-06.webp',
+        imageAlt: 'A simple capsule of seven outfits arranged on hangers.',
+        keyTerms: ['fit', 'system'],
+        reading:
+            '<h3>Build the capsule</h3>'
+          + '<p>A capsule is a small set of pieces that combine into many outfits without thought. Done right, it covers most of your week with seven core items: two trousers, two shirts, one knit, one outer layer, one pair of shoes. Done wrong, it becomes a uniform you resent within a month.</p>'
+          + '<p>The trick is to base the capsule on your real week — not on aspirational scenarios. Look at your last five days. What did you actually wear? What did you actually need? Build the seven around that data, not around catalog photos.</p>'
+          + '<h3>Why capsules work</h3>'
+          + '<p>Decision cost is the silent tax on style. A small capsule that <span class="pp-term" data-term="fit">fits</span> well and works together removes the decision so your morning energy lands on the day, not on the closet.</p>',
+        whyItMatters: 'A capsule is the closest thing personal style has to a working operating system.',
+        keyInsight: 'You do not need many clothes. You need a small set that combines reliably.',
+        example: 'A user built a 7-piece capsule and noted he wore it 60 of the next 90 days without anyone noticing the repetition. His mornings felt 10 minutes shorter every day.',
+        actionStep: 'Pick the seven pieces today. Hang them together. Try three combinations and photograph each.',
+        checklist: [
+          'Pick two trousers',
+          'Pick two shirts',
+          'Pick one knit, one outer layer, one pair of shoes',
+          'Verify the combinations work in three full outfits'
+        ],
+        microChallenge: 'Wear only the capsule for the next 5 days. Note when you reach outside it — that is the data.',
+        reflection: 'Which of my "varied" clothes is actually just costing me time in the morning?'
+      },
+      7: {
+        image: 'style-foundations-day-07.webp',
+        imageAlt: 'A clean fitting check in front of a tall mirror.',
+        keyTerms: ['fit', 'execution'],
+        reading:
+            '<h3>The fit audit</h3>'
+          + '<p>Take three of your core pieces — one jacket, one pair of trousers, one shirt — and run a real fit audit. Stand in good light. Check the shoulder line. Check the chest pull. Check the trouser break. Note where the line drops. Photograph each from the side and back; you will see things in the photo you missed in the mirror.</p>'
+          + '<p>This is not a perfectionist exercise. Most pieces have one specific fit problem that, if fixed, transforms the look. A trouser hem two inches too long. A jacket sleeve a touch short. A shirt that sits two centimeters too wide in the chest.</p>'
+          + '<h3>The tailor is cheap</h3>'
+          + '<p>The tailor is one of the highest-leverage spends in personal style. A $40 alteration on an existing piece often outperforms a $400 new piece that comes with its own fit problems.</p>',
+        whyItMatters: 'Fit is the silent multiplier behind every style choice you make.',
+        keyInsight: 'A well-fitting average piece looks better than a poorly fitting expensive one.',
+        example: 'An operator spent $80 on alterations across three pieces he already owned. He was complimented on his style for the next three months without buying anything new.',
+        actionStep: 'Photograph three pieces from the side and back. Mark every fit issue. Take them to a tailor this week.',
+        checklist: [
+          'Stand in good light, full-length mirror',
+          'Check shoulders, chest, hem, sleeve',
+          'Photograph side and back',
+          'Book the tailor for the week ahead'
+        ],
+        microChallenge: 'Walk three minutes in each piece. Fit problems show up most clearly in motion.',
+        reflection: 'What am I willing to spend $40 to fix today that I have been carrying around for years?'
+      },
+      8: {
+        image: 'style-foundations-day-08.webp',
+        imageAlt: 'A small drawer of well-folded essentials.',
+        keyTerms: ['system', 'discipline'],
+        reading:
+            '<h3>Closet care</h3>'
+          + '<p>The clothes you own last twice as long when you care for them slightly better. Hang knits flat. Brush wool. Air-dry shirts. Polish leather shoes once a month. Repair small damage before it grows.</p>'
+          + '<p>None of this is dramatic. Together, it doubles the practical life of your wardrobe and protects the money you spent on real pieces. Treat your clothes like the small assets they are.</p>'
+          + '<h3>The five-minute weekly check</h3>'
+          + '<p>Once a week, spend five minutes looking at your wardrobe. Anything torn, anything stained, anything stretched. Fix it now. Most ruined pieces died from neglect, not from wear.</p>',
+        whyItMatters: 'Wardrobe care is the cheapest style multiplier available.',
+        keyInsight: 'A pristine three-year-old piece looks better than a worn six-month-old one.',
+        example: 'A consultant rotated his shoes weekly and polished them monthly. His "good shoes" lasted seven years and never looked tired in photos.',
+        actionStep: 'Book five minutes this Sunday for the weekly closet check. Repeat for a month.',
+        checklist: [
+          'Hang knits flat',
+          'Air-dry shirts after wear',
+          'Polish leather once a month',
+          'Fix small damage immediately'
+        ],
+        microChallenge: 'Pick the one piece you care for least. Give it 10 minutes of care today.',
+        reflection: 'Where am I letting good pieces die early from small inattention?'
+      },
+      9: {
+        image: 'style-foundations-day-09.webp',
+        imageAlt: 'Three pairs of clean shoes arranged in a row.',
+        keyTerms: ['positioning'],
+        reading:
+            '<h3>The shoe rule</h3>'
+          + '<p>Shoes are the single most visible piece of an outfit. Everyone notices them; few people change them often enough. Today you audit shoes. Three pairs is plenty for most modern operators: a clean white sneaker, a dark casual leather (boot or derby), and one formal pair for important days.</p>'
+          + '<p>Quality matters more here than in any other category. A $250 pair of well-made shoes lasts a decade with care; three $80 pairs last a year and look tired the whole time. Spend once.</p>'
+          + '<h3>Match the floor</h3>'
+          + '<p>A useful rule: dressier shoes for dressier rooms. Match the formality of the floor you walk on — a wedding, an office, a coffee shop — and the rest of the outfit lands without effort.</p>',
+        whyItMatters: 'Shoes set the visual register of the entire outfit.',
+        keyInsight: 'One great pair beats three average ones, every time.',
+        example: 'A reader sold three average sneaker pairs and bought one excellent leather pair. He wore it every formal day for four years and was complimented on it constantly.',
+        actionStep: 'Audit your shoes today. Pick three pairs to keep, the rest to retire. Identify the gap.',
+        checklist: [
+          'List the three categories you actually need',
+          'Pick the best pair in each',
+          'Retire what does not fit, is worn out, or is rarely used',
+          'Note the gap to fill'
+        ],
+        microChallenge: 'Wear your best pair tomorrow with an outfit you would normally not pair it with. Note the lift.',
+        reflection: 'What am I signalling about myself with my current shoes that I do not actually want to signal?'
+      },
+      10: {
+        image: 'style-foundations-day-10.webp',
+        imageAlt: 'A simple shopping list on a notebook beside a cup of tea.',
+        keyTerms: ['execution', 'momentum'],
+        reading:
+            '<h3>Shop the list, not the store</h3>'
+          + '<p>The single biggest waste in style is shopping without a list. Today you write a real one and commit to buying only from it for 90 days.</p>'
+          + '<p>The list should be specific. Not "a sweater" — "a navy mid-weight merino crewneck, slim through the chest, $80–$160." If you cannot describe the item that specifically, the gap is not yet clear to you. Write down what each item completes about the existing wardrobe.</p>'
+          + '<h3>The 90-day rule</h3>'
+          + '<p>For 90 days, no purchases outside the list. You will be tempted. Resist. The list, written calmly, is almost always correct. Impulse buys, written in the store, almost always are not.</p>',
+        whyItMatters: 'A short calm list beats a long urgent one every time.',
+        keyInsight: 'You do not need more clothes. You need a few right ones.',
+        example: 'An operator wrote a 4-item list, bought all four over six months, and stopped impulse buying entirely. His closet shrank and his style improved.',
+        actionStep: 'Write the list today. Three to six items. Specific descriptions and price ceilings.',
+        checklist: [
+          'Write 3–6 specific items',
+          'Match each to a wardrobe gap',
+          'Set a price ceiling per item',
+          'Commit: no off-list buys for 90 days'
+        ],
+        microChallenge: 'For each item, write the exact outfit it completes. If you cannot, take it off the list.',
+        reflection: 'What does my impulse buying signal about what is actually missing from the closet?'
+      },
+      11: {
+        image: 'style-foundations-day-11.webp',
+        imageAlt: 'A neat dresser with a single watch and a small ring tray.',
+        keyTerms: ['positioning'],
+        reading:
+            '<h3>Accessories with purpose</h3>'
+          + '<p>Accessories are the most overrated and underused parts of personal style. Overrated when used as decoration; underused when chosen as small signatures. Today you decide on one or two small signature accessories — a watch, a simple ring, a pair of glasses you actually like.</p>'
+          + '<p>The rule is restraint. One or two pieces, worn consistently, become recognizable as part of you. Three or more compete for attention and look unstudied. Pick few, choose well, wear them daily.</p>'
+          + '<h3>What an accessory is for</h3>'
+          + '<p>An accessory is not jewelry. It is a small piece of identity you carry into rooms. A quietly excellent watch tells a story about how you treat time. Glasses you actually chose say something different than glasses you accepted.</p>',
+        whyItMatters: 'The signature accessory is the smallest, longest-lasting style decision you make.',
+        keyInsight: 'Restraint is a style asset. Most people accessorize too much.',
+        example: 'A reader picked one classic steel watch and wore it daily for six years. People began describing him by it without realizing.',
+        actionStep: 'Pick the one accessory you will commit to. Wear it daily for the next 30 days.',
+        checklist: [
+          'Identify a signature accessory',
+          'Verify it works with the capsule',
+          'Wear it daily for 30 days',
+          'Resist adding a second piece during that window'
+        ],
+        microChallenge: 'Audit your current accessories. Anything you do not consciously love or wear weekly — store it.',
+        reflection: 'Which one accessory could I keep for years that would still feel right at the end?'
+      },
+      12: {
+        image: 'style-foundations-day-12.webp',
+        imageAlt: 'A clean side profile in soft daylight.',
+        keyTerms: ['confidence', 'momentum'],
+        reading:
+            '<h3>Posture is style</h3>'
+          + '<p>You can have a perfect wardrobe and still look uncertain if posture is off. Today you spend a few minutes on the simplest postural cues. Shoulders back and down. Crown of the head lifting toward the ceiling. Weight slightly forward on the balls of the feet.</p>'
+          + '<p>It feels strange at first. Hold it through one conversation. Then another. Within a week, your default starts to shift. Posture is the layer underneath the clothes — the layer everyone reads without being told to.</p>'
+          + '<h3>How clothes meet posture</h3>'
+          + '<p>Well-fitting clothes are designed for an aligned body. When you stand correctly, the lines of the jacket and shoulders work as intended. When you slouch, even excellent fit collapses visually.</p>',
+        whyItMatters: 'Posture is the cheapest, fastest style upgrade available. It costs zero.',
+        keyInsight: 'How you stand is the first thing anyone reads about you. Long before they get to the watch.',
+        example: 'A founder spent two weeks correcting posture in meetings. Colleagues told him he looked "more senior" without knowing what changed.',
+        actionStep: 'Set three reminders today. Each time, run the posture check: shoulders, head, weight.',
+        checklist: [
+          'Three daily posture checks',
+          'Hold through one full conversation',
+          'Photograph yourself standing relaxed',
+          'Compare to a week from now'
+        ],
+        microChallenge: 'Walk one full block with active posture. Notice how it changes the way the world receives you.',
+        reflection: 'What story am I telling without speaking — and is it the one I want to tell?'
+      },
+      13: {
+        image: 'style-foundations-day-13.webp',
+        imageAlt: 'A clean closet with a few thoughtfully chosen pieces.',
+        keyTerms: ['system', 'reflection'],
+        reading:
+            '<h3>The 90-day style review</h3>'
+          + '<p>At the end of a 90-day style cycle, sit down for 20 minutes. What pieces did you wear most? What did you almost never wear? What item on the list did you buy and turned out to use less than you expected? What surprised you?</p>'
+          + '<p>Style improves the way training improves: small honest reviews, small directed changes. Without the review, you drift back into impulse buying within a quarter.</p>'
+          + '<h3>What to do with the data</h3>'
+          + '<p>Pick one specific change. Replace the piece you never wore. Buy the missing item the review revealed. Promote the piece you wore three times more than expected.</p>',
+        whyItMatters: 'A quarterly review is the difference between style that compounds and style that drifts.',
+        keyInsight: 'The pieces you actually wear are the only data that matters.',
+        example: 'A reader did a 20-minute review every quarter for two years. His closet halved, his style sharpened, and his clothing spend fell by two-thirds.',
+        actionStep: 'Block 20 minutes this Sunday. Run the review. Write the answers. Pick one change.',
+        checklist: [
+          'List most-worn pieces',
+          'List rarely-worn pieces',
+          'Pick one piece to replace',
+          'Pick one gap to fill'
+        ],
+        microChallenge: 'Photograph the current capsule on hangers. Compare to your photo from Day 1.',
+        reflection: 'What does my real closet say about who I actually am — and is that the message I want to send?'
+      },
+      14: {
+        image: 'style-foundations-day-14.webp',
+        imageAlt: 'A small one-page personal style document.',
+        keyTerms: ['system', 'positioning'],
+        reading:
+            '<h3>Write the personal style document</h3>'
+          + '<p>You now have a palette, a capsule, a fit standard, a shopping list, an accessory, a posture practice, and a review cadence. Today you condense all of it onto a single page: your personal style document.</p>'
+          + '<p>Keep it short. The palette in three lines. The capsule in seven. The fit standard in two. The shop-list rule. The signature accessory. The posture cues. The quarterly review block on the calendar.</p>'
+          + '<h3>Use the page</h3>'
+          + '<p>This page is the standing document for every future style decision. Read it before you shop. Read it before you pack for a trip. Read it before you replace anything. It saves money, time, and uncertainty for years.</p>',
+        whyItMatters: 'One page of personal style decisions, made calmly, replaces a hundred rushed ones in stores.',
+        keyInsight: 'The document is the asset. Everything you buy after it just slots in.',
+        example: 'A reader wrote a one-page style document and reread it once a quarter. Five years later his closet was small, considered, and consistently complimented.',
+        actionStep: 'Write the page today. Save it where you will see it every time you plan a purchase.',
+        checklist: [
+          'Palette in 3 lines',
+          'Capsule in 7 items',
+          'Fit standard in 2 lines',
+          'Shop-list rule + accessory + posture + review block'
+        ],
+        microChallenge: 'Pin the page where you dress. Read it on the next chaotic morning.',
+        reflection: 'Who am I dressing for now that I was not dressing for two weeks ago — and what does the next quarter look like?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     CLEAR SKIN PACK — overview + first 3 lessons deep (health-adjacent;
+     pack already shows the appropriate safety note via _isHealthAdjacent). */
+  'clear-skin': {
+    coverImage:  'clear-skin-cover.webp',
+    coverAlt:    'Soft natural light on clean, healthy skin.',
+    heroImage:   'clear-skin-cover.webp',
+    heroAlt:     'Calm morning light on a simple skincare setup.',
+    overviewLong:
+        'Most skin issues are not solved by more products. They are solved by fewer, used patiently. This pack walks through fourteen days of a calm routine built around the three things every skin type benefits from: gentle cleansing, consistent moisturizer, daily sunscreen. Add a little structure on sleep, water, and stress notes and let the rest settle.\n\n'
+      + 'This pack is general education and habit tracking. It is not medical advice. For severe, painful, cystic, infected, or rapidly changing skin, see a dermatologist.',
+    outcomes: [
+      'A simple AM and PM routine you can hold without thinking',
+      'Honest baseline notes about what changes your skin in your real life',
+      'A short list of products you actually need — and a longer list you do not',
+      'A daily sunscreen habit',
+      'An understanding of what does and does not work for your skin specifically'
+    ],
+    howToUse: 'One short lesson per day. Do not introduce new products mid-pack. Less is the lesson.',
+    dayOverlays: {
+      1: {
+        image: 'clear-skin-day-01.webp',
+        imageAlt: 'A simple morning routine layout on a clean surface.',
+        keyTerms: ['reflection', 'discipline'],
+        reading:
+            '<p>You cannot improve what you have not honestly observed. Today you take a baseline. Look at your current routine, your products, your sleep, your water, your stress on a 1–10 scale, and your skin in good natural light.</p>'
+          + '<p>Take a single baseline photo for yourself only. You will compare in two weeks. Honest baselines beat wishful thinking.</p>',
+        whyItMatters: 'You will be tempted to call a normal week "an improvement" without data. The photo prevents that.',
+        keyInsight: 'Skin tells the truth about the rest of your life if you let it.',
+        example: 'A user noticed in his baseline that breakouts always followed a poor sleep stretch. He fixed sleep first and the routine that came later worked twice as well.',
+        checklist: [
+          'List current products honestly',
+          'Note sleep, water, stress (1–10)',
+          'Take a baseline photo for yourself',
+          'Save it in a private folder'
+        ],
+        microChallenge: 'Write the one pattern you already suspect connects your life and your skin.',
+        reflection: 'What am I already noticing that I have been ignoring?'
+      },
+      2: {
+        image: 'clear-skin-day-02.webp',
+        imageAlt: 'A calm tray with only three skincare bottles.',
+        keyTerms: ['system'],
+        reading:
+            '<p>Most skin issues are made worse by doing too much, not too little. Cutting back to basics gives your skin room to settle and lets you see what actually helps.</p>'
+          + '<p>Choose a simple structure. AM: gentle cleanse if needed, moisturizer, sunscreen. PM: gentle cleanse, moisturizer. Drop everything else for 13 days. The goal is signal, not features.</p>',
+        whyItMatters: 'You cannot tell which product is helping if you are using five at once.',
+        keyInsight: 'A real routine is small and reliable. Anything else is an experiment running in parallel.',
+        example: 'A user dropped a 7-step nighttime routine for a 2-step one and her skin calmed within ten days.',
+        checklist: [
+          'Choose a simple AM structure',
+          'Choose a simple PM structure',
+          'Put the unused products in a box',
+          'Do not buy anything new this week'
+        ],
+        microChallenge: 'Time the new routine. If it takes more than three minutes, simplify further.',
+        reflection: 'Which products am I using out of habit or hype rather than for a real reason?'
+      },
+      3: {
+        image: 'clear-skin-day-03.webp',
+        imageAlt: 'A small bottle of sunscreen catching morning light.',
+        keyTerms: ['consistency'],
+        reading:
+            '<p>Sunscreen is the single highest-leverage daily product for almost every skin type. It protects against pigmentation, premature aging, and irritation. The best one is the one you will actually use every morning.</p>'
+          + '<p>Pick a formula that feels good on your skin — comfortable enough that you reach for it without negotiating. Apply it after moisturizer, before anything else. Re-apply if you spend significant midday hours outside.</p>',
+        whyItMatters: 'No other single habit produces a comparable long-term effect on skin.',
+        keyInsight: 'A sunscreen you actually like is worth more than a "better" one that lives in the drawer.',
+        example: 'A user switched from a heavy formula she dreaded to a lightweight one she enjoyed. Her usage went from "sometimes" to "daily" inside one week.',
+        checklist: [
+          'Apply sunscreen every morning this week',
+          'Set the bottle next to your moisturizer',
+          'Re-apply if you spend long midday hours outside',
+          'Note how your skin feels by day 4'
+        ],
+        microChallenge: 'Read the label and check that the SPF is at least 30 and the formula is broad spectrum.',
+        reflection: 'What is the easiest version of this habit I can hold for a year?'
+      },
+      4: {
+        image: 'clear-skin-day-04.webp',
+        imageAlt: 'A simple skincare ritual with a gentle cleanser.',
+        keyTerms: ['routine', 'discipline'],
+        reading:
+            '<h3>The gentle cleanse</h3>'
+          + '<p>Most skin issues are made worse by harsh cleansing. The skin barrier — the thin oily layer that holds moisture in and irritants out — is fragile. A foaming, stripping cleanser feels clean in the moment and damages the barrier over time. A gentle cleanse, twice a day, is enough for almost every skin type.</p>'
+          + '<p>Look for a pH-balanced, non-foaming cleanser if your skin runs dry or sensitive; a light gel cleanser if your skin runs oily. The brand matters less than the formula. Use lukewarm water — not hot. Pat dry — do not rub.</p>'
+          + '<h3>What "clean" should feel like</h3>'
+          + '<p>After cleansing, your skin should feel soft, not tight. Tightness is irritation, not cleanliness. If your face feels tight, the cleanser is too strong for you, and the rest of the routine cannot fix what the cleanse damaged.</p>',
+        whyItMatters: 'A gentle, repeatable cleanse protects the only barrier between your skin and the world.',
+        keyInsight: 'Soft, not tight. That is the signal that the cleanse is right.',
+        example: 'A reader switched from a foaming cleanser to a gentle one and her chronic redness calmed inside ten days. Nothing else changed.',
+        actionStep: 'Cleanse twice today with the gentle formula. Note how your skin feels after each cleanse.',
+        checklist: [
+          'Lukewarm water, not hot',
+          'Gentle non-stripping cleanser',
+          'Pat dry, do not rub',
+          'Check: soft, not tight'
+        ],
+        microChallenge: 'For one week, cleanse only in the morning and at night. No mid-day washes.',
+        reflection: 'What part of my old routine was leaving my skin worse than when I started?'
+      },
+      5: {
+        image: 'clear-skin-day-05.webp',
+        imageAlt: 'A small bottle of moisturizer on a clean surface.',
+        keyTerms: ['routine', 'system'],
+        reading:
+            '<h3>Moisturize consistently</h3>'
+          + '<p>Hydration is not optional, even for oily skin. Skipping moisturizer makes oily skin produce more oil to compensate; it makes dry skin flake; and it leaves sensitive skin reactive. Today the practice is simple: moisturize twice a day, every day, for the next 14 days.</p>'
+          + '<p>Pick a non-comedogenic formula matched to your skin type. Lightweight gel for oily, balanced lotion for normal, richer cream for dry. Apply within a minute of cleansing, while the skin is still slightly damp — moisturizer holds water in, not on.</p>'
+          + '<h3>The minimum effective dose</h3>'
+          + '<p>You do not need many products. You need two — a cleanser and a moisturizer — used reliably for several weeks before judging them. Most people change products before the routine has had time to settle the skin.</p>',
+        whyItMatters: 'Consistency beats sophistication. A simple routine done daily outperforms a sophisticated one done sometimes.',
+        keyInsight: 'Hydration is the foundation. Almost every other concern improves once the barrier is intact.',
+        example: 'A user with persistent oiliness added daily moisturizer and her midday shine reduced inside two weeks. Her skin learned it did not need to overproduce.',
+        actionStep: 'Moisturize within 60 seconds of cleansing today. Set a reminder if needed.',
+        checklist: [
+          'Pick a non-comedogenic formula',
+          'Apply within 60 seconds of cleansing',
+          'Twice a day, every day',
+          'Do not switch products for two weeks'
+        ],
+        microChallenge: 'Keep the bottle visible. Visibility is half the habit.',
+        reflection: 'What product have I been judging too quickly without giving the routine time to settle?'
+      },
+      6: {
+        image: 'clear-skin-day-06.webp',
+        imageAlt: 'A glass of water and a calm morning routine on a desk.',
+        keyTerms: ['consistency', 'recovery'],
+        reading:
+            '<h3>Hydration from inside</h3>'
+          + '<p>Hydration on the outside has a ceiling. The other half of skin health is what you drink. Most people drink less water than they think, especially in the morning. Today the practice is two liters of water across the day, with the first glass before the first coffee.</p>'
+          + '<p>This is not magic. Hydration affects elasticity, dullness, and the speed at which your skin recovers from minor irritation. It is the cheapest intervention you can make, and almost no one does it consistently for two weeks in a row.</p>'
+          + '<h3>How to track it without effort</h3>'
+          + '<p>Use a reusable bottle with marks. Refill it twice. That is the system. Do not measure it precisely; just commit to the visible target and notice the change in your skin by day seven.</p>',
+        whyItMatters: 'Skin recovery depends on hydration. You cannot product your way out of dehydration.',
+        keyInsight: 'Drink before you are thirsty. Thirst is already a deficit.',
+        example: 'A reader added a 1-liter bottle on his desk every morning. He drank both refills daily for a month and his coworker asked what he was doing differently.',
+        actionStep: 'Fill the bottle now. First glass before the first coffee. Refill at lunch. Refill before dinner.',
+        checklist: [
+          'Reusable bottle with marks',
+          'First glass before coffee',
+          'Refill at lunch',
+          'Refill before dinner'
+        ],
+        microChallenge: 'For seven days, log the bottles you finished. Just count, do not score.',
+        reflection: 'What body signal have I been ignoring that hydration would change?'
+      },
+      7: {
+        image: 'clear-skin-day-07.webp',
+        imageAlt: 'A calm bedroom with soft warm light at night.',
+        keyTerms: ['recovery', 'consistency'],
+        reading:
+            '<h3>Sleep is skincare</h3>'
+          + '<p>Skin repairs during sleep. Cell turnover, micro-inflammation reduction, and barrier recovery happen mostly between 11pm and 2am for most adults. Cutting sleep by an hour for a week shows up on the face by day five.</p>'
+          + '<p>You do not need a different sleep window than the focus pack recommended. A consistent 7-hour window, dark room, screens out 60 minutes before lights off. Same rules. Different downstream effect.</p>'
+          + '<h3>The pillowcase</h3>'
+          + '<p>Change the pillowcase twice a week. Oils, residue, and product buildup transfer to your face for one third of the day. The pillowcase is the most under-considered piece of skincare gear in most homes.</p>',
+        whyItMatters: 'Skin recovery is mostly a sleep problem disguised as a routine problem.',
+        keyInsight: 'You cannot fix on the skin what is broken in the rest.',
+        example: 'A reader did a sleep-only intervention — no product changes — and her hormonal-cycle breakouts calmed by two cycles.',
+        actionStep: 'Set the sleep window tonight. Change the pillowcase. Track tomorrow\'s skin response.',
+        checklist: [
+          'Lights out within a 30-min window',
+          'Cool, dark room',
+          'No screens for the last hour',
+          'Change pillowcase twice a week'
+        ],
+        microChallenge: 'For one week, sleep with the same pillowcase only two nights. Note the difference.',
+        reflection: 'How much of my "stubborn" skin issue is actually a sleep issue I have been calling a skin one?'
+      },
+      8: {
+        image: 'clear-skin-day-08.webp',
+        imageAlt: 'A simple breakfast plate with whole foods.',
+        keyTerms: ['recovery', 'system'],
+        reading:
+            '<h3>Food and skin</h3>'
+          + '<p>This pack does not prescribe a diet. It teaches one habit: notice what your skin does after specific foods, and adjust calmly. Common patterns: sugar spikes show up two days later as inflammation; dairy varies by person and worth a one-week test; very salty food can show up the next morning as puffiness.</p>'
+          + '<p>You are not looking for villains. You are building awareness. A single food rarely causes a skin issue, but a pattern that repeats every week often does.</p>'
+          + '<h3>The light food log</h3>'
+          + '<p>For one week, note in two lines what you ate and how your skin looked the next morning. After seven days, scan for the obvious pattern. Most people find one or two foods that affect them consistently.</p>',
+        whyItMatters: 'Awareness costs nothing and unlocks the personal pattern no general advice can give you.',
+        keyInsight: 'You are looking for your pattern, not the universal one.',
+        example: 'A user noticed his Sunday breakouts followed the Friday-night pizza pattern. He swapped the toppings and the cycle broke.',
+        actionStep: 'Start a two-line food log today. Continue for seven days. No judgment.',
+        checklist: [
+          'Two-line note per day',
+          'Skin score next morning, 1–10',
+          'Seven days, then scan',
+          'Mark the obvious pattern'
+        ],
+        microChallenge: 'Pick the most likely trigger and run a one-week swap. Note the response.',
+        reflection: 'What food pattern have I suspected but never confirmed?'
+      },
+      9: {
+        image: 'clear-skin-day-09.webp',
+        imageAlt: 'A calm walk through warm afternoon light.',
+        keyTerms: ['recovery', 'emotional-regulation'],
+        reading:
+            '<h3>Stress and skin</h3>'
+          + '<p>Cortisol — the body\'s primary stress hormone — directly affects skin in measurable ways. It increases oil production, suppresses immune response, and slows barrier repair. A week of high stress shows up as breakouts, dullness, and slower healing.</p>'
+          + '<p>You cannot eliminate stress. You can lower its skin cost with two cheap practices: a daily 20-minute walk and three slow breaths before each high-stress task. Both reduce cortisol on a measurable timescale.</p>'
+          + '<h3>What the walk does</h3>'
+          + '<p>A walk shifts the nervous system out of sympathetic dominance. The skin notices within hours. Most people skip the walk because it feels too simple to matter.</p>',
+        whyItMatters: 'Skin is downstream of nervous system state. Manage state and the skin follows.',
+        keyInsight: 'A 20-minute walk is medicine. Treat it like one.',
+        example: 'A reader added a midday walk during a stressful project and his chronic forehead breakouts cleared inside three weeks.',
+        actionStep: 'Add a 20-minute walk today. Take three slow breaths before the next stressful task.',
+        checklist: [
+          '20-minute walk',
+          'Three slow breaths before stress',
+          'No phone during the walk',
+          'Note skin response by day 7'
+        ],
+        microChallenge: 'Schedule the walk for a fixed time. The same time, daily, for a week.',
+        reflection: 'What is my stress costing my skin that I have been blaming on products?'
+      },
+      10: {
+        image: 'clear-skin-day-10.webp',
+        imageAlt: 'A clean shelf with only essential skincare bottles.',
+        keyTerms: ['system', 'execution'],
+        reading:
+            '<h3>The product audit</h3>'
+          + '<p>Today you sit down with every product in your bathroom. Cleanser, moisturizer, sunscreen, anything else. Three piles. Pile one: products you use daily. Pile two: products you bought but rarely use. Pile three: products you have honestly outgrown.</p>'
+          + '<p>The second pile is the most informative. Why did you buy them? What did they promise? What were you treating that turned out not to be the real issue? Notes here are gold for future buying decisions.</p>'
+          + '<h3>Decluttering is part of skincare</h3>'
+          + '<p>Each unused product is a small accusation that you are doing it wrong. They cost mental space. Box them up. Use the daily three. Revisit in 30 days; almost nothing in the box will be missed.</p>',
+        whyItMatters: 'A simpler shelf produces a simpler decision every morning. Decisions cost more energy than the actions they trigger.',
+        keyInsight: 'Less product, more consistency. Almost always the right move.',
+        example: 'A reader boxed up 14 products and stuck to 3 for a month. Her skin calmed and she stopped buying things she did not need.',
+        actionStep: 'Sort every product today. Daily-use stays. The rest goes into a box for 30 days.',
+        checklist: [
+          'Sort everything into three piles',
+          'Keep only daily-use on the shelf',
+          'Box the rest, label with today\'s date',
+          'Revisit in 30 days'
+        ],
+        microChallenge: 'For 14 days, buy nothing new. Use only what is on the shelf.',
+        reflection: 'What problem did I think I was solving with each unused product?'
+      },
+      11: {
+        image: 'clear-skin-day-11.webp',
+        imageAlt: 'A small notebook with weekly skin notes.',
+        keyTerms: ['reflection', 'consistency'],
+        reading:
+            '<h3>The weekly skin note</h3>'
+          + '<p>Every Sunday for the next month, spend 5 minutes writing a few honest lines about your skin. What changed this week. What you did differently. What you suspect. The notes are not for anyone else. They are the only honest comparison you will have next month.</p>'
+          + '<p>Memory is a liar in skincare. You will swear a product helped, when actually it was a calmer week. You will swear nothing is working, when in fact your skin has been steadily improving for a month. The notes resolve the lie.</p>'
+          + '<h3>What to look for</h3>'
+          + '<p>Trends, not single events. One breakout is weather. A consistent monthly pattern is climate. The weekly notes catch the climate.</p>',
+        whyItMatters: 'Skin improves slowly. The eye misses what the notebook catches.',
+        keyInsight: 'You cannot judge a routine on a single morning.',
+        example: 'A user kept weekly notes for 12 weeks and realized his "breakout product" was correlated with a single weekend habit, not the product itself.',
+        actionStep: 'Block 5 minutes this Sunday. Write the first note. Continue weekly for four weeks.',
+        checklist: [
+          'Open a notes file',
+          '5 minutes each Sunday',
+          'Note skin, sleep, stress, food in two lines each',
+          'Re-read at the end of the month'
+        ],
+        microChallenge: 'On day 30, compare the four notes. Mark the pattern that surprised you.',
+        reflection: 'What about my skin have I been judging week-to-week that only makes sense month-to-month?'
+      },
+      12: {
+        image: 'clear-skin-day-12.webp',
+        imageAlt: 'A clean bathroom with a small considered set of products.',
+        keyTerms: ['system', 'recovery'],
+        reading:
+            '<h3>The travel routine</h3>'
+          + '<p>Travel breaks most routines. Today you design the smallest possible travel version: cleanser, moisturizer, sunscreen. Three travel-size containers. Same products, smaller bottles. A single zipper pouch.</p>'
+          + '<p>Travel is not when to experiment. Travel is when to maintain. The smallest reliable version of your routine, repeated even on a tired night, protects the gains you have made at home.</p>'
+          + '<h3>The 30-second night</h3>'
+          + '<p>On the hardest travel nights, the rule is: 30 seconds of cleanse, 10 seconds of moisturizer, done. Better than skipping. Tomorrow morning is when you reset.</p>',
+        whyItMatters: 'Skin gains from a real routine are lost in two weeks of inconsistency.',
+        keyInsight: 'Maintenance is the goal during travel. Not optimization.',
+        example: 'A user kept her three travel sizes packed permanently. Her skin barely registered the difference between weeks at home and weeks abroad.',
+        actionStep: 'Assemble the travel pouch today. Three products, no extras.',
+        checklist: [
+          'Travel-size cleanser',
+          'Travel-size moisturizer',
+          'Travel-size sunscreen',
+          'Zipper pouch, packed permanently'
+        ],
+        microChallenge: 'Use the pouch for one weekend even at home. Test the minimum reliably works.',
+        reflection: 'What about my routine is fragile in environments other than my bathroom?'
+      },
+      13: {
+        image: 'clear-skin-day-13.webp',
+        imageAlt: 'Two side-by-side photographs comparing two weeks of routine.',
+        keyTerms: ['reflection', 'momentum'],
+        reading:
+            '<h3>Two-week comparison</h3>'
+          + '<p>Pull up your baseline photograph from Day 1 and take a new one today in the same light. Compare honestly. Most people are bad at this — they see the day-by-day, miss the two-week. The photographs are the only honest comparison.</p>'
+          + '<p>If skin improved, take a moment to note what specifically. If skin did not improve, look at the weekly notes for the consistency gap. Almost always, the gap is consistency, not the products.</p>'
+          + '<h3>Adjust calmly</h3>'
+          + '<p>Pick the one change to make for the next two weeks. Not five. One. Skin responds to consistent inputs, not to constant tinkering.</p>',
+        whyItMatters: 'Two-week intervals are the right cadence for skincare decisions. Anything shorter is noise.',
+        keyInsight: 'Photographs do not flatter you, but they do not lie either.',
+        example: 'A user thought nothing was working and his two-week comparison showed visible improvement he had not noticed in daily mirrors.',
+        actionStep: 'Photograph yourself today in the same light as Day 1. Compare side by side.',
+        checklist: [
+          'Same time of day',
+          'Same light',
+          'Same angle',
+          'Honest comparison'
+        ],
+        microChallenge: 'If you cannot see a difference, ask one trusted person to compare. Outside eyes catch what mirrors miss.',
+        reflection: 'What pattern over two weeks tells me something a single mirror moment never could?'
+      },
+      14: {
+        image: 'clear-skin-day-14.webp',
+        imageAlt: 'A small handwritten note describing a clean ongoing routine.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>The long-term routine</h3>'
+          + '<p>You have run a complete 14-day cycle. Cleanse, moisturize, sunscreen, hydration, sleep, food awareness, stress walks, weekly notes, travel pouch. Today the work is to compress all of it onto a single page you will use for years.</p>'
+          + '<p>The page should be short. Three products. Three habits. One weekly note block. One quarterly photo. That is the system. Resist adding to it.</p>'
+          + '<h3>When to see a dermatologist</h3>'
+          + '<p>This pack is general education. For severe, painful, cystic, infected, or rapidly changing skin, please see a dermatologist. The routines above are designed to make a calm baseline visible. A medical issue requires medical care.</p>',
+        whyItMatters: 'Skin is a years-long project. A small, clear page is the only sustainable map.',
+        keyInsight: 'The simplest routine you can hold every day beats the perfect routine you only sometimes run.',
+        example: 'A reader followed the same one-page routine for two years. Her skin steadily improved and she stopped feeling anxious about new products.',
+        actionStep: 'Write the page today. Save it where you keep your other personal documents.',
+        checklist: [
+          'Three products',
+          'Three habits (hydration, sleep, stress)',
+          'Weekly note block',
+          'Quarterly photo reminder'
+        ],
+        microChallenge: 'Set a calendar reminder for the next quarterly photo and review.',
+        reflection: 'Who do I become when I treat my skin like a long-term project instead of a daily emergency?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     HAIR CARE PACK — full 14-day overlay, men’s-grooming aligned. The
+     existing cover-only entry above was removed; this is the canonical
+     overlay for Hair Care from Stage 35-A onward. */
+  'hair-care': {
+    coverImage:  'hair-care-cover.webp',
+    coverAlt:    'A man at a barbershop having a clean, modern haircut.',
+    heroImage:   'hair-care-hero.webp',
+    heroAlt:     'A man’s side profile after a clean haircut, soft daylight.',
+    overviewLong:
+        'Most men ignore hair until something looks off — a thinning patch, a bad cut, a dry-feeling scalp. By then the fix takes months. This pack is fourteen days of a calm, repeatable men’s grooming routine that protects what you have, brings out the best of your hair type, and gives you a clean cut you can actually maintain.\n\n'
+      + 'You will spend the first week on the scalp and the basics — gentle wash cadence, the right shampoo, brushing, scalp health, and understanding your hair type. The second week is on cut, style, and beard / facial-hair coordination. By the end you will have a small, masculine grooming system you can run in under five minutes a day and a clear relationship with your barber.',
+    outcomes: [
+      'A calm wash cadence matched to your hair and scalp type',
+      'A specific shampoo and conditioner that work for you, not against you',
+      'A simple daily styling routine in under five minutes',
+      'A barber relationship and a haircut you actually like, repeatable',
+      'A beard or facial-hair plan that complements the hair on your head'
+    ],
+    howToUse: 'One short lesson per day. Most days have a small physical experiment — a wash test, a brush test, a 10-minute mirror session. Treat them like the small lab work they are. This pack is general education; for medically significant hair loss or scalp conditions, see a dermatologist.',
+    dayOverlays: {
+      1: {
+        image: 'hair-care-day-01.webp',
+        imageAlt: 'A close shot of a man’s clean, healthy hair.',
+        keyTerms: ['grooming', 'scalp', 'reflection'],
+        reading:
+            '<h3>Honest hair audit</h3>'
+          + '<p>You cannot improve what you have not honestly looked at. Today you take an audit. Wet hair, towel-dry, no product. Stand in good natural light. Look at the front hairline, the temples, the crown, the part. Note thickness, density, and any patches that look thinner than the rest.</p>'
+          + '<p>Take three reference photos — front, side, top — for yourself only. You will compare in two weeks. Without the photos, your eye lies to you both directions: you will either overestimate improvement or refuse to see it.</p>'
+          + '<h3>What an audit gives you</h3>'
+          + '<p>A clear baseline does two useful things at once. It tells you which problems are real and which are anxiety. It also resets your expectations — most men either expect too much from a haircut or too little from a routine.</p>',
+        whyItMatters: 'A real baseline is the cheapest grooming improvement available. It costs zero and prevents a year of buying wrong products.',
+        keyInsight: 'You are working with the hair you have, not the hair you imagined. Both can look excellent.',
+        example: 'A user did one honest audit and realized his frontline was finer than he thought but his density was strong. He stopped chasing thickness products and started working with what he had. His haircut got better and he stopped feeling self-conscious.',
+        actionStep: 'Take three reference photos in good light today. Save them in a private folder.',
+        checklist: [
+          'Wet hair, towel-dry, no product',
+          'Photo: front, side, top',
+          'Note density, thickness, anything that looks off',
+          'Save photos for comparison in 14 days'
+        ],
+        microChallenge: 'Write one line on the most flattering haircut you have ever had. That is data.',
+        reflection: 'What am I pretending not to see about my hair, and what would change if I just looked at it calmly?'
+      },
+      2: {
+        image: 'hair-care-day-02.webp',
+        imageAlt: 'A man having his hair washed in soft, even light.',
+        keyTerms: ['scalp', 'routine', 'consistency'],
+        reading:
+            '<h3>Wash cadence</h3>'
+          + '<p>Most men either over-wash or under-wash. Both cause problems. Over-washing strips the scalp\'s natural oils and triggers more oil production; under-washing leaves residue that irritates the <span class="pp-term" data-term="scalp">scalp</span> and dulls hair. The right cadence depends on your scalp type, hair type, and daily activity level.</p>'
+          + '<p>A workable starting protocol: shampoo every 2–3 days, water-only rinses on the off days, and a full wash after any hard workout. Adjust based on how the scalp feels by day 5. If it itches, you are over-washing. If it feels heavy, you are under-washing.</p>'
+          + '<h3>Water temperature</h3>'
+          + '<p>Hot water dries the scalp. Lukewarm is enough. Finish with a 10-second cool rinse to close the cuticle — hair lies flatter and reflects more light. It is a small ritual; it does a real thing.</p>',
+        whyItMatters: 'Wash cadence is the single most-overlooked variable in men\'s hair care. Most men wash too often, the rest too little.',
+        keyInsight: 'A clean scalp is the foundation. Hair quality follows scalp condition.',
+        example: 'A user who washed every day moved to every 2 days. His chronic itch disappeared in a week and his hair stopped feeling dry.',
+        actionStep: 'Start the 2–3 day cadence today. Track in two-line notes how the scalp feels each evening.',
+        checklist: [
+          'Shampoo every 2–3 days',
+          'Lukewarm water; cool 10-sec rinse',
+          'Water-only rinse on off days',
+          'Adjust by day 5 based on how scalp feels'
+        ],
+        microChallenge: 'On a non-wash day, gently massage the scalp under the water for 60 seconds. That is part of the routine.',
+        reflection: 'What hair "problem" of mine has actually been a wash-cadence problem?'
+      },
+      3: {
+        image: 'hair-care-day-03.webp',
+        imageAlt: 'A clean side-profile haircut with sharp clean edges.',
+        keyTerms: ['grooming', 'system'],
+        reading:
+            '<h3>The right shampoo</h3>'
+          + '<p>Shampoo is mostly soap. The marketing is theater. What matters is the surfactant — the cleansing agent — and whether your scalp tolerates it. Sulfate-free formulas are gentler and a sensible default for most men. Add a separate scalp-focused shampoo (with salicylic acid or zinc pyrithione) once a week if you have flakes or itch.</p>'
+          + '<p>Use the smallest amount that produces a light lather. A coin-size in the palm, rubbed into wet hands, then worked into the scalp. The shampoo is for the scalp, not the strands. The strands clean themselves as the suds rinse out.</p>'
+          + '<h3>Conditioner</h3>'
+          + '<p>Conditioner goes on mid-lengths to ends, never on the scalp. Leave for 60 seconds. Rinse with cool water. Skip on the days you only water-rinse.</p>',
+        whyItMatters: 'Most men use the wrong shampoo for years because of the brand they grew up with. A 5-minute change can transform hair quality.',
+        keyInsight: 'Shampoo for the scalp. Conditioner for the ends. Not interchangeable.',
+        example: 'A reader switched to a sulfate-free shampoo and added a weekly zinc pyrithione shampoo for flakes. The itch was gone in two weeks.',
+        actionStep: 'Read the label of your current shampoo. If it has SLS or SLES as a top ingredient, plan a sulfate-free swap this week.',
+        checklist: [
+          'Find a sulfate-free shampoo matched to your scalp',
+          'Use coin-size, scalp only',
+          'Conditioner mid-lengths to ends only',
+          'Add a weekly scalp shampoo if you have flakes'
+        ],
+        microChallenge: 'Massage the scalp for 60 seconds during the shampoo. Most men shampoo for 15 seconds and underclean.',
+        reflection: 'How long have I been using the same shampoo without questioning it, and what does that say about my routines generally?'
+      },
+      4: {
+        image: 'hair-care-day-04.webp',
+        imageAlt: 'A barber’s tools laid out neatly on a clean surface.',
+        keyTerms: ['scalp', 'routine'],
+        reading:
+            '<h3>Brushing and combing</h3>'
+          + '<p>Brushing is not just styling. It distributes scalp oil along the hair shaft and stimulates blood flow to the scalp. A boar-bristle brush is the right tool for medium and shorter hair; a wide-tooth comb for longer or curlier hair. Two minutes a day is enough.</p>'
+          + '<p>Always start at the ends and work up. Most damage happens when men brush from the scalp down through tangles. Detangle from below; you will keep more of the hair you already have.</p>'
+          + '<h3>Scalp massage</h3>'
+          + '<p>A 60-second scalp massage in the morning improves circulation and feels good. Use the pads of your fingers, not your nails. It is small. Do it daily. The skin under the hair is the soil; the hair grows out of it.</p>',
+        whyItMatters: 'Brushing and scalp massage are the most consistently underused men\'s hair tools. They cost almost no time.',
+        keyInsight: 'Hair quality follows scalp condition. Touch the scalp daily and gently.',
+        example: 'A user added two minutes of brushing and a 60-second massage to his morning. His hair shine improved noticeably within a month — no products changed.',
+        actionStep: 'Get the right tool today. Boar bristle brush, or wide-tooth comb. Use it every morning this week.',
+        checklist: [
+          'Pick the right brush for your hair type',
+          'Detangle ends-up',
+          '60-second daily scalp massage',
+          'Use the pads of your fingers, not nails'
+        ],
+        microChallenge: 'Brush only at night for one week, immediately after styling washes out. Notice morning hair.',
+        reflection: 'Which small daily input have I been skipping because it feels too simple to matter?'
+      },
+      5: {
+        image: 'hair-care-day-05.webp',
+        imageAlt: 'A man’s clean-shaven face and styled hair in calm light.',
+        keyTerms: ['grooming', 'positioning'],
+        reading:
+            '<h3>Beard or no beard</h3>'
+          + '<p>Beards are a frame for the face. A well-shaped beard sharpens the jawline; a poorly-shaped one softens it in ways most men do not intend. Today the decision is honest: clean-shaven, designer stubble, short beard, or full beard. Pick one and commit for two weeks before judging.</p>'
+          + '<p>The rule is to match beard length to hair length. Long beard with very short hair looks unbalanced; very short hair with very thick beard looks heavy. Aim for similar visual weight on top and bottom of the face.</p>'
+          + '<h3>The shaping</h3>'
+          + '<p>Whichever style you pick, edges matter most. A clean neckline (two fingers above the Adam\'s apple, curving down behind the ear). A clean cheek line that follows your natural cheek hair, not an arbitrary high line. Shape the edges twice a week. The rest grows.</p>',
+        whyItMatters: 'The face is the first thing anyone reads about you. The beard frames it or fights it.',
+        keyInsight: 'The frame should match the picture. Match beard weight to hair weight.',
+        example: 'A reader trimmed his beard from chest-length to a short box trim and kept his hair short on the sides, longer on top. People described him as "more put together" for months without knowing why.',
+        actionStep: 'Pick the style today. Block 10 minutes for edges twice a week.',
+        checklist: [
+          'Pick a style and commit for 2 weeks',
+          'Match beard weight to hair weight',
+          'Clean neckline (two fingers above Adam\'s apple)',
+          'Cheek line follows natural growth'
+        ],
+        microChallenge: 'Take a clean photo of the new style after one week. Compare to your Day 1 photos.',
+        reflection: 'What does my facial hair say about how I see myself — and is it the message I want to send?'
+      },
+      6: {
+        image: 'hair-care-day-06.webp',
+        imageAlt: 'A small set of grooming tools arranged neatly.',
+        keyTerms: ['grooming', 'system'],
+        reading:
+            '<h3>Build the toolkit</h3>'
+          + '<p>You need fewer tools than the marketing suggests. A clipper with two guards, a beard trimmer, a small precise pair of scissors, a good comb, and a brush. Maybe an electric razor for the cheeks. That is the toolkit. It fits in one drawer and lasts years.</p>'
+          + '<p>The trap is buying multiple of the same tool for slightly different jobs. One good clipper does the work of three average ones. Spend once, on tools that feel solid in the hand.</p>'
+          + '<h3>Where to spend</h3>'
+          + '<p>If you only spend on one item, spend on the clipper. The blade quality is what makes the difference between a clean cut and a tugged one. A $100 clipper outperforms three $40 clippers in every way that matters.</p>',
+        whyItMatters: 'Good tools make small grooming maintenance feel quick instead of like an event.',
+        keyInsight: 'Restraint applies to tools too. A small considered toolkit beats a drawer of half-broken ones.',
+        example: 'A reader replaced four cheap tools with one good clipper and one good trimmer. He stopped going to the barber for in-between maintenance and saved hours each month.',
+        actionStep: 'Audit the toolkit today. Keep the one good of each kind. Box the duplicates.',
+        checklist: [
+          'One quality clipper with guards',
+          'One beard trimmer',
+          'Small precise scissors',
+          'A real comb and brush'
+        ],
+        microChallenge: 'Oil and clean the clipper today. Tools that are cared for cut better and last years.',
+        reflection: 'Which tools have I been tolerating that work just well enough to keep me from buying the right one?'
+      },
+      7: {
+        image: 'hair-care-day-07.webp',
+        imageAlt: 'A clean barbershop chair under warm light.',
+        keyTerms: ['execution', 'positioning'],
+        reading:
+            '<h3>Find a real barber</h3>'
+          + '<p>The right barber is the single largest grooming upgrade most men can make. A great barber understands your face shape, your hair pattern, and the cut you actually want — not the cut you can describe.</p>'
+          + '<p>Look for a barber who asks questions before cutting. Look for one whose own hair is well-cut. Pay for the higher-end appointment once, see how it feels, and decide. The right barber is not always the most expensive, but they are rarely the cheapest.</p>'
+          + '<h3>Communicate the cut</h3>'
+          + '<p>Take two reference photos to your appointment. One front, one side. Photos make a clear contract. Words alone produce different cuts in different barbers\' hands.</p>',
+        whyItMatters: 'A great barber relationship is a years-long compounding asset.',
+        keyInsight: 'The cut you describe is not the cut you get. The cut you show is.',
+        example: 'A reader switched barbers three times before finding one who asked questions before cutting. His hair has been cut by the same person for six years since.',
+        actionStep: 'Book a real appointment this week. Bring two reference photos.',
+        checklist: [
+          'Identify 2–3 candidate barbers',
+          'Book the most considered one',
+          'Bring two reference photos',
+          'Pay attention to whether they ask before cutting'
+        ],
+        microChallenge: 'After the cut, take fresh reference photos. They become next time\'s contract.',
+        reflection: 'Have I been settling on cuts because finding the right barber felt like more effort than it is?'
+      },
+      8: {
+        image: 'hair-care-day-08.webp',
+        imageAlt: 'A small selection of considered grooming products.',
+        keyTerms: ['positioning', 'execution'],
+        reading:
+            '<h3>Pick one product</h3>'
+          + '<p>Most men own four products and use one. Today you pick one product that does the work for your hair type and commit to it for the next two weeks.</p>'
+          + '<p>Pomade for shine and hold. Cream for softness and movement. Clay for matte and texture. Sea salt spray for casual volume. Choose based on the look you actually want, not on what is trending.</p>'
+          + '<h3>How much</h3>'
+          + '<p>Most men use too much product. The rule is dime-size, warmed in the hands, distributed evenly through damp hair. If your hair looks greasy, you are using too much or the wrong product. Less, dried more, almost always looks better.</p>',
+        whyItMatters: 'One product, used right, will outperform four products used randomly.',
+        keyInsight: 'Less product, applied evenly, beats more product applied unevenly.',
+        example: 'A reader switched from three products to one cream. His hair felt softer and looked more natural. He had not realized the layering was the issue.',
+        actionStep: 'Pick the one product today. Use only it for 14 days. Note the result.',
+        checklist: [
+          'Pick a product matched to your hair type',
+          'Dime-size, warmed in hands',
+          'Apply to damp hair, distribute evenly',
+          'Resist adding a second product'
+        ],
+        microChallenge: 'Style with no product for one day this week. See your hair\'s real default. That is the baseline you are styling from.',
+        reflection: 'Where have I been adding when I should have been subtracting?'
+      },
+      9: {
+        image: 'hair-care-day-09.webp',
+        imageAlt: 'A man styling his hair in a clean mirror in soft light.',
+        keyTerms: ['routine', 'execution'],
+        reading:
+            '<h3>The five-minute style</h3>'
+          + '<p>Today you design a five-minute morning style. Wash or rinse. Towel-dry (do not rub — press). Brush. Apply product to damp hair. Style in the direction your hair naturally falls. Done.</p>'
+          + '<p>The point is repeatability. A style you can execute on a tired morning is the only style that matters. Anything else is theater you abandon by week three.</p>'
+          + '<h3>Work with the cowlick</h3>'
+          + '<p>Every man has at least one. Pretending it is not there is how you produce the awkward middle-school cut all over again. Style with the cowlick, not against it. The cut should make the cowlick disappear, not the styling.</p>',
+        whyItMatters: 'A repeatable five-minute style protects every other grooming investment you have made.',
+        keyInsight: 'Style with your hair, not against it.',
+        example: 'A reader spent 25 minutes styling each day and switched to a 5-minute routine that worked with his cowlick. He looked sharper, not worse.',
+        actionStep: 'Time your style today. If it takes more than 5 minutes, the cut is wrong for the style. Tell your barber next time.',
+        checklist: [
+          'Towel-press dry, do not rub',
+          'Brush in the direction of growth',
+          'Apply product to damp hair',
+          'Style with the cowlick, not against it'
+        ],
+        microChallenge: 'For three days, do nothing different to the style. Notice that "different" was probably not improving it.',
+        reflection: 'What part of my morning hair routine is theater rather than function?'
+      },
+      10: {
+        image: 'hair-care-day-10.webp',
+        imageAlt: 'A clean sink and a small set of grooming essentials.',
+        keyTerms: ['system', 'consistency'],
+        reading:
+            '<h3>Maintenance cadence</h3>'
+          + '<p>Hair drifts. A great cut looks great for two weeks, fine for two more, and unkempt by week six. The cadence that keeps a man looking sharp is a haircut every 3–4 weeks. Beard touch-ups twice a week. Edge work on the neckline and around the ears weekly.</p>'
+          + '<p>Most men miss the cadence and only realize after the cut is unrecoverable. The trick is to book the next appointment before leaving the current one. The barber\'s book becomes the calendar.</p>'
+          + '<h3>What "edge work" means</h3>'
+          + '<p>Cleaning the neckline with a trimmer once a week, between cuts. Following the natural curve, not a straight line. Five minutes. Extends the life of every haircut by 1–2 weeks.</p>',
+        whyItMatters: 'Cadence is the silent multiplier behind every well-groomed man.',
+        keyInsight: 'Book the next cut before you leave the current one.',
+        example: 'A reader started booking every cut while still in the chair. He never missed a cadence for a year and people kept telling him his hair always looked good.',
+        actionStep: 'Book the next cut today. Schedule weekly edge work as a 5-minute recurring slot.',
+        checklist: [
+          'Haircut every 3–4 weeks',
+          'Edge work weekly, 5 minutes',
+          'Beard touch-ups twice a week',
+          'Book the next appointment before leaving the current one'
+        ],
+        microChallenge: 'Take a "halfway" photo two weeks after your next cut. That is your real maintenance baseline.',
+        reflection: 'Which grooming task have I been treating as occasional that should be on the calendar?'
+      },
+      11: {
+        image: 'hair-care-day-11.webp',
+        imageAlt: 'A calm bathroom shelf with a small set of skincare and grooming.',
+        keyTerms: ['scalp', 'recovery'],
+        reading:
+            '<h3>Scalp health for the long term</h3>'
+          + '<p>Hair density and thickness in your 30s and 40s is mostly downstream of scalp health in your 20s and 30s. The work today is small and unglamorous: a weekly 5-minute scalp routine. Massage with a clean scalp brush, or with the pads of your fingers, for two minutes after shampooing. Apply a non-irritating scalp serum if you have visible thinning.</p>'
+          + '<p>The conversation about hair loss can get loud. Most of it is theater. The signal is simple: pay attention to the scalp, see a dermatologist if you notice meaningful change, and do not panic-buy expensive products. Most miracle products are miraculous mostly to their marketing departments.</p>'
+          + '<h3>When to see a doctor</h3>'
+          + '<p>Notable shedding, a new bald patch, scalp pain, persistent itch, or visible thinning that bothers you — these warrant a dermatologist visit. Early consultation is cheap; late consultation is expensive.</p>',
+        whyItMatters: 'Scalp care now is hair density later. The math is patient but real.',
+        keyInsight: 'Take the scalp seriously without being anxious about it.',
+        example: 'A reader added a 5-minute weekly scalp routine and noticed less shedding within a season. He did not chase miracle products.',
+        actionStep: 'Add a weekly 5-minute scalp routine. Massage, gentle exfoliation, optional serum.',
+        checklist: [
+          'Weekly 5-minute scalp routine',
+          'Pads of fingers or scalp brush',
+          'Optional non-irritating serum',
+          'See a dermatologist for noticeable changes'
+        ],
+        microChallenge: 'Photograph the part-line monthly under the same light. That is your honest scalp comparison.',
+        reflection: 'What am I afraid of about my hair that I have been refusing to look at calmly?'
+      },
+      12: {
+        image: 'hair-care-day-12.webp',
+        imageAlt: 'A man’s clean side profile in soft warm light.',
+        keyTerms: ['confidence', 'positioning'],
+        reading:
+            '<h3>Own your hair</h3>'
+          + '<p>The most attractive thing a man can do with his hair is wear a cut that fits him and stop apologizing for it. Hair you are confident in always looks better than the "ideal" hair you are anxious about.</p>'
+          + '<p>If you are thinning, the worst move is the long sweep across. A clean shorter cut, a beard with weight, and confidence read as masculine. The opposite reads as denial.</p>'
+          + '<h3>What confidence looks like</h3>'
+          + '<p>Stand in a mirror. Notice the part of yourself you spend the most time hiding. That is exactly where confidence has the most room to move you. Hair is one of the most common ones for men. Cutting it short is often a relief, not a loss.</p>',
+        whyItMatters: 'Confidence in your hair compounds the way a great cut compounds.',
+        keyInsight: 'Wear the cut that fits you now. The version of you that does not exist yet cannot wear it.',
+        example: 'A reader cut his thinning hair short. Within weeks people described him as confident. He had not realized the hairstyle was carrying his self-image.',
+        actionStep: 'Look in the mirror today. Pick the cut you have been afraid to ask for. Book it.',
+        checklist: [
+          'Identify what you have been hiding',
+          'Pick a cut that fits the man you are now',
+          'Book the appointment',
+          'Walk in and own it'
+        ],
+        microChallenge: 'Get one fresh photo after the cut. Compare to the Day 1 photos.',
+        reflection: 'What about my hair am I clinging to, and what is that costing me?'
+      },
+      13: {
+        image: 'hair-care-day-13.webp',
+        imageAlt: 'A small notebook with two columns: keep, change.',
+        keyTerms: ['reflection', 'system'],
+        reading:
+            '<h3>Two-week review</h3>'
+          + '<p>Pull up the Day-1 photos. Compare to today. Look at the front, side, and top. Note what is better, what is the same, what surprised you.</p>'
+          + '<p>The review is short. Five minutes. Two columns: keep, change. Most of the keep column will be habits — wash cadence, brushing, the product, the cut. Most of the change column will be one specific thing — a different beard length, a better barber, a different shampoo.</p>'
+          + '<h3>One change at a time</h3>'
+          + '<p>Pick one item to change for the next two weeks. Not five. One. Grooming compounds best with patient single changes.</p>',
+        whyItMatters: 'Two-week intervals are the right cadence to evaluate grooming changes. Anything shorter is noise.',
+        keyInsight: 'The photo does not lie. The mirror sometimes does.',
+        example: 'A reader compared his Day 1 to Day 14 photos and was surprised by visible scalp improvement. He had not noticed in daily mirrors.',
+        actionStep: 'Run the two-column review today. Pick one specific change. Plan to test it for two weeks.',
+        checklist: [
+          'Compare Day 1 and Day 14 photos',
+          'Two columns: keep, change',
+          'Pick one change to test',
+          'Commit to two weeks before re-evaluating'
+        ],
+        microChallenge: 'Ask one trusted person what they have noticed in your grooming this month. Outside eyes catch what you miss.',
+        reflection: 'What pattern across two weeks tells me more than any single mirror moment could?'
+      },
+      14: {
+        image: 'hair-care-day-14.webp',
+        imageAlt: 'A small handwritten grooming routine card.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>The long-term grooming protocol</h3>'
+          + '<p>Two weeks of careful work, condensed onto a single page. Your wash cadence. Your shampoo. Your conditioner. Your daily five-minute style. Your weekly edge work. Your monthly cut. Your quarterly photo. That is the protocol.</p>'
+          + '<p>Most men spend more on products than on the discipline that makes the products matter. You did the opposite. Keep doing it.</p>'
+          + '<h3>The next 90 days</h3>'
+          + '<p>Run the protocol unchanged for 90 days. After three months, sit down with the photos and pick one specific upgrade. Add a serum, or change a product, or move to a different beard length. One change per quarter is plenty. The compounding is in the patience.</p>',
+        whyItMatters: 'A small, calm protocol you run for years beats any miracle product you abandon in two weeks.',
+        keyInsight: 'Most great grooming looks effortless because it is just a small routine, executed without negotiation, for a long time.',
+        example: 'A reader followed the same one-page protocol for two years. His hair, beard, and skin stopped feeling like ongoing problems and started feeling like a maintained asset.',
+        actionStep: 'Write the page today. Save it where you do your morning routine.',
+        checklist: [
+          'Wash cadence + shampoo / conditioner',
+          'Daily 5-minute style',
+          'Weekly edge work',
+          'Monthly cut + quarterly photo'
+        ],
+        microChallenge: 'Pin the page where you shave. Read it every Monday morning for the first 90 days.',
+        reflection: 'Who am I after 14 days of taking my hair seriously without taking it personally — and what does that man maintain for the next year?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     MORNING MASTERY — full 14-day overlay. The original pack runs 21
+     days; Stage 35-C will extend coverage to days 15–21. */
+  'morning-mastery': {
+    coverImage:  'morning-mastery-cover.webp',
+    coverAlt:    'A calm sunrise illuminating a quiet desk before the day begins.',
+    heroImage:   'morning-mastery-hero.webp',
+    heroAlt:     'A still morning workspace lit by soft early sunlight.',
+    overviewLong:
+        'The first hour of your day sets the trajectory of every hour that follows. Most men hand that hour over to their phone, to their inbox, to other people\'s urgency — and then wonder why the rest of the day never feels like their own. This pack rebuilds the morning, one calm habit at a time.\n\n'
+      + 'You will not become a different person by Day 7. You will become the same person with three or four habits that quietly raise the floor of every day. By Day 14 you will have a working morning protocol you can hold without willpower. The goal is not extreme. The goal is repeatable — for years.',
+    outcomes: [
+      'A fixed wake time you hold even on tired days',
+      'A clean 30-minute screen-free start to the day',
+      'A short journaling and intention practice',
+      'A daily morning movement habit',
+      'A complete morning protocol you can run on autopilot'
+    ],
+    howToUse: 'One small habit per day, layered. Do not skip ahead. The order matters — each later habit depends on the earlier ones being in place. Measure consistency, not intensity.',
+    dayOverlays: {
+      1: {
+        image: 'morning-mastery-day-01.webp',
+        imageAlt: 'A clean bedside table with a soft alarm and no phone.',
+        keyTerms: ['discipline', 'routine'],
+        reading:
+            '<h3>Anchor the wake time</h3>'
+          + '<p>Most morning routines fail before they begin because the wake time is negotiable. You set the alarm for 6:00 and then move it to 6:30 and then to 7:15 and then quietly decide that mornings are not really your thing. The fix is not motivation. The fix is removing the negotiation.</p>'
+          + '<p>Tonight, set the alarm for 6:00 and put the phone across the room. The single design move — phone out of reach — does almost all the work. You cannot snooze without standing up. By the time you are standing, the hardest decision of the morning is already behind you.</p>'
+          + '<h3>Why 6 AM specifically</h3>'
+          + '<p>Six AM is not magic. What matters is that the wake time is fixed, repeatable seven days a week (with at most a 30-minute weekend buffer), and early enough to give you a real first hour before the world starts asking for things. If 6 is unrealistic, pick 6:30. The number matters less than the consistency.</p>',
+        whyItMatters: 'Anchoring your wake time anchors every other habit downstream. Without it, every other morning practice drifts.',
+        keyInsight: 'Discipline is the architecture of the morning. Motivation is the weather.',
+        example: 'A founder put his phone in the bathroom at night for 30 days. He never snoozed once during that month. Three years later, the same habit was still in place.',
+        actionStep: 'Tonight, set the alarm for 6:00 (or your chosen fixed time). Put the phone across the room. Do not negotiate when it rings tomorrow.',
+        checklist: [
+          'Choose your fixed wake time',
+          'Set the alarm tonight',
+          'Place the phone across the room',
+          'Do not snooze tomorrow morning'
+        ],
+        microChallenge: 'Tonight, write down on paper what you want to do in the first 30 minutes tomorrow. Then sleep.',
+        reflection: 'What has been keeping me from owning my mornings — and is the cost still worth it?'
+      },
+      2: {
+        image: 'morning-mastery-day-02.webp',
+        imageAlt: 'A shower with steam and cold light from a window.',
+        keyTerms: ['discipline', 'recovery'],
+        reading:
+            '<h3>The 30-second cold finish</h3>'
+          + '<p>Cold exposure has become a marketing category, but the practice itself is simple and almost free. At the end of your shower, turn the water as cold as it goes for 30 seconds. Breathe through it. Do not stop early. That is the practice.</p>'
+          + '<p>What you train is not just cold tolerance. You train the small decision to stay in discomfort when your body wants out. That muscle transfers to almost every important domain — focus, training, hard conversations, finishing the last paragraph of a draft. The 30 seconds is the rep.</p>'
+          + '<h3>What it actually does</h3>'
+          + '<p>Acute cold raises noradrenaline, sharpens alertness, and lowers cortisol response to later stressors in the day. You will feel notably more alert for an hour after. That alertness lands directly on whatever you do next — which, in a real morning, is your first work block.</p>',
+        whyItMatters: 'You are training a small, daily choice to stay in discomfort on purpose. Almost everything else compounds from that choice.',
+        keyInsight: 'The point is not the cold. The point is the choice.',
+        example: 'A reader added the 30-second cold finish to his daily shower. Within two weeks he noticed his first work hour was sharper. Within three months, hard conversations felt smaller.',
+        actionStep: 'End every shower today and tomorrow with 30 cold seconds. No negotiation. No stopping early.',
+        checklist: [
+          'Normal shower as usual',
+          'Final 30 seconds: water as cold as it goes',
+          'Breathe through it; do not hold breath',
+          'Step out and dry off immediately'
+        ],
+        microChallenge: 'Time yourself. The full 30 seconds is non-negotiable; that is the whole practice.',
+        reflection: 'Where else in my day am I quietly negotiating my way out of small discomfort?'
+      },
+      3: {
+        image: 'morning-mastery-day-03.webp',
+        imageAlt: 'A small open notebook beside a black coffee on a still desk.',
+        keyTerms: ['reflection', 'discipline'],
+        reading:
+            '<h3>Five minutes on paper</h3>'
+          + '<p>Most men do not have a clear thought until late in the day, after the noise has begun. A short morning journaling practice flips the order. Five minutes on paper before any input — no phone, no email, no music — and the day starts with your voice instead of someone else\'s.</p>'
+          + '<p>The structure can be one of three things: free-write whatever is on your mind, answer a single prompt ("what do I most want to be true at the end of today?"), or write a short morning page about how you actually feel. None of it is for an audience. It is for clarity.</p>'
+          + '<h3>Why paper</h3>'
+          + '<p>Typing is too fast. Phone notes are too contaminated. Paper slows you down enough that the thought has to land. The friction is part of the practice.</p>',
+        whyItMatters: 'The first 5 minutes of writing reveal more about what is actually on your mind than the next 5 hours of doing.',
+        keyInsight: 'Writing is how thinking happens. Most of us mistake activity for thought.',
+        example: 'A consultant journaled for 5 minutes daily for a month and identified two recurring concerns he had been avoiding. Both turned out to be the most leveraged moves of his quarter.',
+        actionStep: 'Tomorrow morning, sit with a notebook and a pen for 5 minutes before any screen. Write whatever shows up.',
+        checklist: [
+          'Have notebook and pen ready tonight',
+          'No phone for the first 5 minutes',
+          'Write freely; do not edit',
+          'Underline one line that stands out'
+        ],
+        microChallenge: 'After the five minutes, read your underline aloud. Notice what it tells you.',
+        reflection: 'What thought keeps showing up in my morning writing that I have not yet acted on?'
+      },
+      4: {
+        image: 'morning-mastery-day-04.webp',
+        imageAlt: 'A phone face down on a table beside a still window.',
+        keyTerms: ['discipline', 'system'],
+        reading:
+            '<h3>Protect the first 30 minutes</h3>'
+          + '<p>Your phone is engineered to capture the most attentive minutes you have. Those are the first 30. Today you take them back. Phone face-down, in another room, or on a setting that physically does not light up until you choose to engage.</p>'
+          + '<p>The first urge to check is the urge to skip the work you set up the night before. Notice the urge. Do not act on it. The work — the journaling, the movement, the planning — happens because the phone is not there to interrupt it.</p>'
+          + '<h3>What the 30 minutes contain</h3>'
+          + '<p>Wake. Cold shower finish. Five minutes of journaling. Ten minutes of movement (tomorrow\'s lesson). Water. Plan the day. Done. Thirty minutes is plenty. The phone joins you after, not during.</p>',
+        whyItMatters: 'How the first 30 minutes are spent shapes the entire neurological state of the next 8 hours.',
+        keyInsight: 'You either run your morning, or someone else runs it for you.',
+        example: 'A reader kept his phone in another room for two weeks. He realized his anxiety levels were directly correlated with how early he checked it. The phone moved permanently to the kitchen.',
+        actionStep: 'Tonight, decide where the phone will live during the first 30 minutes of tomorrow. Do not change the decision in the morning.',
+        checklist: [
+          'Pick the phone\'s "home" for the first 30 minutes',
+          'Make sure it is not within arm\'s reach',
+          'Turn off the lock screen vibration',
+          'Notice the urge to check; do not act on it'
+        ],
+        microChallenge: 'For the next 7 days, do not open any app before 30 minutes after waking. Track honest compliance.',
+        reflection: 'How different does my day feel when it starts completely on my own terms?'
+      },
+      5: {
+        image: 'morning-mastery-day-05.webp',
+        imageAlt: 'A small home workout space lit by morning light.',
+        keyTerms: ['routine', 'momentum'],
+        reading:
+            '<h3>Ten minutes of movement</h3>'
+          + '<p>Movement generates energy. It does not consume it. Most men wait to feel like training and so they never train; the rule for the next two weeks is that you move first and feel later.</p>'
+          + '<p>The practice is small. Ten minutes. Any form. A short walk outside. A few sets of push-ups and squats. A simple yoga flow. The format matters less than the time stamp — before 7am, before the day has a chance to negotiate.</p>'
+          + '<h3>Why morning movement specifically</h3>'
+          + '<p>Morning movement raises body temperature, increases morning cortisol in the right way (priming alertness), and shifts your nervous system from sleep mode into action mode. By the time you sit down for your first real work block, you are awake in the way your body needs to be awake.</p>',
+        whyItMatters: 'You do not need more time to train. You need a smaller, daily, non-negotiable amount of movement that compounds.',
+        keyInsight: 'Energy follows action. Almost never the other way around.',
+        example: 'A coach started 10 morning minutes of push-ups and squats. He skipped them three times in 90 days. His afternoon energy was unrecognizable.',
+        actionStep: 'Pick the movement format you will run tomorrow morning. Set out clothes or equipment tonight.',
+        checklist: [
+          'Pick the format (walk, calisthenics, yoga)',
+          'Set out clothes or gear the night before',
+          'Move within the first 30 minutes of waking',
+          'Minimum 10 minutes — do not skip'
+        ],
+        microChallenge: 'On a low-energy day, halve the time but do not skip. Two minutes counts; zero minutes is a broken chain.',
+        reflection: 'What would it mean if physical energy were something I created rather than waited for?'
+      },
+      6: {
+        image: 'morning-mastery-day-06.webp',
+        imageAlt: 'A calm desk with one sentence written on a paper note.',
+        keyTerms: ['reflection', 'execution'],
+        reading:
+            '<h3>One sentence intention</h3>'
+          + '<p>Before reacting to the world, decide what today is for. One clear intention beats a long task list because it gives every other action a direction. The intention is not a goal; it is a frame.</p>'
+          + '<p>The frame might be a result ("ship the first draft today"), a state ("calm and present in every conversation"), or a relationship ("be the calm one when my team is anxious"). Pick what fits today. Write it on paper. Read it once mid-morning.</p>'
+          + '<h3>What this changes</h3>'
+          + '<p>You will start noticing that a day with one written intention has a backbone the day without it lacks. Decisions get easier; small irritations matter less; the end of the day has a clearer measure of success.</p>',
+        whyItMatters: 'A day without a written intention is run by the loudest input. With one, you have a quiet anchor to return to.',
+        keyInsight: 'The intention is the lens for the day, not the to-do list.',
+        example: 'A founder wrote one sentence each morning for a quarter. His Sunday review felt completely different from quarters past — like he had actually been somewhere.',
+        actionStep: 'Tomorrow morning, write the one sentence on paper before any screen. Read it again at lunch.',
+        checklist: [
+          'Write the sentence before checking anything',
+          'Make it specific enough to act on',
+          'Put it where you will see it midday',
+          'Re-read it at 1pm'
+        ],
+        microChallenge: 'Tonight, score the intention 1–10 on whether you held it. Calmly. Not self-critically.',
+        reflection: 'What do I want today to mean when I look back on it tonight?'
+      },
+      7: {
+        image: 'morning-mastery-day-07.webp',
+        imageAlt: 'A small notebook open to a weekly review entry.',
+        keyTerms: ['reflection', 'momentum'],
+        reading:
+            '<h3>Week one review</h3>'
+          + '<p>Discipline is not proved on one good morning. It is proved on seven. Today you sit down for 10 minutes and look honestly at where you held and where you did not.</p>'
+          + '<p>Score yourself 1–7 on consistency for each habit so far: wake time, cold finish, journaling, phone-free 30 minutes, movement, intention. Mark the one that was hardest. That is the bottleneck for week two.</p>'
+          + '<h3>What the data tells you</h3>'
+          + '<p>Almost always, one habit will score significantly lower than the others. That is the habit to focus on next week. Do not try to fix everything at once. Pick the bottleneck. Improve it 30%. Reassess at the end of week two.</p>',
+        whyItMatters: 'Compounding comes from honest weekly reviews, not from extraordinary days.',
+        keyInsight: 'Most habits die quietly in the gap between week one and week two. The review closes the gap.',
+        example: 'A reader scored himself 4/7 on movement at the end of week one and 7/7 at the end of week two — after one calendar change that put the movement block first.',
+        actionStep: 'Block 10 minutes tonight. Score each habit 1–7. Pick the one habit to fix next week.',
+        checklist: [
+          'Score each habit honestly',
+          'Mark the bottleneck',
+          'Choose one specific change for next week',
+          'Take a real evening off after the review'
+        ],
+        microChallenge: 'Write one sentence to yourself about how week one actually felt — not how you hope it felt.',
+        reflection: 'What did completing this first week honestly reveal about my relationship with consistency?'
+      },
+      8: {
+        image: 'morning-mastery-day-08.webp',
+        imageAlt: 'A non-fiction book open beside a calm morning light.',
+        keyTerms: ['leverage', 'consistency'],
+        reading:
+            '<h3>Ten pages a day</h3>'
+          + '<p>Ten pages a day is more than 3,600 pages a year. That is roughly 15 books. The men who keep growing in their 30s and 40s are almost always reading every single morning. The men who plateau usually stopped reading at some point and replaced it with feeds.</p>'
+          + '<p>Pick a book. Non-fiction. Keep it physical, beside the bed. Ten pages, before any screen. The morning brain reads better than the evening one — most reading you do in the morning lands twice as deep.</p>'
+          + '<h3>How to choose the book</h3>'
+          + '<p>Pick books slightly outside your current expertise. Books inside your current field are research; books slightly outside are how you compound. Both have value; the second is what most operators skip.</p>',
+        whyItMatters: 'Reading is the cheapest, longest-compounding habit available to modern operators.',
+        keyInsight: 'Leaders are readers. Not because they have to be, but because they cannot help it.',
+        example: 'A reader committed to 10 pages every morning for 18 months. He finished 30 books. He could feel the difference in conversations by month three.',
+        actionStep: 'Pick the book today. Place it on the nightstand. Read 10 pages tomorrow morning before any screen.',
+        checklist: [
+          'Choose a non-fiction book slightly outside your field',
+          'Keep it physical, by the bed',
+          '10 pages every morning',
+          'Underline one line per session'
+        ],
+        microChallenge: 'On day 7 of reading, write down the most useful line from the week. Save it.',
+        reflection: 'What would change if I became someone who learns something meaningful every single day?'
+      },
+      9: {
+        image: 'morning-mastery-day-09.webp',
+        imageAlt: 'A glass of water on a clean countertop in morning light.',
+        keyTerms: ['recovery', 'routine'],
+        reading:
+            '<h3>Water before coffee</h3>'
+          + '<p>Your body loses water overnight. Most men start the day mildly dehydrated and then add caffeine — which mildly dehydrates further. The fix is small and free: 500ml of water before the first coffee.</p>'
+          + '<p>Tonight, fill a glass and put it on the nightstand. Drink it before doing anything else. The act takes 30 seconds; the difference is noticeable in alertness, headaches, and how the first coffee actually feels.</p>'
+          + '<h3>The 500ml rule</h3>'
+          + '<p>Five hundred millilitres is roughly two standard glasses. You do not need to measure it. You need to drink it before the coffee, every morning. The order matters.</p>',
+        whyItMatters: 'Hydration is the cheapest cognitive intervention available. Almost no one does it consistently.',
+        keyInsight: 'Drink before you are thirsty. Thirst is already a deficit.',
+        example: 'A user added the bedside-water rule and within a week his first-hour focus had measurably improved. He had not realized how dehydrated his mornings were.',
+        actionStep: 'Tonight, fill a 500ml glass and place it on the nightstand. Drink it before coffee.',
+        checklist: [
+          'Fill the glass before bed',
+          'Drink before any coffee or tea',
+          'Note how the first coffee feels',
+          'Repeat for at least 7 days'
+        ],
+        microChallenge: 'Use a refillable bottle and track water intake for 7 days. Most men under-drink and overestimate.',
+        reflection: 'How does my body respond when I give it what it actually needs first?'
+      },
+      10: {
+        image: 'morning-mastery-day-10.webp',
+        imageAlt: 'A calm man taking slow breaths in soft early light.',
+        keyTerms: ['emotional-regulation', 'recovery'],
+        reading:
+            '<h3>Two minutes of breathing</h3>'
+          + '<p>Controlled breathing is one of the few interventions that directly down-regulates the nervous system within minutes. It lowers cortisol, raises heart-rate variability, and produces a calm alertness most other practices only promise.</p>'
+          + '<p>The protocol today: 4-7-8 breathing. Inhale through the nose for 4 counts. Hold for 7. Exhale slowly through the mouth for 8. Four full cycles. Two minutes total. You can do it before getting out of bed.</p>'
+          + '<h3>What it trains</h3>'
+          + '<p>You are not just calming the morning. You are training a switch. When something hard happens at 2pm, the same breath pattern moves you out of reactivity. Practice in calm conditions; use in hard ones.</p>',
+        whyItMatters: 'Breath is the only autonomic system you can train directly. The leverage is enormous.',
+        keyInsight: 'You cannot focus on a frazzled nervous system. Calm first, work second.',
+        example: 'A reader practiced 4-7-8 for 30 days. By week three, he was using it before hard meetings and noticing his voice steadied within seconds.',
+        actionStep: 'Tomorrow morning, before getting out of bed, run 4 full cycles of 4-7-8 breathing.',
+        checklist: [
+          'Find a calm position',
+          'Inhale 4, hold 7, exhale 8',
+          'Repeat 4 cycles',
+          'Note the state shift'
+        ],
+        microChallenge: 'Use 4-7-8 once during the day before a stressful moment. Note the difference.',
+        reflection: 'Where else in my life could two minutes of deliberate control make a significant difference?'
+      },
+      11: {
+        image: 'morning-mastery-day-11.webp',
+        imageAlt: 'A small evening notebook with tomorrow’s top three priorities.',
+        keyTerms: ['system', 'reflection'],
+        reading:
+            '<h3>Plan the night before</h3>'
+          + '<p>Winning mornings are built the evening before. Five minutes of intentional planning eliminates the decision fatigue that steals focus from your most important first hour.</p>'
+          + '<p>Tonight, before bed, write tomorrow\'s top three priorities. Set out anything you will need in the morning: clothes, journal, water glass. The morning becomes mechanical; you stop spending will on small decisions.</p>'
+          + '<h3>Three is the right number</h3>'
+          + '<p>Fewer than three feels like procrastination. More than five feels like overwhelm. Three priorities give the morning a backbone without crushing it. If the day produces one of them done well, it is already a real day.</p>',
+        whyItMatters: 'Tomorrow morning is built tonight. Most men miss this and live in reactive mornings forever.',
+        keyInsight: 'The night before is the cheapest piece of leverage you have on your future self.',
+        example: 'A reader wrote three priorities each night for a month. His weekly output doubled — not because he worked more, but because he wasted less morning energy deciding what to work on.',
+        actionStep: 'Tonight, write tomorrow\'s top three priorities on paper. Set out your morning gear.',
+        checklist: [
+          'Write three priorities the night before',
+          'Set out clothes and gear',
+          'Pre-fill the water glass',
+          'Read the priorities first thing in the morning'
+        ],
+        microChallenge: 'For 7 nights, write the priorities at the same time. Make it part of the wind-down ritual.',
+        reflection: 'What morning decisions could be made the night before to fully protect my early energy?'
+      },
+      12: {
+        image: 'morning-mastery-day-12.webp',
+        imageAlt: 'A simple page with three written lines of thanks.',
+        keyTerms: ['reflection', 'emotional-regulation'],
+        reading:
+            '<h3>Three specific lines</h3>'
+          + '<p>Gratitude is not sentiment. It is a cognitive reframe that shifts the brain from threat-scanning to possibility-finding. Research consistently shows it measurably improves focus, resilience, and even immune response.</p>'
+          + '<p>The practice today: write three specific things you are grateful for. Not vague — be precise about what each one is and why it matters. "The text from my brother last night" is real. "My family" is a list-stuffer.</p>'
+          + '<h3>Why specific matters</h3>'
+          + '<p>Vague gratitude is intellectually true and emotionally inert. Specific gratitude lights the brain. The neurology only fires when the detail is concrete enough that the memory plays in your head when you write it.</p>',
+        whyItMatters: 'Specific gratitude is the cheapest mood-regulation intervention available. It costs about two minutes.',
+        keyInsight: 'Specificity is the engine. Vague gratitude does almost nothing.',
+        example: 'A user wrote three specific lines daily for 30 days. He noted that by week three he was noticing more good things in the moment, not just at the journal.',
+        actionStep: 'Tomorrow morning, write three specific things you are grateful for, with one short detail each.',
+        checklist: [
+          'Three lines, specific',
+          'One concrete detail per line',
+          'Read them aloud once after writing',
+          'No editing, no judgment'
+        ],
+        microChallenge: 'For 7 days, never repeat an item. Force yourself to notice fresh things.',
+        reflection: 'What good thing in my life have I been treating as ordinary that actually deserves real attention?'
+      },
+      13: {
+        image: 'morning-mastery-day-13.webp',
+        imageAlt: 'A still room with closed eyes and morning light through curtains.',
+        keyTerms: ['execution', 'discipline'],
+        reading:
+            '<h3>Visualize the day</h3>'
+          + '<p>Olympic athletes do it. Surgeons do it. Top performers do it consistently. Five minutes of vivid mental rehearsal primes your nervous system for the performance you are about to execute. The brain responds to clear internal pictures almost as if they were happening.</p>'
+          + '<p>Today, spend five minutes in silence with your eyes closed. Walk through the most important moment of the day in precise sensory detail. See the room. Feel the temperature. Hear the words you will say. Practice the calm version of yourself you want to be.</p>'
+          + '<h3>What to visualize</h3>'
+          + '<p>Pick the highest-stakes moment of the day, not the smallest. The hard conversation. The pitch. The moment when you usually drift from your plan. Rehearse the version of you that holds the line.</p>',
+        whyItMatters: 'You can either practice mentally before the moment or improvise inside it. Practice is cheaper.',
+        keyInsight: 'Your brain rehearses something. The choice is whether it rehearses on purpose.',
+        example: 'A founder visualized hard pitches for 5 minutes each morning. He felt his nervous system steady measurably by the end of week two. He stopped losing pitches he should have won.',
+        actionStep: 'Tomorrow morning, sit in silence for 5 minutes and rehearse the day\'s hardest moment in detail.',
+        checklist: [
+          'Find a quiet seat',
+          'Eyes closed, 5 minutes',
+          'Pick the hardest moment of the day',
+          'Rehearse the calm version of yourself'
+        ],
+        microChallenge: 'Visualize the moment in first person, not third person. The neurology is stronger when it is "you," not "him."',
+        reflection: 'What is the most important future scene I need to see clearly right now?'
+      },
+      14: {
+        image: 'morning-mastery-day-14.webp',
+        imageAlt: 'A small mirror reflecting morning light on a clean wall.',
+        keyTerms: ['confidence', 'discipline'],
+        reading:
+            '<h3>Identity, said aloud</h3>'
+          + '<p>Reading an affirmation creates a different neural response than speaking it aloud. The auditory feedback loop reinforces the belief. It feels awkward — that is evidence that the rewiring is actually happening.</p>'
+          + '<p>Today, write three identity statements in present tense. Not goals — identities. "I am a man who keeps his word." "I am calm under pressure." "I am the kind of operator who follows through." Speak them aloud three times in front of a mirror.</p>'
+          + '<h3>Why this isn\'t cheesy</h3>'
+          + '<p>The discomfort comes from the gap between who you are now and who you are claiming to be. That gap is the whole point. You are not lying; you are practicing the identity until your behavior catches up.</p>',
+        whyItMatters: 'Identity precedes consistent behavior. You become the kind of man you claim to be — out loud, daily.',
+        keyInsight: 'You are who you are when no one is watching. The mirror is the cheapest practice for that.',
+        example: 'A reader spoke three identity lines daily for 30 days. He noticed by week three that his default reactions were starting to match the statements.',
+        actionStep: 'Write three identity statements today. Speak them aloud three times in front of a mirror tomorrow morning.',
+        checklist: [
+          'Write 3 identity statements (not goals)',
+          'Use present tense',
+          'Speak aloud 3 times to a mirror',
+          'Do not edit them for a full week'
+        ],
+        microChallenge: 'On day 7, score each statement honestly: how often is it true in your behavior? Pick one to deepen.',
+        reflection: 'What kind of man do I need to become to make my goals feel inevitable rather than possible?'
+      },
+      15: {
+        image: 'morning-mastery-day-15.webp',
+        imageAlt: 'A still morning landscape with the sky beginning to brighten.',
+        keyTerms: ['system', 'routine'],
+        reading:
+            '<h3>The full 60-minute protocol</h3>'
+          + '<p>You have practiced every component. Today you sequence them. The full morning is not a list of habits; it is a single continuous protocol, with each piece flowing into the next without negotiation.</p>'
+          + '<p>The recommended sequence: wake at the fixed time, water from the nightstand, two minutes of breathing in bed, journal for five minutes, ten minutes of movement, shower with the cold finish, plan and intention, ten pages of reading, gratitude lines. About sixty minutes total. The exact order matters less than the fact that you have an order at all.</p>'
+          + '<h3>Why the sequence matters</h3>'
+          + '<p>A sequenced protocol removes the small decisions between habits — what next, what now, what if I skip this. The protocol decides. You execute. Over a few weeks, the order becomes invisible and the morning becomes one calm flowing block.</p>',
+        whyItMatters: 'The protocol is the asset. Individual habits drift; sequenced protocols hold.',
+        keyInsight: 'A repeatable order beats willpower every time.',
+        example: 'A founder wrote his exact sequence on a single index card. He kept it on the nightstand for a year. By month three he had stopped reading the card and started executing it from memory.',
+        actionStep: 'Write your morning sequence on one card today. Place it on your nightstand for tomorrow.',
+        checklist: [
+          'Write the full sequence in order',
+          'Time each segment honestly',
+          'Pin it where you wake up',
+          'Run it without modification for 7 days'
+        ],
+        microChallenge: 'On day 1 of running the sequence, time the full protocol. Most men overestimate. Sixty minutes is plenty.',
+        reflection: 'What about the sequence still feels aspirational rather than realistic — and how do I trim it to fit my actual mornings?'
+      },
+      16: {
+        image: 'morning-mastery-day-16.webp',
+        imageAlt: 'A quiet weekend morning with a calm coffee on a porch.',
+        keyTerms: ['consistency', 'recovery'],
+        reading:
+            '<h3>Weekend without rigidity</h3>'
+          + '<p>The weekend trap is binary thinking. You either run the perfect weekday protocol (and resent it) or skip everything (and lose two days of momentum). Neither works. The right answer is a calmer weekend version that protects the spine of the routine.</p>'
+          + '<p>The minimum weekend protocol: fixed wake within a 60-minute buffer. Water. Five minutes of journaling. A short walk. That is the spine. Everything else — movement, reading, cold finish, intention — is optional.</p>'
+          + '<h3>What this preserves</h3>'
+          + '<p>The point is to never reset. A two-day gap requires three days of rebuilding. A weekend with even the minimum spine in place lets you walk into Monday already in rhythm.</p>',
+        whyItMatters: 'Weekend consistency is the single biggest variable that separates morning protocols that last a year from those that last a month.',
+        keyInsight: 'Less, daily, beats more, sometimes.',
+        example: 'A reader ran a 4-piece weekend version for a year. He never had a "restart Monday." His Monday mornings were just continuations.',
+        actionStep: 'Define your weekend spine today on the same card as the weekday version.',
+        checklist: [
+          'Fixed wake (60-minute weekend buffer)',
+          'Water and journaling',
+          'A short walk',
+          'No rebuild required on Monday'
+        ],
+        microChallenge: 'On Saturday, do not check the phone before completing the spine. Test whether the protocol holds without rigidity.',
+        reflection: 'Where am I being either too rigid or too loose on weekends — and what is the calm middle?'
+      },
+      17: {
+        image: 'morning-mastery-day-17.webp',
+        imageAlt: 'A still bedroom with grey morning light through a window.',
+        keyTerms: ['recovery', 'emotional-regulation'],
+        reading:
+            '<h3>Bad-night recovery</h3>'
+          + '<p>Some nights you will not sleep well. The body is tired, the mind is foggy, and the temptation is to skip the whole protocol. That is exactly the wrong move. The protocol is what stabilizes a bad day.</p>'
+          + '<p>On a bad-night morning, run the minimum spine — wake, water, journaling, a short walk — and skip the harder pieces. Two minutes of breathing replaces the harder breathing exercise. A walk replaces the workout. Reading is shorter. The structure stays; the intensity drops.</p>'
+          + '<h3>The recovery rule</h3>'
+          + '<p>Never zero. A bad-night morning of even 20% of the protocol holds the chain. A skipped morning breaks it. Most men learn this only after rebuilding the protocol three or four times.</p>',
+        whyItMatters: 'Consistency is held in the bad days, not in the easy ones.',
+        keyInsight: 'Never zero is the protocol that lasts.',
+        example: 'A reader had a six-day stretch of bad sleep during a stressful month. He ran the minimum spine every morning. He did not have to rebuild after.',
+        actionStep: 'Define your bad-night minimum today on the same card. Use it the next time sleep is short.',
+        checklist: [
+          'Define the bad-night minimum',
+          'Pre-decide what gets dropped',
+          'Pre-decide what stays no matter what',
+          'Never zero'
+        ],
+        microChallenge: 'On the next bad-night morning, time the minimum protocol. Most men can run it in under 20 minutes.',
+        reflection: 'What part of my recovery is reactive when it should be pre-decided?'
+      },
+      18: {
+        image: 'morning-mastery-day-18.webp',
+        imageAlt: 'A clean desk arranged for one focused work block.',
+        keyTerms: ['execution', 'momentum'],
+        reading:
+            '<h3>The handoff to deep work</h3>'
+          + '<p>The protocol is not the destination. It is the runway. The real work happens after — in the first deep-work block of the day. Today you design the handoff: how the protocol ends and how the first work block begins, with no gap.</p>'
+          + '<p>The handoff is small but specific. Close the journal. Stand. Walk to the workspace. Open the one document or task that matters most. Start a timer. The protocol\'s last action and the work block\'s first action sit two seconds apart.</p>'
+          + '<h3>Why the gap matters</h3>'
+          + '<p>Most men finish a beautiful morning protocol and then drift into email, slack, or the kitchen. The gap kills the entire benefit. The handoff removes the gap by removing the decision.</p>',
+        whyItMatters: 'A great morning that produces nothing in the first work block was theater. The handoff is what turns the protocol into output.',
+        keyInsight: 'Two seconds between protocol and first work block. That is the rule.',
+        example: 'A founder placed his laptop, open to the right document, on his desk every night. He walked from the journal to the laptop without checking anything. His first block was working by 7:15 daily.',
+        actionStep: 'Define the handoff sequence today. Set the workspace tonight so tomorrow\'s handoff is mechanical.',
+        checklist: [
+          'Last protocol action defined',
+          'First work-block action defined',
+          'Workspace pre-set the night before',
+          'Two seconds, no negotiation'
+        ],
+        microChallenge: 'For one week, do not check any app between protocol and first work block. Test whether the gap really disappears.',
+        reflection: 'Where am I losing the benefit of a good morning by drifting between the routine and the work?'
+      },
+      19: {
+        image: 'morning-mastery-day-19.webp',
+        imageAlt: 'A page of identity statements being reviewed in soft light.',
+        keyTerms: ['confidence', 'reflection'],
+        reading:
+            '<h3>Review the identity</h3>'
+          + '<p>Twelve days ago, on Day 14, you wrote three identity statements. Today you sit with them. Read them aloud. Note where they have become true in behavior and where they are still aspirational.</p>'
+          + '<p>The honest review is not a grade. It is a calibration. The statements that have become true are evidence of identity. The ones still aspirational tell you what next month\'s morning is for.</p>'
+          + '<h3>Update the statements</h3>'
+          + '<p>Refine the language. Drop a statement that no longer matters. Add one that emerged. The identity work is dynamic. The statements grow with you.</p>',
+        whyItMatters: 'Identity is the substrate underneath every habit. Reviewing it keeps the protocol pointed at the man you are becoming.',
+        keyInsight: 'You become the version of you you practice — out loud, on purpose.',
+        example: 'A reader\'s Day 14 statement was "I am calm under pressure." On Day 19 he noted it was now true in three specific situations from the past two weeks. He updated it to a sharper version.',
+        actionStep: 'Read your Day 14 statements today. Mark each one true or aspirational. Refine the language.',
+        checklist: [
+          'Re-read the original three',
+          'Mark each true or aspirational',
+          'Refine the wording',
+          'Speak the updated versions aloud once'
+        ],
+        microChallenge: 'Write one specific behavior from the past two weeks that proves one of the statements is becoming true.',
+        reflection: 'Who am I three weeks into this work that I was not three weeks ago — and what does that man practice next?'
+      },
+      20: {
+        image: 'morning-mastery-day-20.webp',
+        imageAlt: 'A calendar showing a clean 30-day morning rhythm.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>Design the next 30 days</h3>'
+          + '<p>You have built the protocol. You have practiced it. You have reviewed the identity. Today you design the next 30 days — not the next 30 morning routines, but the rhythm that holds the protocol while life continues.</p>'
+          + '<p>On a single page: the protocol summary, the bad-night minimum, the weekend spine, three identity statements, and one intentional growth area for the month — a habit to add, an intensity to raise, a tool to drop.</p>'
+          + '<h3>One growth area, not five</h3>'
+          + '<p>Most morning routines die from over-engineering. One added challenge per 30 days is enough. Pick something small enough that you will actually do it on a tired Wednesday.</p>',
+        whyItMatters: 'A written 30-day plan turns the protocol from a 21-day exercise into a years-long system.',
+        keyInsight: 'Pick one growth area. Make it boring enough to actually do.',
+        example: 'A reader added one item every 30 days for a year. He ended with a protocol that included reading, training, journaling, breathing, and a long Sunday walk — none of which had been there a year prior.',
+        actionStep: 'Write the 30-day plan on one page today. Pick the one growth area for next month.',
+        checklist: [
+          'Protocol summary',
+          'Bad-night minimum',
+          'Weekend spine',
+          'One growth area for next month'
+        ],
+        microChallenge: 'Place the page on the wall above your nightstand. Read it every Sunday for the next four weeks.',
+        reflection: 'What is the smallest meaningful upgrade I can sustain across the next 30 days?'
+      },
+      21: {
+        image: 'morning-mastery-day-21.webp',
+        imageAlt: 'A still moment of contentment in a morning ritual.',
+        keyTerms: ['system', 'momentum', 'discipline'],
+        reading:
+            '<h3>Run the full protocol — and lock it in</h3>'
+          + '<p>Twenty-one days ago, the morning belonged to your phone, your inbox, and other people\'s urgency. Today the morning is yours. The protocol is sequenced. The identity is becoming truer in behavior. The next 30 days are designed.</p>'
+          + '<p>Run the full protocol today. Every element, in sequence, without skipping. Notice what feels easy, what is still effortful, and what has become the new default. This is not a graduation; it is a commitment to keep running the loop.</p>'
+          + '<h3>The lifetime morning</h3>'
+          + '<p>The protocol you have built is not a 21-day experiment. It is the operating system of every important morning in your life from here on. Most men spend their lives looking for a productivity trick. You spent 21 days building one that compounds for decades.</p>',
+        whyItMatters: 'The compounding is in the next year, not in the 21 days. The 21 days are the deposit. The compounding is the interest.',
+        keyInsight: 'A morning you can repeat for ten years is worth more than any single brilliant morning.',
+        example: 'A reader completed the 21 days and never went back. Three years later, the same protocol — slightly refined, never replaced — is still running. His mornings are calm; his days work.',
+        actionStep: 'Run the full protocol today. Tomorrow morning, run it again. Then run it for the rest of the year.',
+        checklist: [
+          'Full sequence executed today',
+          'Tomorrow\'s alarm set, phone away',
+          'The 30-day plan on the wall',
+          'Promise: no redesign for 30 days'
+        ],
+        microChallenge: 'Tonight, write one paragraph to your future self. Tell him why this protocol exists. He will need to read it on a slow Wednesday in month six.',
+        reflection: 'Who am I after 21 days that I was not before — and what would the next 21 days look like if I never returned to who I was?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     BUSINESS IDEA PACK — full 14-day overlay. Companion to Side Business
+     Sprint: this pack is for the earlier "do I even have an idea worth
+     pursuing" phase. Side Business Sprint is for the "I have an idea —
+     now go validate and sell it" phase. */
+  'business-idea': {
+    coverImage:  'business-idea-cover.webp',
+    coverAlt:    'A notebook and a laptop on a creative workspace.',
+    heroImage:   'business-idea-hero.webp',
+    heroAlt:     'A focused desk arranged for early-stage business thinking.',
+    overviewLong:
+        'Most men do not start a business because they cannot decide which idea is the one. They keep four or five ideas alive in the back of their head, do a little research on each, and never put weight behind any of them. The result feels like progress and produces nothing.\n\n'
+      + 'This pack is fourteen days of structured idea work. By Day 14, you will have one clear idea that you have stress-tested with research, conversations, and a small market check. You will either have something worth pursuing in Side Business Sprint — or you will have killed a bad idea cleanly so you can move on. Both are wins.',
+    outcomes: [
+      'A clear method for evaluating any business idea against your life',
+      'A single idea chosen with reasons you can defend',
+      'A real understanding of your target customer in their own language',
+      'A small market check that tells you whether the idea is worth pursuing',
+      'A decision: go, kill, or pivot — made calmly, with data'
+    ],
+    howToUse: 'One lesson per day. The hardest day is Day 3, when you commit to a single idea. Do not skip it. If you cannot decide by Day 3, the rest of the pack will produce noise instead of signal.',
+    dayOverlays: {
+      1: {
+        image: 'business-idea-day-01.webp',
+        imageAlt: 'A blank notebook page beside a single pen.',
+        keyTerms: ['execution', 'reflection'],
+        reading:
+            '<h3>Stop collecting ideas</h3>'
+          + '<p>You probably have several business ideas in your head right now. Today, write all of them down. Every half-formed thought. The one you have been chewing on for three years. The one you mentioned at dinner last week. All of them on one page.</p>'
+          + '<p>The exercise produces two things. First, the relief of getting them out of your head. Second, an honest count. Most men think they have many ideas; the actual list is usually three or four.</p>'
+          + '<h3>What to look for</h3>'
+          + '<p>Read the list. Which ones excite you when you read them, and which ones feel like obligations you should pursue? The excitement matters — not as the deciding factor, but as one of the inputs.</p>',
+        whyItMatters: 'You cannot evaluate ideas that are still floating in your head. The page is where evaluation begins.',
+        keyInsight: 'Ideas that survive a written list are stronger than ideas that survive only in memory.',
+        example: 'A reader thought he had 7 business ideas. On paper, he had 4. Two were duplicates and one was a hobby. The list got clearer before he changed anything.',
+        actionStep: 'Spend 15 minutes writing every business idea you have, no matter how rough. One page. No editing.',
+        checklist: [
+          'Open a blank page',
+          'Write every idea, however vague',
+          'Mark the ones that excite you',
+          'Mark the ones that feel like obligations'
+        ],
+        microChallenge: 'Read the list aloud. Notice which idea you stumble on. That is data.',
+        reflection: 'Which of my ideas have I been keeping alive because I am afraid to choose?'
+      },
+      2: {
+        image: 'business-idea-day-02.webp',
+        imageAlt: 'A clean workspace with a single focused notebook.',
+        keyTerms: ['leverage', 'positioning'],
+        reading:
+            '<h3>The honest filter</h3>'
+          + '<p>Today you put each idea through a simple filter with three questions. Do I have a real edge here — skill, network, or unique experience? Can I see myself working on this for two years on hard weeks? Can I picture the first customer and what they pay for?</p>'
+          + '<p>Score each idea 1–10 on each question. Most ideas will fail on at least one. That is fine — failing the filter cheaply is exactly the point. The ideas that score 7+ across all three are worth pursuing seriously.</p>'
+          + '<h3>Why two years</h3>'
+          + '<p>Most early-stage businesses take longer than people plan for. The two-year filter is honest about the timeline. Picking an idea you would walk away from in six months guarantees the business never compounds.</p>',
+        whyItMatters: 'The filter catches the ideas that look great on paper and produce nothing in practice.',
+        keyInsight: 'You are not picking the best idea. You are picking the best idea for you.',
+        example: 'A reader had three 8/10 ideas and a 5/10 idea he was excited about. He almost picked the 5. The filter saved him 18 months.',
+        actionStep: 'Score every idea today on the three filter questions. Pick the top two for Day 3.',
+        checklist: [
+          'Score each idea 1–10 on edge',
+          'Score each idea 1–10 on two-year willingness',
+          'Score each idea 1–10 on customer clarity',
+          'Mark the top two'
+        ],
+        microChallenge: 'Be especially honest about the edge. If your edge is "I really want to," that is enthusiasm, not edge.',
+        reflection: 'Which of my ideas am I overweighting because they sound impressive in conversation?'
+      },
+      3: {
+        image: 'business-idea-day-03.webp',
+        imageAlt: 'A single sentence written on a clean page.',
+        keyTerms: ['execution', 'momentum'],
+        reading:
+            '<h3>Pick the one</h3>'
+          + '<p>Today is the hard day. You pick one idea. Not your top two. One. And you commit to working only on that idea for the next 11 days.</p>'
+          + '<p>The decision is not permanent. If the idea fails its checks in the next 11 days, you kill it and come back. But for now, the choice is binary: pick one or stay stuck. Most men stay stuck.</p>'
+          + '<h3>What to write</h3>'
+          + '<p>One sentence: who it is for and what change it produces. Put it on paper. Read it once. If reading it feels uncomfortable, that probably means it is specific enough.</p>',
+        whyItMatters: 'Until you pick one, every day produces shallow effort across all of them.',
+        keyInsight: 'A wrong decision made fast can be corrected in days. An undecided idea wastes years.',
+        example: 'A user picked his second-favorite idea on Day 3. By Day 11 it was clearly a fit; by Day 30 he had his first paying customer. His "favorite" idea would have failed the customer filter.',
+        actionStep: 'Pick one idea today. Write the one-sentence promise. Close every other idea tab.',
+        checklist: [
+          'Choose one idea',
+          'Write the one-sentence promise (who + change)',
+          'Close tabs for every other idea',
+          'Tell one person what you decided'
+        ],
+        microChallenge: 'Say the one sentence out loud, three times. Notice the words you stumble on; those are still vague.',
+        reflection: 'Which idea am I most afraid to close — and what would change if I closed it today?'
+      },
+      4: {
+        image: 'business-idea-day-04.webp',
+        imageAlt: 'A simple notebook with five names listed underneath.',
+        keyTerms: ['audience', 'reflection'],
+        reading:
+            '<h3>Real customers, by name</h3>'
+          + '<p>You have a target customer in your head. Today, write down five real names of people who would fit. Not "small business owners." Five specific people you could text this week.</p>'
+          + '<p>If you cannot name five, the idea\'s audience is too abstract. That is information. Narrow the audience until you can name five — even if it means making the niche smaller.</p>'
+          + '<h3>Why five</h3>'
+          + '<p>Five names give you the first five conversations of your validation phase. They give you the first words of your sales page. They give you the first five "no, but here is why" answers that sharpen the offer.</p>',
+        whyItMatters: 'A real customer base starts with five real people, not a thousand imagined ones.',
+        keyInsight: 'If you cannot name five, the audience is still too vague to act on.',
+        example: 'A reader thought his audience was "freelance designers." When he tried to name five, he could only think of one. He narrowed the niche; the names came easily after.',
+        actionStep: 'Write five names today. If you cannot, narrow the audience until you can.',
+        checklist: [
+          'Open a new note',
+          'Write five real names',
+          'Note how each fits your audience',
+          'Note who you could realistically text this week'
+        ],
+        microChallenge: 'Pick the easiest name on the list to text. You will reach out to them on Day 6.',
+        reflection: 'Where am I being abstract because the specifics feel scary?'
+      },
+      5: {
+        image: 'business-idea-day-05.webp',
+        imageAlt: 'A small whiteboard with a draft offer sketched on it.',
+        keyTerms: ['offer', 'positioning'],
+        reading:
+            '<h3>The rough offer</h3>'
+          + '<p>An idea is not an offer. An <span class="pp-term" data-term="offer">offer</span> is a specific outcome, a price, and a way to start. Today you write the first rough version. Three lines: the outcome you produce, the price, the way someone starts.</p>'
+          + '<p>The first version will be ugly. That is fine. You are not building the final offer; you are giving yourself something concrete enough to discuss with the five names from yesterday. A real conversation about a rough offer beats an imagined conversation about a perfect one.</p>'
+          + '<h3>Price as a hypothesis</h3>'
+          + '<p>The price is a guess. It exists so the conversation has stakes. You will adjust it later. The number matters less than the act of putting one on the page.</p>',
+        whyItMatters: 'Without an offer on paper, conversations about your idea drift. With one, they have to commit to yes or no.',
+        keyInsight: 'A rough offer is a hypothesis. You are testing whether the outcome is buyable.',
+        example: 'A reader wrote a one-line $400 offer that was clearly underpriced. The five conversations he had about it told him exactly what the right price was. He doubled it before launching.',
+        actionStep: 'Write the rough offer in three lines today. Outcome. Price. Way to start.',
+        checklist: [
+          'Write the outcome in plain language',
+          'Set a starter price',
+          'Write the way to start (call, signup, payment link)',
+          'Read it aloud — cut adjectives'
+        ],
+        microChallenge: 'Imagine a buyer says yes today. Write the first message you would send them. That tells you whether the offer is real.',
+        reflection: 'What is the smallest version of this offer that still produces the outcome I promised?'
+      },
+      6: {
+        image: 'business-idea-day-06.webp',
+        imageAlt: 'A phone showing a short respectful outreach message.',
+        keyTerms: ['audience', 'execution'],
+        reading:
+            '<h3>The first five conversations</h3>'
+          + '<p>Today you text three of the five names from Day 4. The message is short and honest. You are working on something small, you would value 15 minutes of their perspective, and you have one specific question: "what does this problem actually cost you right now?"</p>'
+          + '<p>Do not sell. The point is to listen. Take notes in their words. The copy of every page you build in the next year will come straight out of these notes.</p>'
+          + '<h3>Why three, not five</h3>'
+          + '<p>Three is enough to test the message and start learning. The other two you will text after seeing how the first three respond. You will probably tweak the message between batches.</p>',
+        whyItMatters: 'The first conversations are worth more than any amount of research. They tell you whether the problem is real.',
+        keyInsight: 'You are not asking for sales. You are asking for language.',
+        example: 'A reader texted three people and one of them was actively looking for exactly his offer. He landed his first paying customer before he had a website.',
+        actionStep: 'Text three of the five names today with a short, honest, specific message.',
+        checklist: [
+          'Pick three names',
+          'Personalize the first line for each',
+          'Make the ask small (15 minutes)',
+          'Send before the day ends'
+        ],
+        microChallenge: 'If a reply comes in, take notes in their language. Save the file titled "real quotes."',
+        reflection: 'Whose attention am I afraid to ask for, and why?'
+      },
+      7: {
+        image: 'business-idea-day-07.webp',
+        imageAlt: 'A small review notebook open in calm midday light.',
+        keyTerms: ['reflection', 'momentum'],
+        reading:
+            '<h3>Week one review</h3>'
+          + '<p>Stop. Halfway through. Look at what week one produced. The idea. The filter scores. The audience. The rough offer. The first three messages. What is alive? What is already weaker than you thought it would be?</p>'
+          + '<p>The honest review now is the difference between a productive second week and a lost one. Most operators skip the review and discover at Day 13 that they were polishing the wrong thing.</p>'
+          + '<h3>One change for week two</h3>'
+          + '<p>Pick one specific change for week two. Narrow the audience further. Sharpen the offer. Raise the price. Pivot the angle. One change. The rest stays.</p>',
+        whyItMatters: 'A clean weekly review prevents the second week from recycling the first week\'s assumptions.',
+        keyInsight: 'You almost always know the bottleneck honestly in 15 minutes. The hard part is responding to it.',
+        example: 'A reader\'s Week 1 review surfaced that his offer did not actually solve the problem people described. He changed it in Week 2 and started getting yeses.',
+        actionStep: 'Block 15 minutes today. Review the week. Pick one specific change for next week.',
+        checklist: [
+          'Re-read the one-sentence promise',
+          'Re-read the audience list',
+          'Re-read the rough offer',
+          'Pick one specific change'
+        ],
+        microChallenge: 'Take a real evening off after the review. Rest is part of the system.',
+        reflection: 'If I could only fix one thing next week, what is it?'
+      },
+      8: {
+        image: 'business-idea-day-08.webp',
+        imageAlt: 'A page comparing three competing products.',
+        keyTerms: ['positioning', 'leverage'],
+        reading:
+            '<h3>The competitor sketch</h3>'
+          + '<p>Today you spend 30 minutes mapping three competitors. Not to copy them — to position against them. What are they good at? What do they neglect? Where is the gap you are uniquely placed to fill?</p>'
+          + '<p>Competition is information. It tells you the price point the market accepts, the language buyers already understand, and the underserved pocket where a small operator can win.</p>'
+          + '<h3>Find the gap</h3>'
+          + '<p>The gap is rarely the obvious one. Look for the customer complaint that shows up in reviews across multiple competitors. That is your wedge.</p>',
+        whyItMatters: 'You are not building in a vacuum. Understanding the field is the cheapest way to find an angle.',
+        keyInsight: 'You do not need to be better than competitors. You need to be different in a way that matters.',
+        example: 'A reader\'s three-competitor sketch surfaced that none of them offered a clean onboarding call. He made it the centerpiece of his offer.',
+        actionStep: 'Map three competitors today. Write what each is great at, what each neglects, and where your gap is.',
+        checklist: [
+          'Pick three real competitors',
+          'List their strengths',
+          'List their gaps from customer reviews',
+          'Pick the gap you can credibly fill'
+        ],
+        microChallenge: 'Read 10 customer reviews of each competitor. Note the exact phrases customers repeat.',
+        reflection: 'Where is the gap I am uniquely placed to fill, and what evidence do I have for it?'
+      },
+      9: {
+        image: 'business-idea-day-09.webp',
+        imageAlt: 'A clean landing page draft on a laptop screen.',
+        keyTerms: ['offer', 'CTA'],
+        reading:
+            '<h3>The one-page test</h3>'
+          + '<p>Today you build the smallest possible landing page. One page. One offer. One button. The page exists to give a serious buyer enough to say yes and an unserious one a fast exit.</p>'
+          + '<p>Structure: headline names the outcome. Subhead names the audience. Three lines on what is included. Price. CTA button to a calendar link, a payment link, or a typeform. No bio. No "trusted by." If you have a testimonial, one is enough.</p>'
+          + '<h3>Speed over polish</h3>'
+          + '<p>Use a tool you can ship in under two hours. Carrd, Webflow, Notion sites. The goal is a real URL by end of day, not a beautiful page.</p>',
+        whyItMatters: 'A page makes the offer real outside your head. It also forces every fuzzy claim into specific words.',
+        keyInsight: 'A working ugly page beats a beautiful page that does not exist yet.',
+        example: 'A reader shipped his page on Carrd in 90 minutes. Six weeks later, the same page (essentially unchanged) had produced $3,200 in pilot revenue.',
+        actionStep: 'Build the page today. Real URL by end of day. One CTA only.',
+        checklist: [
+          'Pick a no-code tool',
+          'Write the headline last',
+          'One CTA only',
+          'Ship the URL today'
+        ],
+        microChallenge: 'Share the URL with one trusted person and ask "what do you think this is?" — their first guess is your real positioning.',
+        reflection: 'What am I leaving on the page because I am scared to cut it?'
+      },
+      10: {
+        image: 'business-idea-day-10.webp',
+        imageAlt: 'A laptop showing a short list of outreach replies.',
+        keyTerms: ['execution', 'consistency'],
+        reading:
+            '<h3>Send the page to ten people</h3>'
+          + '<p>The page exists. Now it needs traffic. Today you send it to ten people you know who fit the audience. Personalize the first sentence for each. Keep the message short. Ask for their honest first impression, not a sale.</p>'
+          + '<p>Ten is the right number — small enough to actually finish, large enough to learn something. Half will not respond. The other half will tell you whether the page is doing its job.</p>'
+          + '<h3>What you are listening for</h3>'
+          + '<p>You are not listening for "yes, I will buy." You are listening for "I would want this if X was different" or "this isn\'t for me but I know someone who needs it." Both are valuable.</p>',
+        whyItMatters: 'Real responses to a real page beat any amount of imagined customer research.',
+        keyInsight: 'Conversations about a real page convert; conversations about an imagined product do not.',
+        example: 'A reader sent his page to 10 people. Two became customers within a week. Three told him exactly which sentence on the page was confusing.',
+        actionStep: 'Send the page to ten people today with a short personalized message.',
+        checklist: [
+          'Make a list of ten real people',
+          'Personalize the first sentence for each',
+          'Send before the day ends',
+          'Track responses in a simple sheet'
+        ],
+        microChallenge: 'If someone says no, ask one follow-up: "what would have made this a yes?"',
+        reflection: 'Whose attention am I afraid to ask for at this stage, and what is that costing me?'
+      },
+      11: {
+        image: 'business-idea-day-11.webp',
+        imageAlt: 'A simple spreadsheet of small-business basic metrics.',
+        keyTerms: ['system', 'cash-flow'],
+        reading:
+            '<h3>The simple money model</h3>'
+          + '<p>Before going further, you need to know whether the math actually works. Not a full financial model — a simple sheet with five rows. Price per customer. Customers per month at year one. Monthly recurring or one-off. Direct cost per customer. Your time per customer.</p>'
+          + '<p>Run the math at three customer levels: 1, 5, and 20 per month. The picture shows you whether this is a side project, a real business, or a treadmill.</p>'
+          + '<h3>Time is a cost</h3>'
+          + '<p>Most early operators forget to account for their own time. A $500 offer that takes you 20 hours to deliver is a $25/hour offer. Be honest about your time before you commit to delivery.</p>',
+        whyItMatters: 'Math you avoid now is math that surprises you at month nine.',
+        keyInsight: 'Cash flow tells you what the business actually does for your life. Profit on paper does not pay your rent.',
+        example: 'A reader ran the simple math and realized at 20 customers per month he would be working 50 hours just on delivery. He pivoted to a higher-priced, lower-touch version.',
+        actionStep: 'Open a sheet today. Five rows. Run the math at 1, 5, 20 customers per month.',
+        checklist: [
+          'Price per customer',
+          'Customers per month (3 levels)',
+          'Direct cost per customer',
+          'Your time per customer'
+        ],
+        microChallenge: 'Calculate your effective hourly rate at each customer level. Look at it honestly.',
+        reflection: 'Does this business actually produce the kind of life I want, or just the kind of work I want?'
+      },
+      12: {
+        image: 'business-idea-day-12.webp',
+        imageAlt: 'A clean proposal draft on a single page.',
+        keyTerms: ['offer', 'execution'],
+        reading:
+            '<h3>The proposal template</h3>'
+          + '<p>If conversations from Day 6 or Day 10 produced a yes-curious person, you need a proposal you can send within minutes. Today you write the template. One page. Three sections: what you will deliver and by when, what they are responsible for, the price and how to pay.</p>'
+          + '<p>The template means future deals close in minutes, not days. Speed in proposals is a real competitive edge in early-stage business.</p>'
+          + '<h3>What the proposal does for you</h3>'
+          + '<p>It forces you to be honest about scope, timeline, and what you are actually selling. Writing it sharpens the offer more than any amount of brainstorming will.</p>',
+        whyItMatters: 'The gap between yes and starting is where most early deals die. The proposal closes the gap.',
+        keyInsight: 'Speed is a competitive advantage no one can take from you in the early days.',
+        example: 'A reader wrote his template before he had a customer. When the first yes came, he sent the proposal during the same call. The buyer signed before the call ended.',
+        actionStep: 'Write the one-page proposal template today. Save it where you can send it fast.',
+        checklist: [
+          'Deliverables and timeline',
+          'Buyer responsibilities',
+          'Price and how to pay',
+          'One page total'
+        ],
+        microChallenge: 'Imagine sending it to a real buyer. Read it aloud. Cut everything that sounds like filler.',
+        reflection: 'What can I make easier for the buyer so saying yes is the obvious choice?'
+      },
+      13: {
+        image: 'business-idea-day-13.webp',
+        imageAlt: 'A small two-column page: keep / kill.',
+        keyTerms: ['reflection', 'execution'],
+        reading:
+            '<h3>The go-or-kill decision</h3>'
+          + '<p>Two weeks of work has produced data. Today you sit with the data and decide. The honest options are three. Go: the idea passed the checks; the conversations were encouraging; the math works; you commit to Side Business Sprint or the equivalent. Kill: the idea did not survive contact with reality; the customers were vague; the math is bad; you close it cleanly. Pivot: the original idea did not work but a clearer version emerged; the next sprint tests the new version.</p>'
+          + '<p>All three are wins. The worst outcome is to keep the idea on life support, where it consumes attention without producing anything.</p>'
+          + '<h3>How to decide</h3>'
+          + '<p>Write two columns on paper. Reasons to go. Reasons to kill or pivot. Look at the columns. Most of the time the decision is already clear; you have been delaying because saying it out loud feels final.</p>',
+        whyItMatters: 'Clean decisions about ideas are how operators move forward. Slow deaths produce slow operators.',
+        keyInsight: 'Kill it cleanly or commit to it cleanly. Halfway hurts most.',
+        example: 'A reader killed his original idea on Day 13. The clean kill freed him to pursue a different idea — which became a real business within a year.',
+        actionStep: 'Write the two-column page today. Decide. Tell one person what you decided.',
+        checklist: [
+          'Write the two columns honestly',
+          'Look at the data, not the feelings',
+          'Make the decision before the day ends',
+          'Tell someone what you decided'
+        ],
+        microChallenge: 'If you decide to kill, write down what you learned. Killed ideas are paid tuition for future ones.',
+        reflection: 'What am I afraid the decision will say about me, separately from what it says about the idea?'
+      },
+      14: {
+        image: 'business-idea-day-14.webp',
+        imageAlt: 'A small one-page business idea document with a green check.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>The idea document</h3>'
+          + '<p>Whatever you decided yesterday, write it down on a single page. The idea (or the decision to kill it). The audience. The offer. The math. The first five customers. The next concrete step.</p>'
+          + '<p>If you decided to go: this is the brief for Side Business Sprint. Start it tomorrow. If you decided to kill: this is the post-mortem. Save it. The next idea you start will be sharper for it.</p>'
+          + '<h3>What this 14 days has bought you</h3>'
+          + '<p>The asset is not the idea. The asset is the loop — write, filter, choose, narrow, validate, math, decide. You can run that loop on every idea you ever have.</p>',
+        whyItMatters: 'The loop is what makes you the kind of operator who can evaluate ideas calmly for the rest of your life.',
+        keyInsight: 'You are not picking the perfect idea. You are practicing the discipline of picking and committing.',
+        example: 'A reader did this loop on three ideas over a year. The third was the one that worked. The first two were tuition for being able to spot the third.',
+        actionStep: 'Write the one-page idea document today. Schedule the first action of tomorrow.',
+        checklist: [
+          'The idea or the post-mortem',
+          'The audience and offer',
+          'The math at three levels',
+          'The first concrete step tomorrow'
+        ],
+        microChallenge: 'Save the document. Reread it 90 days from now whether or not you started the business.',
+        reflection: 'Who am I after 14 days of taking an idea seriously, and what does that man do next?'
+      }
+    }
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     LOCKED-PACK PREVIEW OVERLAYS — Stage 35-B
+     ─────────────────────────────────────────────────────────────
+     These five packs are coming-soon / locked. The marketplace click
+     handler returns early for locked packs (the toast fires), so day
+     overlays would be invisible work. What users CAN see is the cover
+     image (already in place) and the marketplace card metadata. These
+     entries upgrade the marketplace presentation to a polished preview
+     state without changing access logic. */
+  'financial-blueprint': {
+    coverImage:  'financial-blueprint-cover.webp',
+    coverAlt:    'A budgeting notebook and a calm coffee in soft light.',
+    heroImage:   'financial-blueprint-hero.webp',
+    heroAlt:     'A clean finance setup: notebook, ledger, calm light.',
+    overviewLong:
+        'Most personal-finance failures are not failures of knowledge. They are failures of system — money flowing without a clear plan, decisions made in fragments, savings happening "with whatever is left." Financial Blueprint is a 30-day rebuild of that system, from baseline cash flow to the first $10k saved.\n\n'
+      + 'You will define your real numbers, build a budget that survives a normal week, automate savings, eliminate the small leaks, and develop a calm investing baseline. By Day 30, money becomes infrastructure instead of anxiety.',
+    outcomes: [
+      'A clear picture of your real monthly income, expenses, and leaks',
+      'A working budget that is simple enough to follow for years',
+      'Automated savings on a schedule you do not have to think about',
+      'A defined emergency reserve plan',
+      'The first $10k saved — or the clear plan to get there in 90 days'
+    ],
+    howToUse: 'Pro-only pack. The marketplace shows the preview; the full 30-day lessons unlock with Empire Pro.'
+  },
+  'mindset-reboot': {
+    coverImage:  'mindset-reboot-cover.webp',
+    coverAlt:    'A figure walking at dawn through clean architecture.',
+    heroImage:   'mindset-reboot-hero.webp',
+    heroAlt:     'A still page of journaling and a calm pen.',
+    overviewLong:
+        'Limiting beliefs are not motivational decorations. They are the operating system underneath the behavior. Mindset Reboot is a 14-day rewrite of the most common ones — about money, about ability, about identity — through structured journaling, evidence collection, and small reinforcing actions.\n\n'
+      + 'You will not "manifest" anything. You will identify the specific beliefs that have been quietly shaping your behavior and replace them, with evidence, with beliefs that produce different behavior on hard days.',
+    outcomes: [
+      'A specific list of the beliefs that have been costing you the most',
+      'A journaling practice that surfaces beliefs as they form',
+      'A small daily action that proves the new belief to the rest of you',
+      'A calm reframe for the three or four reactive patterns you fall into',
+      'A 14-day baseline you can run again any time things drift'
+    ],
+    howToUse: 'Pro-only pack. The marketplace shows the preview; the full 14-day lessons unlock with Empire Pro.'
+  },
+  'body-architect': {
+    coverImage:  'body-architect-cover.webp',
+    coverAlt:    'A focused training session in a quiet gym.',
+    heroImage:   'body-architect-hero.webp',
+    heroAlt:     'A clean training space arranged for serious work.',
+    overviewLong:
+        'You can build a body that quietly tells the truth about how you treat your life. Body Architect is the structured 28-day plan most men needed at 25 and finally take seriously somewhere around 35. Training, nutrition, sleep, recovery — laid out as one integrated system rather than four separate hobbies.\n\n'
+      + 'You will train three to four times a week with a real progression. You will eat with intention, not perfection. You will measure honestly and adjust calmly. The body you build in this pack is the kind that compounds across the next ten years, not the kind that peaks in three months.',
+    outcomes: [
+      'A weekly training schedule you can hold while working a real job',
+      'A simple eating template you can run on busy days',
+      'A recovery and sleep protocol that keeps training sustainable',
+      'A measurable baseline you can compare against in 90 days',
+      'A long-term operating system, not a 30-day shred'
+    ],
+    howToUse: 'Pro-only pack. The marketplace shows the preview; the full 28-day plan unlocks with Empire Pro.'
+  },
+  'business-builder': {
+    coverImage:  'business-builder-cover.webp',
+    coverAlt:    'A founder\'s workspace with laptop, notebook, and coffee.',
+    heroImage:   'business-builder-hero.webp',
+    heroAlt:     'A focused workspace where a small business is being built.',
+    overviewLong:
+        'Business Builder is the 30-day plan for taking a validated idea from blank page to first customer. It assumes you have done the work of Side Business Sprint or Business Idea Pack and now need a real plan to ship: a brand, a website, an offer with pricing, a sales process you can actually run, and the operational system to deliver without burning out.\n\n'
+      + 'The pack is structured for a man with a full-time job and limited evenings — small, daily blocks that compound into a working business by Day 30.',
+    outcomes: [
+      'A real brand identity you can defend in a sentence',
+      'A working sales page or service description',
+      'A pricing structure that respects your time',
+      'A small sales process you can repeat',
+      'Your first customer or a clean pivot plan'
+    ],
+    howToUse: 'Pro-only pack. The marketplace shows the preview; the full 30-day lessons unlock with Empire Pro.'
+  },
+  'social-mastery': {
+    coverImage:  'social-mastery-cover.webp',
+    coverAlt:    'A confident man in calm conversation in a warm cafe.',
+    heroImage:   'social-mastery-hero.webp',
+    heroAlt:     'A warm conversation in soft afternoon light.',
+    overviewLong:
+        'Social presence is not about charisma tricks. It is about being calm, attentive, and clear in rooms where most men are anxious, distracted, or performing. Social Mastery is a 21-day rebuild of how you actually show up — eye contact, posture, listening, the small choices that earn quiet respect without effort.\n\n'
+      + 'You will not become someone else. You will become the calmer, more confident version of yourself that you already are in your best moments — but on demand, not by accident.',
+    outcomes: [
+      'A stronger default presence in conversations',
+      'A genuine practice of attentive listening',
+      'Boundary skills that protect your time without producing conflict',
+      'A small set of phrases that handle the hardest social moments',
+      'A baseline of social confidence you can rely on in any room'
+    ],
+    howToUse: 'Pro-only pack. The marketplace shows the preview; the full 21-day lessons unlock with Empire Pro.'
+  }
+};
+
+/* Stage 35-A — content overlay helpers. Used by the closure-internal
+   renderers to fetch overlay data without touching the original
+   PLAN_PACKS_DATA / PACK_META. Pure read functions, safe in all phases. */
+function _ppOverlayFor(packId) {
+  return (packId && PACK_CONTENT_OVERLAY[packId]) ? PACK_CONTENT_OVERLAY[packId] : null;
+}
+function _ppDayOverlayFor(packId, dayNumber) {
+  var o = _ppOverlayFor(packId);
+  if (!o || !o.dayOverlays) return null;
+  var d = o.dayOverlays[dayNumber] || o.dayOverlays[String(dayNumber)];
+  return d || null;
+}
+function _ppRenderGlossarySpan(termKey, label) {
+  /* Used by lesson reading bodies to mark a glossary term inline.
+     The data attribute is the lookup key into PACK_GLOSSARY. Body text
+     of the reading uses dpEsc / escapeHTML for everything else; glossary
+     spans are emitted directly by the overlay data which is authored by
+     us, not user input, so the surrounding string is trusted. */
+  return '<span class="pp-term" data-term="' + termKey + '">' + label + '</span>';
+}
+function _ppCoverImagePath(filename) { return '../images/plan-packs/cards/'   + filename; }
+function _ppLessonImagePath(filename){ return '../images/plan-packs/lessons/' + filename; }
+
+/* Expose for renderers + future-stage debugging. */
+window.PACK_CONTENT_OVERLAY = PACK_CONTENT_OVERLAY;
+window.PACK_GLOSSARY        = PACK_GLOSSARY;
+window._ppOverlayFor        = _ppOverlayFor;
+window._ppDayOverlayFor     = _ppDayOverlayFor;
+window._ppCoverImagePath    = _ppCoverImagePath;
+window._ppLessonImagePath   = _ppLessonImagePath;
+
 /* Teaser catalogue — "coming soon" entries so the marketplace feels like
    a real $40 product surface. These are visual-only; clicking shows toast. */
 var PLAN_PACKS_TEASERS = [
@@ -8080,30 +11402,52 @@ function initSidebar() {
         : '';
       var btn, statusBadge = '';
       if (e.status === 'coming-soon') {
-        btn = '<button class="pp-pack-start pp-pack-start-soon" data-soon="1">Coming Soon</button>';
-        statusBadge = '<span class="pp-pack-status pp-pack-status-soon">SOON</span>';
+        /* Stage 35-A: cleaner wording — the security/eligibility logic is
+           unchanged (data-soon="1" still triggers the toast); only the
+           visible label is upgraded from "Coming Soon" / "SOON". */
+        btn = '<button class="pp-pack-start pp-pack-start-soon" data-soon="1">Included in Pro</button>';
+        statusBadge = '<span class="pp-pack-status pp-pack-status-soon">Locked</span>';
       } else if (comp.completed > 0 && comp.completed < comp.total) {
         btn = '<button class="pp-pack-start">Continue -&gt;</button>';
-        statusBadge = '<span class="pp-pack-status pp-pack-status-active">ACTIVE</span>';
+        statusBadge = '<span class="pp-pack-status pp-pack-status-active">In Progress</span>';
       } else if (comp.completed >= comp.total && comp.total > 0) {
         btn = '<button class="pp-pack-start">Restart -&gt;</button>';
-        statusBadge = '<span class="pp-pack-status pp-pack-status-done">DONE</span>';
+        statusBadge = '<span class="pp-pack-status pp-pack-status-done">Completed</span>';
       } else {
         btn = '<button class="pp-pack-start">Start -&gt;</button>';
       }
       var dataAttrs = e.openable ? ('data-packid="' + e.id + '"') : ('data-soonid="' + e.id + '"');
       var lockedCls = e.openable ? '' : ' pp-pack-card-soon';
-      return '<div class="pp-pack-card' + lockedCls + (e.featured ? ' pp-pack-card-featured' : '') + '" '
+      /* Stage 35-A: cover image from PACK_CONTENT_OVERLAY when available.
+         onerror swap removes the wrapper if the file is missing so the
+         card degrades cleanly to the icon-only layout (the CSS
+         .pp-pack-card:not(.has-cover) handles padding). */
+      var ov = (typeof _ppOverlayFor === 'function') ? _ppOverlayFor(e.id) : null;
+      var coverHtml = '';
+      var coverCls = '';
+      if (ov && ov.coverImage) {
+        var src = (typeof _ppCoverImagePath === 'function') ? _ppCoverImagePath(ov.coverImage) : ('../images/plan-packs/cards/' + ov.coverImage);
+        var alt = ov.coverAlt || (e.title + ' — Plan Pack cover');
+        coverHtml = '<div class="pp-pack-card-cover">'
+          + '<img src="' + src + '" alt="' + dpEsc(alt) + '" loading="lazy" '
+          + 'onerror="this.parentNode.parentNode.classList.remove(\'has-cover\'); this.parentNode.remove();">'
+          + '</div>';
+        coverCls = ' has-cover';
+      }
+      return '<div class="pp-pack-card' + lockedCls + coverCls + (e.featured ? ' pp-pack-card-featured' : '') + '" '
         + dataAttrs + ' style="' + styleVars + '">'
-        + '<div class="pp-pack-top"><div class="pp-pack-icon">' + e.icon + '</div>'
-        + '<div class="pp-pack-badge">' + dpEsc(e.category) + '</div></div>'
-        + statusBadge
-        + '<div class="pp-pack-title">' + dpEsc(e.title) + '</div>'
-        + '<div class="pp-pack-desc">' + dpEsc(e.promise || e.desc) + '</div>'
-        + prog
-        + '<div class="pp-pack-footer">'
-        +   '<span class="pp-pack-days">' + e.totalDays + ' days · ' + (e.difficulty || 'Medium') + '</span>'
-        +   btn
+        + coverHtml
+        + '<div class="pp-pack-card-body">'
+        +   '<div class="pp-pack-top"><div class="pp-pack-icon">' + e.icon + '</div>'
+        +   '<div class="pp-pack-badge">' + dpEsc(e.category) + '</div></div>'
+        +   statusBadge
+        +   '<div class="pp-pack-title">' + dpEsc(e.title) + '</div>'
+        +   '<div class="pp-pack-desc">' + dpEsc(e.promise || e.desc) + '</div>'
+        +   prog
+        +   '<div class="pp-pack-footer">'
+        +     '<span class="pp-pack-days">' + e.totalDays + ' days · ' + (e.difficulty || 'Medium') + '</span>'
+        +     btn
+        +   '</div>'
         + '</div>'
         + '</div>';
     }
@@ -8425,7 +11769,8 @@ function initSidebar() {
       }
     }
     var statusBadge = '';
-    if (meta.status === 'coming-soon') statusBadge = '<span class="pp-dh-status pp-dh-status-soon">COMING SOON</span>';
+    /* Stage 35-A: cleaner status wording, behavior unchanged. */
+    if (meta.status === 'coming-soon') statusBadge = '<span class="pp-dh-status pp-dh-status-soon">Included in Pro</span>';
     else if (comp.completed >= comp.total && comp.total > 0) statusBadge = '<span class="pp-dh-status pp-dh-status-done">COMPLETED</span>';
     else if (comp.completed > 0) statusBadge = '<span class="pp-dh-status pp-dh-status-active">IN PROGRESS</span>';
     else statusBadge = '<span class="pp-dh-status pp-dh-status-ready">READY TO START</span>';
@@ -8486,20 +11831,49 @@ function initSidebar() {
 
   function renderPackOverviewTab(pack, meta) {
     var copy = PACK_OVERVIEW_COPY[pack.id] || {};
-    var outcomes = (copy.outcomes || []).map(function (o) { return '<li>' + dpEsc(o) + '</li>'; }).join('');
+    /* Stage 35-A: prefer overlay fields when present (overviewLong,
+       outcomes, howToUse, heroImage). Fall back to PACK_OVERVIEW_COPY +
+       pack.about so packs without an overlay still render fully. */
+    var ov = (typeof _ppOverlayFor === 'function') ? _ppOverlayFor(pack.id) : null;
+    var heroHtml = '';
+    if (ov && ov.heroImage) {
+      var hsrc = (typeof _ppLessonImagePath === 'function') ? _ppLessonImagePath(ov.heroImage) : ('../images/plan-packs/lessons/' + ov.heroImage);
+      var halt = ov.heroAlt || (pack.title + ' — hero image');
+      heroHtml = '<div class="pp-overview-hero">'
+        + '<img src="' + hsrc + '" alt="' + dpEsc(halt) + '" loading="lazy" '
+        + 'onerror="this.parentNode.style.display=\'none\';">'
+        + '</div>';
+    }
+    var aboutText = (ov && ov.overviewLong) ? ov.overviewLong : (pack.about || pack.desc || '');
+    var aboutHtml = '<section class="pp-section"><h3 class="pp-section-h">About This Pack</h3>'
+      + (ov && ov.overviewLong
+          /* overviewLong uses paragraph breaks; render \n\n as <p> boundaries
+             and escape each paragraph individually so we keep XSS safety. */
+          ? '<div class="pp-overview-long">'
+            + aboutText.split(/\n\n+/).map(function (para) {
+                return '<p>' + dpEsc(para) + '</p>';
+              }).join('')
+            + '</div>'
+          : '<p class="pp-section-body">' + dpEsc(aboutText) + '</p>')
+      + '</section>';
+    var outcomesArr = (ov && ov.outcomes && ov.outcomes.length) ? ov.outcomes : (copy.outcomes || []);
+    var outcomes = outcomesArr.map(function (o) { return '<li>' + dpEsc(o) + '</li>'; }).join('');
     var worlds   = (meta.worlds || []).map(function (w) { return '<span class="pp-world-chip">' + dpEsc(w) + '</span>'; }).join('');
+    var howToUseText = (ov && ov.howToUse) ? ov.howToUse : null;
     var safetyNote = _isHealthAdjacent(pack, meta)
       ? '<div class="pp-safety">This pack provides general educational guidance and habit tracking. It is not medical advice.</div>'
       : '';
     return '<div class="pp-tab-panel">'
-      + '<section class="pp-section"><h3 class="pp-section-h">About This Pack</h3>'
-      +   '<p class="pp-section-body">' + dpEsc(pack.about || pack.desc || '') + '</p></section>'
+      + heroHtml
+      + aboutHtml
       + (copy.whoFor ? '<section class="pp-section"><h3 class="pp-section-h">Who It Helps</h3>'
           + '<p class="pp-section-body">' + dpEsc(copy.whoFor) + '</p></section>' : '')
       + (copy.build ? '<section class="pp-section"><h3 class="pp-section-h">What You Will Build</h3>'
           + '<p class="pp-section-body">' + dpEsc(copy.build) + '</p></section>' : '')
       + (outcomes ? '<section class="pp-section"><h3 class="pp-section-h">Outcomes</h3>'
           + '<ul class="pp-outcomes">' + outcomes + '</ul></section>' : '')
+      + (howToUseText ? '<section class="pp-section"><h3 class="pp-section-h">How To Use This Pack</h3>'
+          + '<div class="pp-how-to-use">' + dpEsc(howToUseText) + '</div></section>' : '')
       + (worlds ? '<section class="pp-section"><h3 class="pp-section-h">Connected Worlds</h3>'
           + '<div class="pp-worlds">' + worlds + '</div></section>' : '')
       + '<section class="pp-section"><h3 class="pp-section-h">Before You Start</h3>'
@@ -8764,19 +12138,78 @@ function initSidebar() {
       }
     }
 
+    /* Stage 35-A: lesson overlay produces a premium article layout when
+       present (image hero + multi-paragraph reading + why-it-matters +
+       key-insight + example + action block + micro-challenge). The
+       original task / action / reflection layout still wraps the bottom
+       so old saved progress and unmarked packs keep working untouched. */
+    var dayOv = (typeof _ppDayOverlayFor === 'function') ? _ppDayOverlayFor(pack.id, day.day) : null;
+    var ovHtml = '';
+    if (dayOv) {
+      if (dayOv.image) {
+        var lsrc = (typeof _ppLessonImagePath === 'function') ? _ppLessonImagePath(dayOv.image) : ('../images/plan-packs/lessons/' + dayOv.image);
+        var lalt = dayOv.imageAlt || (pack.title + ' — Day ' + day.day);
+        ovHtml += '<div class="pp-lesson-image">'
+          + '<img src="' + lsrc + '" alt="' + dpEsc(lalt) + '" loading="lazy" '
+          + 'onerror="this.parentNode.style.display=\'none\';">'
+          + '</div>';
+      }
+      if (dayOv.reading) {
+        /* dayOv.reading is overlay-authored HTML (paragraph tags + glossary
+           spans only). PACK_CONTENT_OVERLAY is checked into our own code,
+           never user-supplied, so the reading body is trusted. */
+        ovHtml += '<div class="pp-reading">' + dayOv.reading + '</div>';
+      }
+      if (dayOv.whyItMatters) {
+        ovHtml += '<div class="pp-callout pp-callout-why">'
+          + '<div class="pp-callout-kicker">Why this matters</div>'
+          + '<div class="pp-callout-body">' + dpEsc(dayOv.whyItMatters) + '</div>'
+          + '</div>';
+      }
+      if (dayOv.keyInsight) {
+        ovHtml += '<div class="pp-callout pp-callout-insight">'
+          + '<div class="pp-callout-kicker">Key insight</div>'
+          + '<div class="pp-callout-body">' + dpEsc(dayOv.keyInsight) + '</div>'
+          + '</div>';
+      }
+      if (dayOv.example) {
+        ovHtml += '<div class="pp-callout pp-callout-example">'
+          + '<div class="pp-callout-kicker">Example</div>'
+          + '<div class="pp-callout-body">' + dpEsc(dayOv.example) + '</div>'
+          + '</div>';
+      }
+    }
+    /* If the overlay supplies actionStep, prefer it; else use day.action. */
+    var actionText = (dayOv && dayOv.actionStep) ? dayOv.actionStep : day.action;
+    var reflectionText = (dayOv && dayOv.reflection) ? dayOv.reflection : day.reflection;
+    var microChallengeHtml = (dayOv && dayOv.microChallenge)
+      ? '<div class="pp-micro-challenge">'
+        + '<div class="pp-micro-challenge-kicker">Micro challenge</div>'
+        + '<div class="pp-micro-challenge-body">' + dpEsc(dayOv.microChallenge) + '</div>'
+        + '</div>'
+      : '';
+
     return '<button class="pp-back-btn" id="ppBackToOverview">&larr; ' + dpEsc(pack.title) + '</button>'
       + '<div class="pp-dv-header">'
       + '<div class="pp-dv-daynum">Day ' + day.day + '</div>'
       + '<div class="pp-dv-title">' + dpEsc(day.title) + '</div>'
       + completionDateHtml
       + '</div>'
-      + '<div class="pp-dv-section"><div class="pp-dv-label">Today\'s Focus</div>'
-      + '<div class="pp-dv-body">' + dpEsc(day.task) + '</div></div>'
-      + '<div class="pp-dv-action-box"><div class="pp-dv-action-label">ACTION</div>'
-      + '<div class="pp-dv-action-text">' + dpEsc(day.action) + '</div></div>'
+      + ovHtml
+      /* The original Today's Focus block is suppressed when overlay reading
+         has already covered the same ground. Packs without an overlay still
+         get it. */
+      + (dayOv && dayOv.reading ? ''
+         : '<div class="pp-dv-section"><div class="pp-dv-label">Today\'s Focus</div>'
+           + '<div class="pp-dv-body">' + dpEsc(day.task) + '</div></div>')
+      + '<div class="pp-action-block">'
+      +   '<div class="pp-action-block-kicker">Action</div>'
+      +   '<div class="pp-action-block-body">' + dpEsc(actionText) + '</div>'
+      + '</div>'
       + checklistHtml
+      + microChallengeHtml
       + '<div class="pp-dv-section"><div class="pp-dv-label">Reflection</div>'
-      + '<div class="pp-dv-reflection">' + dpEsc(day.reflection) + '</div></div>'
+      + '<div class="pp-dv-reflection">' + dpEsc(reflectionText) + '</div></div>'
       + '<div class="pp-dv-footer">'
       + (isDone
           ? '<button class="pp-complete-btn pp-complete-done" disabled>&#10003; Day Complete</button>'
@@ -8792,6 +12225,76 @@ function initSidebar() {
       });
     }
     var ppRoot = document.getElementById('workspaceContent') || document.getElementById('dpContent');
+    /* Stage 35-A: glossary tooltip — delegated handler on the workspace
+       container. Bound once, then a click/hover on any .pp-term shows a
+       single shared popover anchored under the term. Re-renders of pack
+       day/overview HTML do not re-attach (flag guards against duplicates). */
+    if (ppRoot && !ppRoot._eeGlossaryBound) {
+      ppRoot._eeGlossaryBound = true;
+      var popover = null;
+      function _ppEnsurePopover() {
+        if (popover) return popover;
+        popover = document.createElement('div');
+        popover.className = 'pp-term-popover';
+        popover.setAttribute('role', 'tooltip');
+        popover.innerHTML = '<div class="pp-term-popover-title"></div><div class="pp-term-popover-body"></div>';
+        document.body.appendChild(popover);
+        /* Keep the popover from being treated as outside-click. */
+        popover.addEventListener('click', function (e) { e.stopPropagation(); });
+        return popover;
+      }
+      function _ppOpenTermPopover(termEl) {
+        if (!termEl) return;
+        var key = termEl.getAttribute('data-term');
+        var def = (window.PACK_GLOSSARY && window.PACK_GLOSSARY[key]) || null;
+        if (!def) return;
+        var po = _ppEnsurePopover();
+        po.querySelector('.pp-term-popover-title').textContent = def.title || key;
+        po.querySelector('.pp-term-popover-body').textContent  = def.body  || '';
+        /* Position under the term, viewport-aware so it never clips. */
+        var rect = termEl.getBoundingClientRect();
+        po.style.left = '0px'; po.style.top = '0px';
+        po.classList.add('is-open');
+        var pw = po.offsetWidth, ph = po.offsetHeight;
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var left = rect.left;
+        if (left + pw > vw - 12) left = vw - pw - 12;
+        if (left < 12) left = 12;
+        var top = rect.bottom + 8;
+        if (top + ph > vh - 12) top = rect.top - ph - 8;
+        po.style.left = left + 'px';
+        po.style.top  = top  + 'px';
+        /* Mark the term as open so the CSS state can lift the highlight. */
+        Array.prototype.forEach.call(ppRoot.querySelectorAll('.pp-term.is-open'), function (e) { e.classList.remove('is-open'); });
+        termEl.classList.add('is-open');
+      }
+      function _ppClosePopover() {
+        if (popover) popover.classList.remove('is-open');
+        Array.prototype.forEach.call(ppRoot.querySelectorAll('.pp-term.is-open'), function (e) { e.classList.remove('is-open'); });
+      }
+      ppRoot.addEventListener('click', function (e) {
+        var term = e.target.closest && e.target.closest('.pp-term');
+        if (term) { e.stopPropagation(); _ppOpenTermPopover(term); return; }
+        _ppClosePopover();
+      });
+      ppRoot.addEventListener('mouseover', function (e) {
+        var term = e.target.closest && e.target.closest('.pp-term');
+        if (term) _ppOpenTermPopover(term);
+      });
+      ppRoot.addEventListener('mouseout', function (e) {
+        var term = e.target.closest && e.target.closest('.pp-term');
+        if (!term) return;
+        /* If the cursor lands on the popover itself, keep it open. */
+        var related = e.relatedTarget;
+        if (related && popover && (related === popover || popover.contains(related))) return;
+        _ppClosePopover();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') _ppClosePopover();
+      });
+      window.addEventListener('scroll', _ppClosePopover, true);
+      window.addEventListener('resize', _ppClosePopover);
+    }
 
     /* Stage 32-C: wire Today Command Center events when the bridge is mounted
        inside Plan Packs. attachTodayDashboardEvents scopes its queries to
@@ -10368,7 +13871,7 @@ function showPackCompletionModal(packId) {
       + '<div class="pack-complete-next-row">'
       +   '<div class="pack-complete-next-icon">' + nextIcon + '</div>'
       +   '<div class="pack-complete-next-info">'
-      +     '<div class="pack-complete-next-name">' + _apDpEsc(nextRef.label) + (nextStatus !== 'active' ? ' <span class="pack-complete-next-soon">SOON</span>' : '') + '</div>'
+      +     '<div class="pack-complete-next-name">' + _apDpEsc(nextRef.label) + (nextStatus !== 'active' ? ' <span class="pack-complete-next-soon">Locked</span>' : '') + '</div>'
       +     '<div class="pack-complete-next-reason">' + _apDpEsc(nextRef.reason) + '</div>'
       +   '</div>'
       + '</div>';
@@ -13207,7 +16710,7 @@ function _tagDetailPanel(tag) {
     var theme = _apThemeFor(meta);
     var style = '--pp-pri:' + theme.primary + ';--pp-sec:' + theme.secondary + ';--pp-glow:' + theme.glow + ';';
     var status = (p.status === 'active') ? '<span class="tag-status tag-status-active">ACTIVE</span>'
-               : (p.status === 'coming-soon' ? '<span class="tag-status tag-status-soon">SOON</span>' : '');
+               : (p.status === 'coming-soon' ? '<span class="tag-status tag-status-soon">Locked</span>' : '');
     return '<div class="tag-source-item" style="' + style + '">'
       + '<div class="tag-source-icon">' + (p.icon || '◈') + '</div>'
       + '<div class="tag-source-info">'
@@ -13545,7 +17048,7 @@ function buildGlobalSearchIndex() {
   /* B. Plan Packs */
   if (typeof buildMarketplaceEntries === 'function') {
     buildMarketplaceEntries().forEach(function (e) {
-      var statusLabel = (e.status === 'active') ? 'Active' : (e.status === 'coming-soon' ? 'Coming Soon' : (e.status || ''));
+      var statusLabel = (e.status === 'active') ? 'Active' : (e.status === 'coming-soon' ? 'Included in Pro' : (e.status || ''));
       var subtitle = (e.category || '') + ' - ' + (e.totalDays || '?') + ' days - ' + statusLabel;
       var keywords = [e.title, e.category, statusLabel].concat(e.tags || []);
       var openable = (e.status === 'active');
