@@ -9576,7 +9576,7 @@ function initSidebar() {
    DASHBOARD WORKSPACE SYSTEM
 ══════════════════════════════════════════════════════════════ */
 
-var dashboardState = { currentView: 'graph' };
+var dashboardState = { currentView: 'graph', workflowMode: 'planet' };
 
 var WS_META = {
   'plan-packs':  { kicker: 'EMPIRE PRO', title: 'Plan Packs',     subtitle: 'Guided transformation packs — daily action plans.' },
@@ -9610,6 +9610,61 @@ var TOPBAR_CONTEXT = {
   tags:          { title: 'Tags',            subtitle: 'Structured labels',                 placeholder: 'Search tags...' },
   settings:      { title: 'Settings',        subtitle: 'Account, billing, and dashboard controls', placeholder: 'Search settings...' }
 };
+
+/* Stage 34-B: workflow mode registry. Single-entry for now - the arrows are
+   wired so the cycling mechanism is verifiable, but cycleWorkflowMode wraps
+   around a length-1 array so the result stays on Planet Workflow. Stage
+   34-E will expand the registry; Stage 34-F will swap actual canvas
+   rendering per mode. Until then this is a pure UI scaffold. */
+var WORKFLOW_MODES = [
+  { id: 'planet', title: 'Planet Workflow', subtitle: 'Knowledge Graph' }
+];
+
+function getCurrentWorkflowMode() {
+  var id = (window.dashboardState && window.dashboardState.workflowMode) || 'planet';
+  for (var i = 0; i < WORKFLOW_MODES.length; i++) {
+    if (WORKFLOW_MODES[i].id === id) return WORKFLOW_MODES[i];
+  }
+  return WORKFLOW_MODES[0];
+}
+
+function updateWorkflowSwitcher() {
+  var sw = document.getElementById('tbWorkflowSwitcher');
+  if (!sw) return;
+  var mode = getCurrentWorkflowMode();
+  var titleEl = document.getElementById('tbWfTitle');
+  var subEl   = document.getElementById('tbWfSub');
+  if (titleEl) titleEl.textContent = mode.title;
+  if (subEl)   subEl.textContent   = mode.subtitle;
+  /* Visibility is owned by updateTopBarContext (viewId === 'graph'); this
+     helper only refreshes the labels. */
+}
+
+function cycleWorkflowMode(direction) {
+  if (!WORKFLOW_MODES.length) return;
+  var currentId = (window.dashboardState && window.dashboardState.workflowMode) || 'planet';
+  var idx = 0;
+  for (var i = 0; i < WORKFLOW_MODES.length; i++) {
+    if (WORKFLOW_MODES[i].id === currentId) { idx = i; break; }
+  }
+  var nextIdx = (idx + (direction > 0 ? 1 : -1) + WORKFLOW_MODES.length) % WORKFLOW_MODES.length;
+  if (window.dashboardState) window.dashboardState.workflowMode = WORKFLOW_MODES[nextIdx].id;
+  /* Subtle visual tick so the click is visible even when the mode is
+     unchanged (length === 1). Class removed after a short transition. */
+  var sw = document.getElementById('tbWorkflowSwitcher');
+  if (sw) {
+    sw.classList.add('is-ticking');
+    setTimeout(function () { sw.classList.remove('is-ticking'); }, 220);
+  }
+  updateWorkflowSwitcher();
+}
+
+function _bindWorkflowSwitcherEvents() {
+  var prev = document.getElementById('tbWfPrev');
+  var next = document.getElementById('tbWfNext');
+  if (prev && !prev._eeBound) { prev._eeBound = true; prev.addEventListener('click', function () { cycleWorkflowMode(-1); }); }
+  if (next && !next._eeBound) { next._eeBound = true; next.addEventListener('click', function () { cycleWorkflowMode( 1); }); }
+}
 
 function updateTopBarContext(viewId, extraData) {
   var ctx = TOPBAR_CONTEXT[viewId] || { title: viewId || 'Workspace', subtitle: '', placeholder: 'Search...' };
@@ -9648,6 +9703,22 @@ function updateTopBarContext(viewId, extraData) {
   if (searchEl)   searchEl.placeholder    = (extraData && extraData.placeholder) || ctx.placeholder;
   /* Green "live" dot only makes sense in Graph View */
   if (liveDotEl)  liveDotEl.style.display = (viewId === 'graph') ? '' : 'none';
+
+  /* Stage 34-B: workflow switcher visibility tracks viewId === 'graph'. The
+     normal context block (#tbTitle / #tbSubtitle) stays mounted so other
+     views keep their existing labels; the switcher just slides in beside
+     it on graph view. _bindWorkflowSwitcherEvents is idempotent (guarded
+     by _eeBound) so repeated calls do not stack handlers. */
+  var sw = document.getElementById('tbWorkflowSwitcher');
+  if (sw) {
+    if (viewId === 'graph') {
+      sw.hidden = false;
+      _bindWorkflowSwitcherEvents();
+      updateWorkflowSwitcher();
+    } else {
+      sw.hidden = true;
+    }
+  }
 }
 
 function setDashboardBackgroundMode(viewId) {
@@ -17093,6 +17164,12 @@ function initWorkspaceSystem() {
   window.showWorkspaceView    = showWorkspaceView;
   window.closeWorkspaceView   = closeWorkspaceView;
   window.updateTopBarContext  = updateTopBarContext;
+  /* Stage 34-B: expose workflow switcher helpers for runtime inspection and
+     future stages (34-E will read getCurrentWorkflowMode from EE_GRAPH_API). */
+  window.WORKFLOW_MODES         = WORKFLOW_MODES;
+  window.getCurrentWorkflowMode = getCurrentWorkflowMode;
+  window.cycleWorkflowMode      = cycleWorkflowMode;
+  window.updateWorkflowSwitcher = updateWorkflowSwitcher;
   window.setDashboardBackgroundMode = setDashboardBackgroundMode;
   window.setGraphInteractionEnabled = setGraphInteractionEnabled;
   window.hideGraphHudForWorkspace   = hideGraphHudForWorkspace;

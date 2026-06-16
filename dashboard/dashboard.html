@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="../images/favicon-48x48.png">
   <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
   <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
-  <link rel="stylesheet" href="dashboard.css?v=p25">
+  <link rel="stylesheet" href="dashboard.css?v=p27">
 
   <!-- ══ Stage 33-B-6: dev-environment detection ══
        Runs before every other script (head, non-deferred) so window.EE_ENV
@@ -99,6 +99,20 @@
         <div class="tb-context">
           <span class="tb-title" id="tbTitle">Knowledge Graph</span>
           <span class="tb-subtitle" id="tbSubtitle">Live Map</span>
+        </div>
+        <!-- Stage 34-B: workflow switcher pill. Mounts next to the existing
+             context block so the top bar height stays 44px. Hidden by default;
+             updateTopBarContext reveals it when viewId === 'graph'. Only one
+             mode (Planet Workflow) is registered in Stage 34-B; the arrows
+             still fire cycleWorkflowMode(±1) so the wiring is verifiable, but
+             the registry length === 1 keeps the result a no-op visually. -->
+        <div id="tbWorkflowSwitcher" class="tb-wfsw" role="navigation" aria-label="Workflow selector" hidden>
+          <button class="tb-wfsw-arrow" id="tbWfPrev" type="button" aria-label="Previous workflow">&lsaquo;</button>
+          <div class="tb-wfsw-label">
+            <div class="tb-wfsw-title" id="tbWfTitle">Planet Workflow</div>
+            <div class="tb-wfsw-sub" id="tbWfSub">Knowledge Graph</div>
+          </div>
+          <button class="tb-wfsw-arrow" id="tbWfNext" type="button" aria-label="Next workflow">&rsaquo;</button>
         </div>
         <div class="tb-live-dot" id="tbLiveDot"></div>
       </div>
@@ -1112,7 +1126,7 @@
   <!-- <script src="empire-map.js"></script> -->
 
   <!-- ══ Dashboard Logic ══ -->
-  <script src="dashboard.js?v=p27"></script>
+  <script src="dashboard.js?v=p28"></script>
 
 </body>
 </html>
