@@ -210,6 +210,10 @@ function initDashboard(detail) {
     initWorkspaceSystem();
     initRightPanel();
     initHeader();
+    /* Stage 34-C: wire Explore + Tools top-bar dropdowns. Runs after
+       initHeader so the markup is in the DOM and the profile dropdown
+       handlers are already bound (we never reach into them). */
+    if (typeof bindTopMenuDropdowns === 'function') bindTopMenuDropdowns();
     initSidebarCollapse();
 
     /* Stage 6: install workspace wrappers (empty states, calendar/tags renderers)
@@ -9666,6 +9670,114 @@ function _bindWorkflowSwitcherEvents() {
   if (next && !next._eeBound) { next._eeBound = true; next.addEventListener('click', function () { cycleWorkflowMode( 1); }); }
 }
 
+/* ════════════════════════════════════════════════════════════════
+   Stage 34-C — Top-bar Explore + Tools dropdowns
+   ════════════════════════════════════════════════════════════════
+   Apple-style glass capsules that route through the same
+   switchDashboardView() path as the existing sidebar. The sidebar
+   stays mounted so both surfaces work in parallel; Stage 34-D will
+   hide the side rail once these are verified. */
+var TOP_MENU_VIEWS = {
+  explore: ['graph', 'plan-packs', 'active-plan', 'notes', 'daily', 'tasks', 'templates'],
+  tools:   ['dataview', 'calendar', 'tags', 'settings']
+};
+
+function closeTopMenuDropdowns() {
+  ['tbExploreDrop', 'tbToolsDrop'].forEach(function (id) {
+    var drop = document.getElementById(id);
+    if (drop) {
+      drop.classList.remove('is-open');
+      drop.setAttribute('aria-hidden', 'true');
+    }
+  });
+  ['tbExploreBtn', 'tbToolsBtn'].forEach(function (id) {
+    var btn = document.getElementById(id);
+    if (btn) {
+      btn.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+function toggleTopMenuDropdown(type) {
+  if (type !== 'explore' && type !== 'tools') return;
+  var btnId  = (type === 'explore') ? 'tbExploreBtn'  : 'tbToolsBtn';
+  var dropId = (type === 'explore') ? 'tbExploreDrop' : 'tbToolsDrop';
+  var btn  = document.getElementById(btnId);
+  var drop = document.getElementById(dropId);
+  if (!btn || !drop) return;
+  var alreadyOpen = drop.classList.contains('is-open');
+  closeTopMenuDropdowns();
+  if (!alreadyOpen) {
+    drop.classList.add('is-open');
+    drop.setAttribute('aria-hidden', 'false');
+    btn.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+function handleTopMenuViewClick(viewId) {
+  if (!viewId) return;
+  closeTopMenuDropdowns();
+  if (typeof window.switchDashboardView === 'function') {
+    window.switchDashboardView(viewId);
+  }
+}
+
+function _refreshTopMenuActive(viewId) {
+  var current = viewId || (window.dashboardState && window.dashboardState.currentView) || '';
+  ['explore', 'tools'].forEach(function (type) {
+    var btnId  = (type === 'explore') ? 'tbExploreBtn'  : 'tbToolsBtn';
+    var dropId = (type === 'explore') ? 'tbExploreDrop' : 'tbToolsDrop';
+    var btn  = document.getElementById(btnId);
+    var drop = document.getElementById(dropId);
+    var owns = TOP_MENU_VIEWS[type].indexOf(current) >= 0;
+    if (btn) btn.classList.toggle('is-active', owns);
+    if (drop) Array.prototype.forEach.call(drop.querySelectorAll('.tb-menu-item'), function (it) {
+      it.classList.toggle('is-active', it.getAttribute('data-view') === current);
+    });
+  });
+}
+
+function bindTopMenuDropdowns() {
+  var explore = document.getElementById('tbExploreBtn');
+  var tools   = document.getElementById('tbToolsBtn');
+  if (explore && !explore._eeBound) {
+    explore._eeBound = true;
+    explore.addEventListener('click', function (e) { e.stopPropagation(); toggleTopMenuDropdown('explore'); });
+  }
+  if (tools && !tools._eeBound) {
+    tools._eeBound = true;
+    tools.addEventListener('click', function (e) { e.stopPropagation(); toggleTopMenuDropdown('tools'); });
+  }
+  /* Item delegation - one handler per dropdown panel. */
+  ['tbExploreDrop', 'tbToolsDrop'].forEach(function (id) {
+    var drop = document.getElementById(id);
+    if (!drop || drop._eeBound) return;
+    drop._eeBound = true;
+    drop.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var item = e.target.closest('.tb-menu-item');
+      if (!item) return;
+      handleTopMenuViewClick(item.getAttribute('data-view'));
+    });
+  });
+  /* Outside click + Escape - guarded so it doesn't bind twice and
+     doesn't interfere with the profile dropdown (which has its own
+     handler and uses a separate .pd-open class). */
+  if (!document._eeTopMenuOutsideBound) {
+    document._eeTopMenuOutsideBound = true;
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('#tbNavActions')) return;
+      closeTopMenuDropdowns();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeTopMenuDropdowns();
+    });
+  }
+  _refreshTopMenuActive();
+}
+
 function updateTopBarContext(viewId, extraData) {
   var ctx = TOPBAR_CONTEXT[viewId] || { title: viewId || 'Workspace', subtitle: '', placeholder: 'Search...' };
 
@@ -9719,6 +9831,12 @@ function updateTopBarContext(viewId, extraData) {
       sw.hidden = true;
     }
   }
+
+  /* Stage 34-C: refresh the Explore / Tools active state so the top-bar
+     dropdown chips and active item highlight track switchDashboardView
+     transitions (sidebar clicks, programmatic switches, etc.). Safe no-op
+     when the buttons are not yet mounted. */
+  if (typeof _refreshTopMenuActive === 'function') _refreshTopMenuActive(viewId);
 }
 
 function setDashboardBackgroundMode(viewId) {
@@ -17170,6 +17288,12 @@ function initWorkspaceSystem() {
   window.getCurrentWorkflowMode = getCurrentWorkflowMode;
   window.cycleWorkflowMode      = cycleWorkflowMode;
   window.updateWorkflowSwitcher = updateWorkflowSwitcher;
+  /* Stage 34-C: expose top-menu dropdown helpers for debugging and for
+     future stages that may need to refresh active state programmatically. */
+  window.closeTopMenuDropdowns  = closeTopMenuDropdowns;
+  window.toggleTopMenuDropdown  = toggleTopMenuDropdown;
+  window.bindTopMenuDropdowns   = bindTopMenuDropdowns;
+  window.handleTopMenuViewClick = handleTopMenuViewClick;
   window.setDashboardBackgroundMode = setDashboardBackgroundMode;
   window.setGraphInteractionEnabled = setGraphInteractionEnabled;
   window.hideGraphHudForWorkspace   = hideGraphHudForWorkspace;

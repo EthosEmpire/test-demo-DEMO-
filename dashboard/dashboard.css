@@ -3386,6 +3386,155 @@ body {
   #dashRoot.mode-graph #graphHint { top: 110px; }
 }
 
+/* ── Stage 34-C: Explore + Tools top-bar dropdowns.
+   Apple-style glass capsules + floating glass menus. The container sits
+   inside .tb-right, before the search box, so it doesn't disturb the
+   existing search/profile order. Each menu drop is position:absolute
+   anchored to its .tb-nav-slot parent, so it floats below the trigger
+   without affecting top-bar layout. */
+.tb-nav-actions {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-right: 8px;
+}
+.tb-nav-slot {
+  position: relative;
+  display: inline-flex; align-items: center;
+}
+.tb-nav-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(10,12,22,0.42);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  color: rgba(255,255,255,0.86);
+  font-family: inherit;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.20);
+}
+.tb-nav-btn:hover,
+.tb-nav-btn:focus-visible {
+  background: rgba(212,175,55,0.18);
+  color: #fff;
+  border-color: rgba(212,175,55,0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.22),
+    0 0 14px rgba(212,175,55,0.22);
+  outline: none;
+}
+.tb-nav-btn:active { transform: scale(0.96); }
+.tb-nav-btn.is-open {
+  background: rgba(212,175,55,0.22);
+  color: #fff;
+  border-color: rgba(212,175,55,0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.22),
+    0 0 18px rgba(212,175,55,0.28);
+}
+.tb-nav-btn.is-active::after {
+  content: ''; display: inline-block;
+  width: 5px; height: 5px; margin-left: 2px;
+  border-radius: 50%;
+  background: var(--gold-hi, #f5c542);
+  box-shadow: 0 0 8px rgba(245,197,66,0.65);
+}
+.tb-nav-btn-caret {
+  width: 9px; height: 6px;
+  opacity: 0.6;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.tb-nav-btn.is-open .tb-nav-btn-caret,
+.tb-nav-btn:hover .tb-nav-btn-caret { opacity: 0.95; }
+.tb-nav-btn.is-open .tb-nav-btn-caret { transform: rotate(180deg); }
+
+/* Floating glass menu — anchored under its trigger via the position:relative
+   parent slot. Hidden by default; opacity + translate animate in on open. */
+.tb-menu-drop {
+  position: absolute;
+  top: calc(100% + 10px); right: 0;
+  min-width: 220px; max-width: 260px;
+  padding: 8px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(10,12,22,0.62);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,0.55),
+    0 0 26px rgba(212,175,55,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    inset 0 -1px 0 rgba(0,0,0,0.28);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0.18s;
+  z-index: 70;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.tb-menu-drop.is-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1), visibility 0s;
+}
+.tb-menu-item {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(255,255,255,0.84);
+  font-family: inherit;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease, border-color 0.14s ease, transform 0.12s ease;
+}
+.tb-menu-item:hover,
+.tb-menu-item:focus-visible {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border-color: rgba(255,255,255,0.10);
+  outline: none;
+}
+.tb-menu-item:active { transform: scale(0.98); }
+.tb-menu-item.is-active {
+  color: #fff;
+  background: linear-gradient(140deg, rgba(212,175,55,0.18), rgba(212,175,55,0.06));
+  border-color: rgba(212,175,55,0.42);
+}
+.tb-menu-item.is-active::before {
+  content: ''; display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold-hi, #f5c542);
+  box-shadow: 0 0 8px rgba(245,197,66,0.65);
+}
+
+@media (max-width: 720px) {
+  .tb-nav-actions { gap: 4px; margin-right: 4px; }
+  .tb-nav-btn    { padding: 0 10px; font-size: 0.62rem; letter-spacing: 0.12em; }
+  .tb-menu-drop  { min-width: 200px; max-width: 240px; right: -10px; }
+}
+@media (max-width: 540px) {
+  .tb-nav-actions { gap: 3px; margin-right: 2px; }
+  .tb-nav-btn-label { display: none; }
+  .tb-nav-btn    { padding: 0 9px; min-width: 36px; gap: 0; }
+  .tb-menu-drop  { right: 50%; transform: translate(50%, -6px) scale(0.98); min-width: 220px; max-width: calc(100vw - 32px); }
+  .tb-menu-drop.is-open { transform: translate(50%, 0) scale(1); }
+}
+
 /* ── Collapse toggle button ── */
 .sidebar-collapse-btn {
   position: absolute;

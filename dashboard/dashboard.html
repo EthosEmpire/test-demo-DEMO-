@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="../images/favicon-48x48.png">
   <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
   <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
-  <link rel="stylesheet" href="dashboard.css?v=p27">
+  <link rel="stylesheet" href="dashboard.css?v=p28">
 
   <!-- ══ Stage 33-B-6: dev-environment detection ══
        Runs before every other script (head, non-deferred) so window.EE_ENV
@@ -117,6 +117,48 @@
         <div class="tb-live-dot" id="tbLiveDot"></div>
       </div>
       <div class="tb-right">
+        <!-- Stage 34-C: top-bar Explore + Tools dropdowns. Each button is
+             an Apple-style glass capsule; click toggles a floating glass
+             panel whose items route via switchDashboardView(viewId). The
+             existing sidebar markup stays mounted so this stage is purely
+             additive - both nav paths work in parallel until Stage 34-D
+             hides the side rail. data-view attributes mirror the sidebar's
+             so the active-state highlight stays in sync. -->
+        <div class="tb-nav-actions" id="tbNavActions">
+          <div class="tb-nav-slot" data-tb-menu="explore">
+            <button class="tb-nav-btn" id="tbExploreBtn" type="button"
+                    aria-haspopup="menu" aria-expanded="false" aria-controls="tbExploreDrop">
+              <span class="tb-nav-btn-label">Explore</span>
+              <svg class="tb-nav-btn-caret" viewBox="0 0 10 6" aria-hidden="true">
+                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </svg>
+            </button>
+            <div class="tb-menu-drop" id="tbExploreDrop" role="menu" aria-hidden="true">
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="graph">Graph View</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="plan-packs">Plan Packs</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="active-plan">Active Plan</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="notes">Notes</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="daily">Daily Log</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="tasks">Tasks</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="templates">Templates</button>
+            </div>
+          </div>
+          <div class="tb-nav-slot" data-tb-menu="tools">
+            <button class="tb-nav-btn" id="tbToolsBtn" type="button"
+                    aria-haspopup="menu" aria-expanded="false" aria-controls="tbToolsDrop">
+              <span class="tb-nav-btn-label">Tools</span>
+              <svg class="tb-nav-btn-caret" viewBox="0 0 10 6" aria-hidden="true">
+                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </svg>
+            </button>
+            <div class="tb-menu-drop" id="tbToolsDrop" role="menu" aria-hidden="true">
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="dataview">Dataview</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="calendar">Calendar</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="tags">Tags</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="settings">Settings</button>
+            </div>
+          </div>
+        </div>
         <!-- Search -->
         <div class="tb-srch-wrap" id="tbSrchWrap">
           <span class="tb-srch-icon">⌕</span>
@@ -1126,7 +1168,7 @@
   <!-- <script src="empire-map.js"></script> -->
 
   <!-- ══ Dashboard Logic ══ -->
-  <script src="dashboard.js?v=p28"></script>
+  <script src="dashboard.js?v=p29"></script>
 
 </body>
 </html>
