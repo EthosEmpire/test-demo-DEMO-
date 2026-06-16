@@ -10141,3 +10141,189 @@ body.global-search-open .tb-srch-wrap { border-color: rgba(212,175,55,0.50); bac
   #workspaceContent .pp-overview-hero { aspect-ratio: 16 / 9; border-radius: 16px; }
   #workspaceContent .pp-reading       { font-size: 0.82rem; }
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Stage 37 — Learning Sections workflow
+   ════════════════════════════════════════════════════════════════════════
+   Pure UI polish that makes the section workflow obvious: a kicker above
+   the pack title, a helper line under the CTA, a "How it works" card on
+   the overview, a grouped sections tab, a section-status badge on each
+   row, and a post-complete "Next Learning Section" prompt at the bottom
+   of the lesson page. Internal state model is unchanged. */
+
+/* Pack header — "Learning Path" kicker + CTA helper. */
+#workspaceContent .pp-dh-kicker {
+  display: inline-block;
+  font-size: 0.50rem; font-weight: 800; letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.78);
+  margin: 4px 0 6px;
+}
+#workspaceContent .pp-dh-cta-wrap {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+  flex-shrink: 0;
+}
+#workspaceContent .pp-dh-cta-helper {
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.52);
+  max-width: 200px;
+  text-align: right;
+  line-height: 1.4;
+}
+@media (max-width: 720px) {
+  #workspaceContent .pp-dh-cta-wrap { align-items: stretch; }
+  #workspaceContent .pp-dh-cta-helper { text-align: left; max-width: none; }
+}
+
+/* "How it works" card on the overview tab. */
+#workspaceContent .pp-how-it-works .pp-hiw-steps {
+  list-style: none; padding: 0; margin: 6px 0 0;
+  display: grid; gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (max-width: 720px) {
+  #workspaceContent .pp-how-it-works .pp-hiw-steps { grid-template-columns: 1fr; }
+}
+#workspaceContent .pp-how-it-works .pp-hiw-steps li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.84);
+  font-size: 0.72rem; line-height: 1.5;
+}
+#workspaceContent .pp-how-it-works .pp-hiw-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(212,175,55,0.18);
+  color: #f5c542; font-weight: 800; font-size: 0.68rem;
+  flex-shrink: 0;
+}
+
+/* Sections tab — grouped layout (Current / Coming Next / Completed). */
+#workspaceContent .pp-sections-intro {
+  font-size: 0.74rem; color: rgba(255,255,255,0.66);
+  line-height: 1.55;
+  margin: 4px 0 14px;
+}
+#workspaceContent .pp-day-group {
+  margin-bottom: 18px;
+}
+#workspaceContent .pp-day-group-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 8px;
+}
+#workspaceContent .pp-day-group-label {
+  font-size: 0.50rem; font-weight: 800; letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.78);
+}
+#workspaceContent .pp-day-group-helper {
+  font-size: 0.58rem; color: rgba(255,255,255,0.40);
+  letter-spacing: 0.04em;
+}
+#workspaceContent .pp-day-status {
+  font-size: 0.50rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.50);
+  margin-left: auto;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+#workspaceContent .pp-day-item.pp-day-done .pp-day-status {
+  background: rgba(52,211,153,0.14);
+  color: #6ee7b7;
+}
+#workspaceContent .pp-day-item.pp-day-next .pp-day-status {
+  background: rgba(212,175,55,0.18);
+  color: #f5c542;
+}
+
+/* Lesson page kicker (Section X of Y). */
+#workspaceContent .pp-dv-kicker {
+  font-size: 0.52rem; font-weight: 800; letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.78);
+  margin-bottom: 4px;
+}
+
+/* Post-complete prompt: "Next Learning Section" card. */
+#workspaceContent .pp-next-section {
+  margin: 22px 0 6px;
+  padding: 20px 22px;
+  border-radius: 20px;
+  background: linear-gradient(140deg, rgba(212,175,55,0.16), rgba(212,175,55,0.04));
+  border: 1px solid rgba(212,175,55,0.38);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.32),
+    0 0 22px rgba(212,175,55,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+#workspaceContent .pp-next-section-kicker {
+  font-size: 0.52rem; font-weight: 900; letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f5c542;
+  margin-bottom: 6px;
+}
+#workspaceContent .pp-next-section-title {
+  font-size: 0.88rem; font-weight: 700;
+  color: #fff;
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+#workspaceContent .pp-next-section-actions {
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+#workspaceContent .pp-next-section-cta {
+  display: inline-flex; align-items: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(212,175,55,0.65);
+  background: rgba(212,175,55,0.24);
+  color: #fff;
+  font-size: 0.70rem; font-weight: 800; letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+#workspaceContent .pp-next-section-cta:hover,
+#workspaceContent .pp-next-section-cta:focus-visible {
+  background: rgba(212,175,55,0.34);
+  border-color: rgba(212,175,55,0.85);
+  box-shadow: 0 0 22px rgba(212,175,55,0.32);
+  outline: none;
+}
+#workspaceContent .pp-next-section-cta:active { transform: scale(0.97); }
+#workspaceContent .pp-next-section-secondary {
+  display: inline-flex; align-items: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.78);
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+#workspaceContent .pp-next-section-secondary:hover,
+#workspaceContent .pp-next-section-secondary:focus-visible {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.28);
+  color: #fff;
+  outline: none;
+}
+#workspaceContent .pp-next-section-final {
+  background: linear-gradient(140deg, rgba(168,85,247,0.16), rgba(168,85,247,0.04));
+  border-color: rgba(168,85,247,0.45);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.32),
+    0 0 24px rgba(168,85,247,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+#workspaceContent .pp-next-section-final .pp-next-section-kicker {
+  color: #d8b4fe;
+}

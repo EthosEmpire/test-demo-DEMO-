@@ -11401,6 +11401,16 @@ function initSidebar() {
         ? '<div class="pp-card-prog-wrap"><div class="pp-card-prog-fill" style="width:' + comp.pct + '%;"></div></div>'
         : '';
       var btn, statusBadge = '';
+      /* Stage 37: determine the next-up section number for in-progress
+         packs so the marketplace CTA can say "Continue Section X". */
+      var entryPack = (e.openable && typeof getPackById === 'function') ? getPackById(e.id) : null;
+      var nextSectionNum = null;
+      if (entryPack && entryPack.days && entryPack.days.length) {
+        var pp = packProgress[e.id] || {};
+        for (var nsi2 = 0; nsi2 < entryPack.days.length; nsi2++) {
+          if (!pp['day_' + entryPack.days[nsi2].day]) { nextSectionNum = entryPack.days[nsi2].day; break; }
+        }
+      }
       if (e.status === 'coming-soon') {
         /* Stage 35-A: cleaner wording — the security/eligibility logic is
            unchanged (data-soon="1" still triggers the toast); only the
@@ -11408,13 +11418,15 @@ function initSidebar() {
         btn = '<button class="pp-pack-start pp-pack-start-soon" data-soon="1">Included in Pro</button>';
         statusBadge = '<span class="pp-pack-status pp-pack-status-soon">Locked</span>';
       } else if (comp.completed > 0 && comp.completed < comp.total) {
-        btn = '<button class="pp-pack-start">Continue -&gt;</button>';
-        statusBadge = '<span class="pp-pack-status pp-pack-status-active">In Progress</span>';
+        /* Stage 37: friendlier in-progress wording with the specific section number. */
+        var contLabel = (nextSectionNum != null) ? ('Continue Section ' + nextSectionNum) : 'Continue';
+        btn = '<button class="pp-pack-start">' + contLabel + '</button>';
+        statusBadge = '<span class="pp-pack-status pp-pack-status-active">Active</span>';
       } else if (comp.completed >= comp.total && comp.total > 0) {
-        btn = '<button class="pp-pack-start">Restart -&gt;</button>';
+        btn = '<button class="pp-pack-start">Review Pack</button>';
         statusBadge = '<span class="pp-pack-status pp-pack-status-done">Completed</span>';
       } else {
-        btn = '<button class="pp-pack-start">Start -&gt;</button>';
+        btn = '<button class="pp-pack-start">Start Learning</button>';
       }
       var dataAttrs = e.openable ? ('data-packid="' + e.id + '"') : ('data-soonid="' + e.id + '"');
       var lockedCls = e.openable ? '' : ' pp-pack-card-soon';
@@ -11445,7 +11457,7 @@ function initSidebar() {
         +   '<div class="pp-pack-desc">' + dpEsc(e.promise || e.desc) + '</div>'
         +   prog
         +   '<div class="pp-pack-footer">'
-        +     '<span class="pp-pack-days">' + e.totalDays + ' days · ' + (e.difficulty || 'Medium') + '</span>'
+        +     '<span class="pp-pack-days">' + e.totalDays + ' sections · ' + (e.difficulty || 'Medium') + '</span>'
         +     btn
         +   '</div>'
         + '</div>'
@@ -11530,8 +11542,8 @@ function initSidebar() {
     var todayBridgeHtml = showTodayBridge
       ? '<div class="pp-today-bridge">'
         + '<div class="pp-section-head">'
-        +   '<span class="pp-section-kicker">TODAY&rsquo;S PATH</span>'
-        +   '<span class="pp-section-title">Your daily loop</span>'
+        +   '<span class="pp-section-kicker">YOUR ACTIVE LEARNING PATH</span>'
+        +   '<span class="pp-section-title">Continue your pack</span>'
         + '</div>'
         + renderTodayDashboard()
         + '</div>'
@@ -11769,15 +11781,18 @@ function initSidebar() {
       }
     }
     var statusBadge = '';
-    /* Stage 35-A: cleaner status wording, behavior unchanged. */
+    /* Stage 37: status wording simplified for learning sections — behavior unchanged. */
     if (meta.status === 'coming-soon') statusBadge = '<span class="pp-dh-status pp-dh-status-soon">Included in Pro</span>';
-    else if (comp.completed >= comp.total && comp.total > 0) statusBadge = '<span class="pp-dh-status pp-dh-status-done">COMPLETED</span>';
-    else if (comp.completed > 0) statusBadge = '<span class="pp-dh-status pp-dh-status-active">IN PROGRESS</span>';
-    else statusBadge = '<span class="pp-dh-status pp-dh-status-ready">READY TO START</span>';
+    else if (comp.completed >= comp.total && comp.total > 0) statusBadge = '<span class="pp-dh-status pp-dh-status-done">Completed</span>';
+    else if (comp.completed > 0) statusBadge = '<span class="pp-dh-status pp-dh-status-active">Active</span>';
+    else statusBadge = '<span class="pp-dh-status pp-dh-status-ready">Ready to Start</span>';
 
+    /* Stage 37: user-facing "Sections" language; internal nextDay still tracks day number. */
     var ctaLabel = !hasDays
-      ? 'Days In Development'
-      : (comp.completed > 0 ? 'Continue Day ' + nextDay : 'Start Day ' + nextDay);
+      ? 'Sections In Development'
+      : (comp.completed >= comp.total && comp.total > 0
+          ? 'Review Pack'
+          : (comp.completed > 0 ? 'Continue Section ' + nextDay : 'Start Learning'));
     /* Stage 5: keep the button clickable even when days are empty so the
        handler can surface the "Workflow days are still being built" toast.
        The .pp-dh-cta-muted class provides the visual cue. */
@@ -11785,6 +11800,14 @@ function initSidebar() {
     var ctaCls = !hasDays ? ' pp-dh-cta-muted' : '';
 
     var styleVars = '--pp-pri:' + theme.primary + ';--pp-sec:' + theme.secondary + ';--pp-glow:' + theme.glow + ';';
+    /* Stage 37: helper sub-line under the CTA — explicitly tells the user
+       what to do next when they open a pack. */
+    var ctaHelper = !hasDays
+      ? 'Sections are being built'
+      : (comp.completed >= comp.total && comp.total > 0
+          ? 'You finished this learning path. Review any time.'
+          : 'Read, act, then mark each section complete.');
+    var sectionsOfLabel = 'Section ' + (nextDay || comp.total) + ' of ' + comp.total;
     return '<div class="pp-detail-shell" style="' + styleVars + '">'
       + '<button class="pp-back-btn" id="ppBackToMarket">&larr; All Packs</button>'
       + '<div class="pp-dh">'
@@ -11793,21 +11816,25 @@ function initSidebar() {
       +     '<div class="pp-dh-icon">' + pack.icon + '</div>'
       +     '<div class="pp-dh-info">'
       +       statusBadge
+      +       '<div class="pp-dh-kicker">Learning Path</div>'
       +       '<h1 class="pp-dh-title">' + dpEsc(pack.title) + '</h1>'
       +       '<div class="pp-dh-meta-row">'
       +         '<span class="pp-dh-meta">' + dpEsc(pack.category) + '</span>'
       +         '<span class="pp-dh-meta-sep">&middot;</span>'
-      +         '<span class="pp-dh-meta">' + pack.totalDays + ' days</span>'
+      +         '<span class="pp-dh-meta">' + pack.totalDays + ' sections</span>'
       +         '<span class="pp-dh-meta-sep">&middot;</span>'
       +         '<span class="pp-dh-meta">' + dpEsc(meta.difficulty || 'Medium') + '</span>'
       +       '</div>'
       +     '</div>'
-      +     '<button class="pp-dh-cta' + ctaCls + '" id="ppDhStart"' + ctaDisabled + '>' + ctaLabel + '</button>'
+      +     '<div class="pp-dh-cta-wrap">'
+      +       '<button class="pp-dh-cta' + ctaCls + '" id="ppDhStart"' + ctaDisabled + '>' + ctaLabel + '</button>'
+      +       '<div class="pp-dh-cta-helper">' + ctaHelper + '</div>'
+      +     '</div>'
       +   '</div>'
       +   '<div class="pp-dh-progress">'
       +     '<div class="pp-dh-prog-row">'
-      +       '<span class="pp-dh-prog-lbl">Progress</span>'
-      +       '<span class="pp-dh-prog-val">' + comp.completed + ' / ' + comp.total + ' days &middot; ' + comp.pct + '%</span>'
+      +       '<span class="pp-dh-prog-lbl">' + sectionsOfLabel + '</span>'
+      +       '<span class="pp-dh-prog-val">' + comp.completed + ' of ' + comp.total + ' sections complete &middot; ' + comp.pct + '%</span>'
       +     '</div>'
       +     '<div class="pp-dh-prog-bar"><div class="pp-dh-prog-fill" style="width:' + comp.pct + '%;"></div></div>'
       +   '</div>'
@@ -11817,7 +11844,8 @@ function initSidebar() {
   function renderPackTabs(activeTab) {
     var tabs = [
       ['overview',  'Overview'],
-      ['days',      'Days'],
+      /* Stage 37: tab id stays 'days' for internal compatibility; visible label says "Sections". */
+      ['days',      'Sections'],
       ['schedule',  'Schedule'],
       ['progress',  'Progress'],
       ['notes',     'Notes'],
@@ -11844,6 +11872,17 @@ function initSidebar() {
         + 'onerror="this.parentNode.style.display=\'none\';">'
         + '</div>';
     }
+    /* Stage 37: tiny "how it works" card sits above the about narrative so a
+       first-time user sees the four-step learning loop before reading anything. */
+    var howItWorksHtml = '<section class="pp-section pp-how-it-works">'
+      + '<h3 class="pp-section-h">How It Works</h3>'
+      + '<ol class="pp-hiw-steps">'
+      +   '<li><span class="pp-hiw-num">1</span><span class="pp-hiw-text">Read the section</span></li>'
+      +   '<li><span class="pp-hiw-num">2</span><span class="pp-hiw-text">Finish the action and checklist</span></li>'
+      +   '<li><span class="pp-hiw-num">3</span><span class="pp-hiw-text">Mark the section complete</span></li>'
+      +   '<li><span class="pp-hiw-num">4</span><span class="pp-hiw-text">Continue to the next section</span></li>'
+      + '</ol>'
+      + '</section>';
     var aboutText = (ov && ov.overviewLong) ? ov.overviewLong : (pack.about || pack.desc || '');
     var aboutHtml = '<section class="pp-section"><h3 class="pp-section-h">About This Pack</h3>'
       + (ov && ov.overviewLong
@@ -11865,6 +11904,7 @@ function initSidebar() {
       : '';
     return '<div class="pp-tab-panel">'
       + heroHtml
+      + howItWorksHtml
       + aboutHtml
       + (copy.whoFor ? '<section class="pp-section"><h3 class="pp-section-h">Who It Helps</h3>'
           + '<p class="pp-section-body">' + dpEsc(copy.whoFor) + '</p></section>' : '')
@@ -11887,30 +11927,56 @@ function initSidebar() {
     if (!pack.days || pack.days.length === 0) {
       return '<div class="pp-tab-panel"><div class="pp-empty-tab">'
         + '<div class="pp-empty-tab-icon">' + pack.icon + '</div>'
-        + '<div class="pp-empty-tab-title">Days in development</div>'
-        + '<div class="pp-empty-tab-sub">The full day-by-day plan is being built. The Overview, Schedule, Notes, and Tools tabs are available now.</div>'
+        + '<div class="pp-empty-tab-title">Sections in development</div>'
+        + '<div class="pp-empty-tab-sub">The full section-by-section plan is being built. The Overview, Schedule, Notes, and Tools tabs are available now.</div>'
         + '</div></div>';
     }
-    /* Find the next-up day (first incomplete) for highlight */
+    /* Find the next-up section (first incomplete) for highlight.
+       Variable still named nextDay internally to keep the rest of the
+       file unchanged; user-facing label says Section. */
     var nextDay = null;
     for (var i = 0; i < pack.days.length; i++) {
       if (!pp['day_' + pack.days[i].day]) { nextDay = pack.days[i].day; break; }
     }
-    var daysHtml = pack.days.map(function (d) {
+    /* Stage 37: bucket sections into Completed / Current / Coming Next so
+       the user instantly sees what to click. Internal data model (pack.days,
+       d.day, packProgress.day_N) is untouched. */
+    var sections = pack.days.map(function (d) {
       var done = !!pp['day_' + d.day];
       var isNext = (d.day === nextDay);
       var cls = 'pp-day-item';
-      if (done) cls += ' pp-day-done';
-      if (isNext) cls += ' pp-day-next';
-      if (!done && !isNext) cls += ' pp-day-upcoming';
-      return '<div class="' + cls + '" data-day="' + d.day + '">'
-        + '<div class="pp-day-num-badge">Day ' + d.day + '</div>'
-        + '<div class="pp-day-title">' + dpEsc(d.title) + '</div>'
-        + (done ? '<div class="pp-day-check">&#10003;</div>' : (isNext ? '<div class="pp-day-arrow pp-day-arrow-next">&rsaquo;</div>' : '<div class="pp-day-arrow">&rsaquo;</div>'))
-        + '</div>';
-    }).join('');
+      var status;
+      if (done)      { cls += ' pp-day-done';     status = 'Complete'; }
+      else if (isNext) { cls += ' pp-day-next';   status = 'Current';  }
+      else            { cls += ' pp-day-upcoming'; status = 'Next';     }
+      return {
+        done: done, isNext: isNext, status: status,
+        html: '<div class="' + cls + '" data-day="' + d.day + '">'
+          + '<div class="pp-day-num-badge">Section ' + d.day + '</div>'
+          + '<div class="pp-day-title">' + dpEsc(d.title) + '</div>'
+          + '<div class="pp-day-status">' + status + '</div>'
+          + (done ? '<div class="pp-day-check">&#10003;</div>' : (isNext ? '<div class="pp-day-arrow pp-day-arrow-next">&rsaquo;</div>' : '<div class="pp-day-arrow">&rsaquo;</div>'))
+          + '</div>'
+      };
+    });
+    function groupHtml(label, helper, items) {
+      if (!items.length) return '';
+      return '<div class="pp-day-group">'
+        +    '<div class="pp-day-group-head">'
+        +      '<span class="pp-day-group-label">' + label + '</span>'
+        +      (helper ? '<span class="pp-day-group-helper">' + helper + '</span>' : '')
+        +    '</div>'
+        +    '<div class="pp-day-grid">' + items.map(function (s) { return s.html; }).join('') + '</div>'
+        +  '</div>';
+    }
+    var doneItems    = sections.filter(function (s) { return s.done; });
+    var currentItems = sections.filter(function (s) { return !s.done && s.isNext; });
+    var nextItems    = sections.filter(function (s) { return !s.done && !s.isNext; });
     return '<div class="pp-tab-panel">'
-      + '<div class="pp-day-grid">' + daysHtml + '</div>'
+      + '<p class="pp-sections-intro">Each row below is one learning section. Complete one at a time — read, act, then mark it done.</p>'
+      + groupHtml('Current Section', 'Open this one next', currentItems)
+      + groupHtml('Coming Next',     'Unlocks as you progress', nextItems)
+      + groupHtml('Completed Sections', doneItems.length + ' of ' + sections.length + ' complete', doneItems)
       + '</div>';
   }
 
@@ -11983,14 +12049,14 @@ function initSidebar() {
       }
     }
     var nextAction = nextDay
-      ? ('Day ' + nextDay.day + ' &middot; ' + dpEsc(nextDay.title))
-      : (comp.total === 0 ? 'Day content is in development' : 'Pack complete - consider a full restart');
+      ? ('Section ' + nextDay.day + ' &middot; ' + dpEsc(nextDay.title))
+      : (comp.total === 0 ? 'Sections are in development' : 'Pack complete — consider a full restart');
     /* Stage 9: manual ceremony button when pack is 100% */
     var isComplete = (comp.total > 0 && comp.completed >= comp.total);
     var ceremonyBtn = isComplete
       ? '<div class="pp-section pp-section-note pp-section-celebrate">'
       +   '<h3 class="pp-section-h">Pack Complete</h3>'
-      +   '<p class="pp-section-body">You finished every day in this pack. Reopen the ceremony any time.</p>'
+      +   '<p class="pp-section-body">You finished this learning path. Reopen the ceremony any time.</p>'
       +   '<button class="pp-ceremony-btn" id="ppViewCeremony" data-pack="' + dpEsc(pack.id) + '">View Completion Ceremony</button>'
       + '</div>'
       : '';
@@ -12189,18 +12255,51 @@ function initSidebar() {
         + '</div>'
       : '';
 
+    /* Stage 37: locate the next incomplete section (skipping the current
+       one) so a completed lesson shows a clear "Continue to Next Section"
+       prompt. If none exist, the pack is complete and we show a final
+       celebration with a path back to the marketplace. */
+    var nextSection = null;
+    for (var nsi = 0; nsi < pack.days.length; nsi++) {
+      var cand = pack.days[nsi];
+      if (cand.day === day.day) continue;
+      if (!pp['day_' + cand.day]) { nextSection = cand; break; }
+    }
+    var sectionKickerHtml = '<div class="pp-dv-kicker">Learning Section ' + day.day + ' of ' + pack.days.length + '</div>';
+    var nextSectionHtml = '';
+    if (isDone) {
+      if (nextSection) {
+        nextSectionHtml = '<div class="pp-next-section">'
+          + '<div class="pp-next-section-kicker">Section Complete</div>'
+          + '<div class="pp-next-section-title">Next: Learning Section ' + nextSection.day + ' &middot; ' + dpEsc(nextSection.title) + '</div>'
+          + '<div class="pp-next-section-actions">'
+          +   '<button class="pp-next-section-cta" data-section-jump="' + nextSection.day + '">Continue to Next Section</button>'
+          +   '<button class="pp-next-section-secondary" id="ppNextBackToOverview">Back to Pack Overview</button>'
+          + '</div>'
+          + '</div>';
+      } else {
+        nextSectionHtml = '<div class="pp-next-section pp-next-section-final">'
+          + '<div class="pp-next-section-kicker">Pack Complete</div>'
+          + '<div class="pp-next-section-title">You finished this learning path.</div>'
+          + '<div class="pp-next-section-actions">'
+          +   '<button class="pp-next-section-cta" id="ppNextReturnPacks">Return to Plan Packs</button>'
+          +   '<button class="pp-next-section-secondary" id="ppNextBackToOverview">Review Pack</button>'
+          + '</div>'
+          + '</div>';
+      }
+    }
     return '<button class="pp-back-btn" id="ppBackToOverview">&larr; ' + dpEsc(pack.title) + '</button>'
       + '<div class="pp-dv-header">'
-      + '<div class="pp-dv-daynum">Day ' + day.day + '</div>'
-      + '<div class="pp-dv-title">' + dpEsc(day.title) + '</div>'
-      + completionDateHtml
+      +   sectionKickerHtml
+      +   '<div class="pp-dv-title">' + dpEsc(day.title) + '</div>'
+      +   completionDateHtml
       + '</div>'
       + ovHtml
-      /* The original Today's Focus block is suppressed when overlay reading
+      /* Stage 35-A: the original task block is suppressed when overlay reading
          has already covered the same ground. Packs without an overlay still
-         get it. */
+         get the original "Today's Focus" block under a section-friendly label. */
       + (dayOv && dayOv.reading ? ''
-         : '<div class="pp-dv-section"><div class="pp-dv-label">Today\'s Focus</div>'
+         : '<div class="pp-dv-section"><div class="pp-dv-label">This Section</div>'
            + '<div class="pp-dv-body">' + dpEsc(day.task) + '</div></div>')
       + '<div class="pp-action-block">'
       +   '<div class="pp-action-block-kicker">Action</div>'
@@ -12212,9 +12311,10 @@ function initSidebar() {
       + '<div class="pp-dv-reflection">' + dpEsc(reflectionText) + '</div></div>'
       + '<div class="pp-dv-footer">'
       + (isDone
-          ? '<button class="pp-complete-btn pp-complete-done" disabled>&#10003; Day Complete</button>'
-          : '<button class="pp-complete-btn" id="ppDayComplete">Mark Day Complete</button>')
-      + '</div>';
+          ? '<button class="pp-complete-btn pp-complete-done" disabled>&#10003; Section Complete</button>'
+          : '<button class="pp-complete-btn" id="ppDayComplete">Complete this Section</button>')
+      + '</div>'
+      + nextSectionHtml;
   }
 
   function attachPackEvents() {
@@ -12421,6 +12521,23 @@ function initSidebar() {
     var ppBackOv = document.getElementById('ppBackToOverview');
     if (ppBackOv) ppBackOv.addEventListener('click', function () {
       ppActiveDay = null; refreshPackPanel();
+    });
+    /* Stage 37: wire the "Continue to Next Section" / "Back to Pack Overview"
+       prompt that appears after a section is marked complete. The
+       data-section-jump attribute holds the next section's day number. */
+    Array.prototype.forEach.call(ppRoot ? ppRoot.querySelectorAll('[data-section-jump]') : [], function (btn) {
+      btn.addEventListener('click', function () {
+        var n = parseInt(btn.getAttribute('data-section-jump'), 10);
+        if (!isNaN(n)) { ppActiveDay = n; refreshPackPanel(); }
+      });
+    });
+    var ppNextBackOv = document.getElementById('ppNextBackToOverview');
+    if (ppNextBackOv) ppNextBackOv.addEventListener('click', function () {
+      ppActiveDay = null; refreshPackPanel();
+    });
+    var ppNextReturnPacks = document.getElementById('ppNextReturnPacks');
+    if (ppNextReturnPacks) ppNextReturnPacks.addEventListener('click', function () {
+      ppActivePack = null; ppActiveDay = null; refreshPackPanel();
     });
     var ppComplete = document.getElementById('ppDayComplete');
     if (ppComplete) ppComplete.addEventListener('click', function () {
@@ -14220,7 +14337,7 @@ function renderTodayDashboard() {
         +   '<div class="ap-command-pack-icon">' + (lastPack.icon || '◈') + '</div>'
         +   '<div class="ap-command-pack-info">'
         +     '<div class="ap-command-pack-name">' + _apDpEsc(lastPack.title) + '</div>'
-        +     '<div class="ap-command-pack-meta">' + (lastNext ? 'Day ' + lastNext.day + ' &middot; ' + lastComp.pct + '%' : 'Complete &middot; ' + lastComp.pct + '%') + '</div>'
+        +     '<div class="ap-command-pack-meta">' + (lastNext ? 'Section ' + lastNext.day + ' &middot; ' + lastComp.pct + '%' : 'Complete &middot; ' + lastComp.pct + '%') + '</div>'
         +   '</div>'
         + '</div>'
         + '<button class="ap-command-cta" id="apTdContinue" data-td-pack="' + _apDpEsc(lastPack.id) + '">' + (lastNext ? 'Continue' : 'Review Progress') + '</button>'
@@ -16982,7 +17099,8 @@ var GS_GROUP_ORDER = [
   ['command',       'Commands'],
   ['task',          'Tasks'],
   ['pack',          'Plan Packs'],
-  ['pack-day',      'Days'],
+  /* Stage 37: command-palette filter label — internal id stays pack-day. */
+  ['pack-day',      'Sections'],
   ['note',          'Notes'],
   ['pack-note',     'Pack Notes'],
   ['template',      'Templates'],
@@ -17092,7 +17210,7 @@ function buildGlobalSearchIndex() {
         out.push({
           id:        'pack-day:' + pack.id + ':' + day.day,
           type:      'pack-day',
-          title:     'Day ' + day.day + ' - ' + day.title,
+          title:     'Section ' + day.day + ' - ' + day.title,
           subtitle:  pack.title,
           body:      day.task || day.action || '',
           icon:      pack.icon || '◈',
@@ -17949,7 +18067,7 @@ function completeTask(taskId, options) {
     var msg = 'Task completed. Mark ' + packTitle + ' - Day ' + task.linkedDayNumber + ' complete too?';
     window.showToast(msg, 'success', {
       duration: 6000,
-      actionLabel: 'Mark Day Complete',
+      actionLabel: 'Complete this Section',
       onAction: function () { completeLinkedPackDayFromTask(taskId); }
     });
   }
@@ -19401,7 +19519,7 @@ function renderActivePlan() {
         + 'style="--pp-pri:' + theme.primary + ';--pp-sec:' + theme.secondary + ';--pp-glow:' + theme.glow + ';">'
         + '<div class="ap-suggest-icon">' + p.icon + '</div>'
         + '<div class="ap-suggest-title">' + _apDpEsc(p.title) + '</div>'
-        + '<div class="ap-suggest-meta">' + _apDpEsc(p.category) + ' - ' + p.totalDays + ' days</div>'
+        + '<div class="ap-suggest-meta">' + _apDpEsc(p.category) + ' - ' + p.totalDays + ' sections</div>'
         + '<div class="ap-suggest-cta">Open Pack</div>'
         + '</div>';
     }).join('');
@@ -19442,8 +19560,9 @@ function renderActivePlan() {
 
   /* Hero */
   var ctaLabel, ctaCls = '';
-  if (!hasDays) { ctaLabel = 'Days In Development'; ctaCls = ' pp-dh-cta-muted'; }
-  else if (nextDay) ctaLabel = (comp.completed > 0 ? 'Continue Day ' + nextDay.day : 'Start Day ' + nextDay.day);
+  /* Stage 37: Active Plan hero CTA uses Section language. */
+  if (!hasDays) { ctaLabel = 'Sections In Development'; ctaCls = ' pp-dh-cta-muted'; }
+  else if (nextDay) ctaLabel = (comp.completed > 0 ? 'Continue Section ' + nextDay.day : 'Start Learning');
   else ctaLabel = 'Review Progress';
 
   var styleVars = '--pp-pri:' + theme.primary + ';--pp-sec:' + theme.secondary + ';--pp-glow:' + theme.glow + ';';
@@ -19457,7 +19576,7 @@ function renderActivePlan() {
     +       '<h1 class="ap-hero-title">' + _apDpEsc(pack.title) + '</h1>'
     +       '<div class="ap-hero-meta">'
     +         '<span>' + _apDpEsc(pack.category) + '</span><span class="ap-hero-sep">&middot;</span>'
-    +         '<span>' + pack.totalDays + ' days</span><span class="ap-hero-sep">&middot;</span>'
+    +         '<span>' + pack.totalDays + ' sections</span><span class="ap-hero-sep">&middot;</span>'
     +         '<span>' + _apDpEsc(meta.difficulty || 'Medium') + '</span>'
     +         (nextDay ? '<span class="ap-hero-sep">&middot;</span><span class="ap-hero-current">Day ' + nextDay.day + ' of ' + pack.totalDays + '</span>' : '')
     +       '</div>'
