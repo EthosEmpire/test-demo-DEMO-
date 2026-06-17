@@ -10327,3 +10327,407 @@ body.global-search-open .tb-srch-wrap { border-color: rgba(212,175,55,0.50); bac
 #workspaceContent .pp-next-section-final .pp-next-section-kicker {
   color: #d8b4fe;
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Stage 37b — Apple-style Learning Sections polish
+   ════════════════════════════════════════════════════════════════════════
+   Bigger, brighter, more readable. Adds:
+   - readability lift across pack header, lesson page, and section rows
+   - large glowing Current Section hero card on the Sections tab
+   - compact horizontal How-It-Works strip at the top of the Sections tab
+   - Section Progress explainer with a colored legend (green/gold/dim)
+   - bigger, more obvious complete-section CTA
+   - Today bridge gets a helper line
+   None of these rules touch internal state; they re-skin the workflow. */
+
+/* ── Pack header readability ── */
+#workspaceContent .pp-dh-title {
+  font-size: 1.55rem; font-weight: 800; letter-spacing: 0.005em;
+  color: #fff;
+}
+#workspaceContent .pp-dh-kicker {
+  font-size: 0.56rem;
+  color: #f5c542;
+}
+#workspaceContent .pp-dh-meta-row .pp-dh-meta {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.78);
+}
+#workspaceContent .pp-dh-prog-lbl {
+  font-size: 0.66rem; font-weight: 700;
+  color: rgba(255,255,255,0.82);
+  letter-spacing: 0.04em;
+}
+#workspaceContent .pp-dh-prog-val {
+  font-size: 0.70rem; font-weight: 600;
+  color: rgba(255,255,255,0.88);
+}
+#workspaceContent .pp-dh-cta {
+  font-size: 0.78rem; font-weight: 800;
+  padding: 12px 22px;
+  letter-spacing: 0.06em;
+}
+#workspaceContent .pp-dh-cta-helper {
+  font-size: 0.66rem;
+  color: rgba(255,255,255,0.72);
+  max-width: 240px;
+  line-height: 1.5;
+}
+
+/* ── How It Works steps brighter & roomier ── */
+#workspaceContent .pp-how-it-works .pp-hiw-steps li {
+  padding: 14px 16px;
+  font-size: 0.80rem;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.55;
+}
+#workspaceContent .pp-how-it-works .pp-hiw-num {
+  width: 26px; height: 26px;
+  font-size: 0.78rem;
+}
+
+/* ── Compact horizontal How-It-Works strip on the Sections tab ── */
+#workspaceContent .pp-hiw-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 16px;
+  margin-bottom: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 22px rgba(0,0,0,0.30);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+#workspaceContent .pp-hiw-strip-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.74rem; font-weight: 600;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.4;
+}
+#workspaceContent .pp-hiw-strip-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(212,175,55,0.20);
+  color: #f5c542; font-weight: 800; font-size: 0.78rem;
+  flex-shrink: 0;
+}
+@media (max-width: 720px) {
+  #workspaceContent .pp-hiw-strip { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 460px) {
+  #workspaceContent .pp-hiw-strip { grid-template-columns: 1fr; }
+}
+
+/* ── Large Current Section hero card ── */
+#workspaceContent .pp-current-hero {
+  display: flex; gap: 22px;
+  margin: 6px 0 20px;
+  padding: 22px;
+  border-radius: 22px;
+  background: linear-gradient(140deg, rgba(212,175,55,0.18), rgba(212,175,55,0.04));
+  border: 1px solid rgba(212,175,55,0.42);
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.40),
+    0 0 32px rgba(212,175,55,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), box-shadow 0.22s ease, border-color 0.18s ease;
+}
+#workspaceContent .pp-current-hero:hover,
+#workspaceContent .pp-current-hero:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(212,175,55,0.65);
+  box-shadow:
+    0 30px 70px rgba(0,0,0,0.46),
+    0 0 40px rgba(212,175,55,0.26),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+  outline: none;
+}
+#workspaceContent .pp-current-hero-thumb {
+  flex: 0 0 220px;
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.20);
+  align-self: stretch;
+}
+#workspaceContent .pp-current-hero-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+#workspaceContent .pp-current-hero-body {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: 8px;
+  min-width: 0;
+}
+#workspaceContent .pp-current-hero-kicker {
+  font-size: 0.56rem; font-weight: 900; letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f5c542;
+}
+#workspaceContent .pp-current-hero-meta {
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.78);
+}
+#workspaceContent .pp-current-hero-title {
+  font-size: 1.42rem; font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  margin: 2px 0 4px;
+}
+#workspaceContent .pp-current-hero-helper {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.55;
+  margin: 0 0 12px;
+  max-width: 520px;
+}
+#workspaceContent .pp-current-hero-cta {
+  align-self: flex-start;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: rgba(212,175,55,0.28);
+  border: 1px solid rgba(212,175,55,0.65);
+  color: #fff;
+  font-size: 0.80rem; font-weight: 800; letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+#workspaceContent .pp-current-hero-cta:hover,
+#workspaceContent .pp-current-hero-cta:focus-visible {
+  background: rgba(212,175,55,0.42);
+  border-color: rgba(212,175,55,0.88);
+  box-shadow: 0 0 28px rgba(212,175,55,0.34);
+  outline: none;
+}
+#workspaceContent .pp-current-hero-cta:active { transform: scale(0.97); }
+@media (max-width: 720px) {
+  #workspaceContent .pp-current-hero { flex-direction: column; gap: 16px; padding: 18px; }
+  #workspaceContent .pp-current-hero-thumb { flex: 0 0 auto; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; }
+  #workspaceContent .pp-current-hero-title { font-size: 1.18rem; }
+}
+
+/* ── Section Progress explainer + colored legend ── */
+#workspaceContent .pp-section-progress {
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+#workspaceContent .pp-section-progress-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+#workspaceContent .pp-section-progress-label {
+  font-size: 0.56rem; font-weight: 800; letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.80);
+}
+#workspaceContent .pp-section-progress-value {
+  font-size: 0.74rem; font-weight: 700;
+  color: rgba(255,255,255,0.88);
+}
+#workspaceContent .pp-section-progress-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+#workspaceContent .pp-section-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(52,211,153,0.85), rgba(212,175,55,0.95));
+  border-radius: 999px;
+  transition: width 0.45s ease;
+}
+#workspaceContent .pp-section-progress-key {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.74);
+}
+#workspaceContent .pp-section-progress-key-dot {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  margin-right: 4px; vertical-align: -1px;
+}
+#workspaceContent .pp-section-progress-key-dot.pp-spk-done    { background: #6ee7b7; box-shadow: 0 0 8px rgba(110,231,183,0.55); }
+#workspaceContent .pp-section-progress-key-dot.pp-spk-current { background: #f5c542; box-shadow: 0 0 8px rgba(245,197,66,0.65); }
+#workspaceContent .pp-section-progress-key-dot.pp-spk-next    { background: rgba(255,255,255,0.30); }
+#workspaceContent .pp-section-progress-key-sep {
+  margin: 0 2px;
+  color: rgba(255,255,255,0.32);
+}
+
+/* ── Section rows: bigger, brighter, roomier ── */
+#workspaceContent .pp-sections-intro {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.6;
+  margin: 4px 0 18px;
+}
+#workspaceContent .pp-day-grid {
+  gap: 10px;
+}
+#workspaceContent .pp-day-item {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  gap: 14px;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.12s ease;
+}
+#workspaceContent .pp-day-item:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.16);
+}
+#workspaceContent .pp-day-num-badge {
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.06em;
+  color: #f5c542;
+  padding: 4px 10px;
+  background: rgba(212,175,55,0.10);
+  border: 1px solid rgba(212,175,55,0.22);
+  border-radius: 999px;
+}
+#workspaceContent .pp-day-item.pp-day-done .pp-day-num-badge {
+  color: #6ee7b7;
+  background: rgba(52,211,153,0.10);
+  border-color: rgba(52,211,153,0.28);
+}
+#workspaceContent .pp-day-title {
+  font-size: 0.92rem; font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+#workspaceContent .pp-day-item.pp-day-done .pp-day-title {
+  color: rgba(255,255,255,0.62);
+}
+#workspaceContent .pp-day-status {
+  font-size: 0.56rem; font-weight: 800;
+  padding: 4px 10px;
+}
+#workspaceContent .pp-day-group-label {
+  font-size: 0.58rem;
+  color: rgba(212,175,55,0.92);
+}
+#workspaceContent .pp-day-group-helper {
+  font-size: 0.64rem;
+  color: rgba(255,255,255,0.56);
+}
+
+/* ── Lesson page readability lift ── */
+#workspaceContent .pp-dv-title {
+  font-size: 1.55rem; font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+#workspaceContent .pp-dv-kicker {
+  font-size: 0.62rem;
+  color: #f5c542;
+}
+#workspaceContent .pp-reading {
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.85;
+}
+#workspaceContent .pp-reading h3 {
+  font-size: 1.00rem;
+  color: #fff;
+  margin-top: 26px;
+}
+#workspaceContent .pp-callout-body {
+  font-size: 0.86rem;
+  color: rgba(255,255,255,0.92);
+}
+#workspaceContent .pp-callout-kicker {
+  font-size: 0.56rem;
+}
+#workspaceContent .pp-action-block {
+  padding: 22px 24px;
+  border-radius: 20px;
+}
+#workspaceContent .pp-action-block-kicker {
+  font-size: 0.60rem;
+}
+#workspaceContent .pp-action-block-body {
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+#workspaceContent .pp-micro-challenge-body {
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.92);
+}
+#workspaceContent .pp-dv-reflection {
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.86);
+  line-height: 1.7;
+}
+#workspaceContent .pp-dv-label {
+  font-size: 0.60rem;
+  color: rgba(212,175,55,0.88);
+}
+
+/* ── Complete this Section CTA bigger and more obvious ── */
+#workspaceContent .pp-dv-footer {
+  margin-top: 26px;
+}
+#workspaceContent .pp-complete-btn {
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 18px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: linear-gradient(140deg, rgba(212,175,55,0.32), rgba(212,175,55,0.18));
+  border: 1px solid rgba(212,175,55,0.70);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.30), 0 0 24px rgba(212,175,55,0.18);
+}
+#workspaceContent .pp-complete-btn:hover,
+#workspaceContent .pp-complete-btn:focus-visible {
+  background: linear-gradient(140deg, rgba(212,175,55,0.42), rgba(212,175,55,0.24));
+  border-color: rgba(212,175,55,0.90);
+  box-shadow: 0 14px 38px rgba(0,0,0,0.36), 0 0 34px rgba(212,175,55,0.34);
+  outline: none;
+}
+#workspaceContent .pp-complete-btn:active { transform: scale(0.98); }
+#workspaceContent .pp-complete-btn.pp-complete-done {
+  background: rgba(52,211,153,0.16);
+  border-color: rgba(52,211,153,0.40);
+  color: #6ee7b7;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.24);
+  cursor: default;
+}
+
+/* ── Today bridge helper line ── */
+#workspaceContent .pp-section-helper {
+  display: block;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.66);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* ── Marketplace card readability lift ── */
+.pp-pack-title {
+  font-size: 0.96rem;
+  color: #fff;
+}
+.pp-pack-desc {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.6;
+}
+.pp-pack-days {
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.56);
+}
+.pp-pack-start {
+  font-size: 0.66rem;
+  padding: 9px 16px;
+}

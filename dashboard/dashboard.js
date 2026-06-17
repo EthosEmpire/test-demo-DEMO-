@@ -11544,6 +11544,7 @@ function initSidebar() {
         + '<div class="pp-section-head">'
         +   '<span class="pp-section-kicker">YOUR ACTIVE LEARNING PATH</span>'
         +   '<span class="pp-section-title">Continue your pack</span>'
+        +   '<span class="pp-section-helper">Complete one section at a time.</span>'
         + '</div>'
         + renderTodayDashboard()
         + '</div>'
@@ -11931,24 +11932,56 @@ function initSidebar() {
         + '<div class="pp-empty-tab-sub">The full section-by-section plan is being built. The Overview, Schedule, Notes, and Tools tabs are available now.</div>'
         + '</div></div>';
     }
-    /* Find the next-up section (first incomplete) for highlight.
+    /* Find the next-up section (first incomplete) for the hero card.
        Variable still named nextDay internally to keep the rest of the
        file unchanged; user-facing label says Section. */
     var nextDay = null;
     for (var i = 0; i < pack.days.length; i++) {
       if (!pp['day_' + pack.days[i].day]) { nextDay = pack.days[i].day; break; }
     }
-    /* Stage 37: bucket sections into Completed / Current / Coming Next so
-       the user instantly sees what to click. Internal data model (pack.days,
-       d.day, packProgress.day_N) is untouched. */
+    /* Stage 37b: compact horizontal How-It-Works strip at the top of the
+       Sections tab so users see the loop before scanning the list. */
+    var hiwStripHtml = '<div class="pp-hiw-strip" role="list" aria-label="How learning sections work">'
+      + '<div class="pp-hiw-strip-item" role="listitem"><span class="pp-hiw-strip-num">1</span><span class="pp-hiw-strip-text">Open the current section</span></div>'
+      + '<div class="pp-hiw-strip-item" role="listitem"><span class="pp-hiw-strip-num">2</span><span class="pp-hiw-strip-text">Read the lesson</span></div>'
+      + '<div class="pp-hiw-strip-item" role="listitem"><span class="pp-hiw-strip-num">3</span><span class="pp-hiw-strip-text">Finish the checklist</span></div>'
+      + '<div class="pp-hiw-strip-item" role="listitem"><span class="pp-hiw-strip-num">4</span><span class="pp-hiw-strip-text">Complete the section</span></div>'
+      + '</div>';
+    /* Stage 37b: section-progress explainer above the list — explicitly
+       labels the meaning of green / gold / dim states so the dotted grid
+       is never unexplained. */
+    var doneCount = 0;
+    for (var dn = 0; dn < pack.days.length; dn++) {
+      if (pp['day_' + pack.days[dn].day]) doneCount++;
+    }
+    var pct = pack.days.length > 0 ? Math.round((doneCount / pack.days.length) * 100) : 0;
+    var progressStripHtml = '<div class="pp-section-progress">'
+      + '<div class="pp-section-progress-head">'
+      +   '<span class="pp-section-progress-label">Section Progress</span>'
+      +   '<span class="pp-section-progress-value">' + doneCount + ' of ' + pack.days.length + ' sections complete · ' + pct + '%</span>'
+      + '</div>'
+      + '<div class="pp-section-progress-bar"><div class="pp-section-progress-fill" style="width:' + pct + '%;"></div></div>'
+      + '<div class="pp-section-progress-key">'
+      +   '<span class="pp-section-progress-key-dot pp-spk-done"></span> Green = complete'
+      +   '<span class="pp-section-progress-key-sep">·</span>'
+      +   '<span class="pp-section-progress-key-dot pp-spk-current"></span> Gold = current'
+      +   '<span class="pp-section-progress-key-sep">·</span>'
+      +   '<span class="pp-section-progress-key-dot pp-spk-next"></span> Dim = coming next'
+      + '</div>'
+      + '</div>';
+    /* Stage 37b: bucket sections into Current / Coming Next / Completed.
+       The current section also renders as a large hero card above the
+       list groups so the next action is the most obvious thing on screen. */
+    var currentDay = null;
     var sections = pack.days.map(function (d) {
       var done = !!pp['day_' + d.day];
       var isNext = (d.day === nextDay);
+      if (isNext) currentDay = d;
       var cls = 'pp-day-item';
       var status;
-      if (done)      { cls += ' pp-day-done';     status = 'Complete'; }
-      else if (isNext) { cls += ' pp-day-next';   status = 'Current';  }
-      else            { cls += ' pp-day-upcoming'; status = 'Next';     }
+      if (done)        { cls += ' pp-day-done';     status = 'Complete'; }
+      else if (isNext) { cls += ' pp-day-next';     status = 'Current';  }
+      else             { cls += ' pp-day-upcoming'; status = 'Next';     }
       return {
         done: done, isNext: isNext, status: status,
         html: '<div class="' + cls + '" data-day="' + d.day + '">'
@@ -11959,6 +11992,33 @@ function initSidebar() {
           + '</div>'
       };
     });
+    /* Stage 37b: large Current Section hero card with optional image
+       thumbnail + big CTA + helper line. Pulls the lesson image from the
+       overlay (PACK_CONTENT_OVERLAY) when present so the hero feels
+       premium even before a user opens the section. */
+    var currentHeroHtml = '';
+    if (currentDay) {
+      var dayOv = (typeof _ppDayOverlayFor === 'function') ? _ppDayOverlayFor(pack.id, currentDay.day) : null;
+      var thumbHtml = '';
+      if (dayOv && dayOv.image) {
+        var thumbSrc = (typeof _ppLessonImagePath === 'function') ? _ppLessonImagePath(dayOv.image) : ('../images/plan-packs/lessons/' + dayOv.image);
+        var thumbAlt = dayOv.imageAlt || (pack.title + ' — Section ' + currentDay.day);
+        thumbHtml = '<div class="pp-current-hero-thumb">'
+          + '<img src="' + thumbSrc + '" alt="' + dpEsc(thumbAlt) + '" loading="lazy" '
+          + 'onerror="this.parentNode.style.display=\'none\';">'
+          + '</div>';
+      }
+      currentHeroHtml = '<div class="pp-current-hero" data-section-open="' + currentDay.day + '" role="button" tabindex="0" aria-label="Open Section ' + currentDay.day + '">'
+        + thumbHtml
+        + '<div class="pp-current-hero-body">'
+        +   '<div class="pp-current-hero-kicker">Current Section</div>'
+        +   '<div class="pp-current-hero-meta">Section ' + currentDay.day + ' of ' + pack.days.length + '</div>'
+        +   '<h2 class="pp-current-hero-title">' + dpEsc(currentDay.title) + '</h2>'
+        +   '<p class="pp-current-hero-helper">Open the lesson, finish the checklist, then mark this section complete.</p>'
+        +   '<button class="pp-current-hero-cta" data-section-open="' + currentDay.day + '">Continue Section ' + currentDay.day + '</button>'
+        + '</div>'
+        + '</div>';
+    }
     function groupHtml(label, helper, items) {
       if (!items.length) return '';
       return '<div class="pp-day-group">'
@@ -11970,12 +12030,17 @@ function initSidebar() {
         +  '</div>';
     }
     var doneItems    = sections.filter(function (s) { return s.done; });
-    var currentItems = sections.filter(function (s) { return !s.done && s.isNext; });
     var nextItems    = sections.filter(function (s) { return !s.done && !s.isNext; });
+    /* Note: currentItems intentionally omitted from the list groups
+       because the hero card above already covers it. */
     return '<div class="pp-tab-panel">'
-      + '<p class="pp-sections-intro">Each row below is one learning section. Complete one at a time — read, act, then mark it done.</p>'
-      + groupHtml('Current Section', 'Open this one next', currentItems)
-      + groupHtml('Coming Next',     'Unlocks as you progress', nextItems)
+      + hiwStripHtml
+      + currentHeroHtml
+      + progressStripHtml
+      + (currentDay
+          ? '<p class="pp-sections-intro">The big card above is what to open next. The list below shows what is coming and what you have completed.</p>'
+          : '<p class="pp-sections-intro">You have completed every section in this pack. Open any row below to review.</p>')
+      + groupHtml('Coming Next',        'Unlocks as you progress',                            nextItems)
       + groupHtml('Completed Sections', doneItems.length + ' of ' + sections.length + ' complete', doneItems)
       + '</div>';
   }
@@ -12530,6 +12595,24 @@ function initSidebar() {
         var n = parseInt(btn.getAttribute('data-section-jump'), 10);
         if (!isNaN(n)) { ppActiveDay = n; refreshPackPanel(); }
       });
+    });
+    /* Stage 37b: wire the large Current Section hero card on the Sections
+       tab. data-section-open holds the section number; the whole card
+       and its inner CTA both carry the attribute so any click inside
+       routes to the lesson. Enter/Space activates via the role="button"
+       wrapper for keyboard users. */
+    Array.prototype.forEach.call(ppRoot ? ppRoot.querySelectorAll('[data-section-open]') : [], function (el) {
+      function open(e) {
+        e.stopPropagation();
+        var n = parseInt(el.getAttribute('data-section-open'), 10);
+        if (!isNaN(n)) { ppActiveDay = n; refreshPackPanel(); }
+      }
+      el.addEventListener('click', open);
+      if (el.getAttribute('role') === 'button') {
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); }
+        });
+      }
     });
     var ppNextBackOv = document.getElementById('ppNextBackToOverview');
     if (ppNextBackOv) ppNextBackOv.addEventListener('click', function () {
