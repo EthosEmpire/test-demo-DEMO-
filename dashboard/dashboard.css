@@ -10921,3 +10921,117 @@ body.ee-reduce-motion * {
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Stage 41-B (UX) — Settings Guide & Plan tab
+   ════════════════════════════════════════════════════════════════════════
+   Visual treatment for the five informational cards that replace the
+   old reset-button-only Learning tab. Cards reuse the Apple-style glass
+   surface from the existing settings rows and add a hero card style for
+   Your Current Plan + Tips. */
+
+#workspaceContent .ee-guide-card {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 14px;
+}
+
+#workspaceContent .ee-guide-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.96);
+  letter-spacing: 0.005em;
+  margin-bottom: 4px;
+}
+
+#workspaceContent .ee-guide-card-meta {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.66);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+
+#workspaceContent .ee-guide-card-actions {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+
+#workspaceContent .ee-btn-secondary {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.85);
+}
+#workspaceContent .ee-btn-secondary:hover,
+#workspaceContent .ee-btn-secondary:focus-visible {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.28);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(255,255,255,0.04);
+}
+
+/* How-to steps + tips lists. */
+#workspaceContent .ee-guide-steps,
+#workspaceContent .ee-guide-tips {
+  margin: 0; padding: 0;
+  list-style-position: outside;
+  color: rgba(255,255,255,0.86);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+#workspaceContent .ee-guide-steps { padding-left: 1.4em; }
+#workspaceContent .ee-guide-tips  { padding-left: 1.2em; }
+#workspaceContent .ee-guide-steps li,
+#workspaceContent .ee-guide-tips  li {
+  margin-bottom: 6px;
+}
+#workspaceContent .ee-guide-steps li::marker {
+  color: rgba(212,175,55,0.85);
+  font-weight: 800;
+}
+#workspaceContent .ee-guide-tips  li::marker {
+  color: rgba(212,175,55,0.85);
+}
+#workspaceContent .ee-guide-steps strong,
+#workspaceContent .ee-guide-tips  strong {
+  color: rgba(255,255,255,0.96);
+}
+
+/* Quick Navigation grid — 3-column responsive set of glass buttons. */
+#workspaceContent .ee-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+@media (max-width: 720px) {
+  #workspaceContent .ee-guide-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 460px) {
+  #workspaceContent .ee-guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+#workspaceContent .ee-guide-nav-btn {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.86);
+  font-family: inherit;
+  font-size: 0.74rem; font-weight: 700; letter-spacing: 0.04em;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+#workspaceContent .ee-guide-nav-btn:hover,
+#workspaceContent .ee-guide-nav-btn:focus-visible {
+  background: rgba(212,175,55,0.12);
+  border-color: rgba(212,175,55,0.45);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(212,175,55,0.18);
+  outline: none;
+}
+#workspaceContent .ee-guide-nav-btn:active { transform: scale(0.97); }

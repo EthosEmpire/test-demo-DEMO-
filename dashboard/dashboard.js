@@ -39,7 +39,7 @@
    ~22550 Stage 6 polish (transitions, shortcuts, empty states, persistence)
    ~22557 _eeEsc — top-level HTML-escape helper used by Settings hub
    ~22980 Stage 2 membership / billing system + upgrade modal
-   ~23292 Stage 39 Settings hub (General · Appearance · Learning · Data · Account)
+   ~23292 Settings hub (General · Appearance · Guide & Plan · Data · Account)
    ~24255 Right panel system
    ~24473 Header controls (search + profile)
    ════════════════════════════════════════════════════════════════════════ */
@@ -23380,8 +23380,12 @@ function _eeListLocalDashboardKeys() {
    Setting window._eeSettingsTab BEFORE switchDashboardView ensures the
    first render of the Settings view picks the right tab — Stage 39's
    renderSettingsTabbed reads it on each render. */
-var EE_SETTINGS_VALID_TABS = ['general', 'appearance', 'learning', 'data', 'account'];
+var EE_SETTINGS_VALID_TABS = ['general', 'appearance', 'guide', 'data', 'account'];
 function openSettingsTab(tabName) {
+  /* Backward compatibility: the 'learning' tab was renamed to 'guide'
+     in Stage 41-B (UX). Anything still asking for 'learning' (command
+     palette, persisted state, old links) lands on Guide & Plan. */
+  if (tabName === 'learning') tabName = 'guide';
   var safe = (EE_SETTINGS_VALID_TABS.indexOf(tabName) >= 0) ? tabName : 'general';
   try { window._eeSettingsTab = safe; } catch (e) {}
   if (window.switchDashboardView) {
@@ -23465,37 +23469,118 @@ function renderSettingsTabbed() {
     +   '<div class="dp-setting-sub">Return to dark / gold / normal / motion on</div></div>'
     +   '<button class="dp-setting-btn" id="eeAppearanceReset" type="button">Reset</button></div>';
 
-  /* ── Learning tab — real Plan Pack actions ──────────────────── */
+  /* ── Guide & Plan tab — orientation + active-plan summary + safe nav.
+       Reset controls are present but de-emphasised at the bottom under
+       Progress Tools so they no longer dominate the page. ──────────── */
   var lastTouchedPackId = '';
   try { lastTouchedPackId = localStorage.getItem('ethos_last_touched_pack') || ''; } catch (e) {}
-  var lastPackName = '';
+  var lastPack = null;
   if (lastTouchedPackId && typeof PLAN_PACKS_DATA !== 'undefined') {
     for (var lpi = 0; lpi < PLAN_PACKS_DATA.length; lpi++) {
-      if (PLAN_PACKS_DATA[lpi].id === lastTouchedPackId) { lastPackName = PLAN_PACKS_DATA[lpi].title; break; }
+      if (PLAN_PACKS_DATA[lpi].id === lastTouchedPackId) { lastPack = PLAN_PACKS_DATA[lpi]; break; }
     }
   }
-  var learningHtml = ''
-    + '<div class="dp-label">Plan Packs</div>'
-    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Open Plan Packs</div>'
-    +   '<div class="dp-setting-sub">Jump to the marketplace of learning sections</div></div>'
-    +   '<button class="dp-setting-btn" id="eeLearningOpen" type="button">Open</button></div>'
-    + (lastPackName
-        ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Continue ' + _eeEsc(lastPackName) + '</div>'
-          +   '<div class="dp-setting-sub">Resume the last pack you touched</div></div>'
-          +   '<button class="dp-setting-btn" id="eeLearningContinue" type="button" data-pack="' + _eeEsc(lastTouchedPackId) + '">Continue</button></div>'
-        : '')
-    + '<div class="dp-label">Progress</div>'
-    + (lastPackName
+  /* Pull current-section info from saved pack progress, if any. */
+  var packProgressNow = {};
+  try { packProgressNow = JSON.parse(localStorage.getItem('ee_pack_progress') || '{}') || {}; } catch (e) {}
+  var lastPackName    = lastPack ? lastPack.title : '';
+  var lastPackTotal   = lastPack ? (lastPack.totalDays || (lastPack.days ? lastPack.days.length : 0)) : 0;
+  var lastPackDone    = 0;
+  var lastPackNextDay = null;
+  if (lastPack && lastPack.days) {
+    var packProgress = packProgressNow[lastPack.id] || {};
+    for (var dIdx = 0; dIdx < lastPack.days.length; dIdx++) {
+      var d = lastPack.days[dIdx];
+      if (packProgress['day_' + d.day]) lastPackDone++;
+      else if (lastPackNextDay === null) lastPackNextDay = d.day;
+    }
+  }
+  var lastPackPct = (lastPackTotal > 0) ? Math.round((lastPackDone / lastPackTotal) * 100) : 0;
+
+  /* Card 1: Your Current Plan */
+  var currentPlanCard;
+  if (lastPack) {
+    currentPlanCard = ''
+      + '<div class="dp-label">Your Current Plan</div>'
+      + '<div class="ee-guide-card">'
+      +   '<div class="ee-guide-card-title">' + _eeEsc(lastPackName) + '</div>'
+      +   '<div class="ee-guide-card-meta">'
+      +     'Section ' + (lastPackNextDay || lastPackTotal) + ' of ' + lastPackTotal
+      +     ' · ' + lastPackDone + ' of ' + lastPackTotal + ' complete · ' + lastPackPct + '%'
+      +   '</div>'
+      +   '<div class="ee-guide-card-actions">'
+      +     '<button class="dp-setting-btn" id="eeGuideContinue" type="button" data-pack="' + _eeEsc(lastTouchedPackId) + '">Continue Current Plan</button>'
+      +     '<button class="dp-setting-btn ee-btn-secondary" id="eeGuideActivePlan" type="button">View Active Plan</button>'
+      +     '<button class="dp-setting-btn ee-btn-secondary" id="eeGuideOpenPacks" type="button">Open Plan Packs</button>'
+      +   '</div>'
+      + '</div>';
+  } else {
+    currentPlanCard = ''
+      + '<div class="dp-label">Your Current Plan</div>'
+      + '<div class="ee-guide-card">'
+      +   '<div class="ee-guide-card-title">No active plan selected yet</div>'
+      +   '<div class="ee-guide-card-meta">Pick a Plan Pack to start a structured learning path. Progress saves automatically as you complete sections.</div>'
+      +   '<div class="ee-guide-card-actions">'
+      +     '<button class="dp-setting-btn" id="eeGuideOpenPacks" type="button">Browse Plan Packs</button>'
+      +   '</div>'
+      + '</div>';
+  }
+
+  /* Card 2: How to Use Ethos Empire */
+  var howToCard = ''
+    + '<div class="dp-label">How to Use Ethos Empire</div>'
+    + '<div class="ee-guide-card">'
+    +   '<ol class="ee-guide-steps">'
+    +     '<li>Choose a Plan Pack from the marketplace.</li>'
+    +     '<li>Complete one section at a time — read, act, then mark complete.</li>'
+    +     '<li>Use <strong>Graph View</strong> to explore your learning map.</li>'
+    +     '<li>Use <strong>Notes</strong> to capture thoughts as they come.</li>'
+    +     '<li>Use <strong>Settings</strong> to adjust appearance, back up your data, and manage your account.</li>'
+    +     '<li>Use the <strong>top menu</strong> to jump between sections faster.</li>'
+    +   '</ol>'
+    + '</div>';
+
+  /* Card 3: Quick Navigation */
+  var quickNavCard = ''
+    + '<div class="dp-label">Quick Navigation</div>'
+    + '<div class="ee-guide-grid">'
+    +   '<button class="ee-guide-nav-btn" type="button" data-guide-nav="graph">Dashboard Home</button>'
+    +   '<button class="ee-guide-nav-btn" type="button" data-guide-nav="plan-packs">Plan Packs</button>'
+    +   '<button class="ee-guide-nav-btn" type="button" data-guide-nav="graph">Graph View</button>'
+    +   '<button class="ee-guide-nav-btn" type="button" data-guide-nav="notes">Notes</button>'
+    +   '<button class="ee-guide-nav-btn" type="button" data-guide-settings-tab="general">Settings General</button>'
+    +   '<button class="ee-guide-nav-btn" type="button" data-guide-settings-tab="data">Data &amp; Backup</button>'
+    + '</div>';
+
+  /* Card 4: Progress Tools (reset buttons, less dominant) */
+  var progressToolsCard = ''
+    + '<div class="dp-label">Progress Tools</div>'
+    + '<div class="ee-settings-note">Destructive actions. Save a backup from <strong>Data &amp; Backup</strong> before clearing progress.</div>'
+    + (lastPack
         ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset progress for ' + _eeEsc(lastPackName) + '</div>'
           +   '<div class="dp-setting-sub">Clears completion marks for that pack only</div></div>'
-          +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningResetCurrent" type="button" data-pack="' + _eeEsc(lastTouchedPackId) + '">Reset Pack</button></div>'
+          +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeGuideResetCurrent" type="button" data-pack="' + _eeEsc(lastTouchedPackId) + '">Reset Plan</button></div>'
         : '')
     + '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset all Plan Pack progress</div>'
     +   '<div class="dp-setting-sub">Clears completion marks for every pack on this device</div></div>'
-    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningResetAll" type="button">Reset All</button></div>'
+    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeGuideResetAll" type="button">Reset All</button></div>'
     + '<div class="dp-setting-row"><div><div class="dp-setting-label">Clear completed sections list</div>'
     +   '<div class="dp-setting-sub">Removes the completion-date log without un-marking sections</div></div>'
-    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningClearCompleted" type="button">Clear</button></div>';
+    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeGuideClearCompleted" type="button">Clear</button></div>';
+
+  /* Card 5: Tips & Shortcuts */
+  var tipsCard = ''
+    + '<div class="dp-label">Tips &amp; Shortcuts</div>'
+    + '<div class="ee-guide-card">'
+    +   '<ul class="ee-guide-tips">'
+    +     '<li>Use the top <strong>Settings</strong> dropdown to jump directly to a settings section.</li>'
+    +     '<li>Use the top <strong>Explore</strong> dropdown to move between major dashboard areas.</li>'
+    +     '<li>Save a backup from <strong>Data &amp; Backup</strong> before resetting progress.</li>'
+    +     '<li>If something looks stale, hard refresh with <strong>Cmd + Shift + R</strong> (or <strong>Ctrl + Shift + R</strong>).</li>'
+    +   '</ul>'
+    + '</div>';
+
+  var guideHtml = currentPlanCard + howToCard + quickNavCard + progressToolsCard + tipsCard;
 
   /* ── Data & Backup tab ──────────────────────────────────────── */
   var dataHtml = ''
@@ -23564,18 +23649,19 @@ function renderSettingsTabbed() {
 
   var panel;
   switch (tab) {
-    case 'appearance': panel = appearanceHtml; break;
-    case 'learning':   panel = learningHtml;   break;
-    case 'data':       panel = dataHtml;       break;
-    case 'account':    panel = accountHtml;    break;
+    case 'appearance': panel = appearanceHtml;     break;
+    case 'guide':      panel = guideHtml;          break;
+    case 'learning':   panel = guideHtml;          break; /* backward compat */
+    case 'data':       panel = dataHtml;           break;
+    case 'account':    panel = accountHtml;        break;
     default:           panel = generalHtml;
   }
   return ''
     + '<div class="ee-settings-tabs" role="tablist">'
     +   tabBtn('general',    'General')
     +   tabBtn('appearance', 'Appearance')
-    +   tabBtn('learning',   'Learning')
-    +   tabBtn('data',       'Data & Backup')
+    +   tabBtn('guide',      'Guide &amp; Plan')
+    +   tabBtn('data',       'Data &amp; Backup')
     +   tabBtn('account',    'Account')
     + '</div>'
     + '<div class="ee-stab-panel">' + panel + '</div>';
@@ -23649,20 +23735,40 @@ function attachSettingsTabsEvents() {
     if (window.showToast) window.showToast('Appearance reset.', 'info', 1500);
   });
 
-  /* Learning tab — open / continue / reset pack progress */
-  var lo = root.querySelector('#eeLearningOpen');
-  if (lo) lo.addEventListener('click', function () {
-    if (window.switchDashboardView) window.switchDashboardView('plan-packs');
-  });
-  var lc = root.querySelector('#eeLearningContinue');
-  if (lc) lc.addEventListener('click', function () {
-    var pid = lc.getAttribute('data-pack');
+  /* Guide & Plan tab — current plan actions, quick navigation, reset tools.
+     All buttons perform real actions; destructive ones are confirm-gated. */
+  var gc = root.querySelector('#eeGuideContinue');
+  if (gc) gc.addEventListener('click', function () {
+    var pid = gc.getAttribute('data-pack');
     if (pid && window.EE_PACK_NAV) window.EE_PACK_NAV.setPackTarget(pid, null);
     if (window.switchDashboardView) window.switchDashboardView('plan-packs');
   });
-  var lrc = root.querySelector('#eeLearningResetCurrent');
-  if (lrc) lrc.addEventListener('click', function () {
-    var pid = lrc.getAttribute('data-pack');
+  var gap = root.querySelector('#eeGuideActivePlan');
+  if (gap) gap.addEventListener('click', function () {
+    if (window.switchDashboardView) window.switchDashboardView('active-plan');
+  });
+  var gop = root.querySelector('#eeGuideOpenPacks');
+  if (gop) gop.addEventListener('click', function () {
+    if (window.switchDashboardView) window.switchDashboardView('plan-packs');
+  });
+  /* Quick navigation grid — view-jump buttons. */
+  Array.prototype.forEach.call(root.querySelectorAll('[data-guide-nav]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var v = btn.getAttribute('data-guide-nav');
+      if (v && window.switchDashboardView) window.switchDashboardView(v);
+    });
+  });
+  /* Quick navigation grid — Settings-tab-jump buttons. */
+  Array.prototype.forEach.call(root.querySelectorAll('[data-guide-settings-tab]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var t = btn.getAttribute('data-guide-settings-tab');
+      if (t && typeof window.openSettingsTab === 'function') window.openSettingsTab(t);
+    });
+  });
+  /* Progress Tools — destructive, confirm-gated. */
+  var grc = root.querySelector('#eeGuideResetCurrent');
+  if (grc) grc.addEventListener('click', function () {
+    var pid = grc.getAttribute('data-pack');
     if (!pid) return;
     if (!confirm('Reset progress for this pack? All completed sections will be cleared.')) return;
     try {
@@ -23672,20 +23778,22 @@ function attachSettingsTabsEvents() {
       if (window.EE_PACK_NAV && window.EE_PACK_NAV.reloadProgress) window.EE_PACK_NAV.reloadProgress();
       if (window.EE_PACK_NAV && window.EE_PACK_NAV.refreshPanel)  window.EE_PACK_NAV.refreshPanel();
       if (window.showToast) window.showToast('Pack progress reset.', 'success', 1800);
+      refreshCurrentView();
     } catch (e) { if (window.showToast) window.showToast('Could not reset pack progress.', 'error'); }
   });
-  var lra = root.querySelector('#eeLearningResetAll');
-  if (lra) lra.addEventListener('click', function () {
+  var gra = root.querySelector('#eeGuideResetAll');
+  if (gra) gra.addEventListener('click', function () {
     if (!confirm('Reset progress for EVERY Plan Pack on this device? This cannot be undone.')) return;
     try {
       localStorage.removeItem('ee_pack_progress');
       if (window.EE_PACK_NAV && window.EE_PACK_NAV.reloadProgress) window.EE_PACK_NAV.reloadProgress();
       if (window.EE_PACK_NAV && window.EE_PACK_NAV.refreshPanel)  window.EE_PACK_NAV.refreshPanel();
       if (window.showToast) window.showToast('All Plan Pack progress reset.', 'success', 1800);
+      refreshCurrentView();
     } catch (e) { if (window.showToast) window.showToast('Could not reset pack progress.', 'error'); }
   });
-  var lcc = root.querySelector('#eeLearningClearCompleted');
-  if (lcc) lcc.addEventListener('click', function () {
+  var gcc = root.querySelector('#eeGuideClearCompleted');
+  if (gcc) gcc.addEventListener('click', function () {
     if (!confirm('Clear the completed-sections log? This does not un-mark sections, only the date log.')) return;
     try {
       Object.keys(localStorage).filter(function (k) { return k.indexOf('ee_pack_day_ts_') === 0 || k.indexOf('ee_daily_completion_') === 0; })
