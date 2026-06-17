@@ -11058,6 +11058,512 @@ var PACK_CONTENT_OVERLAY = {
         ],
         microChallenge: 'For one week, do not buy anything on the wait list. Just observe what survives the 72 hours.',
         reflection: 'How much of what I have bought in the past year would still be on the wait list 72 hours later?'
+      },
+      9: {
+        image: 'financial-blueprint-day-09.webp',
+        imageAlt: 'A small saving jar labeled emergency fund on a clean desk.',
+        keyTerms: ['system', 'recovery'],
+        reading:
+            '<h3>Build the first emergency fund</h3>'
+          + '<p>The first milestone in a real financial system is one month of bare needs in a separate account. Not three months. Not six. One month. That number is small enough to be reachable and large enough to change how you feel about money.</p>'
+          + '<p>The first $1,000 is the hardest. Once it sits in an account labeled "emergency," every other financial decision gets a little calmer. You stop one panic from becoming a debt event.</p>'
+          + '<h3>How to actually get there</h3>'
+          + '<p>Cut one wants-category for 60 days (most people can cut $200-400 from a non-essential bucket). Move the cut amount straight to the emergency account every payday. Six pay periods later, the first $1,000 is in place.</p>',
+        whyItMatters: 'The emergency fund is the foundation. Without it, every other financial move is fragile.',
+        keyInsight: 'Small reserves prevent small problems from becoming big debts.',
+        example: 'A reader cut delivery food for 60 days. The $480 he saved became his first emergency cushion. Two months later a car repair landed and he paid it without a credit card for the first time in a decade.',
+        actionStep: 'Pick one wants category to cut for 60 days. Calculate the saved amount. Auto-transfer it to the emergency account every payday.',
+        checklist: [
+          'Pick the category to cut',
+          'Set the auto-transfer for payday',
+          'Hide the account from your home banking screen',
+          'Track to first $1,000'
+        ],
+        microChallenge: 'Photograph the first emergency balance once it crosses $500. Watch it for a year.',
+        reflection: 'How would my last hard year have looked with $1,000 sitting untouched in an emergency account?'
+      },
+      10: {
+        image: 'financial-blueprint-day-10.webp',
+        imageAlt: 'A list of debts being attacked one at a time.',
+        keyTerms: ['discipline', 'execution'],
+        reading:
+            '<h3>Debt strategy that holds</h3>'
+          + '<p>The two debt strategies that actually work: avalanche (highest interest rate first) and snowball (smallest balance first). Both work. Pick the one you will not quit on.</p>'
+          + '<p>Avalanche saves more money mathematically. Snowball produces faster psychological wins. If you have failed at debt before, choose snowball — the early closeout of small balances builds the chain. If you are mathematically motivated, choose avalanche.</p>'
+          + '<h3>The extra $50 rule</h3>'
+          + '<p>Whichever you choose, the rule is simple: an extra $50 on top of the minimum payment, every month, to the target debt. Stack it on the next debt when one closes. The compounding is brutal in your favour.</p>',
+        whyItMatters: 'A debt plan you will actually run beats a perfect debt plan you abandon.',
+        keyInsight: 'Pick snowball if you have quit before. Avalanche if you have not.',
+        example: 'A reader had quit two avalanche plans. Switched to snowball. Closed two small credit cards in 90 days. The chain held this time because the wins came fast.',
+        actionStep: 'Pick snowball or avalanche today. Add $50 above the minimum to the target debt this month.',
+        checklist: [
+          'Choose strategy honestly',
+          'Identify the target debt',
+          'Set the extra $50 transfer',
+          'Stack to the next debt when one closes'
+        ],
+        microChallenge: 'Calculate the date the first debt closes at your current pace. Mark it on the calendar.',
+        reflection: 'Which debt have I been hoping disappears on its own?'
+      },
+      11: {
+        image: 'financial-blueprint-day-11.webp',
+        imageAlt: 'A magnifying glass over a list of subscriptions on a screen.',
+        keyTerms: ['system', 'discipline'],
+        reading:
+            '<h3>The subscription audit</h3>'
+          + '<p>Pull your last three bank statements. Highlight every subscription. Streaming, software, gym, app, recurring delivery. The list will surprise you. Most people pay for 6-12 things they forgot they had.</p>'
+          + '<p>The rule: if you have not used it in the last 30 days, cancel today. Not "downgrade later." Cancel now. You can always re-subscribe if you actually miss it. Most people do not.</p>'
+          + '<h3>The yearly review</h3>'
+          + '<p>Once a year, run the subscription audit again. It builds back up faster than you think. Make the audit a scheduled event — January 1 is fine — so it does not depend on you remembering.</p>',
+        whyItMatters: 'Subscriptions are designed to be forgotten. The audit is the cure.',
+        keyInsight: 'Cancel today, re-subscribe later only if you miss it. Almost no one does.',
+        example: 'A reader audited and cancelled seven subscriptions in 20 minutes. $94 a month freed up. He missed exactly one of them and re-added it. Net savings: $82 a month for the next year.',
+        actionStep: 'Audit your subscriptions today. Cancel anything unused in the last 30 days. Calendar a yearly re-audit.',
+        checklist: [
+          'Pull 3 months of statements',
+          'List every subscription',
+          'Cancel anything unused this month',
+          'Calendar a yearly re-audit'
+        ],
+        microChallenge: 'For one month, do not start any new subscription without a 7-day cool-off note in your wait-list file.',
+        reflection: 'What am I paying for monthly that does not match how I actually live?'
+      },
+      12: {
+        image: 'financial-blueprint-day-12.webp',
+        imageAlt: 'A small cooking setup with simple, low-cost ingredients.',
+        keyTerms: ['discipline', 'consistency'],
+        reading:
+            '<h3>Food and transport leaks</h3>'
+          + '<p>For most earners, two categories carry 70 percent of leakable spending: food bought reactively and transport friction. Delivery, daily lunches out, rideshare for trips that could have been walked, gas for routes that could have been combined.</p>'
+          + '<p>The fix is structural, not willpower. Build one routine that handles each. A weekly grocery plan with three repeatable meals. A weekly trip plan that consolidates errands. Both routines cost an hour to set up and save hundreds per month.</p>'
+          + '<h3>The repeatable meal</h3>'
+          + '<p>Pick one protein, two vegetables, one carb, one fat. Cook it twice a week. Eat it on busy days. You will save money, eat better, and stop thinking about food at the moments your willpower is lowest.</p>',
+        whyItMatters: 'Most "money problems" are food and transport problems disguised as budgeting problems.',
+        keyInsight: 'Routine kills leaks. Willpower does not.',
+        example: 'A reader built one repeatable meal he cooked twice a week. Delivery dropped from 8 times a week to once. He saved $480 a month with zero willpower.',
+        actionStep: 'Plan one repeatable meal and one weekly grocery + errand run today.',
+        checklist: [
+          'Pick the repeatable meal',
+          'Plan the weekly grocery list',
+          'Combine errands into one trip',
+          'Track delivery spending for 4 weeks'
+        ],
+        microChallenge: 'For one week, eat the repeatable meal for three lunches. Note the savings and the energy.',
+        reflection: 'Where am I paying for convenience that I could replace with five minutes of planning?'
+      },
+      13: {
+        image: 'financial-blueprint-day-13.webp',
+        imageAlt: 'A credit report being reviewed calmly with morning coffee.',
+        keyTerms: ['system', 'discipline'],
+        reading:
+            '<h3>Credit basics</h3>'
+          + '<p>Credit is leverage. It works for you when used carefully and against you when used reactively. The basics: pay every balance in full every month, keep utilisation below 30 percent of available credit, never miss a due date, and check your credit report once a year for errors.</p>'
+          + '<p>If you carry a balance, you are paying for the privilege of borrowing your own future money — usually at 20+ percent interest. The math is brutal. Closing the carrying habit is the single highest-return financial move available to most earners.</p>'
+          + '<h3>The autopay rule</h3>'
+          + '<p>Set every credit card to autopay the full balance from your checking. Not the minimum. The full balance. This single move eliminates 90 percent of credit-related financial damage.</p>',
+        whyItMatters: 'Credit either compounds wealth or destroys it. The difference is autopay.',
+        keyInsight: 'Pay the full balance. Always. The card is a tool, not a loan.',
+        example: 'A reader set every card to autopay the full balance for the first time in his life. His credit score rose 60 points in six months and he stopped paying $200 a month in interest.',
+        actionStep: 'Set every credit card to autopay the full balance today. Check your credit report for errors this week.',
+        checklist: [
+          'Set autopay to full balance',
+          'Check credit report for errors',
+          'Keep utilisation under 30%',
+          'Never miss a due date'
+        ],
+        microChallenge: 'Calculate the interest you paid last year. Use that number as motivation.',
+        reflection: 'What story am I telling myself about credit that the math does not support?'
+      },
+      14: {
+        image: 'financial-blueprint-day-14.webp',
+        imageAlt: 'A book on professional skills next to a notebook.',
+        keyTerms: ['leverage', 'execution'],
+        reading:
+            '<h3>Income skill-building</h3>'
+          + '<p>Budgeting controls the floor. Skill-building raises the ceiling. The most leveraged financial move available to most earners is increasing income by 10-30 percent within 2-3 years — usually by getting better at the highest-paid version of what you already do.</p>'
+          + '<p>Pick one skill that pays. Communication. Sales. A specific software. Negotiation. A technical certification. Invest 30 minutes a day for six months. Most professional ceilings move by tens of thousands of dollars per year for this kind of focused investment.</p>'
+          + '<h3>The 30-minute rule</h3>'
+          + '<p>Not two hours on weekends. Thirty minutes a day, five days a week. Books, courses, practice. Compounded across a year, that is 130 hours of skill development — more than most people do in a decade.</p>',
+        whyItMatters: 'The income ceiling moves more than the budget floor. Skill is the leverage.',
+        keyInsight: 'You cannot budget your way out of a low-skill job. Raise the floor by raising the ceiling.',
+        example: 'A reader picked one skill and gave it 30 minutes a day for a year. His next job offer was 28 percent higher than his previous salary. The skill paid for itself in three months.',
+        actionStep: 'Pick the skill today. Block 30 minutes for tomorrow. Continue 5 days a week for 90 days.',
+        checklist: [
+          'Pick one skill',
+          'Block 30 minutes daily',
+          'Track 5 sessions a week',
+          '90-day commitment'
+        ],
+        microChallenge: 'Find one book and one course on the chosen skill before the week ends. Buy or borrow both.',
+        reflection: 'What skill would have changed my last salary negotiation if I had built it a year ago?'
+      },
+      15: {
+        image: 'financial-blueprint-day-15.webp',
+        imageAlt: 'A savings account balance crossing the $1,000 mark.',
+        keyTerms: ['momentum', 'discipline'],
+        reading:
+            '<h3>The first $1,000 saved</h3>'
+          + '<p>The first $1,000 is psychological as much as financial. Once it exists, you have proof that saving is something you can do. The number is small enough to feel reachable and large enough to change how you behave with money.</p>'
+          + '<p>If you have followed the previous sections — buckets, tracking, automation, leaks closed, debt structured — the first $1,000 arrives faster than feels possible. Most readers hit it in 60-90 days.</p>'
+          + '<h3>What changes once you have it</h3>'
+          + '<p>You stop one panic from becoming a debt event. You feel different about your job. You make slightly better long-term decisions. None of this is dramatic — but it compounds.</p>',
+        whyItMatters: 'The first $1,000 is the proof of concept for every later milestone.',
+        keyInsight: 'You are not just saving money. You are saving evidence that you can.',
+        example: 'A reader saved his first $1,000 over 75 days. He described the feeling afterward as "I am a different person." He hit $5,000 within another six months.',
+        actionStep: 'Set the first $1,000 as the official target. Calculate the date at your current pace. Mark it.',
+        checklist: [
+          'Calculate the date',
+          'Mark it on the calendar',
+          'Keep the automatic transfer running',
+          'Do not touch the account once balance crosses $500'
+        ],
+        microChallenge: 'When the balance crosses $1,000, take a moment to acknowledge it. Most people miss the milestone.',
+        reflection: 'Who do I become when I have $1,000 sitting untouched in a separate account?'
+      },
+      16: {
+        image: 'financial-blueprint-day-16.webp',
+        imageAlt: 'A chart showing steady progress toward the $5,000 mark.',
+        keyTerms: ['momentum', 'consistency'],
+        reading:
+            '<h3>The first $5,000 saved</h3>'
+          + '<p>$5,000 is the second milestone. It is roughly one month of needs for most earners. Once it exists, you can survive a job loss for a month without panic. That month buys you the negotiating power to find the next role instead of taking the first one offered.</p>'
+          + '<p>The path is the same as the first $1,000 — just multiplied by five. Same buckets, same automation, same patience. The compounding does most of the work after the first $1,000 — the habit is now established.</p>'
+          + '<h3>The pace doubles after $1,000</h3>'
+          + '<p>Most readers who reached $1,000 in 60-90 days reach $5,000 in another 6-9 months without changing the system. The reason is simple: the system is already running. You stop having to think about it.</p>',
+        whyItMatters: '$5,000 buys time. Time buys options. Options are what wealth feels like.',
+        keyInsight: 'You do not need a raise to hit $5,000. You need the system to keep running.',
+        example: 'A reader hit $5,000 in nine months without changing his income. He took a 4-week sabbatical to recover from burnout using the reserve. He came back sharper than he had been in a decade.',
+        actionStep: 'Set $5,000 as the next milestone. Keep the system running. Do not change the rules.',
+        checklist: [
+          'Keep the automatic transfer',
+          'Do not raid the account',
+          'Track quarterly',
+          'Resist optimising the system'
+        ],
+        microChallenge: 'For 90 days, do not check the balance more than once a month. Patience is the system.',
+        reflection: 'What would I do with a one-month reserve that I cannot do today?'
+      },
+      17: {
+        image: 'financial-blueprint-day-17.webp',
+        imageAlt: 'A simple investing primer book next to a calm cup of coffee.',
+        keyTerms: ['leverage', 'consistency'],
+        reading:
+            '<h3>Investing baseline (education only)</h3>'
+          + '<p>This section is general education — not personal financial advice. For your situation, talk to a fee-only fiduciary advisor. With that said: most successful long-term investors do something simple. They buy broad, low-cost index funds. They buy them on a schedule. They never sell during a downturn. They hold for decades.</p>'
+          + '<p>The math of long-term compounding is the most powerful financial force available to a normal earner. $200 a month invested for 30 years at average market returns historically produces more than $200,000. The variable is time.</p>'
+          + '<h3>What to do today</h3>'
+          + '<p>Open a brokerage account if you do not have one. Educate yourself on index funds — the basics, not the noise. Do not invest anything yet. Today is education and account-opening only.</p>',
+        whyItMatters: 'Time in the market beats timing the market. Always.',
+        keyInsight: 'Boring beats clever for almost everyone, for almost every market cycle, across almost every decade.',
+        example: 'A reader opened a brokerage account at 32 and put $200 a month into a single broad-market index fund. He did not check it. At 45, the account held more money than his original career-decade salary.',
+        actionStep: 'Open a brokerage account today. Educate yourself on index funds this week. Do not buy yet.',
+        checklist: [
+          'Open the brokerage account',
+          'Read one book on index investing',
+          'Do not buy anything yet',
+          'Talk to a fee-only fiduciary if available'
+        ],
+        microChallenge: 'For one month, just learn. Resist the urge to act before you understand.',
+        reflection: 'Have I been treating investing as something for "later" when later was actually now?'
+      },
+      18: {
+        image: 'financial-blueprint-day-18.webp',
+        imageAlt: 'A retirement account dashboard with steady progress.',
+        keyTerms: ['leverage', 'consistency'],
+        reading:
+            '<h3>Retirement accounts (education only)</h3>'
+          + '<p>This section is general education. Tax rules vary by country and change over time — verify the specifics with a local fee-only fiduciary. With that caveat: most countries offer tax-advantaged retirement accounts (401k, IRA, pension, ISA, etc.) that produce significant long-term benefits.</p>'
+          + '<p>The two universal moves: if your employer matches retirement contributions, contribute at least the matching amount — anything less is leaving money on the table. Beyond that, contribute consistently and let time do the work.</p>'
+          + '<h3>The match is free money</h3>'
+          + '<p>If your employer offers a 4 percent match and you contribute 0 percent, you are turning down a 4 percent raise every year. Most people never adjust the default. Today is the day you do.</p>',
+        whyItMatters: 'Tax-advantaged retirement accounts are one of the few legitimate "free money" moves available to normal earners.',
+        keyInsight: 'Match it before anything else.',
+        example: 'A reader noticed his employer matched 5 percent and he was contributing 0. He flipped the switch. Twenty years later, that single decision was worth six figures.',
+        actionStep: 'Check whether your employer offers a retirement match. If yes, contribute at least the matching amount starting next paycheck.',
+        checklist: [
+          'Check for employer match',
+          'Contribute at least the match',
+          'Verify the tax treatment with a fiduciary if uncertain',
+          'Schedule a yearly contribution review'
+        ],
+        microChallenge: 'Calculate how much the match would have given you over the past 5 years had you been contributing. Use it as motivation.',
+        reflection: 'What part of my income am I leaving on the table because the defaults stayed at zero?'
+      },
+      19: {
+        image: 'financial-blueprint-day-19.webp',
+        imageAlt: 'A list of clearly categorised emergency expenses.',
+        keyTerms: ['system', 'recovery'],
+        reading:
+            '<h3>Emergency categories</h3>'
+          + '<p>"Emergency" is the most abused financial word. Most spending called emergency is reactive — and reactive spending depletes the actual reserve. Today you define what counts.</p>'
+          + '<p>A real emergency: job loss, medical event, critical car or housing repair, family death. That is the list. Not "I really wanted to fly home for a wedding." Not "the new console came out." Not "I had a bad week and want to buy something nice."</p>'
+          + '<h3>What this protects</h3>'
+          + '<p>Once you have a written list, the reserve becomes harder to raid. Most reserve raids happen because the brain reclassifies "want" as "need" in the moment. The written list interrupts the reclassification.</p>',
+        whyItMatters: 'A reserve only works if you have agreed in advance what it is for.',
+        keyInsight: 'A want is not an emergency, no matter how strong the feeling.',
+        example: 'A reader wrote his emergency definition and pinned it next to his reserve balance. He raided the reserve zero times in 18 months — a personal record.',
+        actionStep: 'Write the four-category emergency list today. Pin it where the reserve balance lives.',
+        checklist: [
+          'Job loss',
+          'Medical event',
+          'Critical home/car repair',
+          'Family event'
+        ],
+        microChallenge: 'For 30 days, log any "but is this an emergency?" thought. Read the list before responding.',
+        reflection: 'What spending have I called "emergency" in the past year that the list would have rejected?'
+      },
+      20: {
+        image: 'financial-blueprint-day-20.webp',
+        imageAlt: 'A monthly money review notebook on a clean kitchen table.',
+        keyTerms: ['reflection', 'system'],
+        reading:
+            '<h3>The monthly money review</h3>'
+          + '<p>The single highest-leverage financial habit available to most earners is a 30-minute monthly money review. Buckets. Tracking. Net worth. Subscriptions. Debt progress. Reserve balance. One sitting. Same time each month.</p>'
+          + '<p>The review is not about feeling guilty. It is about seeing patterns. Most financial drift happens because nobody is watching. The review is the watching.</p>'
+          + '<h3>What to actually check</h3>'
+          + '<p>The same five things every month. Income vs expenses. Reserve balance. Debt balances. Subscriptions still active. One pattern that surprised you. Five minutes per item. Done in 30.</p>',
+        whyItMatters: 'Without the monthly review, every month is the previous month repeated. With it, every month gets cleaner.',
+        keyInsight: 'The review is the difference between a system that compounds and a system that drifts.',
+        example: 'A reader ran a monthly review for a year. By month twelve his net worth was up 40 percent without a raise. The review caught the drift before it became damage.',
+        actionStep: 'Pick a date — first Saturday of the month is fine — and calendar the monthly review. Run the first one this week.',
+        checklist: [
+          'Pick the date',
+          'Calendar it recurring',
+          'Five categories per review',
+          'Run the first one this week'
+        ],
+        microChallenge: 'After the first review, write one sentence about what surprised you. Save it.',
+        reflection: 'What financial pattern have I been suspecting but refusing to write down?'
+      },
+      21: {
+        image: 'financial-blueprint-day-21.webp',
+        imageAlt: 'A clean page of spending rules in a personal finance journal.',
+        keyTerms: ['system', 'discipline'],
+        reading:
+            '<h3>Personal spending rules</h3>'
+          + '<p>You have automated savings, structured debt, audited subscriptions, and built a reserve. The remaining work is the rules — the small, personal financial decisions you can make once and never have to revisit.</p>'
+          + '<p>Common rules that work: never finance depreciating assets, always pay credit cards in full, never lend money you cannot afford to never see again, never check a brokerage account more than monthly, always negotiate one bill per quarter. Pick three. Write them down.</p>'
+          + '<h3>The point of rules</h3>'
+          + '<p>Rules turn decisions into defaults. Defaults survive bad days. Decisions do not. Most people fail at money because they decide in the moment. The rules decide in advance.</p>',
+        whyItMatters: 'Rules made calmly beat decisions made reactively. Almost every time.',
+        keyInsight: 'You cannot rely on willpower at the moment of temptation. You can rely on a rule made six months earlier.',
+        example: 'A reader adopted three personal rules. Within a year, his impulse spending was down 70 percent. The rules removed the decisions; the decisions had been the leak.',
+        actionStep: 'Pick three personal spending rules today. Write them on the same page as your budget.',
+        checklist: [
+          'Choose 3 rules',
+          'Write them where you can see them',
+          'Tell one person',
+          'Review once a year'
+        ],
+        microChallenge: 'For one week, every spending decision over $50, ask: "what rule applies here?" If no rule applies, write one.',
+        reflection: 'Which financial decisions have been making me anxious because I never decided in advance?'
+      },
+      22: {
+        image: 'financial-blueprint-day-22.webp',
+        imageAlt: 'A simple net-worth tracking spreadsheet on a laptop screen.',
+        keyTerms: ['reflection', 'momentum'],
+        reading:
+            '<h3>Track net worth quarterly</h3>'
+          + '<p>Net worth is the cleanest single number in personal finance. Assets minus debts. It tells you whether you are moving forward across years even when individual months look flat.</p>'
+          + '<p>Track it once a quarter — not more. Daily checking turns the number into anxiety. Quarterly checking turns it into a compass. Most people who track quarterly are calmer about money than people who track daily.</p>'
+          + '<h3>What to actually track</h3>'
+          + '<p>One simple sheet. Cash + reserve + investments + retirement minus debts. One number. Compare to the same number last quarter. The direction matters more than the magnitude.</p>',
+        whyItMatters: 'Net worth is the score. Quarterly tracking turns the noise of monthly statements into a signal.',
+        keyInsight: 'You do not need to optimise the number. You need to point it in the right direction.',
+        example: 'A reader tracked net worth quarterly for three years. The number was up every single quarter. He stopped being anxious about money because the chart had a trend.',
+        actionStep: 'Build a one-row spreadsheet today. Calculate this quarter\'s net worth. Compare next quarter.',
+        checklist: [
+          'Build the spreadsheet',
+          'Calculate this quarter',
+          'Schedule next quarter',
+          'Do not check between quarters'
+        ],
+        microChallenge: 'Save a screenshot of the number. Compare visually after four quarters.',
+        reflection: 'Have I been measuring my financial life by the month when I should be measuring by the quarter?'
+      },
+      23: {
+        image: 'financial-blueprint-day-23.webp',
+        imageAlt: 'A plan for the first $10,000 milestone on a notebook page.',
+        keyTerms: ['momentum', 'discipline'],
+        reading:
+            '<h3>The first $10,000 plan</h3>'
+          + '<p>$10,000 is the milestone that changes how you think. It is roughly two to three months of needs for most earners — a real cushion against an unexpected event. The number sounds large early in the journey and very reachable once you cross $5,000.</p>'
+          + '<p>The path is the same as the first $1,000 and the first $5,000. Same automation. Same patience. Most readers who follow the system reach $10,000 within 18 months of starting.</p>'
+          + '<h3>What changes at $10,000</h3>'
+          + '<p>You can comfortably leave a bad job and find the right next one. You can decline opportunities that do not fit. You can negotiate from strength instead of fear. The number is not just money — it is leverage in every decision.</p>',
+        whyItMatters: '$10,000 is the threshold where reserve becomes leverage.',
+        keyInsight: 'The number changes how you walk into rooms.',
+        example: 'A reader crossed $10,000 18 months into the pack. He turned down two job offers that would have paid more because they did not fit his life. He had not been able to do that at $1,000.',
+        actionStep: 'Calculate the date you would cross $10,000 at your current pace. Plan one accelerator to move it forward by 30 days.',
+        checklist: [
+          'Calculate the projected date',
+          'Pick one accelerator (extra income, deeper cut)',
+          'Run it for 90 days',
+          'Recalculate the date'
+        ],
+        microChallenge: 'Tell one trusted person your $10,000 date. Lightweight accountability holds the chain.',
+        reflection: 'Who do I become when I have $10,000 sitting untouched in an account?'
+      },
+      24: {
+        image: 'financial-blueprint-day-24.webp',
+        imageAlt: 'A small, clear 90-day money roadmap in a notebook.',
+        keyTerms: ['system', 'execution'],
+        reading:
+            '<h3>The 90-day money roadmap</h3>'
+          + '<p>You have the system. The remaining work is the roadmap — the specific 90-day plan that turns the system into measurable progress. One page. Three milestones. Real dates.</p>'
+          + '<p>Common 90-day milestones: pay off one debt; cross a reserve threshold; complete the subscription audit; raise the automatic savings rate by 2 percent. Pick three. Write the dates. Pin the page.</p>'
+          + '<h3>Why 90 days</h3>'
+          + '<p>Long enough for compounding to be visible. Short enough that you do not lose the thread. Quarterly is the natural rhythm of personal finance — and the same window most professional money managers operate in.</p>',
+        whyItMatters: 'A 90-day roadmap is what turns a system into a story.',
+        keyInsight: 'Three milestones, real dates. Then run.',
+        example: 'A reader ran four consecutive 90-day roadmaps. By month twelve, his net worth had moved more than in the prior five years combined. The roadmap was the difference.',
+        actionStep: 'Write the 90-day roadmap today. Three milestones, real dates. Pin where the budget lives.',
+        checklist: [
+          'Pick 3 milestones',
+          'Assign real dates',
+          'Pin the page',
+          'Review monthly during the 30-minute review'
+        ],
+        microChallenge: 'After this 90 days, write the next 90 from week-12 progress. The roadmap is the asset.',
+        reflection: 'What 90-day result would I be proud of three years from now?'
+      },
+      25: {
+        image: 'financial-blueprint-day-25.webp',
+        imageAlt: 'A man teaching basic finance to a younger family member.',
+        keyTerms: ['leverage', 'momentum'],
+        reading:
+            '<h3>Teach the system</h3>'
+          + '<p>One of the highest-leverage financial moves available is to teach what you know. Not formally. Conversationally. To a partner, a younger sibling, a child, a friend who is struggling. Teaching is the test of how well you have learned.</p>'
+          + '<p>This pack does not require it. But the readers who teach the system often report that it was the explanation to someone else that finally locked the principles in for themselves.</p>'
+          + '<h3>The conversation, not the lecture</h3>'
+          + '<p>The framing matters. Not "let me teach you about money." Just "this is what I am doing — want to try it?" The invitation works. The lecture does not.</p>',
+        whyItMatters: 'Teaching is the deepest form of learning available.',
+        keyInsight: 'Explain it once. You understand it twice.',
+        example: 'A reader walked his younger brother through the buckets one Sunday afternoon. The conversation locked his own understanding more than five months of solo practice had.',
+        actionStep: 'This week, share one principle from the pack with someone you care about. Not a lecture — a conversation.',
+        checklist: [
+          'Pick the principle',
+          'Pick the person',
+          'Pick the moment',
+          'Keep it short'
+        ],
+        microChallenge: 'After the conversation, write one sentence about what you understood differently. Save it.',
+        reflection: 'Who in my life would benefit from a single calm conversation about money?'
+      },
+      26: {
+        image: 'financial-blueprint-day-26.webp',
+        imageAlt: 'A page of basic income-protecting insurance considerations.',
+        keyTerms: ['system', 'recovery'],
+        reading:
+            '<h3>Protect the system (education only)</h3>'
+          + '<p>This section is general education, not insurance advice — products and rules vary widely by country. With that caveat: a financial system without protection is fragile. The basics most adults benefit from considering: health coverage, term life insurance if dependents rely on your income, disability coverage if your income depends on your ability to work, renter\'s or homeowner\'s insurance.</p>'
+          + '<p>The point of insurance is not to save money — it is to prevent a single event from undoing years of compounding. Most people overpay for coverage they do not need and underpay for coverage that would matter.</p>'
+          + '<h3>What to do today</h3>'
+          + '<p>List the coverage you currently have. Identify gaps that would devastate your financial system. Talk to a fee-only advisor or do honest research before changing anything. Coverage decisions reward patience.</p>',
+        whyItMatters: 'Compounding without protection is a tower without a foundation.',
+        keyInsight: 'Insurance prevents single events from undoing years of work.',
+        example: 'A reader added a basic term life policy after his first child was born. Eight months later, an unrelated health event made him grateful he had not delayed.',
+        actionStep: 'List your current coverage today. Identify one gap. Schedule research time within the week.',
+        checklist: [
+          'List current coverage',
+          'Identify one gap',
+          'Research without buying yet',
+          'Talk to a fee-only advisor if needed'
+        ],
+        microChallenge: 'Talk to one person you trust whose financial life looks well-protected. Ask what they cover and why.',
+        reflection: 'What single event could undo a decade of my financial work — and what does that say about what I need to protect?'
+      },
+      27: {
+        image: 'financial-blueprint-day-27.webp',
+        imageAlt: 'A man enjoying small joys without financial stress.',
+        keyTerms: ['discipline', 'reflection'],
+        reading:
+            '<h3>Wealth is freedom, not stuff</h3>'
+          + '<p>The cleanest definition of personal wealth: the freedom to make decisions without money being the deciding factor. Not a private jet. Not a mansion. The smaller, quieter freedom of saying yes to the things that matter and no to the things that do not.</p>'
+          + '<p>Most readers who follow this pack discover something unexpected: their consumption desires shrink as their freedom grows. The need to prove something through purchases fades. The need to actually live shows up in its place.</p>'
+          + '<h3>What the system buys you</h3>'
+          + '<p>Time. Sleep. Calmer relationships. The ability to walk into hard conversations without fear of losing your livelihood. None of these things have line items. All of them are the real return.</p>',
+        whyItMatters: 'The point of the financial system is not the numbers — it is the quality of your life.',
+        keyInsight: 'Freedom is the real currency. Money is the bridge.',
+        example: 'A reader described the change after 18 months: "I sleep better. My partner and I argue less about money. I do work I actually like. None of this is on a balance sheet."',
+        actionStep: 'Write one paragraph today: what does financial freedom actually mean in your daily life?',
+        checklist: [
+          'Write the paragraph',
+          'Save it where the budget lives',
+          'Re-read quarterly',
+          'Update once a year'
+        ],
+        microChallenge: 'For one week, every time you make a money decision, ask "does this buy freedom or noise?" Note the pattern.',
+        reflection: 'What kind of life am I actually building with this money?'
+      },
+      28: {
+        image: 'financial-blueprint-day-28.webp',
+        imageAlt: 'A small calm financial review on a Sunday morning.',
+        keyTerms: ['reflection', 'consistency'],
+        reading:
+            '<h3>The four-week review</h3>'
+          + '<p>Four weeks into the pack. Pull up the numbers. Compare to the baseline you wrote in Section 1. Reserve, debt, net worth, automation, monthly review running. Note what is working and what slipped.</p>'
+          + '<p>The point of the review is not to feel good about progress. It is to identify the one piece of the system that is most fragile. That is the focus for the next 30 days.</p>'
+          + '<h3>What surprises most readers</h3>'
+          + '<p>Most readers underestimate how much has moved in four weeks. Reserve up, one debt smaller, three subscriptions cancelled, monthly review running, autopay set. None of it dramatic. All of it compounding.</p>',
+        whyItMatters: 'Four-week reviews convert effort into evidence.',
+        keyInsight: 'The system is mostly invisible. The review is how you see it.',
+        example: 'A reader did his four-week review and was surprised to find his net worth had moved by $1,400. He had not noticed because the changes were spread across five categories.',
+        actionStep: 'Block 30 minutes today. Compare today\'s numbers to Section 1. Pick the fragile piece. Plan the fix.',
+        checklist: [
+          'Compare to Section 1 baseline',
+          'Score each habit honestly',
+          'Pick the fragile piece',
+          'Plan one specific fix'
+        ],
+        microChallenge: 'Tell one person what your four-week numbers actually look like. Saying them aloud makes them real.',
+        reflection: 'What about the past four weeks of work surprised me — honestly?'
+      },
+      29: {
+        image: 'financial-blueprint-day-29.webp',
+        imageAlt: 'A long-view chart of compounding finance over decades.',
+        keyTerms: ['leverage', 'momentum'],
+        reading:
+            '<h3>The long view</h3>'
+          + '<p>Twenty-eight sections of focused work have built a system. The remaining question is the time horizon. Most personal finance writing operates on a one-year frame. The actual returns of a calm financial system show up across a decade.</p>'
+          + '<p>The path from $10,000 to $100,000 looks different from the path from $0 to $10,000 — but the rhythm is the same. Buckets, automation, monthly review, quarterly net-worth check. Most of the work you have already learned to do.</p>'
+          + '<h3>The compounding decade</h3>'
+          + '<p>The same $200 a month that built $200,000 over 30 years builds $100,000 over 20 years and $40,000 over 10. Time is the variable. The earlier you start, the less the system has to work.</p>',
+        whyItMatters: 'The financial returns of a calm system are decade-shaped.',
+        keyInsight: 'Patience is the most under-priced asset in personal finance.',
+        example: 'A reader ran the same system for a decade. He stopped tracking the year-over-year change because the year-over-decade change was so much more interesting.',
+        actionStep: 'Write a one-paragraph 10-year projection today. Where could you reasonably be at this pace? Save the paragraph.',
+        checklist: [
+          'Write the 10-year paragraph',
+          'Compare current pace to projection',
+          'Save the page',
+          'Re-read once a year'
+        ],
+        microChallenge: 'On the same page, write a one-paragraph 20-year projection. Notice what feels different.',
+        reflection: 'Am I treating my financial life as a one-year experiment when it is actually a decade-long compounding game?'
+      },
+      30: {
+        image: 'financial-blueprint-day-30.webp',
+        imageAlt: 'A handwritten financial operating system on one page.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>The final operating system</h3>'
+          + '<p>Twenty-nine sections compress onto a single page today. Buckets. Tracking habit. Automation. Reserve milestones. Debt structure. Subscription audit. Skill investment. Monthly review. Quarterly net worth. 90-day roadmap. Spending rules. Coverage list. 10-year view.</p>'
+          + '<p>This page is the asset. Everything else has been practice toward writing it. Save it. Read it monthly. Update once a year. The financial operating system carries you for the next decade.</p>'
+          + '<h3>What you have actually built</h3>'
+          + '<p>You have not just built a budget. You have built a way of moving through the world that is calmer than the person who started Section 1. Money has stopped being a stress and started being infrastructure. That is the entire point.</p>',
+        whyItMatters: 'A working financial operating system is the closest thing to a money cheat code most people will ever build.',
+        keyInsight: 'The page is the asset. Run it for years.',
+        example: 'A reader pinned his one-page operating system inside his desk drawer. He ran it without modification for three years. By year three, his financial life was unrecognisable from where it had been at Section 1.',
+        actionStep: 'Write the one-page financial operating system today. Save it where you will read it monthly. Promise no redesign for 90 days.',
+        checklist: [
+          'Write the page',
+          'Save it where you will see it',
+          'Promise no redesign for 90 days',
+          'Tell one person you finished the pack'
+        ],
+        microChallenge: 'Photograph the page. Compare it in a year. Notice what stayed and what evolved.',
+        reflection: 'Who am I after thirty sections of financial work — and what does the next decade look like for that man?'
       }
     }
   },
@@ -11234,6 +11740,512 @@ var PACK_CONTENT_OVERLAY = {
         ],
         microChallenge: 'Read the protocol aloud once. The act of speaking it is part of the commitment.',
         reflection: 'Who do I become when this protocol runs without me thinking about it?'
+      },
+      7: {
+        image: 'body-architect-day-07.webp',
+        imageAlt: 'A calm gym session focused on heavier compound lifts.',
+        keyTerms: ['execution', 'discipline'],
+        reading:
+            '<h3>Progressive overload</h3>'
+          + '<p>Strip away the marketing and lifting science is simple: do slightly more this week than last week. More weight, more reps, better form. Progressive overload is the entire engine of long-term muscle growth.</p>'
+          + '<p>The trap is to chase intensity without measuring. Without a logbook, "more" becomes "whatever felt hard today." Bring a notebook to every session. Write the weight, reps, and one note. Next session, beat one of the three.</p>'
+          + '<h3>How to actually progress</h3>'
+          + '<p>Add 2.5–5 pounds when you hit the top of your rep range with clean form. If you cannot beat last week, repeat the weight and add one rep. If you cannot do that, eat more, sleep more, and try again next week.</p>',
+        whyItMatters: 'No progression, no growth. The whole game is the slow climb.',
+        keyInsight: 'Beat one number from last session. That is the whole strategy.',
+        example: 'A reader logged every lift for a year. He added an average of 5 pounds per month to his big lifts. The compounding was unrecognisable from where he started.',
+        actionStep: 'Bring a notebook to your next session. Write down weight and reps for every set. Beat one number next session.',
+        checklist: [
+          'Bring a notebook',
+          'Log weight + reps + one note',
+          'Beat one number next session',
+          'Repeat for 12 weeks'
+        ],
+        microChallenge: 'After a session, write one sentence about what was harder and easier than expected. Build the awareness.',
+        reflection: 'Where am I doing the same workout every week and calling it training?'
+      },
+      8: {
+        image: 'body-architect-day-08.webp',
+        imageAlt: 'A man checking technique in the mirror with calm focus.',
+        keyTerms: ['discipline', 'execution'],
+        reading:
+            '<h3>Form before weight</h3>'
+          + '<p>The most expensive lifting mistake is heavy weight with bad form. Every rep is either training the movement pattern or training the injury pattern. Both compound — pick which one you are training.</p>'
+          + '<p>Spend the first 4 weeks lifting submaximal weight with deliberate form. Video yourself on the big lifts once a week. Compare to a coach or a reference video. Adjust calmly.</p>'
+          + '<h3>The reps that build</h3>'
+          + '<p>A clean rep with 80 percent of your max builds more muscle and less injury than a sloppy rep at 100 percent. Most men chase the number. The discipline is to chase the rep.</p>',
+        whyItMatters: 'Form is the entire compound of training. Without it, time is wasted and injury is bought.',
+        keyInsight: 'A clean rep with lighter weight beats a sloppy rep with heavier weight. Always.',
+        example: 'A reader videoed his squat once a week for a month. He fixed two technical issues he had been carrying for years. His lift went up 30 pounds in the next quarter without any conscious effort.',
+        actionStep: 'Video yourself on one big lift this week. Compare to a reference. Fix one specific thing.',
+        checklist: [
+          'Video one big lift',
+          'Compare to a reference video',
+          'Identify one fix',
+          'Apply at the next session'
+        ],
+        microChallenge: 'Lower the weight 10 percent on a big lift this week. Focus only on perfect form. Note how it feels.',
+        reflection: 'What technique have I been ignoring because it would require lowering the weight?'
+      },
+      9: {
+        image: 'body-architect-day-09.webp',
+        imageAlt: 'A plate with high-protein whole foods and clear water.',
+        keyTerms: ['recovery', 'consistency'],
+        reading:
+            '<h3>Hit your protein target</h3>'
+          + '<p>The single nutritional lever that matters most for muscle is protein. Aim for roughly 0.8–1.0 grams per pound of body weight per day. Most men under-eat protein by 30-50 percent. That gap is invisible until you fix it.</p>'
+          + '<p>Spread it across the day. Four meals of 35-50 grams each is more effective than one giant protein meal. Protein at every meal also kills food cravings because protein is the most satiating macronutrient.</p>'
+          + '<h3>What that looks like</h3>'
+          + '<p>For a 180-pound man: 150-180 grams of protein per day. That is roughly 8 oz of chicken, 6 oz of fish, 2 eggs, and a protein shake. Not exotic. Not expensive. Calmly hit it daily.</p>',
+        whyItMatters: 'Without protein, you cannot rebuild. Without rebuilding, training does not produce growth.',
+        keyInsight: 'Most men underestimate their protein intake by half.',
+        example: 'A reader tracked protein for a week and found he was hitting 90 grams a day instead of his 180 target. He raised it to 180 over a month. His lifts went up without any new program.',
+        actionStep: 'Calculate your daily protein target. Track for 3 days. Note the gap. Close it across the next week.',
+        checklist: [
+          'Calculate target',
+          'Track 3 days',
+          'Identify the gap',
+          'Plan how to close it'
+        ],
+        microChallenge: 'Add 30 grams of protein to one meal you usually skimp on. Make it the default for a week.',
+        reflection: 'How much of my training has been wasted by under-eating protein?'
+      },
+      10: {
+        image: 'body-architect-day-10.webp',
+        imageAlt: 'A clean glass of water on a focused training desk.',
+        keyTerms: ['recovery', 'routine'],
+        reading:
+            '<h3>Hydration</h3>'
+          + '<p>Mild dehydration tanks training performance and recovery. Most men walk around at 70-80 percent of optimal hydration without realising it. Mild dehydration also dulls cognition — your work suffers, not just your training.</p>'
+          + '<p>The simple rule: drink water steadily through the day. A refillable bottle with marks. Refill twice. That is the system. Add an extra glass for every hour of training. Add electrolytes if you sweat heavily.</p>'
+          + '<h3>The first-thing rule</h3>'
+          + '<p>500ml of water before the first coffee. The simplest hydration habit available. Most men start the day mildly dehydrated. The bedside glass fixes it.</p>',
+        whyItMatters: 'Mild dehydration tanks every athletic and cognitive metric you care about.',
+        keyInsight: 'You are probably dehydrated right now. Most men are.',
+        example: 'A reader added a 1-liter bottle on his desk every morning and finished two refills daily. Within two weeks he noticed better focus, more energy, and stronger lifts. Nothing else had changed.',
+        actionStep: 'Buy a refillable bottle today. Drink 500ml before coffee tomorrow. Refill twice through the day.',
+        checklist: [
+          'Refillable bottle with marks',
+          '500ml before coffee',
+          'Refill twice daily',
+          'Add electrolytes on heavy training days'
+        ],
+        microChallenge: 'For one week, log how many bottles you finish. Most men think they drink more than they do.',
+        reflection: 'How much of my "low energy" has been a hydration problem disguised as a sleep problem?'
+      },
+      11: {
+        image: 'body-architect-day-11.webp',
+        imageAlt: 'A calm bedroom prepared for sleep in soft warm light.',
+        keyTerms: ['recovery', 'discipline'],
+        reading:
+            '<h3>Sleep is the recovery</h3>'
+          + '<p>You do not grow in the gym. You grow during sleep. The hormonal cascade that rebuilds muscle is largely a sleep event. Cutting sleep by an hour for a week directly cuts your training results by a measurable percentage.</p>'
+          + '<p>The fix is mechanical. Seven to nine hours a night. Same lights-out time within a 30-minute window. Cool, dark room. Screens out 60 minutes before sleep. Most men try to fix training and ignore sleep — and wonder why progress stalls.</p>'
+          + '<h3>The bedtime alarm</h3>'
+          + '<p>Set an alarm for one hour before lights-out. When it rings, finish what you are doing, brush teeth, dim lights, no more screens. The bedtime alarm is the entire trick — most men do not have one.</p>',
+        whyItMatters: 'You cannot out-train poor sleep. You can out-sleep mediocre training.',
+        keyInsight: 'Rest is part of the work, not the absence of it.',
+        example: 'A reader did nothing but fix his sleep for 30 days. His lifts went up across the board. The body had finally been given permission to rebuild.',
+        actionStep: 'Set the bedtime alarm tonight. Pick a lights-out time. Cool the room.',
+        checklist: [
+          'Bedtime alarm 1 hour before lights-out',
+          'Cool, dark room',
+          'No screens for the last 60 minutes',
+          'Same lights-out within 30 min for a week'
+        ],
+        microChallenge: 'For seven nights, track total sleep honestly. Compare to your average. The gap is usually the issue.',
+        reflection: 'How much of my "slow gains" has been a sleep problem I refuse to acknowledge?'
+      },
+      12: {
+        image: 'body-architect-day-12.webp',
+        imageAlt: 'A man stretching with calm focus in soft morning light.',
+        keyTerms: ['recovery', 'routine'],
+        reading:
+            '<h3>Mobility and active recovery</h3>'
+          + '<p>Mobility is the silent multiplier behind every other lifting metric. Tight hips destroy your squat. Tight shoulders cap your bench. Five minutes of mobility before each session and 10 minutes on rest days is enough.</p>'
+          + '<p>This is not yoga unless you want it to be. A few targeted movements — hip openers, shoulder dislocations, ankle work — applied consistently. Not perfectionism. Patience.</p>'
+          + '<h3>The active rest day</h3>'
+          + '<p>Active recovery is not optional. A 20-30 minute walk, light cycling, or easy swimming on rest days speeds blood flow, reduces soreness, and supports the rebuild. Sitting on the couch is not recovery — it is stagnation.</p>',
+        whyItMatters: 'Mobility decides what your lifts can become. Without it, you cap.',
+        keyInsight: '5 minutes a day, 10 minutes on rest days, for years. That is the whole mobility system.',
+        example: 'A reader added 10 minutes of hip mobility daily for a month. His squat depth improved noticeably, his lower-back tightness disappeared, and his clean form unlocked another 30 pounds over a quarter.',
+        actionStep: 'Pick three mobility movements today. Run them tomorrow before training. Make them automatic.',
+        checklist: [
+          '3 mobility movements pre-session',
+          '10 minutes on rest days',
+          '20-30 min walk on every rest day',
+          'No skipping'
+        ],
+        microChallenge: 'Take a "before" photo of your overhead reach today. Compare in a month.',
+        reflection: 'What lift is being held back by a mobility issue I have been ignoring?'
+      },
+      13: {
+        image: 'body-architect-day-13.webp',
+        imageAlt: 'A clean cardio session focused on steady aerobic work.',
+        keyTerms: ['recovery', 'system'],
+        reading:
+            '<h3>Cardio is part of training</h3>'
+          + '<p>Lifting alone is not enough. Two to three cardio sessions a week — even short ones — supports cardiovascular health, improves recovery, and increases your work capacity for the heavy lifting sessions. Skip it and you cap your training.</p>'
+          + '<p>The format is flexible. Zone 2 walking, easy cycling, swimming, jogging. 20-40 minutes at a pace where you could hold a conversation. Not death runs — easy steady aerobic work.</p>'
+          + '<h3>What zone 2 actually is</h3>'
+          + '<p>Zone 2 is where you could speak a full sentence but would not want to sing. It is harder than walking and easier than running. Most men under-do it because it does not feel difficult. The benefit is largest at exactly that intensity.</p>',
+        whyItMatters: 'Cardio raises the ceiling of every lifting session and protects your body for the next decade.',
+        keyInsight: 'Easy steady cardio beats hard intermittent cardio for almost every long-term metric.',
+        example: 'A reader added two 30-minute Zone 2 sessions a week. Within two months his lifting work capacity had increased noticeably — he could push harder, longer, and recover faster.',
+        actionStep: 'Schedule two 30-minute cardio sessions this week. Pick the format. Pick the days.',
+        checklist: [
+          'Pick the format',
+          'Schedule two sessions',
+          'Zone 2 pace — conversational',
+          'Do not skip'
+        ],
+        microChallenge: 'On a non-lifting day, take a 30-minute walk while listening to a podcast. Note the energy after.',
+        reflection: 'Where am I capping my lifting by avoiding the easy cardio that would support it?'
+      },
+      14: {
+        image: 'body-architect-day-14.webp',
+        imageAlt: 'A calm rest day with light activity in soft light.',
+        keyTerms: ['recovery', 'system'],
+        reading:
+            '<h3>Deloads protect the chain</h3>'
+          + '<p>Every 4-8 weeks, take a deload week. Half the volume. Half the weight. Same movements. The deload is not weakness — it is the recovery that protects the next 8 weeks of progress.</p>'
+          + '<p>Most men skip deloads because they feel like a setback. The result is that small injuries accumulate, stress builds, and a 6-week stall arrives that could have been avoided with one easy week.</p>'
+          + '<h3>What the deload buys</h3>'
+          + '<p>The deload lets the nervous system catch up. Sleep deepens. Joints calm down. You come back stronger and more focused. The 8 weeks that follow are usually noticeably better than the 8 weeks before.</p>',
+        whyItMatters: 'A scheduled deload prevents an unscheduled break.',
+        keyInsight: 'You will never feel like you "need" a deload. Take it anyway.',
+        example: 'A reader scheduled deloads every 6 weeks for a year. He missed zero training cycles because of injury. His average lift over the year was higher than any year prior.',
+        actionStep: 'Schedule your first deload week 6 weeks from today. Mark it on the calendar. Plan the lighter sessions in advance.',
+        checklist: [
+          'Calendar the first deload',
+          'Plan the lighter sessions',
+          'Do not skip',
+          'Note recovery quality afterward'
+        ],
+        microChallenge: 'Tell one training partner about the deload. They will probably benefit too.',
+        reflection: 'What injury or stall am I currently carrying that a planned deload would have prevented?'
+      },
+      15: {
+        image: 'body-architect-day-15.webp',
+        imageAlt: 'A clean training log with months of tracked data.',
+        keyTerms: ['system', 'reflection'],
+        reading:
+            '<h3>Track what matters</h3>'
+          + '<p>The metric of training is not how hard a session felt. It is the progression of three numbers across months: weight on the bar, body composition (weight + tape measurements), and training consistency (sessions per week).</p>'
+          + '<p>Log these weekly. Review monthly. Adjust quarterly. Without the data, training devolves into vibes and stagnation. With the data, every decision becomes obvious.</p>'
+          + '<h3>The four-number page</h3>'
+          + '<p>Weight on your main lift. Body weight. Waist measurement. Training sessions this week. Four numbers, every week, on one page. Anything else is optional.</p>',
+        whyItMatters: 'You cannot improve what you have not tracked. Three months of data shows the direction.',
+        keyInsight: 'Weekly logs become a quarterly story. The quarterly story is the truth.',
+        example: 'A reader tracked the four numbers for a year. The line on the chart was relentlessly up and to the right. He stopped worrying about individual sessions because the chart was honest.',
+        actionStep: 'Build the four-number weekly page today. Fill in this week. Commit to filling it every Sunday for 12 weeks.',
+        checklist: [
+          'Main lift weight',
+          'Body weight',
+          'Waist measurement',
+          'Sessions completed this week'
+        ],
+        microChallenge: 'Photograph the page every Sunday. The visual trend is harder to lie to than the numbers.',
+        reflection: 'Have I been training by feeling when I should be training by data?'
+      },
+      16: {
+        image: 'body-architect-day-16.webp',
+        imageAlt: 'A man taking honest progress photos in good light.',
+        keyTerms: ['reflection', 'consistency'],
+        reading:
+            '<h3>Measure quarterly, photograph monthly</h3>'
+          + '<p>Body composition shifts slowly. A weekly measurement is noise. A quarterly measurement is data. Take the four tape measurements (chest, waist, hip, thigh) once a month and the photos once a month — same time of day, same light, same poses.</p>'
+          + '<p>Most men quit because the day-to-day mirror is misleading. The monthly photos compared to three months ago tell the actual story. Most men are pleasantly surprised. A few realise nothing has changed and adjust calmly.</p>'
+          + '<h3>Never skip the photos</h3>'
+          + '<p>The photos are the only honest comparison you will have. Pin them in a private folder. Compare quarterly. Both directions of feedback are valuable — they tell you whether the system is working or not.</p>',
+        whyItMatters: 'Photos do not lie. The mirror sometimes does.',
+        keyInsight: 'Quarterly compares beat daily mirrors. Always.',
+        example: 'A reader compared photos three months apart and was surprised by visible changes he had missed in the daily mirror. The chain held that quarter because the photos had been honest.',
+        actionStep: 'Take baseline photos this week. Same time, same light, same poses. Calendar the next set for 90 days.',
+        checklist: [
+          'Same time of day',
+          'Same light',
+          'Same poses (front, side, back)',
+          'Save in a private folder'
+        ],
+        microChallenge: 'Compare to last quarter\'s photo if you have one. The trend is the truth.',
+        reflection: 'What about my body have I been measuring by mood instead of by photo?'
+      },
+      17: {
+        image: 'body-architect-day-17.webp',
+        imageAlt: 'A consistent daily training rhythm in a small home gym.',
+        keyTerms: ['consistency', 'discipline'],
+        reading:
+            '<h3>Consistency beats intensity</h3>'
+          + '<p>The single variable that most predicts long-term physique success is sessions per week, held across years. Not max effort. Not perfect program. Not optimised peri-workout nutrition. The number of weeks you held three sessions across the year.</p>'
+          + '<p>Most men quit when life gets busy. The men who keep their physiques into their forties never quit during busy weeks — they just trained shorter. A 25-minute session held during a hard week is worth more than a perfect 75-minute session abandoned the next.</p>'
+          + '<h3>The minimum effective session</h3>'
+          + '<p>Define your minimum: three compound movements, 30 minutes, no warmup beyond what is necessary. Use it on bad weeks. The chain holds.</p>',
+        whyItMatters: 'The chain is the entire game. Consistency compounds; intensity peaks and crashes.',
+        keyInsight: 'Never zero. A 20-minute session beats a skipped one every time.',
+        example: 'A reader held the minimum-effective rule through a six-week work crunch. He came out the other side at the same weight he had been before, instead of needing a month to rebuild.',
+        actionStep: 'Write your minimum-effective session today. Three compounds, 30 minutes. Use it on the next bad week.',
+        checklist: [
+          'Define 3 compounds',
+          '30-minute time cap',
+          'Use it on the next bad week',
+          'Never zero'
+        ],
+        microChallenge: 'Run the minimum on a normal week just to test it. Confirm it feels real.',
+        reflection: 'How many of my "missed weeks" could have been one 20-minute session instead?'
+      },
+      18: {
+        image: 'body-architect-day-18.webp',
+        imageAlt: 'A calm man walking into a gym with steady confidence.',
+        keyTerms: ['confidence', 'discipline'],
+        reading:
+            '<h3>Gym confidence is built</h3>'
+          + '<p>Most men feel awkward in the gym for the first month. That is normal. Everyone is too focused on their own session to judge yours. After 30 sessions, the awkwardness disappears completely.</p>'
+          + '<p>The fastest path to gym confidence is competence at three movements. Pick a clean squat, bench, and row variation. Run them every session for a month. Once those three feel automatic, the rest of the gym opens.</p>'
+          + '<h3>The headphones rule</h3>'
+          + '<p>Headphones on. Eyes on your own workout. Focus on the rep, the breath, the form. Most "gym anxiety" comes from imagining what others think. They are not thinking about you. They are thinking about their own next set.</p>',
+        whyItMatters: 'Gym confidence is a real reward of consistency, not a prerequisite.',
+        keyInsight: 'Nobody is watching. They are all on their own protocols.',
+        example: 'A reader skipped the gym for years because of self-consciousness. He committed to 30 sessions in 90 days. By session 20, he had stopped noticing the room. By session 30, he felt like he belonged.',
+        actionStep: 'Pick your three foundational movements today. Run them every session for the next 30 days.',
+        checklist: [
+          'Pick squat, bench, row variations',
+          'Run all three every session',
+          '30 sessions in 90 days',
+          'Headphones on, eyes on your work'
+        ],
+        microChallenge: 'Talk to one other regular in the gym this week. Most are friendlier than you expect.',
+        reflection: 'Where is gym anxiety stealing weeks of training that the actual room would never charge me for?'
+      },
+      19: {
+        image: 'body-architect-day-19.webp',
+        imageAlt: 'A clean meal-prep session with portion containers.',
+        keyTerms: ['system', 'consistency'],
+        reading:
+            '<h3>Meal prep beats willpower</h3>'
+          + '<p>The single highest-leverage nutrition habit is one weekly meal-prep session. Two hours. Cook the proteins for the week. Portion vegetables. Pack containers. The future-you who finishes work tired has nothing to decide.</p>'
+          + '<p>Most diet failures are decision failures, not willpower failures. The hungry-tired man at 7 PM is not the man who wrote the meal plan on Sunday. The fridge decides for him if you let it.</p>'
+          + '<h3>The Sunday two hours</h3>'
+          + '<p>Pick a fixed time. Sunday morning, Sunday afternoon. Cook three proteins. Wash and chop the week\'s vegetables. Make a big rice or potato batch. Pack five lunches. Sandwich the freezer with two backup meals. Done.</p>',
+        whyItMatters: 'Meal prep removes the lowest-willpower moment of the week from the decision-making chain.',
+        keyInsight: 'You cannot eat well at 8pm hungry. You can eat well from a prepped fridge.',
+        example: 'A reader switched from "trying to eat better" to one weekly two-hour prep session. His protein intake stabilised, his food spending dropped 30 percent, and his body composition shifted in three months.',
+        actionStep: 'Pick the day and time. Calendar it as recurring. Run the first prep this weekend.',
+        checklist: [
+          'Pick day + time',
+          'Calendar it recurring',
+          'Cook 3 proteins, prep vegetables, prep carbs',
+          'Pack 5 lunches'
+        ],
+        microChallenge: 'Pre-pack one lunch tonight. See how different tomorrow morning feels.',
+        reflection: 'How much of my poor eating has been the absence of prep, not the presence of bad willpower?'
+      },
+      20: {
+        image: 'body-architect-day-20.webp',
+        imageAlt: 'A focused training session targeting a weak point.',
+        keyTerms: ['execution', 'discipline'],
+        reading:
+            '<h3>Train your weak points</h3>'
+          + '<p>Every man has lagging muscle groups. The instinct is to train what is already strong because it feels good. The discipline is to train what is weak because it changes the silhouette.</p>'
+          + '<p>Identify your two weakest muscle groups honestly. Add one direct-target movement per group at the start of each session — before you are tired. The first 20 minutes of every session goes to the weak points; the rest of the program continues unchanged.</p>'
+          + '<h3>The honest photo</h3>'
+          + '<p>Look at your standing-relaxed photo from Section 1. Where is the gap? For most men: rear delts, mid-back, hamstrings, calves. Train the gap directly. Most physique transformations come from disciplined weak-point training.</p>',
+        whyItMatters: 'A balanced physique is built by training what does not feel good to train.',
+        keyInsight: 'Strong men train weaknesses first.',
+        example: 'A reader identified weak rear delts. He added 5 minutes of direct work at the start of every session. Six months later, the silhouette had transformed.',
+        actionStep: 'Identify your two weakest muscle groups today. Pick one targeted movement for each. Run them at the start of your next session.',
+        checklist: [
+          'Identify 2 weak points',
+          'Pick 1 movement per weak point',
+          'Run at session start',
+          'Continue for 8 weeks'
+        ],
+        microChallenge: 'Photograph the weak points specifically. Compare in 8 weeks.',
+        reflection: 'What muscle group am I avoiding because it does not feel like a win?'
+      },
+      21: {
+        image: 'body-architect-day-21.webp',
+        imageAlt: 'A man managing stress with calm focused breathing.',
+        keyTerms: ['emotional-regulation', 'recovery'],
+        reading:
+            '<h3>Stress kills recovery</h3>'
+          + '<p>Chronic stress increases cortisol, which suppresses recovery, increases central fat storage, reduces sleep quality, and limits lifting performance. Most men try to out-train stress. It cannot be done.</p>'
+          + '<p>The fix is downstream of training, not part of it. Daily walks. Two-minute breathing practice. No screens before bed. Saying no to commitments that drain you. These are not soft — they are direct training inputs.</p>'
+          + '<h3>The 20-minute walk</h3>'
+          + '<p>A 20-minute outdoor walk lowers cortisol within hours. Daily walks compounded across a year produce measurable changes in stress markers, sleep quality, and body composition. Most men skip them because they feel too simple to matter.</p>',
+        whyItMatters: 'You cannot grow muscle on a body soaked in cortisol.',
+        keyInsight: 'A daily walk is medicine. Treat it like one.',
+        example: 'A reader added a daily lunch-time walk for three months. His sleep improved, his afternoon energy steadied, and his training output rose without changing the program.',
+        actionStep: 'Add a 20-minute outdoor walk to your day starting tomorrow. Same time. No phone.',
+        checklist: [
+          '20 minutes outdoors',
+          'Same time daily',
+          'No phone',
+          'Repeat for 30 days'
+        ],
+        microChallenge: 'For one week, walk after every meal instead of sitting. Note the energy difference.',
+        reflection: 'Where is stress quietly eating my training gains while I focus on the program?'
+      },
+      22: {
+        image: 'body-architect-day-22.webp',
+        imageAlt: 'A man standing with relaxed, confident posture in soft light.',
+        keyTerms: ['confidence', 'discipline'],
+        reading:
+            '<h3>Posture is part of physique</h3>'
+          + '<p>You can build a great body and undermine it with bad posture. Slouched shoulders kill the chest. Forward head ruins the neck. Locked hips destroy the lower back. The body you train must be the body you stand in.</p>'
+          + '<p>Spend 5 minutes a day on posture. Shoulder rolls. Wall stands. Hip openers. Set phone reminders. Most postural improvement compounds quietly over 90 days and shows up in every photo.</p>'
+          + '<h3>How clothes meet posture</h3>'
+          + '<p>Even well-fitting clothes look mediocre on bad posture. The same jacket on a tall, open frame versus a slouched one is a different jacket. Posture is the multiplier on every other physical investment.</p>',
+        whyItMatters: 'Posture is the multiplier on physique. Without it, training is undersold.',
+        keyInsight: 'Stand the way you would want a strong man to stand. Then it becomes true.',
+        example: 'A reader added 5 minutes of posture work daily for a quarter. The shape of his standing-relaxed photo changed more than any training intervention had.',
+        actionStep: 'Pick three posture movements today. Run them daily for 30 days.',
+        checklist: [
+          'Pick 3 movements',
+          'Run them daily, 5 minutes',
+          'Set posture-reset phone alarms',
+          'Photograph posture in 30 days'
+        ],
+        microChallenge: 'For one week, every time you sit down, reset posture before doing anything else.',
+        reflection: 'What part of my physique is being undersold by the way I am standing right now?'
+      },
+      23: {
+        image: 'body-architect-day-23.webp',
+        imageAlt: 'A long-view chart of training over years.',
+        keyTerms: ['momentum', 'consistency'],
+        reading:
+            '<h3>Identity, not transformation</h3>'
+          + '<p>"Transformation" stops happening after the first 12 weeks. From there, training becomes identity. You are not transforming into someone who trains — you are someone who trains. The shift is psychological, not physical.</p>'
+          + '<p>Most men struggle in months 4-12 because they expected continued visible progress. The progress continues — it is just slower and quieter. The men who keep training through those months become the men who keep training for decades.</p>'
+          + '<h3>The decade view</h3>'
+          + '<p>What does training look like at 40 if you start at 30 and never quit? What does it look like at 50? The decade view is the real game. The 12-week game is a warm-up.</p>',
+        whyItMatters: 'Identity is the rope that pulls you through the boring months.',
+        keyInsight: 'You are not getting in shape. You are someone in shape.',
+        example: 'A reader started saying "I train" instead of "I am trying to get in shape." The framing flipped his consistency. He never missed a quarter for the next three years.',
+        actionStep: 'Write the sentence: "I am a man who trains." Read it aloud. Pin it where you dress for training.',
+        checklist: [
+          'Write the identity sentence',
+          'Read aloud daily for a week',
+          'Pin where you train',
+          'Re-read on hard days'
+        ],
+        microChallenge: 'For one week, in any social context, say "I train" before saying "I lift" or "I am trying to."',
+        reflection: 'Am I trying to transform, or am I becoming the man I already am?'
+      },
+      24: {
+        image: 'body-architect-day-24.webp',
+        imageAlt: 'A calm rest day spent recovering with light activity.',
+        keyTerms: ['recovery', 'reflection'],
+        reading:
+            '<h3>Listen to your body</h3>'
+          + '<p>The hardest lifting skill to teach is the difference between productive discomfort and dangerous discomfort. Productive: a tight muscle that loosens in 2 minutes, a heavy set that leaves you breathing hard. Dangerous: sharp pain, joint pain, pain that lingers across days.</p>'
+          + '<p>The rule: any pain that is sharp, focal, or lasts more than 48 hours warrants a session off the affected lift. Substitute a different movement. See a physiotherapist if it lasts more than a week. Ignoring small signals creates large injuries.</p>'
+          + '<h3>The training journal as diagnostic</h3>'
+          + '<p>If you log every session, patterns become visible. Tight hips every Tuesday after Monday\'s squats? That is data. Shoulder pain only on incline bench? That is data. The journal helps you see what the body is whispering before it shouts.</p>',
+        whyItMatters: 'Small ignored signals become large unmissable injuries.',
+        keyInsight: 'Listen first. Adjust second. Push third.',
+        example: 'A reader noticed a recurring shoulder twinge on bench. He swapped incline for low-incline for a month. The twinge disappeared. He saved himself a 3-month injury.',
+        actionStep: 'Note one tight or uncomfortable spot today. Look for the pattern in your log. Adjust one movement next session.',
+        checklist: [
+          'Note current discomfort',
+          'Check log for patterns',
+          'Adjust one movement',
+          'See a physio if it persists 1 week'
+        ],
+        microChallenge: 'Spend 5 minutes on the problem area tomorrow — gentle mobility or band work.',
+        reflection: 'What small signal have I been ignoring that the log would have caught?'
+      },
+      25: {
+        image: 'body-architect-day-25.webp',
+        imageAlt: 'A clean quarterly review of training data.',
+        keyTerms: ['reflection', 'system'],
+        reading:
+            '<h3>Quarterly review</h3>'
+          + '<p>Every 12 weeks, sit down with the data. Weight trends, lift trends, photo comparison, consistency log. Score yourself honestly on training, eating, sleeping, walking. Pick the bottleneck for the next quarter.</p>'
+          + '<p>The review is short. 30 minutes. The point is direction, not perfection. Most stalls happen because nobody is watching the trends. The quarterly review is the watching.</p>'
+          + '<h3>One change at a time</h3>'
+          + '<p>The temptation is to fix three things. The discipline is to fix one. The body responds to focused input. Pick the highest-leverage change. Run it for 12 weeks. Re-review.</p>',
+        whyItMatters: 'Quarterly reviews convert four months of effort into permanent change.',
+        keyInsight: 'Fix one thing. Run it. Review.',
+        example: 'A reader ran quarterly reviews for two years. By year two, the system was self-correcting. He stopped having to think about training; he just trained.',
+        actionStep: 'Block 30 minutes today. Compare your numbers to baseline. Pick the bottleneck for the next 12 weeks.',
+        checklist: [
+          'Pull all the data',
+          'Score 4 areas honestly',
+          'Pick the bottleneck',
+          'Plan one specific change'
+        ],
+        microChallenge: 'Tell one training partner what your bottleneck is. Mutual accountability holds the focus.',
+        reflection: 'Which bottleneck have I been suspecting but refusing to write down?'
+      },
+      26: {
+        image: 'body-architect-day-26.webp',
+        imageAlt: 'A clean view of long-term lifting consistency.',
+        keyTerms: ['discipline', 'momentum'],
+        reading:
+            '<h3>The training partner</h3>'
+          + '<p>The right training partner doubles your consistency. The wrong one undermines it. Pick someone with similar goals, similar discipline, and a similar life-stage. Train together when convenient; respect each other\'s solo sessions.</p>'
+          + '<p>If you cannot find a partner, accountability buddies work — someone you text after every session. The chain is what matters. The partner is just the form.</p>'
+          + '<h3>The session text</h3>'
+          + '<p>"Done with squats — 225x5x5." A simple text after each session, sent to a trusted person, doubles consistency. The act of telling makes the chain real outside your own head.</p>',
+        whyItMatters: 'External accountability is one of the cheapest lifting interventions available.',
+        keyInsight: 'The partner is the form. The chain is the asset.',
+        example: 'A reader texted his brother after every session for a year. Neither of them gave training advice — they just bore witness. The chain held for both of them.',
+        actionStep: 'Pick a training partner or accountability buddy today. Send the first session text after your next workout.',
+        checklist: [
+          'Identify the partner',
+          'Set the simple protocol — text after sessions',
+          'No pressure beyond witness',
+          'Run for 90 days'
+        ],
+        microChallenge: 'On a day you almost skip, send the text first as commitment. Then run the minimum.',
+        reflection: 'Whose attention would actually help me hold the chain?'
+      },
+      27: {
+        image: 'body-architect-day-27.webp',
+        imageAlt: 'A balanced lifestyle outside training — rest, food, family.',
+        keyTerms: ['recovery', 'consistency'],
+        reading:
+            '<h3>The hardest set is the chain</h3>'
+          + '<p>You will have weeks when training feels impossible. Work crisis. Family event. Illness. The point of the system is to hold the chain through those weeks — not through heroic effort, but through the minimum effective dose.</p>'
+          + '<p>Three sessions a week is the floor. One session a week is acceptable for a hard week. Zero is not. The chain must never break. Most ten-year lifters protect this single rule above all others.</p>'
+          + '<h3>The return rule</h3>'
+          + '<p>If you do miss two weeks, return at 70 percent of your previous loads for the first three sessions. Do not try to make up the gap. The body needs to reaccustom. Pushing too hard on return is how injuries land.</p>',
+        whyItMatters: 'The chain is the entire game. Protecting it is most of the discipline.',
+        keyInsight: 'Never zero. Always return at 70 percent.',
+        example: 'A reader had a hospital stay in his second year. He returned at 70 percent for two weeks, then rebuilt over a month. He missed exactly one week of training in 10 years.',
+        actionStep: 'Write the rules: 3 sessions normal, 1 minimum on hard weeks, 70 percent on return. Pin them.',
+        checklist: [
+          '3 sessions / week normal',
+          '1 session minimum hard week',
+          '70 percent on return',
+          'Never zero'
+        ],
+        microChallenge: 'On the next hard week, run only the minimum. Note how that one session protected the chain.',
+        reflection: 'When did I last let a hard week become a hard month?'
+      },
+      28: {
+        image: 'body-architect-day-28.webp',
+        imageAlt: 'A handwritten Body Architect protocol pinned in a quiet space.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>The final Body Architect protocol</h3>'
+          + '<p>Twenty-seven sections fold onto one page today. Training split. Compound movements. Progressive overload. Protein target. Hydration habit. Sleep window. Mobility. Cardio cadence. Deload calendar. Tracking sheet. Stress management. Posture work. Identity statement.</p>'
+          + '<p>This page is the protocol you run for the next decade. Most lifting books overcomplicate the answer. The answer is a single page run patiently.</p>'
+          + '<h3>What you have actually built</h3>'
+          + '<p>You did not build a body. You built a system that builds a body. The system runs whether or not you feel motivated, whether the week was hard, whether progress is visible. That is the asset.</p>',
+        whyItMatters: 'A working long-term lifting protocol is a one-page asset that compounds for decades.',
+        keyInsight: 'The page is the asset. Run it patiently.',
+        example: 'A reader pinned his one-page protocol inside his gym bag and ran it for three years. By year three he was the strongest, leanest, and calmest he had ever been. The page had done the heavy lifting.',
+        actionStep: 'Write the one-page Body Architect protocol today. Save it. Promise no redesign for 12 weeks.',
+        checklist: [
+          'Write the page',
+          'Save it where you train',
+          'Promise no redesign for 12 weeks',
+          'Tell one person you finished the pack'
+        ],
+        microChallenge: 'Read the protocol aloud once tonight. The act of speaking it is part of the commitment.',
+        reflection: 'Who am I after 28 sections of body work — and what does the next decade look like for that man?'
       }
     }
   },
@@ -11455,6 +12467,305 @@ var PACK_CONTENT_OVERLAY = {
         ],
         microChallenge: 'Tell one person what you committed to. Lightweight accountability holds the chain.',
         reflection: 'Who do I become when this protocol runs without me thinking about it?'
+      },
+      9: {
+        image: 'social-mastery-day-09.webp',
+        imageAlt: 'A man introducing himself with calm, grounded eye contact.',
+        keyTerms: ['confidence', 'execution'],
+        reading:
+            '<h3>The first ten seconds</h3>'
+          + '<p>Most introductions are forgotten within minutes — not because the person was uninteresting, but because the introduction itself was forgettable. The first ten seconds of a meeting set the tone for everything that follows.</p>'
+          + '<p>The structure: clear name, steady eye contact, a real handshake (if appropriate to the setting), and one sentence about what you do that lands without effort. "I help small businesses make their hiring less painful" beats "I do HR consulting."</p>'
+          + '<h3>Practice in low stakes</h3>'
+          + '<p>This week, intentionally introduce yourself to three new people. Coffee shop, gym, work. Use the same opening every time. The repetition is the practice — by the fourth time, the words come without effort.</p>',
+        whyItMatters: 'You only get one first impression. Wasted ones cost relationships you never knew you almost had.',
+        keyInsight: 'A great introduction is short, clear, and warm. Most are long, vague, and rushed.',
+        example: 'A reader rewrote his standard introduction and used it for a month. He started getting a callback line — "you said it differently than most people." That line opened three real conversations.',
+        actionStep: 'Write your one-sentence introduction today. Practice it aloud three times. Use it the next time you meet someone new.',
+        checklist: [
+          'Write the one-sentence opener',
+          'Eye contact, name, sentence',
+          'Use it with 3 new people this week',
+          'Refine after the third use'
+        ],
+        microChallenge: 'Record yourself doing the introduction. Listen back. Cut one word.',
+        reflection: 'What does my current introduction say about me — and is it what I want it to say?'
+      },
+      10: {
+        image: 'social-mastery-day-10.webp',
+        imageAlt: 'Two people in light conversation over coffee in warm light.',
+        keyTerms: ['attention', 'consistency'],
+        reading:
+            '<h3>Small talk as a skill</h3>'
+          + '<p>Small talk gets a bad reputation. Done badly, it is the social equivalent of waiting in line — both parties wishing it would end. Done well, it is the gateway to every real connection you have ever had.</p>'
+          + '<p>The trick is to treat the surface question as a doorway, not the conversation itself. "How was your weekend?" is an invitation to share something specific. Specificity invites specificity. "We took the kids to the new park on 12th" beats "It was fine."</p>'
+          + '<h3>Three good follow-ups</h3>'
+          + '<p>Whatever they say, have three follow-up questions ready in your head. "What did you like about it?" "What surprised you?" "Would you do it again?" These are universal openers that work in almost any small-talk doorway.</p>',
+        whyItMatters: 'Most great relationships start as great small talk that knew how to go somewhere.',
+        keyInsight: 'Specific answers invite specific questions. The whole skill is in being specific first.',
+        example: 'A reader trained on three follow-up questions for a month. By month two, colleagues described him as a great conversationalist. He had not changed how he talked — only what he asked.',
+        actionStep: 'In your next three small-talk moments, answer with one specific detail. Then ask one specific follow-up.',
+        checklist: [
+          'Answer with specifics, not "fine"',
+          'Have 3 follow-up questions ready',
+          'Use them the next 3 times you meet someone',
+          'Note which one worked best'
+        ],
+        microChallenge: 'For one week, never answer "how are you" with "good." Find a specific true word every time.',
+        reflection: 'What kind of small talk would I actually enjoy if I designed it?'
+      },
+      11: {
+        image: 'social-mastery-day-11.webp',
+        imageAlt: 'A man standing comfortably in a small group conversation.',
+        keyTerms: ['confidence', 'emotional-regulation'],
+        reading:
+            '<h3>Confidence in groups</h3>'
+          + '<p>Group conversations are different beasts. The turn-taking is fast. The silence is rare. The men who shine in groups are not the loudest — they are the most observant. They notice who has not spoken. They invite. They make space.</p>'
+          + '<p>The simplest leverage in any group is to remember three names and use them. "Sarah was just saying something interesting about that — Sarah, can you say more?" That single move makes you look like the most senior person in the room.</p>'
+          + '<h3>The quiet authority</h3>'
+          + '<p>You do not need to dominate to be respected. Speak when you have something to add. Pause when you do not. Let your steady presence do the work that other men do with volume. The quiet authority is the most magnetic one.</p>',
+        whyItMatters: 'Group dynamics are mostly invisible. The men who see them lead them.',
+        keyInsight: 'Remember names. Invite the quiet. Speak when you have something. That is the whole skill.',
+        example: 'A reader started using two names in every group conversation. Within a quarter, his colleagues described him as "the one who really runs the room." He had not increased his speaking time — only his observation.',
+        actionStep: 'In your next group conversation, remember three names and use them. Invite one quiet person to share.',
+        checklist: [
+          'Remember 3 names',
+          'Use them at least once',
+          'Invite the quiet person',
+          'Speak only when you add something'
+        ],
+        microChallenge: 'Sit through one full meeting without checking your phone. Notice what you learn about the room.',
+        reflection: 'Where in my groups am I trying to be heard when I should be trying to see?'
+      },
+      12: {
+        image: 'social-mastery-day-12.webp',
+        imageAlt: 'A man comfortable with silence in a conversation in warm light.',
+        keyTerms: ['emotional-regulation', 'confidence'],
+        reading:
+            '<h3>Sit with the silence</h3>'
+          + '<p>Silence is the most uncomfortable social moment for most men. Three seconds of pause feels like thirty. The reflex is to fill — with a joke, a hedge, an opinion you do not actually hold. The cost is the conversation.</p>'
+          + '<p>The skill is to sit with it. A two-second pause after someone speaks gives them room to keep going. A four-second pause gives them room to say something they did not plan to. Almost every great conversation has a moment that followed a held silence.</p>'
+          + '<h3>Train the pause</h3>'
+          + '<p>For one week, count silently to three before responding in any meaningful conversation. It will feel awkward to you. To the listener, it lands as calm and considered. By week two, the count is unnecessary — the pause has become natural.</p>',
+        whyItMatters: 'The person who can sit with silence controls the conversation.',
+        keyInsight: 'Most conversations break in the rush to fill silence. The pause is the strength.',
+        example: 'A reader trained the three-second pause for a month. His clients started telling him deeper things. The silence had been doing the listening he never knew he was missing.',
+        actionStep: 'For one full day, count to three silently before any meaningful response. Note what changes.',
+        checklist: [
+          'Count to 3 before responding',
+          'Hold eye contact during the pause',
+          'Notice when they say more',
+          'Repeat for one week'
+        ],
+        microChallenge: 'In one conversation today, do not fill a single silence. Watch what fills it instead.',
+        reflection: 'What was I afraid would happen if I sat with silence — and is it still true?'
+      },
+      13: {
+        image: 'social-mastery-day-13.webp',
+        imageAlt: 'A man disagreeing calmly without raising his voice.',
+        keyTerms: ['emotional-regulation', 'discipline'],
+        reading:
+            '<h3>Disagree without ego</h3>'
+          + '<p>Disagreement is not conflict. It is information. The men who disagree well — calmly, specifically, without attacking the person — earn more trust than men who agree with everything. Strong opinions, loosely held, kindly delivered.</p>'
+          + '<p>The format: name the specific thing you disagree with, name your reason, leave space for them to respond. "I see it differently — I think the bottleneck is the handoff, not the spec. What am I missing?" beats "That is wrong."</p>'
+          + '<h3>The question at the end</h3>'
+          + '<p>Always end a disagreement with a question. Not as a softener — as a real check. "What am I missing?" or "How are you seeing it?" opens the door instead of slamming it. The conversation continues.</p>',
+        whyItMatters: 'The way you disagree builds or destroys trust faster than the way you agree.',
+        keyInsight: 'Disagree with the position, never with the person.',
+        example: 'A reader rewrote his approach to disagreements over a quarter. Colleagues started bringing him into harder conversations because his disagreement felt safe to receive.',
+        actionStep: 'In your next disagreement today, end with a real question. Mean it.',
+        checklist: [
+          'Name what you disagree with',
+          'Name your reason',
+          'End with a real question',
+          'Listen to the answer'
+        ],
+        microChallenge: 'For one week, never say "you are wrong." Say "I see it differently" instead. Note what changes.',
+        reflection: 'Where am I treating disagreement as a fight when I could be treating it as information?'
+      },
+      14: {
+        image: 'social-mastery-day-14.webp',
+        imageAlt: 'A handshake at a small networking event in warm light.',
+        keyTerms: ['execution', 'consistency'],
+        reading:
+            '<h3>Networking without slime</h3>'
+          + '<p>Networking has a bad reputation because most of it is bad. Transactional. Forced. Both parties measuring whether the other is useful. Real networking is something else: meeting people you would want in your life regardless of what they can do for you.</p>'
+          + '<p>The shift: stop looking for what you can get. Start looking for who you find interesting. The latter produces relationships that compound across decades. The former produces business cards that go in a drawer.</p>'
+          + '<h3>The follow-up</h3>'
+          + '<p>The whole game is the follow-up. Send a short note within 48 hours. Reference one specific thing they said. Suggest one specific next step or simply say "good to meet you." Most networking dies in the 48-hour gap.</p>',
+        whyItMatters: 'Most networks are built on a hundred small follow-ups, not on big introductions.',
+        keyInsight: 'Send the note. Most people will not. That is the asymmetry.',
+        example: 'A reader sent a 48-hour note after every meeting for a year. By year two, his network was twice the size of peers who attended twice as many events.',
+        actionStep: 'After your next professional meeting, send a 48-hour follow-up. One specific reference. One specific next step.',
+        checklist: [
+          'Send within 48 hours',
+          'Reference one specific thing',
+          'Suggest one next step',
+          'Keep it short'
+        ],
+        microChallenge: 'This week, send a follow-up to three people you have been meaning to message but have not.',
+        reflection: 'Whose follow-up have I been postponing because it felt awkward, when it would be welcomed?'
+      },
+      15: {
+        image: 'social-mastery-day-15.webp',
+        imageAlt: 'A leader giving calm direction to a small team in soft light.',
+        keyTerms: ['confidence', 'system'],
+        reading:
+            '<h3>Leadership communication</h3>'
+          + '<p>Leadership is a communication discipline. Clear vision, specific expectations, repeated patiently until they land. The leaders people follow are not the ones who say it loudest — they are the ones who say it cleanly and often.</p>'
+          + '<p>The leverage moves: state the goal in one sentence. State the standard in one sentence. State the owner in one sentence. Then leave room for the team to figure out the rest. Over-direction is the enemy of trust.</p>'
+          + '<h3>The repeat rule</h3>'
+          + '<p>You will need to repeat the goal more times than feels reasonable to you. The team is hearing it once a week; you are saying it once a day. That gap is normal. Repetition is the price of alignment.</p>',
+        whyItMatters: 'Most team failures are communication failures dressed up as execution failures.',
+        keyInsight: 'Say it cleanly. Say it often. Trust them with the how.',
+        example: 'A reader took over a team that was missing deadlines. He stopped giving detailed instructions and started repeating one clear goal weekly. Within a quarter, the deadlines were being hit by people who suddenly understood what was being asked.',
+        actionStep: 'Write your team\'s one-sentence goal today. State it at your next meeting. Then state it again next week.',
+        checklist: [
+          'One-sentence goal',
+          'One-sentence standard',
+          'One-sentence owner',
+          'Repeat weekly without apology'
+        ],
+        microChallenge: 'Ask one team member to repeat the goal back to you. Whatever they say is your real alignment.',
+        reflection: 'What am I assuming the team knows that I have not said clearly?'
+      },
+      16: {
+        image: 'social-mastery-day-16.webp',
+        imageAlt: 'A man reading a room of mixed reactions with calm attention.',
+        keyTerms: ['attention', 'emotional-regulation'],
+        reading:
+            '<h3>Read the room</h3>'
+          + '<p>Reading a room is not magic. It is attention. Who is leaning in? Who is leaning out? Who started checking their phone three minutes ago? Who has not said anything in twenty minutes? The room is always telling you the truth. Most people do not look.</p>'
+          + '<p>The skill: pause every five to ten minutes in any extended group situation. Scan the room without making eye contact with anyone in particular. Note the temperature. Adjust your delivery — slow down, change topic, ask a question, take a break.</p>'
+          + '<h3>The mid-meeting check</h3>'
+          + '<p>Halfway through any meeting longer than 30 minutes, ask: "How are we doing? Anything we should adjust?" The question is rarely asked and almost always welcomed. It also gives you a calibration point.</p>',
+        whyItMatters: 'Reading the room is the difference between a leader who lands and one who is endured.',
+        keyInsight: 'The room is always talking. Listen with your eyes.',
+        example: 'A reader started running mid-meeting checks for a quarter. Meeting satisfaction in his team rose noticeably. He had not changed the meetings — only the calibration.',
+        actionStep: 'In your next meeting longer than 30 minutes, run a mid-meeting check. Note what people say.',
+        checklist: [
+          'Scan the room every 5-10 minutes',
+          'Mid-meeting check at halftime',
+          'Adjust delivery to match the room',
+          'Note what you noticed'
+        ],
+        microChallenge: 'For one week, end every meeting with one sentence: "What did we miss?"',
+        reflection: 'What room am I in right now that I have not been honestly reading?'
+      },
+      17: {
+        image: 'social-mastery-day-17.webp',
+        imageAlt: 'A man delivering calm authority in a high-stakes moment.',
+        keyTerms: ['confidence', 'discipline'],
+        reading:
+            '<h3>Calm authority under pressure</h3>'
+          + '<p>The men who lead in hard moments are not the loudest — they are the most regulated. When everyone else gets faster, they get slower. When everyone else gets louder, they get quieter. The calm is what people follow.</p>'
+          + '<p>This is trainable. Before the next high-stakes moment, run a three-minute protocol: breath cycle, posture reset, one-sentence intention. Walk in slower than you feel. Speak quieter than you think you should. Hold the ground while everyone else moves.</p>'
+          + '<h3>The voice drops</h3>'
+          + '<p>Under pressure, most men\'s voices rise in pitch and speed. Practice the opposite. A lower, slower voice in a high-stakes moment lands as authority even when nothing else changes.</p>',
+        whyItMatters: 'Calm under pressure is the rarest leadership signal in any organisation.',
+        keyInsight: 'The room calibrates to the calmest person in it. Be that person.',
+        example: 'A reader led his team through a crisis quarter using only one technique — slower, quieter speech. The team described him afterwards as "the steady one." He had not added a single new skill.',
+        actionStep: 'In your next high-stakes moment, drop your pace by 20 percent and your volume by 10 percent. Note the response.',
+        checklist: [
+          'Three-minute pre-pressure protocol',
+          'Slower pace, lower volume',
+          'Steady posture',
+          'One-sentence intention before walking in'
+        ],
+        microChallenge: 'After the moment, write one sentence about what calm felt like in the body. Train the memory.',
+        reflection: 'Where am I matching the room\'s energy when I should be setting it?'
+      },
+      18: {
+        image: 'social-mastery-day-18.webp',
+        imageAlt: 'A man following up with a thoughtful message on his phone.',
+        keyTerms: ['execution', 'momentum'],
+        reading:
+            '<h3>The compounding follow-up</h3>'
+          + '<p>The single most underused social skill is the follow-up. Not the 48-hour follow-up after a meeting — the six-month follow-up. The one-year follow-up. The "I was just thinking about you and the conversation we had last spring" message that arrives out of nowhere.</p>'
+          + '<p>These messages cost two minutes and produce extraordinary returns. They keep relationships warm without obligation. They remind the other person that you valued them. They open doors that you could not have predicted.</p>'
+          + '<h3>The Sunday list</h3>'
+          + '<p>Once a week, pick three people you have not been in touch with for more than six months. Send each a short, specific, no-ask message. Continue for a year. Watch what builds.</p>',
+        whyItMatters: 'Long-term relationships compound. The follow-up is the compounding.',
+        keyInsight: 'The two-minute message you send today is worth more than the one-hour meeting you might have someday.',
+        example: 'A reader ran the three-message Sunday for a year. By month nine, he had reopened five dormant relationships, one of which became his next professional partner.',
+        actionStep: 'Send three short, specific, no-ask messages to people you have not been in touch with in 6+ months. Today.',
+        checklist: [
+          'Identify 3 dormant relationships',
+          'Send a short, specific message',
+          'No ask attached',
+          'Repeat next Sunday'
+        ],
+        microChallenge: 'Write the three messages in 15 minutes total. Do not over-craft them — short and warm beats long and polished.',
+        reflection: 'Whose voice have I been waiting to hear when I could have just reached out?'
+      },
+      19: {
+        image: 'social-mastery-day-19.webp',
+        imageAlt: 'A man maintaining steady presence across multiple settings.',
+        keyTerms: ['consistency', 'discipline'],
+        reading:
+            '<h3>One presence, many rooms</h3>'
+          + '<p>Many men have a different self at work, a different self at home, a different self with friends. Some of that is healthy code-switching. Much of it is exhaustion — the cost of pretending in different ways in different rooms.</p>'
+          + '<p>The work is to bring the same core self into every room. Same voice. Same posture. Same regulation. Your tone may shift; your principles do not. The integrated self is the magnetic one.</p>'
+          + '<h3>The integration check</h3>'
+          + '<p>Once a week, ask yourself: who was I in the room with my partner this week? With my team? With my friends? Are those three men recognizable to each other? If not, where is the gap?</p>',
+        whyItMatters: 'The integrated self is less tired, more trusted, and easier to be around.',
+        keyInsight: 'Same posture. Same voice. Same regulation. Different topics, same man.',
+        example: 'A reader stopped switching modes between work and home. The first few weeks felt strange. Within a month, his energy at the end of the day was noticeably higher. The pretending had been expensive.',
+        actionStep: 'For one day, intentionally bring the same posture, voice, and regulation into every setting. Note what changes.',
+        checklist: [
+          'Same posture across settings',
+          'Same voice tone (with topic-appropriate words)',
+          'Same regulation under pressure',
+          'Weekly integration check'
+        ],
+        microChallenge: 'Ask one person who knows you across multiple settings: "Do I seem like the same person to you?" Listen carefully.',
+        reflection: 'In which room am I most pretending — and what would it cost to stop?'
+      },
+      20: {
+        image: 'social-mastery-day-20.webp',
+        imageAlt: 'A man preparing for a high-stakes presentation with calm focus.',
+        keyTerms: ['reflection', 'system'],
+        reading:
+            '<h3>Three-week social review</h3>'
+          + '<p>You have practiced presence, voice, posture, listening, regulation, leadership, follow-up, and integration. Today you sit with the data. Where did you feel most yourself? Where did you feel most performative? Which conversation from the past three weeks would you re-do, and how?</p>'
+          + '<p>The review is honest, not punishing. The goal is to keep what is working, drop what is performative, and pick one focus for the next 90 days. Compounding lives in honest reviews and patient focus.</p>'
+          + '<h3>What is keep-doing</h3>'
+          + '<p>Most people focus on what to change. Start with what to keep. The habits that have already become natural — the pauses, the follow-ups, the body language reset — are the foundation. Protect them first.</p>',
+        whyItMatters: 'The review is what turns three weeks of practice into permanent change.',
+        keyInsight: 'Keep first. Change second. Protect the foundation before you build the next floor.',
+        example: 'A reader ran his three-week review and was surprised that the smallest habit — the 30-second posture reset — had become the most valuable. He doubled down on it before adding anything new.',
+        actionStep: 'Block 30 minutes today. Write the three-week review. List 3 keep-doings and 1 next focus.',
+        checklist: [
+          '3 things that became natural',
+          '1 thing that felt performative',
+          '1 conversation to learn from',
+          '1 focus for the next 90 days'
+        ],
+        microChallenge: 'Share the review with one trusted person. Hearing yourself say it out loud reveals more than writing it.',
+        reflection: 'Which version of myself from the past three weeks do I want to keep being?'
+      },
+      21: {
+        image: 'social-mastery-day-21.webp',
+        imageAlt: 'A handwritten social protocol on a single page in soft light.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>The final social protocol</h3>'
+          + '<p>Twenty sections of practice now compress onto one page. The introduction. The opener. The follow-up rules. The posture reset. The pause. The mid-meeting check. The pre-pressure protocol. The Sunday three messages. The integration check.</p>'
+          + '<p>Most men spend years trying to become more "social." You spent 21 sections building the actual system. The system is the asset. Run it for the next year and your social life will not look the same.</p>'
+          + '<h3>The compounding decade</h3>'
+          + '<p>Social presence compounds in ways most other skills do not. A man with a well-run social system at 30 has a different life at 40. The page you write today is the seed of that next decade.</p>',
+        whyItMatters: 'The protocol is what carries social compounding into the next decade.',
+        keyInsight: 'You are not winning rooms. You are building a presence that walks into them.',
+        example: 'A reader pinned his one-page protocol above his desk and ran it for two years. By year two, he was being described by colleagues as "the steady one in the room" without ever having to ask for the title.',
+        actionStep: 'Write the page today. Save it where you will see it weekly. Promise no redesign for 90 days.',
+        checklist: [
+          'Introduction + opener',
+          'Posture + voice protocol',
+          'Pause + room-reading rules',
+          'Follow-up cadence + integration check'
+        ],
+        microChallenge: 'Tonight, send one of the Sunday three messages a day early. Start the chain.',
+        reflection: 'Who do I become after 21 sections of this work — and what does the next decade look like for that man?'
       }
     }
   },
@@ -11869,6 +13180,144 @@ var PACK_CONTENT_OVERLAY = {
         ],
         microChallenge: 'Do not bring up any logistics during the hour. Notice what conversation appears instead.',
         reflection: 'What used to be quality time for us that we let drift?'
+      },
+      9: {
+        image: 'relationship-code-day-09.webp',
+        imageAlt: 'Two people pausing during a disagreement to breathe and reset.',
+        keyTerms: ['emotional-regulation', 'discipline'],
+        reading:
+            '<h3>Conflict without escalation</h3>'
+          + '<p>Conflict is information. Escalation is the cost when neither person stays grounded. The same fight at the same volume produces the same result every time. The skill is to interrupt the pattern early — before either of you is shouting, defending, or looking for a side door out of the room.</p>'
+          + '<p>The three levers: lower your voice, slow your pace, and take a 20-minute pause if needed. The pause is not avoidance — it is regulation. Return to the conversation before the day ends. Unfinished conflict at sleep is what builds resentment over months.</p>'
+          + '<h3>The reset phrase</h3>'
+          + '<p>Have a phrase you both agree means "I need a pause to think." Not as a weapon — as a signal. "Let me think about that for ten minutes" beats firing off the first reaction your nervous system serves up. Most arguments lose their charge after a ten-minute walk.</p>',
+        whyItMatters: 'The relationships that last do not avoid conflict — they regulate inside it.',
+        keyInsight: 'You cannot solve a conflict from inside the emotional state that produced it.',
+        example: 'A reader and his partner agreed on a phrase: "let me take ten." For a year, every disagreement got the pause. By month four, the volume of arguments had dropped by half and almost all of them resolved within the hour.',
+        actionStep: 'Pick a reset phrase with your partner today. Use it the next time the temperature rises.',
+        checklist: [
+          'Lower your voice',
+          'Take one breath before replying',
+          'Take a 20-minute pause if needed',
+          'Return before the day ends'
+        ],
+        microChallenge: 'In the next disagreement, repeat back what they said before defending yourself. Watch the temperature drop.',
+        reflection: 'What conversation do I keep avoiding because I do not trust my own response?'
+      },
+      10: {
+        image: 'relationship-code-day-10.webp',
+        imageAlt: 'A man writing a small note of appreciation in soft warm light.',
+        keyTerms: ['attention', 'consistency'],
+        reading:
+            '<h3>Appreciation, out loud</h3>'
+          + '<p>The thing that compounds across years is appreciation said out loud. Not generic. Specific, frequent, unforced. "Thanks for handling the kids while I was on that call this morning" beats "I appreciate you." The detail is the proof you noticed.</p>'
+          + '<p>Most men under-appreciate not because they do not feel it but because they assume it is obvious. It is not. Saying it out loud is a small act of generosity that costs nothing and changes the air in a household.</p>'
+          + '<h3>One a day for two weeks</h3>'
+          + '<p>For the next 14 days, say one specific, honest appreciation to your partner. Not because the day requires it. Because the habit builds it. By day seven you will notice them noticing.</p>',
+        whyItMatters: 'Appreciation is the slow-build interest rate of a relationship.',
+        keyInsight: 'Specific beats generic. Always.',
+        example: 'A reader committed to one specific appreciation a day for 30 days. By week three, his partner was reciprocating without prompting. By week six, both of them said it had changed the temperature of the whole house.',
+        actionStep: 'Say one specific, honest appreciation to your partner today. No ask attached.',
+        checklist: [
+          'One appreciation today',
+          'Make it specific',
+          'Say it without an ask attached',
+          'Repeat tomorrow'
+        ],
+        microChallenge: 'For seven days, never repeat an appreciation. Force yourself to notice fresh things.',
+        reflection: 'What have I been silently noticing that they would love to hear me say?'
+      },
+      11: {
+        image: 'relationship-code-day-11.webp',
+        imageAlt: 'A man delivering a calm and specific apology in soft light.',
+        keyTerms: ['execution', 'emotional-regulation'],
+        reading:
+            '<h3>The apology that works</h3>'
+          + '<p>A real apology has three parts: name what you did, name the impact, say what changes. No "but," no hedging, no self-pity. Short. Specific. Clean. Most apologies fail because they try to manage how the other person feels instead of naming what you actually did.</p>'
+          + '<p>"I snapped at you over the dishes. I made you feel like you were not a partner, you were a chore-tracker. I am going to take a breath before responding when I am tired tonight." That is an apology. "I am sorry you felt that way" is not.</p>'
+          + '<h3>Today\'s practice</h3>'
+          + '<p>Write a one-paragraph apology you owe someone but have not given. Three parts. Send it or speak it before the day ends. The unfinished apology is heavier than the clean one.</p>',
+        whyItMatters: 'The apology you have been postponing is the one carrying the most weight.',
+        keyInsight: 'A clean apology costs five minutes. The unfinished one costs months.',
+        example: 'A reader wrote a three-line apology to his brother after two years of distance. The brother responded within the hour. The conversation reopened.',
+        actionStep: 'Write a one-paragraph apology you owe someone. Three parts. Send or speak it today.',
+        checklist: [
+          'Name what you did',
+          'Name the impact',
+          'Say what changes',
+          'Send or speak it'
+        ],
+        microChallenge: 'No "but." No "I am sorry you felt." If those words appear, rewrite.',
+        reflection: 'Whose voice have I been avoiding because the apology felt too small or too big?'
+      },
+      12: {
+        image: 'relationship-code-day-12.webp',
+        imageAlt: 'A man re-reading his commitment line in a quiet morning room.',
+        keyTerms: ['discipline', 'momentum'],
+        reading:
+            '<h3>Long-term commitment as a practice</h3>'
+          + '<p>Commitment is not a feeling. It is a daily decision dressed up as a feeling. The men whose relationships last keep choosing in — on calm Tuesday mornings, on hard nights, on days the other person is not at their easiest. The choice is the practice.</p>'
+          + '<p>The trap is to wait for the feeling to renew before you act on the commitment. Most relationships die in those waiting periods. You act first. The feeling follows. Most days.</p>'
+          + '<h3>The commitment line</h3>'
+          + '<p>Write one short line about why you are still choosing this relationship. Not romantic prose. A clear, calm sentence. Save it for hard days. Read it when you need to. Update it once a year.</p>',
+        whyItMatters: 'The commitment line is the anchor for days when the feeling is thin.',
+        keyInsight: 'You can choose in even when you do not feel it. The feeling tends to follow.',
+        example: 'A reader wrote one line during a stable week. Two years later, on the worst day of his life, he read it. The choice held. The feeling caught up by the weekend.',
+        actionStep: 'Write your one-line commitment statement today. Save it where you will find it on a hard day.',
+        checklist: [
+          'Write the line',
+          'Save it where you will find it',
+          'Tell them once',
+          'Re-read on a hard day'
+        ],
+        microChallenge: 'Once a week, read the line aloud. The habit is the practice.',
+        reflection: 'What do I love that I have stopped saying because I assumed it was obvious?'
+      },
+      13: {
+        image: 'relationship-code-day-13.webp',
+        imageAlt: 'A small notebook of two-week review notes in soft daylight.',
+        keyTerms: ['reflection', 'system'],
+        reading:
+            '<h3>Two-week honest review</h3>'
+          + '<p>Two weeks of practice produces real data. What changed in your attention, your tone, your repair time? What did your partner notice without being told? What did you notice about yourself that surprised you?</p>'
+          + '<p>The review is short. Twenty minutes. Three scores out of 10 — attention, clarity, repair. One paragraph of honest notes. One thing to keep doing. One thing to change for the next two weeks.</p>'
+          + '<h3>What the scores actually mean</h3>'
+          + '<p>You are not grading yourself for a feeling. You are noticing patterns. A 6 in attention is data. So is a 9 in repair. The numbers exist to make the next two weeks better, not to judge the last two.</p>',
+        whyItMatters: 'Two-week reviews convert good intentions into permanent change.',
+        keyInsight: 'Score yourself honestly. The number is the start of the next loop.',
+        example: 'A reader ran two-week reviews for six months. Every cycle his repair score went up by half a point. The cumulative effect was a relationship he barely recognised — calmer, warmer, less reactive.',
+        actionStep: 'Block 20 minutes today. Score yourself on attention, clarity, repair. Pick one focus area.',
+        checklist: [
+          'Score 1-10 on attention',
+          'Score 1-10 on clarity',
+          'Score 1-10 on repair',
+          'Pick one focus area'
+        ],
+        microChallenge: 'Share one finding with your partner without making it heavy. "I noticed I have been more present this week" lands warmer than you think.',
+        reflection: 'Which score surprised me, and what does that say?'
+      },
+      14: {
+        image: 'relationship-code-day-14.webp',
+        imageAlt: 'A handwritten Relationship Code on a single page in soft light.',
+        keyTerms: ['system', 'momentum'],
+        reading:
+            '<h3>The long code</h3>'
+          + '<p>You have practiced the small habits. Today you write them as a one-page code you will keep coming back to for years. Not a manifesto. A working document. How you give attention. How you repair. How you apologise. How you appreciate. How you handle conflict. How you choose in.</p>'
+          + '<p>The code is for you, not the other person. It does not require their cooperation. It does not depend on whether they meet you in the middle. The discipline is unilateral. Most relationship advice fails because it treats the partnership as a negotiation. The code makes it a practice.</p>'
+          + '<h3>Use the code</h3>'
+          + '<p>Save it where you can read it once a month. Re-read it before any big conversation. Update it once a year, calmly, with a year of evidence. This single page is the Apple-style asset that 14 sections were building.</p>',
+        whyItMatters: 'The code is the asset. Everything else is the practice that proves the code.',
+        keyInsight: 'You can write the kind of partner you want to be. Then you become him.',
+        example: 'A reader wrote his code and pinned it inside the closet door. He read it every Sunday morning for three years. He stopped having to remember how to be a good partner — the code did the remembering.',
+        actionStep: 'Write the page today. Save it where you will see it. Tell your partner what you committed to.',
+        checklist: [
+          'Write the page',
+          'Save it',
+          'Re-read quarterly',
+          'Update once per year'
+        ],
+        microChallenge: 'Read the page out loud to yourself tonight. The act of speaking it is part of the commitment.',
+        reflection: 'Who do I become when I live this code on autopilot?'
       }
     }
   }
