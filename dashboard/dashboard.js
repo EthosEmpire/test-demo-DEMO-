@@ -6937,12 +6937,19 @@ var PACK_META = {
   'hair-care':          { theme:'violet-indigo', difficulty:'Easy',   promise:'Healthier hair from the inside out.',              worlds:['health'],               tags:['Looks'],               featured:true,  status:'active' },
   'business-idea':      { theme:'pink-gold',     difficulty:'Medium', promise:'Validate a real idea this month.',                 worlds:['business','money'],     tags:['Business','Money'],    featured:true,  status:'active' },
   'content-plan':       { theme:'purple-blue',   difficulty:'Medium', promise:'Ship content consistently without burnout.',       worlds:['business'],             tags:['Content'],             featured:true,  status:'active' },
-  /* Existing real packs - day content preserved, marketplace badge shows SOON */
-  'financial-blueprint':{ theme:'gold-emerald',  difficulty:'Medium', promise:'From scattered spending to your first $10k saved.', worlds:['money'],                tags:['Money'],               featured:false, status:'coming-soon' },
+  /* Stage 38-B1: free-course migration. Three previously-locked packs
+     (financial-blueprint, body-architect, social-mastery) were covered by
+     the public course/ pages, so they flip to free/active. mindset-reboot
+     and business-builder were never part of the free-course set and stay
+     locked. */
+  'financial-blueprint':{ theme:'gold-emerald',  difficulty:'Medium', promise:'From scattered spending to your first $10k saved.', worlds:['money'],                tags:['Money'],               featured:true,  status:'active' },
   'mindset-reboot':     { theme:'magenta-violet',difficulty:'Medium', promise:'Reprogram limiting beliefs in 14 days.',            worlds:['mindset','mastery'],    tags:['Mindset'],             featured:false, status:'coming-soon' },
-  'body-architect':     { theme:'teal-green',    difficulty:'Hard',   promise:'Build the body you have been postponing.',          worlds:['health'],               tags:['Body'],                featured:false, status:'coming-soon' },
+  'body-architect':     { theme:'teal-green',    difficulty:'Hard',   promise:'Build the body you have been postponing.',          worlds:['health'],               tags:['Body'],                featured:true,  status:'active' },
   'business-builder':   { theme:'pink-gold',     difficulty:'Hard',   promise:'Take an idea from blank page to first customer.',   worlds:['business','money'],     tags:['Business','Money'],    featured:false, status:'coming-soon' },
-  'social-mastery':     { theme:'rose-coral',    difficulty:'Medium', promise:'Presence that commands respect without effort.',    worlds:['mindset','discipline'], tags:['Social','Mindset'],    featured:false, status:'coming-soon' },
+  'social-mastery':     { theme:'rose-coral',    difficulty:'Medium', promise:'Presence that commands respect without effort.',    worlds:['mindset','discipline'], tags:['Social','Mindset'],    featured:true,  status:'active' },
+  /* Stage 38-B1: new free packs migrated from the public course/ pages. */
+  'relationship-code':  { theme:'rose-coral',    difficulty:'Medium', promise:'Build the kind of relationships that last on purpose.', worlds:['mindset'],          tags:['Social','Mindset'],    featured:false, status:'active' },
+  'scent-hygiene':      { theme:'blue-mint',     difficulty:'Easy',   promise:'Quietly clean, well-groomed, and confident every day.', worlds:['health'],           tags:['Looks','Body'],        featured:false, status:'active' },
   /* Stage 10: promoted from teasers to active */
   'focus-builder':      { theme:'magenta-violet',difficulty:'Medium', promise:'Train attention like the asset it is.',             worlds:['mindset','discipline'], tags:['Mindset','Purpose'],   featured:false, status:'active' },
   'style-foundations':  { theme:'slate-gold',    difficulty:'Easy',   promise:'A wardrobe that says what you want it to say.',     worlds:['mindset','mastery'],    tags:['Looks'],               featured:false, status:'active' },
@@ -7504,6 +7511,136 @@ PLAN_PACKS_DATA.push(
         action:'Write a simple weekly schedule today: idea day, recording day, editing day, posting day, review day.',
         reflection:'What is my repeatable YouTube system?',
         checklist:['Plan weekly idea day','Plan recording day','Plan editing day','Plan review day'] }
+    ] },
+
+  /* ─────────────────────────────────────────────────────────────
+     Stage 38-B1: SCENT & HYGIENE — new free pack migrated from
+     course/scent-hygiene/. Shell content (task/action/reflection/
+     checklist) is the seed; richer reading + structured callouts are
+     added by PACK_CONTENT_OVERLAY in Stage 38-B3. */
+  { id:'scent-hygiene', icon:'🧴', title:'Scent & Hygiene', category:'Looks', totalDays:8,
+    desc:'Quietly clean, well-groomed, and confident every day.',
+    about:'Eight short sections covering the small daily habits that keep you fresh, well-groomed, and quietly confident. Built around the same Apple-style structure as the rest of the Plan Packs: read the section, do the action, mark it complete.',
+    days:[
+      { day:1, title:'The Hygiene Baseline',
+        task:'Hygiene is not vanity. It is the floor under every other social and professional move you make. A clean baseline costs almost nothing and signals competence before you say a word.',
+        action:'Audit your current daily routine on paper: shower cadence, deodorant, oral care, hand washing, nail care, laundry frequency. Mark the weakest item and decide one fix for this week.',
+        reflection:'Where am I quietly tolerating a habit that costs me more than I realise?',
+        checklist:['List daily hygiene habits','Mark the weakest one','Decide one fix','Plan when you will do it'] },
+      { day:2, title:'Daily Shower System',
+        task:'A shower is not just about cleaning — it is your daily reset. Cold finish, simple soap, dry properly. The goal is a routine you can run on a tired Monday without thinking.',
+        action:'Build a five-minute shower system: warm to clean, cool 30 seconds at the end, two-minute dry, deodorant before clothes. Run it tomorrow morning.',
+        reflection:'How does my body feel when the shower is a system instead of a chore?',
+        checklist:['Pick a simple soap','Add a 30-second cool finish','Dry properly before clothes','Deodorant before getting dressed'] },
+      { day:3, title:'Oral Care Without Excuses',
+        task:'Your mouth is the closest thing people experience to you. Two minutes of careful brushing twice a day, floss once, mouthwash if needed. Small, daily, non-negotiable.',
+        action:'Replace your toothbrush if it is older than three months. Brush for the full two minutes tonight using a timer. Floss before bed.',
+        reflection:'What about my oral routine have I been guessing at instead of measuring?',
+        checklist:['Check toothbrush age','Brush 2 minutes with a timer','Floss tonight','Schedule a dentist visit if overdue'] },
+      { day:4, title:'Hands, Nails, and Small Details',
+        task:'Hands are the part of you people see in every conversation. Trimmed nails, clean cuticles, and washed hands signal someone who pays attention.',
+        action:'Trim nails tonight. Wash hands every time you come home for one week. Note when it becomes automatic.',
+        reflection:'What small detail about my appearance do I keep telling myself does not matter?',
+        checklist:['Trim nails','Clean under nails','Wash hands on entry','Pack a tiny pair of clippers'] },
+      { day:5, title:'The Right Deodorant',
+        task:'Deodorant is a personal-fit decision, not a brand decision. Antiperspirant if you sweat heavily, simple deodorant if you do not. Reapply when needed. Do not over-spray.',
+        action:'Pick one antiperspirant and one deodorant matched to your daily activity level. Apply right after the shower while skin is dry.',
+        reflection:'When did I last actually evaluate what is in my drawer instead of buying out of habit?',
+        checklist:['Pick antiperspirant or deodorant','Apply to dry skin','Reapply only when needed','Keep a small backup at work'] },
+      { day:6, title:'Fragrance That Suits You',
+        task:'A signature scent is one of the cheapest, longest-lasting style upgrades. Light, clean, and applied right beats expensive and wrong. Less is almost always more.',
+        action:'Try one fresh, clean, light fragrance this week. Apply two sprays — neck and wrist — once a day. Do not stack scents.',
+        reflection:'What is the impression I want to leave in a room when no one remembers exactly why?',
+        checklist:['Pick one light fragrance','Two sprays only','Apply once per day','Do not combine with strong deodorant'] },
+      { day:7, title:'Laundry and Smell',
+        task:'Clean clothes are the foundation of feeling clean. A schedule beats willpower. Two loads a week, daily underwear and socks change, and shirts as often as the weather demands.',
+        action:'Pick two laundry days for the next month. Put them on the calendar. Stick to them even on tired weeks.',
+        reflection:'Which old habit around clothes have I outgrown without updating my system?',
+        checklist:['Pick two weekly laundry days','Calendar them','Daily socks and underwear','Air-dry workout clothes between wears'] },
+      { day:8, title:'Build the Daily Hygiene System',
+        task:'A short page of rules that runs on autopilot beats motivation every time. Write yours today.',
+        action:'Write a single-page hygiene system: shower cadence, oral routine, deodorant + fragrance, laundry schedule, nail care. Save it where you can see it.',
+        reflection:'Who do I become when this routine runs without me having to remember it?',
+        checklist:['Write the page','Save it where you will see it','Tell one person you committed','Review monthly'] }
+    ] },
+
+  /* ─────────────────────────────────────────────────────────────
+     Stage 38-B1: RELATIONSHIP CODE — new free pack migrated from
+     course/relationship-code/. Shell content seeds Stage 38-B3 overlays. */
+  { id:'relationship-code', icon:'💞', title:'Relationship Code', category:'Mindset', totalDays:14,
+    desc:'Build the kind of relationships that last on purpose.',
+    about:'Fourteen short sections covering the practical, calm work of building strong, respectful relationships — the basics most men were never taught. Communication, boundaries, attention, repair, and presence.',
+    days:[
+      { day:1,  title:'Why Relationships Need a Code',
+        task:'Most relationships drift not because of conflict but because nobody decided how to run them. A relationship code is not romance — it is structure. With it, the easy days reinforce the hard ones.',
+        action:'Write one sentence about what kind of partner you want to be. Not what you want from someone else. What you bring.',
+        reflection:'What kind of person am I before I expect anything in return?',
+        checklist:['Write one sentence on who you bring','Read it aloud','Save it where you can see it','Re-read in one week'] },
+      { day:2,  title:'Attention as Currency',
+        task:'Attention is the currency of every relationship. Not gifts, not grand gestures. The small minutes of undivided focus that say "I see you." Most men have stopped giving it without noticing.',
+        action:'Have one ten-minute, screen-free conversation today. No phone, no half-listening. Ask one real question.',
+        reflection:'Where in my closest relationships have I been physically present and mentally absent?',
+        checklist:['Phone away','Ten minutes minimum','One real question','Listen without rehearsing your reply'] },
+      { day:3,  title:'Listen to Understand, Not to Reply',
+        task:'Most conversations are two monologues with breaks. The skill that changes relationships fastest is listening to understand instead of waiting to talk.',
+        action:'In your next real conversation, summarise what the other person said before responding. Just once. Notice what changes.',
+        reflection:'How often have I assumed I knew what they meant before I really listened?',
+        checklist:['Summarise before replying','Ask a follow-up','Let silence sit','Save the topic for later if needed'] },
+      { day:4,  title:'Speak Clearly, Even When It Is Uncomfortable',
+        task:'Hint culture kills connection. Strong men say what they mean kindly. "I would like to" beats "I guess I could." Clarity is the kindness, not the harshness.',
+        action:'Today, replace one passive phrase ("maybe," "I guess") with a clear one. Note the response.',
+        reflection:'What truth have I been softening to a point where it stopped meaning anything?',
+        checklist:['Spot a passive phrase','Replace it with a clear one','Keep your tone warm','Note the response'] },
+      { day:5,  title:'Boundaries Without Walls',
+        task:'A boundary is not a wall. It is a clearly-stated line that protects the relationship from resentment. Said calmly, in advance, by the person who owns it.',
+        action:'Define one boundary you have been avoiding stating. Write it in one calm sentence.',
+        reflection:'What boundary have I been hoping someone would guess instead of saying out loud?',
+        checklist:['Pick the boundary','Write it in one sentence','Plan when to say it','Stay calm when you do'] },
+      { day:6,  title:'Repair Is the Real Skill',
+        task:'Every relationship has friction. Strong ones repair. The skill is not avoiding the slip; it is showing up clean the next morning. A short, sincere repair beats an avoided one.',
+        action:'Identify one small unrepaired moment from the past week. Take 60 seconds today to repair it without drama.',
+        reflection:'Where am I letting small things accumulate when one short repair would clear the slate?',
+        checklist:['Name the unrepaired moment','Plan when to repair it','Keep it short','Do not over-explain'] },
+      { day:7,  title:'Week One Review',
+        task:'Patterns hide in plain sight until you write them down. Spend ten minutes reviewing your week — what worked, what drifted, what to keep.',
+        action:'List two wins and one fix from this week of practice. Schedule the fix into next week.',
+        reflection:'What kind of partner did I show up as this week, honestly?',
+        checklist:['Two wins','One fix','Schedule the fix','Take an evening off'] },
+      { day:8,  title:'Quality Time Without a Script',
+        task:'Quality time is not an activity — it is undivided attention with someone you care about. The format matters less than the focus. Walk, dinner, drive, errand. The point is presence.',
+        action:'Plan one undivided hour this week. No phones, no screens, no agenda beyond being together.',
+        reflection:'What used to be quality time for us that we let drift?',
+        checklist:['Block one undivided hour','Phones away','No agenda','Show up early'] },
+      { day:9,  title:'Conflict Without Escalation',
+        task:'Conflict is information. Escalation is the cost when neither person stays grounded. Lower voices, slow down, take a 20-minute pause if needed. Return before the day ends.',
+        action:'In the next disagreement, slow down once. Take a breath. Speak quieter, not louder.',
+        reflection:'What conversation do I keep avoiding because I do not trust my own response?',
+        checklist:['Lower your voice','Take one breath before replying','Take a 20-minute pause if needed','Return the same day'] },
+      { day:10, title:'Appreciation, Out Loud',
+        task:'The thing that compounds across years is appreciation said out loud. Specific, frequent, unforced. Once a day for two weeks changes the air in a household.',
+        action:'Say one specific, honest appreciation to your partner today. Not generic. Specific.',
+        reflection:'What have I been silently noticing that they would love to hear me say?',
+        checklist:['One appreciation today','Make it specific','Say it without an ask attached','Repeat tomorrow'] },
+      { day:11, title:'The Apology That Works',
+        task:'A real apology has three parts: name what you did, name the impact, say what changes. No "but," no hedging, no self-pity. Short, specific, and clean.',
+        action:'Write a one-paragraph apology you owe someone but have not given. Send it or speak it.',
+        reflection:'Whose voice have I been avoiding because the apology felt too small or too big?',
+        checklist:['Name what you did','Name the impact','Say what changes','Send or speak it'] },
+      { day:12, title:'Long-Term Commitment as a Practice',
+        task:'Commitment is not a feeling. It is a daily decision dressed up as a feeling. The men whose relationships last keep choosing in.',
+        action:'Write one short line about why you are still choosing this relationship. Save it for hard days.',
+        reflection:'What do I love that I have stopped saying because I assumed it was obvious?',
+        checklist:['Write the line','Save it where you will find it','Tell them once','Re-read on a hard day'] },
+      { day:13, title:'Two-Week Honest Review',
+        task:'Two weeks of practice produces real data. What changed in your attention, your tone, your repair time? What did your partner notice without being told?',
+        action:'Write a short, honest review of the two weeks. Score yourself 1-10 on attention, clarity, and repair. Pick one to focus on next.',
+        reflection:'Which score surprised me, and what does that say?',
+        checklist:['Score 1-10 on attention','Score 1-10 on clarity','Score 1-10 on repair','Pick one focus area'] },
+      { day:14, title:'The Long Code',
+        task:'You have practiced the small habits. Today you write them as a one-page code you will keep coming back to for years.',
+        action:'Write a single-page Relationship Code: how you give attention, how you repair, how you apologise, how you appreciate. Save it. Re-read quarterly.',
+        reflection:'Who do I become when I live this code on autopilot?',
+        checklist:['Write the page','Save it','Re-read quarterly','Update once per year'] }
     ] }
 );
 
@@ -10795,6 +10932,48 @@ var PACK_CONTENT_OVERLAY = {
       'A baseline of social confidence you can rely on in any room'
     ],
     howToUse: 'Pro-only pack. The marketplace shows the preview; the full 21-day lessons unlock with Empire Pro.'
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     Stage 38-B1: SCENT & HYGIENE overlay (new free pack). Day-level
+     reading content is added in Stage 38-B3. */
+  'scent-hygiene': {
+    coverImage:  'scent-hygiene-cover.webp',
+    coverAlt:    'A clean set of grooming essentials on a bright bathroom counter.',
+    heroImage:   'scent-hygiene-hero.webp',
+    heroAlt:     'Soft daylight on a small considered hygiene setup.',
+    overviewLong:
+        'Most men were never taught the small daily hygiene habits that quietly produce confidence. Not a sales pitch for products — a clean baseline: a real shower system, oral care without excuses, sane laundry, the right deodorant, a light fragrance that fits, and a one-page routine you can run on a tired day.\n\n'
+      + 'Eight short sections, designed so the routine lives on autopilot inside two weeks. By the end you will smell clean, look groomed, and stop having to think about any of it.',
+    outcomes: [
+      'A repeatable five-minute daily shower system',
+      'Oral care that actually runs every day',
+      'A deodorant + fragrance combination you trust',
+      'A laundry rhythm you can hold without willpower',
+      'A one-page hygiene routine you can run for years'
+    ],
+    howToUse: 'One short section per day. The actions are small and physical. Run them tomorrow morning, not someday.'
+  },
+
+  /* ─────────────────────────────────────────────────────────────
+     Stage 38-B1: RELATIONSHIP CODE overlay (new free pack). Day-level
+     reading content is added in Stage 38-B3. */
+  'relationship-code': {
+    coverImage:  'relationship-code-cover.webp',
+    coverAlt:    'Two people in calm conversation in warm afternoon light.',
+    heroImage:   'relationship-code-hero.webp',
+    heroAlt:     'A quiet, respectful conversation between two people.',
+    overviewLong:
+        'Most relationships fail not in big conflicts but in the small daily choices that nobody noticed at the time. Relationship Code is fourteen short sections that name those choices clearly: attention, listening, clarity, boundaries, repair, appreciation, conflict that does not escalate, and the long-term practice of choosing in.\n\n'
+      + 'This is not romance language. It is the calm structural work of building a relationship strong enough to handle real life — and the same code applies to partners, family, and the people you work with closely.',
+    outcomes: [
+      'A clear personal code for how you show up in relationships',
+      'A practice of attention and listening that does not need motivation',
+      'Boundaries that are stated calmly, in advance',
+      'A short, clean repair you can run after small friction',
+      'A one-page Relationship Code you can keep returning to for years'
+    ],
+    howToUse: 'One short section per day. The actions are conversational — most of them happen with one real person you already love.'
   }
 };
 
