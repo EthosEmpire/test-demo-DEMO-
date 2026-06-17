@@ -4208,9 +4208,10 @@ body:has(#dashRoot.layout-top-menus) .ee-hamburger,
 #workspaceContent .ee-bill-plan-status {
   font-size: 0.62rem; color: rgba(255,255,255,0.46); letter-spacing: 0.04em;
 }
-#workspaceContent .ee-bill-actions {
-  display: flex; gap: 10px; flex-wrap: wrap; margin: 6px 0 12px;
-}
+/* .ee-bill-cta — kept; still used by the dev mock-tier switcher in the
+   Account tab. The .ee-bill-actions / .ee-bill-cta-pro / .ee-bill-cta-danger
+   selectors were removed in Stage 41-B (Stage 39 collapsed Billing into
+   a read-only summary inside Account; the matching HTML disappeared). */
 #workspaceContent .ee-bill-cta {
   padding: 9px 16px; border-radius: 10px; cursor: pointer;
   background: rgba(255,255,255,0.04); border: 1px solid rgba(212,175,55,0.26);
@@ -4222,20 +4223,6 @@ body:has(#dashRoot.layout-top-menus) .ee-hamburger,
 #workspaceContent .ee-bill-cta:hover {
   background: rgba(212,175,55,0.12); color: #f5c542;
   border-color: rgba(212,175,55,0.50);
-}
-#workspaceContent .ee-bill-cta-pro {
-  background: linear-gradient(140deg, rgba(245,197,66,0.85), rgba(212,175,55,0.75));
-  color: #000; border-color: rgba(245,197,66,0.7);
-}
-#workspaceContent .ee-bill-cta-pro:hover {
-  background: linear-gradient(140deg, #f5c542, #f59e0b); color: #000;
-  box-shadow: 0 0 22px rgba(245,197,66,0.35);
-}
-#workspaceContent .ee-bill-cta-danger {
-  border-color: rgba(248,113,113,0.30); color: rgba(248,113,113,0.78);
-}
-#workspaceContent .ee-bill-cta-danger:hover {
-  background: rgba(248,113,113,0.10); color: #fca5a5; border-color: rgba(248,113,113,0.55);
 }
 
 #workspaceContent .ee-settings-note {
