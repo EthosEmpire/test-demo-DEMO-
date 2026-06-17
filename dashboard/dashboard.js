@@ -7700,7 +7700,13 @@ var PACK_GLOSSARY = {
   scalp:               { title: 'Scalp',                 body: 'The skin under your hair. Hair quality is mostly downstream of scalp condition — circulation, oil balance, irritation, and cleanliness all show up first on the scalp, then in the hair.' },
   fit:                 { title: 'Fit',                   body: 'How a garment sits on your specific body — shoulders, chest, waist, hem. Fit is the single most visible signal of considered dress; a $30 alteration usually beats a $300 new piece.' },
   automation:          { title: 'Automation',            body: 'A repeatable workflow that runs without you having to remember each step. In modern operators, automation is the silent multiplier between someone who works hard and someone whose hard work compounds.' },
-  'cash-flow':         { title: 'Cash Flow',             body: 'Money in minus money out, measured over a period. Profit is a number on paper; cash flow is whether the business actually pays you and your bills this month.' }
+  'cash-flow':         { title: 'Cash Flow',             body: 'Money in minus money out, measured over a period. Profit is a number on paper; cash flow is whether the business actually pays you and your bills this month.' },
+  /* Stage 38-B2: terms the legacy free-course pages referenced. */
+  'sebum':             { title: 'Sebum',                  body: 'The natural oil your skin produces. The job of skincare is rarely to eliminate it — it is to keep it in balance. Stripping it triggers more production; protecting it keeps the barrier healthy.' },
+  'barrier':           { title: 'Skin Barrier',           body: 'The thin oily layer that holds moisture in and irritants out. Most chronic skin problems are downstream of a damaged barrier — usually from harsh cleansing or over-treatment.' },
+  'cortisol':          { title: 'Cortisol',               body: 'The body’s primary stress hormone. Sustained high cortisol increases oil production, suppresses immune response, and slows healing — it shows up on the skin and in hair quality within days.' },
+  'cleanse':           { title: 'Cleanse',                body: 'The morning + night act of removing surface oil, sweat, and product residue. Gentle and consistent beats harsh and occasional — the barrier is what you are protecting, not the dirt you are removing.' },
+  'attention':         { title: 'Attention',              body: 'The currency of every meaningful relationship. Undivided minutes of presence outvalue gifts, gestures, or words. Most modern relationship work is reclaiming attention from screens.' }
 };
 
 var PACK_CONTENT_OVERLAY = {
@@ -9316,7 +9322,8 @@ var PACK_CONTENT_OVERLAY = {
     heroImage:   'clear-skin-cover.webp',
     heroAlt:     'Calm morning light on a simple skincare setup.',
     overviewLong:
-        'Most skin issues are not solved by more products. They are solved by fewer, used patiently. This pack walks through fourteen days of a calm routine built around the three things every skin type benefits from: gentle cleansing, consistent moisturizer, daily sunscreen. Add a little structure on sleep, water, and stress notes and let the rest settle.\n\n'
+        'Your skin is one of the first things people notice — before your style, before your physique, before you even speak. Clear, healthy skin produces a calm first impression and quietly projects confidence. Skincare is not vanity; it is self-respect. Stage 38-B2 of this pack folds in the calm, masculine framing of the legacy Clear Skin Protocol with the structured fourteen-section routine that already lives here.\n\n'
+      + 'Most skin issues are not solved by more products. They are solved by fewer, used patiently. This pack walks through fourteen sections of a calm routine built around the three things every skin type benefits from: gentle cleansing, consistent moisturizer, and daily sunscreen. Layer in lifestyle work — sleep, water, food, stress — and the rest tends to settle. Acne, dullness, dark circles, oily shine, and dry patches are not random; they are signals. The point of the pack is to read those signals honestly and respond with structure, not panic.\n\n'
       + 'This pack is general education and habit tracking. It is not medical advice. For severe, painful, cystic, infected, or rapidly changing skin, see a dermatologist.',
     outcomes: [
       'A simple AM and PM routine you can hold without thinking',
@@ -9650,8 +9657,9 @@ var PACK_CONTENT_OVERLAY = {
     heroImage:   'hair-care-hero.webp',
     heroAlt:     'A man’s side profile after a clean haircut, soft daylight.',
     overviewLong:
-        'Most men ignore hair until something looks off — a thinning patch, a bad cut, a dry-feeling scalp. By then the fix takes months. This pack is fourteen days of a calm, repeatable men’s grooming routine that protects what you have, brings out the best of your hair type, and gives you a clean cut you can actually maintain.\n\n'
-      + 'You will spend the first week on the scalp and the basics — gentle wash cadence, the right shampoo, brushing, scalp health, and understanding your hair type. The second week is on cut, style, and beard / facial-hair coordination. By the end you will have a small, masculine grooming system you can run in under five minutes a day and a clear relationship with your barber.',
+        'Before people notice your watch, your physique, or your words — they notice your head, your frame, and the way you carry yourself. Grooming is visible self-respect; your crown should never look accidental. Stage 38-B2 of this pack folds in the masculine framing of the legacy Hair Mastery course into the structured fourteen-section routine that already lives here.\n\n'
+      + 'Most men ignore hair until something looks off — a thinning patch, a bad cut, a dry-feeling scalp. By then the fix takes months. This pack rebuilds a calm, repeatable men’s grooming routine that protects what you have, brings out the best of your hair type, gives you a clean cut you can actually maintain, and ties beard and facial hair into the same considered frame. Hair care is maintenance, not guesswork.\n\n'
+      + 'You will spend the first week on the scalp and the basics — gentle wash cadence, the right shampoo, brushing, scalp health, and understanding your hair type. The second week is on cut, style, beard coordination, eyebrows and neckline detail, and the small habits — sleep, hydration, nutrition, stress — that decide hair health from the inside. By the end you will have a small, masculine grooming system you can run in under five minutes a day and a clear relationship with your barber.',
     outcomes: [
       'A calm wash cadence matched to your hair and scalp type',
       'A specific shampoo and conditioner that work for you, not against you',
