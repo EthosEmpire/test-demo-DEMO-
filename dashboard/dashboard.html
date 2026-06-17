@@ -143,12 +143,11 @@
               <button class="tb-menu-item" type="button" role="menuitem" data-view="templates">Templates</button>
             </div>
           </div>
-          <!-- Stage 39: the legacy Tools dropdown is replaced with a real
-               Settings hub. Internal IDs (tbToolsBtn / tbToolsDrop) are kept
-               so the Stage 34-C dropdown handlers continue working; the
-               visible label, items, and routing all go to the Settings
-               view + its tab. Each item carries data-settings-tab so the
-               click handler can open the right section directly. -->
+          <!-- Stage 39: Settings hub. Internal IDs (tbToolsBtn / tbToolsDrop)
+               kept so the Stage 34-C dropdown handlers continue working;
+               the visible label and dropdown items all route to the
+               Settings view + its tab. Each item carries data-settings-tab
+               so the click handler can open the right section directly. -->
           <div class="tb-nav-slot" data-tb-menu="tools">
             <button class="tb-nav-btn" id="tbToolsBtn" type="button"
                     aria-haspopup="menu" aria-expanded="false" aria-controls="tbToolsDrop">
@@ -206,15 +205,14 @@
         <li class="sb-item" data-view="tasks" data-tip="Tasks"><span class="sb-icon">✓</span><span class="sb-label">Tasks</span></li>
         <li class="sb-item" data-view="templates" data-tip="Templates"><span class="sb-icon">⊞</span><span class="sb-label">Templates</span></li>
       </ul>
-      <!-- Stage 39: sidebar group label renamed from "Tools" to "More". The
-           legacy sidebar is hidden by default via Stage 34-D's
-           layout-top-menus class; this rename only matters for debug
-           rollback (disableTopMenuLayoutForDebug). -->
-      <div class="sb-section-label">More</div>
+      <!-- Stage 39: the legacy sidebar group is now Settings-only. The
+           Dataview / Calendar / Tags items were removed from the sidebar
+           because no nav surface should surface them; the views
+           themselves still exist (WS_META, EE_WORKSPACE_RENDER, command
+           palette) for programmatic access. This sidebar is hidden by
+           default via Stage 34-D's layout-top-menus class. -->
+      <div class="sb-section-label">Settings</div>
       <ul class="sb-nav">
-        <li class="sb-item" data-view="dataview" data-tip="Dataview"><span class="sb-icon">⋮⋮</span><span class="sb-label">Dataview</span></li>
-        <li class="sb-item" data-view="calendar" data-tip="Calendar"><span class="sb-icon">◻</span><span class="sb-label">Calendar</span></li>
-        <li class="sb-item" data-view="tags" data-tip="Tags"><span class="sb-icon">#</span><span class="sb-label">Tags</span></li>
         <li class="sb-item" data-view="settings" data-tip="Settings"><span class="sb-icon">⚙</span><span class="sb-label">Settings</span></li>
       </ul>
       <div class="sb-spacer"></div>
