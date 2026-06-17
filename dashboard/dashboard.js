@@ -13822,7 +13822,7 @@ function initSidebar() {
     var titles = {
       notes: 'Notes', daily: 'Daily Log', tasks: 'Tasks',
       templates: 'Templates', dataview: 'Dataview',
-      calendar: 'Calendar', tags: 'Tags', settings: 'Settings',
+      calendar: 'Calendar', tags: 'Tags',
       'plan-packs': 'Plan Packs'
     };
     return '<div id="dpHeader"><div id="dpTitle">' + (titles[view] || view) + '</div>'
@@ -13839,8 +13839,10 @@ function initSidebar() {
     if (view === 'dataview')   return renderDataview();
     if (view === 'calendar')   return renderCalendar();
     if (view === 'tags')       return renderTags();
-    if (view === 'settings')   return renderSettings();
     if (view === 'plan-packs') return renderPlanPacks();
+    /* 'settings' is intentionally not handled here — Settings always
+       renders through the Stage 39 hub (renderSettingsTabbed) via the
+       workspace registry, not the legacy slide-in panel. */
     return '';
   }
 
@@ -15669,32 +15671,6 @@ function initSidebar() {
     return '<div class="dp-label">All Tags</div><div class="dp-tags-cloud">' + pills + '</div>';
   }
 
-  /* Stage 40-C: orphan legacy renderSettings. As of Stage 40-C the legacy
-     EE_WORKSPACE_RENDER['settings'] = renderSettings line was removed, so
-     this function is no longer referenced by any caller. It is left in
-     place only because it lives inside installStage5PackPanel and editing
-     the surrounding closure during a stability stage is not worth the
-     risk. The Stage 39 renderSettingsTabbed at the bottom of the file is
-     the single active Settings renderer. Tagged for Stage 41 deletion. */
-  function renderSettings() {
-    return '<div class="dp-label">Graph</div>'
-      + '<div class="dp-setting-row"><div><div class="dp-setting-label">Auto Spin</div>'
-        + '<div class="dp-setting-sub">Rotate the sphere automatically</div></div>'
-        + '<button class="dp-toggle on" id="dpToggleSpin"></button></div>'
-      + '<div class="dp-setting-row"><div><div class="dp-setting-label">Node Labels</div>'
-        + '<div class="dp-setting-sub">Show world names below nodes</div></div>'
-        + '<button class="dp-toggle on" id="dpToggleLabels"></button></div>'
-      + '<div class="dp-setting-row"><div><div class="dp-setting-label">Connection Lines</div>'
-        + '<div class="dp-setting-sub">Show wave energy lines</div></div>'
-        + '<button class="dp-toggle on" id="dpToggleLines"></button></div>'
-      + '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset View</div>'
-        + '<div class="dp-setting-sub">Center and restore default zoom</div></div>'
-        + '<button class="dp-setting-btn" id="dpBtnReset">Reset</button></div>'
-      + '<div class="dp-label">Account</div>'
-      + '<div class="dp-setting-row"><div><div class="dp-setting-label">Sign Out</div></div>'
-        + '<button class="dp-setting-btn" id="dpBtnSignOut">Sign Out</button></div>';
-  }
-
   /* ── Attach events after render ── */
   function attachPanelEvents(view) {
     var closeBtn = document.getElementById('dpClose');
@@ -15803,29 +15779,9 @@ function initSidebar() {
     if (view === 'plan-packs') {
       attachPackEvents();
     }
-
-    if (view === 'settings') {
-      var tSpin   = document.getElementById('dpToggleSpin');
-      var tLabels = document.getElementById('dpToggleLabels');
-      var tLines  = document.getElementById('dpToggleLines');
-      var btnReset    = document.getElementById('dpBtnReset');
-      var btnSignOut  = document.getElementById('dpBtnSignOut');
-
-      if (tSpin) tSpin.addEventListener('click', function () {
-        tSpin.classList.toggle('on');
-        if (window.EE_GRAPH_API) window.EE_GRAPH_API.setAutoSpin(tSpin.classList.contains('on'));
-      });
-      if (tLabels) tLabels.addEventListener('click', function () {
-        tLabels.classList.toggle('on');
-        if (window.EE_GRAPH_API) window.EE_GRAPH_API.setLabels(tLabels.classList.contains('on'));
-      });
-      if (tLines) tLines.addEventListener('click', function () {
-        tLines.classList.toggle('on');
-        if (window.EE_GRAPH_API) window.EE_GRAPH_API.setLines(tLines.classList.contains('on'));
-      });
-      if (btnReset)   btnReset.addEventListener('click',   function () { if (window.EE_GRAPH_API) window.EE_GRAPH_API.resetView(); });
-      if (btnSignOut) btnSignOut.addEventListener('click', function () { if (window.EE_SIGN_OUT) window.EE_SIGN_OUT(); });
-    }
+    /* 'settings' is intentionally not handled here — Settings events are
+       attached by the Stage 39 attachSettingsTabsEvents helper via the
+       workspace events registry. */
   }
 
   /* ── Sidebar item click wiring ── */
@@ -15857,14 +15813,10 @@ function initSidebar() {
   window.EE_WORKSPACE_RENDER['daily']      = renderDailyLog;
   window.EE_WORKSPACE_RENDER['tasks']      = renderTasks;
   window.EE_WORKSPACE_RENDER['templates']  = renderTemplates;
-  /* Stage 40-C: the legacy renderSettings registration was removed from
-     this line. The Stage 39 Settings hub (renderSettingsTabbed) is now
-     the single source of truth; it is registered later in this file at
-     the Stage 39 hub block. The closure-scoped renderSettings() function
-     above (line ~15683) is left in place to avoid disturbing the
-     installStage5PackPanel closure, but is no longer referenced anywhere
-     and will be removed in a future cleanup. */
   window.EE_WORKSPACE_RENDER['dataview']   = renderDataview;
+  /* Settings is intentionally NOT registered here. The Stage 39 hub
+     (renderSettingsTabbed) is the single registration, made near the
+     bottom of this file. */
 
   window.EE_WORKSPACE_EVENTS = window.EE_WORKSPACE_EVENTS || {};
   window.EE_WORKSPACE_EVENTS['plan-packs'] = attachPackEvents;
@@ -15872,9 +15824,7 @@ function initSidebar() {
   window.EE_WORKSPACE_EVENTS['daily']      = function () { attachPanelEvents('daily'); };
   window.EE_WORKSPACE_EVENTS['tasks']      = function () { attachPanelEvents('tasks'); };
   window.EE_WORKSPACE_EVENTS['templates']  = function () { attachPanelEvents('templates'); };
-  /* Stage 40-C: legacy attachPanelEvents('settings') registration removed
-     here too. The Stage 39 attachSettingsTabsEvents is the single events
-     handler; it is registered later. */
+  /* Settings events: see Stage 39 attachSettingsTabsEvents at bottom. */
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -20078,13 +20028,7 @@ function buildGlobalSearchIndex() {
   /* J. Commands */
   var commands = [
     { id:'cmd:open-billing',  title:'Open Billing',          subtitle:'Settings - Account tab',         icon:'$',  keywords:['billing','plan','subscription'],
-      run: function () {
-        /* Stage 40-C: billing summary lives inside the Account tab in the
-           Stage 39 Settings hub. Use the openSettingsTab helper so we
-           always land on a valid tab. */
-        if (typeof window.openSettingsTab === 'function') window.openSettingsTab('account');
-        else { if (window.switchDashboardView) window.switchDashboardView('settings'); window._eeSettingsTab = 'account'; if (window.refreshCurrentView) window.refreshCurrentView(); }
-      }},
+      run: function () { if (typeof window.openSettingsTab === 'function') window.openSettingsTab('account'); }},
     { id:'cmd:compare-plans', title:'Compare Plans',         subtitle:'Plan comparison modal',          icon:'⇄',  keywords:['compare','plans','upgrade','pro','core'],
       run: function () { if (window.showPlanComparisonModal) window.showPlanComparisonModal(); }},
     { id:'cmd:manage-billing',title:'Manage Billing',        subtitle:'Open Stripe portal if configured', icon:'⊞', keywords:['stripe','portal','billing','manage'],
@@ -20198,11 +20142,7 @@ function getQuickActions() {
   acts.push({ id:'qa:tags', type:'workspace', title:'Open Tags', subtitle:'Cross-system tag hub', icon:'#',
     action: function () { if (window.switchDashboardView) window.switchDashboardView('tags'); } });
   acts.push({ id:'qa:billing', type:'command', title:'Open Billing', subtitle:'Settings - Account tab', icon:'$',
-    action: function () {
-      /* Stage 40-C: see cmd:open-billing — billing summary is in Account. */
-      if (typeof window.openSettingsTab === 'function') window.openSettingsTab('account');
-      else { if (window.switchDashboardView) window.switchDashboardView('settings'); window._eeSettingsTab = 'account'; if (window.refreshCurrentView) window.refreshCurrentView(); }
-    }});
+    action: function () { if (typeof window.openSettingsTab === 'function') window.openSettingsTab('account'); }});
   acts.push({ id:'qa:shortcuts', type:'command', title:'Keyboard Shortcuts', subtitle:'Show all shortcuts', icon:'⌘',
     action: function () { if (window.eeShowShortcutHelp) window.eeShowShortcutHelp(); }});
   return acts;
@@ -23353,15 +23293,12 @@ function attachLockedPlanPacksEvents() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   Stage 39 — Settings hub (General · Appearance · Learning · Data & Backup · Account)
+   SETTINGS HUB  (General · Appearance · Learning · Data & Backup · Account)
    ══════════════════════════════════════════════════════════════════════
-   Replaces the legacy 4-tab General/Appearance/Billing/Data layout with
-   a real working hub. Each control either performs a concrete local
-   action (toggle / save to localStorage / call an existing helper) or
-   is labeled "Coming at launch" and disabled — no decorative buttons.
-   Billing is intentionally NOT a top-level tab anymore: it folds into
-   the Account tab as read-only summary + a link to whatever billing
-   portal already exists. We do NOT add any new payment/Stripe wiring. */
+   Single source of truth for the Settings view. Each control performs a
+   real local action or is clearly marked "Managed at launch"; no
+   decorative buttons. Billing summary lives inside the Account tab —
+   no payment/Stripe wiring is introduced here. */
 
 function _planLabel(level) {
   return ({
@@ -23417,19 +23354,9 @@ window._eeApplyAppearance = _eeApplyAppearance;
   document.addEventListener('DOMContentLoaded', function () { _eeApplyAppearance(); });
 })();
 
-/* Stage 40-A — Settings hub previously called the closure-scoped
-   dpEsc() helper inside installStage5PackPanel, which is unreachable
-   from this top-level scope. When the user had touched a pack (so
-   lastPackName was truthy) the Learning tab threw
-   ReferenceError: dpEsc is not defined and silently fell back to the
-   workspace placeholder via the catch in renderWorkspaceContent.
-   Fix: switch the call sites below to the existing top-level _eeEsc()
-   helper defined earlier in this file (Stage 6 workspace empty-state
-   helper); no new function is introduced. */
-
-/* Stage 39 — namespaced list of localStorage keys we treat as the
-   dashboard's local state. Used by export, import, and clear-data so
-   we never touch other apps' storage. */
+/* Namespaced list of localStorage keys we treat as the dashboard's
+   local state. Used by export, import, and clear-data so we never
+   touch other apps' storage. */
 function _eeListLocalDashboardKeys() {
   var out = [];
   try {
@@ -24790,16 +24717,7 @@ function initHeader() {
         if (act === 'progress') { renderProfDrop('progress'); return; }
         if (act === 'settings') {
           closeProf();
-          /* Stage 40-C: route profile-dropdown "Settings" through the
-             Stage 39 hub instead of the legacy slide-in panel. The
-             legacy openPanel('settings') path called the orphaned
-             closure renderSettings(), which only showed the thin
-             graph-toggles + Sign Out layout — bypassing the real hub. */
-          if (typeof window.openSettingsTab === 'function') {
-            window.openSettingsTab('general');
-          } else if (window.EE_PANEL_API) {
-            window.EE_PANEL_API.openPanel('settings');
-          }
+          if (typeof window.openSettingsTab === 'function') window.openSettingsTab('general');
           return;
         }
         if (act === 'logout') {
