@@ -15669,14 +15669,13 @@ function initSidebar() {
     return '<div class="dp-label">All Tags</div><div class="dp-tags-cloud">' + pills + '</div>';
   }
 
-  /* Stage 40-B: legacy renderSettings. Kept in place but OVERRIDDEN at
-     module-init time by the Stage 39 renderSettingsTabbed (see the
-     EE_WORKSPACE_RENDER['settings'] = renderSettingsTabbed assignment
-     near the bottom of the file). The dead assignment a few hundred
-     lines below (window.EE_WORKSPACE_RENDER['settings'] = renderSettings)
-     runs first; the Stage 39 override runs later and wins. Both stay
-     in place because a destructive removal during a stability stage is
-     not worth the risk; tag for Stage 41 cleanup. */
+  /* Stage 40-C: orphan legacy renderSettings. As of Stage 40-C the legacy
+     EE_WORKSPACE_RENDER['settings'] = renderSettings line was removed, so
+     this function is no longer referenced by any caller. It is left in
+     place only because it lives inside installStage5PackPanel and editing
+     the surrounding closure during a stability stage is not worth the
+     risk. The Stage 39 renderSettingsTabbed at the bottom of the file is
+     the single active Settings renderer. Tagged for Stage 41 deletion. */
   function renderSettings() {
     return '<div class="dp-label">Graph</div>'
       + '<div class="dp-setting-row"><div><div class="dp-setting-label">Auto Spin</div>'
@@ -15858,9 +15857,13 @@ function initSidebar() {
   window.EE_WORKSPACE_RENDER['daily']      = renderDailyLog;
   window.EE_WORKSPACE_RENDER['tasks']      = renderTasks;
   window.EE_WORKSPACE_RENDER['templates']  = renderTemplates;
-  /* Stage 40-B: dead assignment — overridden later in the file by
-     the Stage 39 hub. Kept for now; see renderSettings() comment above. */
-  window.EE_WORKSPACE_RENDER['settings']   = renderSettings;
+  /* Stage 40-C: the legacy renderSettings registration was removed from
+     this line. The Stage 39 Settings hub (renderSettingsTabbed) is now
+     the single source of truth; it is registered later in this file at
+     the Stage 39 hub block. The closure-scoped renderSettings() function
+     above (line ~15683) is left in place to avoid disturbing the
+     installStage5PackPanel closure, but is no longer referenced anywhere
+     and will be removed in a future cleanup. */
   window.EE_WORKSPACE_RENDER['dataview']   = renderDataview;
 
   window.EE_WORKSPACE_EVENTS = window.EE_WORKSPACE_EVENTS || {};
@@ -15869,7 +15872,9 @@ function initSidebar() {
   window.EE_WORKSPACE_EVENTS['daily']      = function () { attachPanelEvents('daily'); };
   window.EE_WORKSPACE_EVENTS['tasks']      = function () { attachPanelEvents('tasks'); };
   window.EE_WORKSPACE_EVENTS['templates']  = function () { attachPanelEvents('templates'); };
-  window.EE_WORKSPACE_EVENTS['settings']   = function () { attachPanelEvents('settings'); };
+  /* Stage 40-C: legacy attachPanelEvents('settings') registration removed
+     here too. The Stage 39 attachSettingsTabsEvents is the single events
+     handler; it is registered later. */
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -16142,13 +16147,18 @@ function bindTopMenuDropdowns() {
       e.stopPropagation();
       var item = e.target.closest('.tb-menu-item');
       if (!item) return;
-      /* Stage 39: Settings dropdown items carry data-settings-tab so the
-         click can open a specific tab (general / appearance / learning /
-         data / account). Set the tab before switching view so the
-         settings renderer reads the right one on mount. */
+      /* Stage 40-C: Settings dropdown items go through the openSettingsTab
+         helper so the valid-tab list lives in one place. Other items
+         (Explore: graph / plan-packs / notes / etc) still go through the
+         general handleTopMenuViewClick path. */
+      var view = item.getAttribute('data-view');
       var settingsTab = item.getAttribute('data-settings-tab');
-      if (settingsTab) window._eeSettingsTab = settingsTab;
-      handleTopMenuViewClick(item.getAttribute('data-view'));
+      if (view === 'settings' && settingsTab && typeof window.openSettingsTab === 'function') {
+        window.openSettingsTab(settingsTab);
+      } else {
+        if (settingsTab) window._eeSettingsTab = settingsTab; /* defensive fallback */
+        handleTopMenuViewClick(view);
+      }
     });
   });
   /* Outside click + Escape - guarded so it doesn't bind twice and
@@ -20067,11 +20077,13 @@ function buildGlobalSearchIndex() {
 
   /* J. Commands */
   var commands = [
-    { id:'cmd:open-billing',  title:'Open Billing',          subtitle:'Settings - Billing tab',         icon:'$',  keywords:['billing','plan','subscription'],
+    { id:'cmd:open-billing',  title:'Open Billing',          subtitle:'Settings - Account tab',         icon:'$',  keywords:['billing','plan','subscription'],
       run: function () {
-        if (window.switchDashboardView) window.switchDashboardView('settings');
-        window._eeSettingsTab = 'billing';
-        if (window.refreshCurrentView) window.refreshCurrentView();
+        /* Stage 40-C: billing summary lives inside the Account tab in the
+           Stage 39 Settings hub. Use the openSettingsTab helper so we
+           always land on a valid tab. */
+        if (typeof window.openSettingsTab === 'function') window.openSettingsTab('account');
+        else { if (window.switchDashboardView) window.switchDashboardView('settings'); window._eeSettingsTab = 'account'; if (window.refreshCurrentView) window.refreshCurrentView(); }
       }},
     { id:'cmd:compare-plans', title:'Compare Plans',         subtitle:'Plan comparison modal',          icon:'⇄',  keywords:['compare','plans','upgrade','pro','core'],
       run: function () { if (window.showPlanComparisonModal) window.showPlanComparisonModal(); }},
@@ -20185,11 +20197,11 @@ function getQuickActions() {
     action: function () { if (window.switchDashboardView) window.switchDashboardView('templates'); } });
   acts.push({ id:'qa:tags', type:'workspace', title:'Open Tags', subtitle:'Cross-system tag hub', icon:'#',
     action: function () { if (window.switchDashboardView) window.switchDashboardView('tags'); } });
-  acts.push({ id:'qa:billing', type:'command', title:'Open Billing', subtitle:'Settings - Billing tab', icon:'$',
+  acts.push({ id:'qa:billing', type:'command', title:'Open Billing', subtitle:'Settings - Account tab', icon:'$',
     action: function () {
-      if (window.switchDashboardView) window.switchDashboardView('settings');
-      window._eeSettingsTab = 'billing';
-      if (window.refreshCurrentView) window.refreshCurrentView();
+      /* Stage 40-C: see cmd:open-billing — billing summary is in Account. */
+      if (typeof window.openSettingsTab === 'function') window.openSettingsTab('account');
+      else { if (window.switchDashboardView) window.switchDashboardView('settings'); window._eeSettingsTab = 'account'; if (window.refreshCurrentView) window.refreshCurrentView(); }
     }});
   acts.push({ id:'qa:shortcuts', type:'command', title:'Keyboard Shortcuts', subtitle:'Show all shortcuts', icon:'⌘',
     action: function () { if (window.eeShowShortcutHelp) window.eeShowShortcutHelp(); }});
@@ -23434,6 +23446,29 @@ function _eeListLocalDashboardKeys() {
   return out;
 }
 
+/* Stage 40-C — explicit, safe entry point for opening the Settings hub
+   on a specific tab. Used by the Stage 39 top-bar dropdown items and by
+   the command palette. The valid tabs are general / appearance /
+   learning / data / account; anything else falls back to 'general'.
+   Setting window._eeSettingsTab BEFORE switchDashboardView ensures the
+   first render of the Settings view picks the right tab — Stage 39's
+   renderSettingsTabbed reads it on each render. */
+var EE_SETTINGS_VALID_TABS = ['general', 'appearance', 'learning', 'data', 'account'];
+function openSettingsTab(tabName) {
+  var safe = (EE_SETTINGS_VALID_TABS.indexOf(tabName) >= 0) ? tabName : 'general';
+  try { window._eeSettingsTab = safe; } catch (e) {}
+  if (window.switchDashboardView) {
+    window.switchDashboardView('settings');
+  }
+  /* If we were already on the Settings view, switchDashboardView is a
+     no-op for the same view; re-render explicitly so the new tab paints. */
+  if (window.dashboardState && window.dashboardState.currentView === 'settings'
+      && typeof window.refreshCurrentView === 'function') {
+    window.refreshCurrentView();
+  }
+}
+window.openSettingsTab = openSettingsTab;
+
 function renderSettingsTabbed() {
   var level   = getUserPlanLevel();
   var tab     = (window._eeSettingsTab) || 'general';
@@ -24755,7 +24790,16 @@ function initHeader() {
         if (act === 'progress') { renderProfDrop('progress'); return; }
         if (act === 'settings') {
           closeProf();
-          if (window.EE_PANEL_API) window.EE_PANEL_API.openPanel('settings');
+          /* Stage 40-C: route profile-dropdown "Settings" through the
+             Stage 39 hub instead of the legacy slide-in panel. The
+             legacy openPanel('settings') path called the orphaned
+             closure renderSettings(), which only showed the thin
+             graph-toggles + Sign Out layout — bypassing the real hub. */
+          if (typeof window.openSettingsTab === 'function') {
+            window.openSettingsTab('general');
+          } else if (window.EE_PANEL_API) {
+            window.EE_PANEL_API.openPanel('settings');
+          }
           return;
         }
         if (act === 'logout') {
