@@ -235,7 +235,7 @@ body.snap-ready {
   max-width: 820px; width: 100%;
 }
 
-/* Hero primary CTA button (Stage 38-C: renamed from Free Course to Enter Dashboard). */
+/* Hero primary CTA button. */
 .hero-free-btn {
   display: inline-flex;
   align-items: center;
