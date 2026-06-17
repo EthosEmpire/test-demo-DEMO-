@@ -23354,6 +23354,16 @@ window._eeApplyAppearance = _eeApplyAppearance;
   document.addEventListener('DOMContentLoaded', function () { _eeApplyAppearance(); });
 })();
 
+/* Stage 40-A — Settings hub previously called the closure-scoped
+   dpEsc() helper inside installStage5PackPanel, which is unreachable
+   from this top-level scope. When the user had touched a pack (so
+   lastPackName was truthy) the Learning tab threw
+   ReferenceError: dpEsc is not defined and silently fell back to the
+   workspace placeholder via the catch in renderWorkspaceContent.
+   Fix: switch the call sites below to the existing top-level _eeEsc()
+   helper defined earlier in this file (Stage 6 workspace empty-state
+   helper); no new function is introduced. */
+
 /* Stage 39 — namespaced list of localStorage keys we treat as the
    dashboard's local state. Used by export, import, and clear-data so
    we never touch other apps' storage. */
@@ -23457,15 +23467,15 @@ function renderSettingsTabbed() {
     +   '<div class="dp-setting-sub">Jump to the marketplace of learning sections</div></div>'
     +   '<button class="dp-setting-btn" id="eeLearningOpen" type="button">Open</button></div>'
     + (lastPackName
-        ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Continue ' + dpEsc(lastPackName) + '</div>'
+        ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Continue ' + _eeEsc(lastPackName) + '</div>'
           +   '<div class="dp-setting-sub">Resume the last pack you touched</div></div>'
-          +   '<button class="dp-setting-btn" id="eeLearningContinue" type="button" data-pack="' + dpEsc(lastTouchedPackId) + '">Continue</button></div>'
+          +   '<button class="dp-setting-btn" id="eeLearningContinue" type="button" data-pack="' + _eeEsc(lastTouchedPackId) + '">Continue</button></div>'
         : '')
     + '<div class="dp-label">Progress</div>'
     + (lastPackName
-        ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset progress for ' + dpEsc(lastPackName) + '</div>'
+        ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset progress for ' + _eeEsc(lastPackName) + '</div>'
           +   '<div class="dp-setting-sub">Clears completion marks for that pack only</div></div>'
-          +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningResetCurrent" type="button" data-pack="' + dpEsc(lastTouchedPackId) + '">Reset Pack</button></div>'
+          +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningResetCurrent" type="button" data-pack="' + _eeEsc(lastTouchedPackId) + '">Reset Pack</button></div>'
         : '')
     + '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset all Plan Pack progress</div>'
     +   '<div class="dp-setting-sub">Clears completion marks for every pack on this device</div></div>'
