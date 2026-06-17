@@ -1,6 +1,42 @@
-/* ================================================================
-   ETHOS EMPIRE — dashboard.css  Phase 3: 3D Globe — p17
-   ================================================================ */
+/* ════════════════════════════════════════════════════════════════════════
+   ETHOS EMPIRE — dashboard.css
+   Single-file dashboard stylesheet. Apple-style dark glass UI: gold/purple
+   highlights, soft blur, rounded surfaces. Theme + accent are runtime-
+   driven by body classes written by the Settings hub (ee-theme-* /
+   ee-accent-* / ee-text-* / ee-reduce-motion).
+
+   ────────────────────────────────────────────────────────────────────────
+   TABLE OF CONTENTS  (line numbers approximate; search for the banner)
+   ────────────────────────────────────────────────────────────────────────
+   ~ 7    :root tokens (--gold, --bg, --sidebar-w, --top-h, etc.)
+   ~ 41   Dashboard root grid layout
+   ~ 55   Top bar (search, profile, dropdowns)
+   ~ 242  Sidebar (premium glass, p18)
+   ~ 316  Graph canvas — 3D globe viewport
+   ~ 365  Node elements (planets, labels)
+   ~ 525  Secondary floating bubbles
+   ~ 609  Right panel — glass drawer (p20)
+   ~ 871  Bottom bar
+   ~ 897  Modals
+   ~ 922  AI plan builder
+   ~ 969  World view overlay (p14)
+   ~ 1142 Core library modal (p18)
+   ~ 1424 Dashboard panel — sliding glass
+   ~ 1743 Template focus panel
+   ~ 1793 Lesson panel — world learning system
+   ~ 2017 World focus panel (peer-to-peer overlay)
+   ~ 2020 Camera control HUD
+   ~ 2461 Plan Packs marketplace styling
+   ~ 2735 Dashboard workspace system
+   ~ 2907 Plan Packs full-screen overrides
+   ~ 3079 Notes workspace  /  Daily Log  /  Tasks  /  Templates  /  Tags
+   ~ 3889 Stage 31.x polish layers
+   ~ 9750 Stage 35-A Plan Pack premium content surfaces
+   ~ 10100 Stage 35-A glossary popover
+   ~ 10733 Stage 39 Settings hub (gear icon, picker pills, body classes)
+
+   Each section uses /* ══════ */ banner comments; search for one to jump.
+   ════════════════════════════════════════════════════════════════════════ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

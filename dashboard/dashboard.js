@@ -1,7 +1,48 @@
-/* ================================================================
-   ETHOS EMPIRE — dashboard.js  Phase 3: True 3D Globe Engine — p19
-   Software-rendered 3D sphere — pure JS, no CSS 3D tricks.
-   ================================================================ */
+/* ════════════════════════════════════════════════════════════════════════
+   ETHOS EMPIRE — dashboard.js
+   Single-file dashboard runtime. The 3D globe engine is software-rendered
+   in pure JS; the rest of the dashboard (Plan Packs, Settings hub, Notes,
+   Daily Log, Tasks, Templates, Calendar, Tags, Active Plan) layers on top.
+
+   ────────────────────────────────────────────────────────────────────────
+   TABLE OF CONTENTS  (line numbers approximate; search for the banner)
+   ────────────────────────────────────────────────────────────────────────
+   ~ 50   Bootstrap helpers (safeJsonParse, focus stash, graph overlay cleanup)
+   ~ 94   Empire Pro plan-tier helpers + Pro-locked planet set
+   ~ 177  initDashboard — boot sequence wiring every subsystem
+   ~ 295  3D globe engine (sphere render, peer-to-peer connections)
+   ~ 491  project() — world-space to screen-space projection
+   ~ 508  Planet info panel content maps
+   ~ 1085 World lessons data
+   ~ 4567 initGlobe — globe boot
+   ~ 6477 Wave energy chart  /  6526 Minimap
+   ~ 6553 Template library
+   ~ 6712 PLAN_PACKS_DATA  /  6904 themes + marketplace metadata + teasers
+   ~ 7647 Stage 35-A premium content overlay + PACK_GLOSSARY
+   ~13329 Pack overlay helpers (_ppOverlayFor / _ppDayOverlayFor / image paths)
+   ~13404 buildMarketplaceEntries — pack marketplace shape
+   ~13439 Stage 8 per-day checklists + pack schedules
+   ~13698 Sidebar panel system
+   ~15824 Dashboard workspace system + EE_WORKSPACE_RENDER registry
+   ~15918 Stage 34-C top-bar Explore + Settings (legacy Tools) dropdowns
+   ~16256 Stage 5 My Active Plan workspace
+   ~16380 Stage 9 Pack Completion Ceremony
+   ~16686 Stage 11 Today Command Center
+   ~17202 Stage 12 daily completion tracking
+   ~17419 Stage 14 checklist timestamps + daily-log integration
+   ~17765 Stage 15 Notes Hub  /  18233 Stage 16 Calendar
+   ~18714 Stage 17 Templates  /  19128 Stage 18 Tags
+   ~19711 Stage 19 global Cmd-K search palette
+   ~20566 Stage 21 Tasks workspace  /  20721 Stage 23 Task <-> Pack sync
+   ~21261 Stage 24 Daily Log  /  21689 Stage 25 prefill  /  21842 Stage 26 autosave
+   ~21966 Stage 22 today's-tasks card inside My Active Plan
+   ~22550 Stage 6 polish (transitions, shortcuts, empty states, persistence)
+   ~22557 _eeEsc — top-level HTML-escape helper used by Settings hub
+   ~22980 Stage 2 membership / billing system + upgrade modal
+   ~23292 Stage 39 Settings hub (General · Appearance · Learning · Data · Account)
+   ~24255 Right panel system
+   ~24473 Header controls (search + profile)
+   ════════════════════════════════════════════════════════════════════════ */
 'use strict';
 
 /* Stage 20: shared safe-JSON helper. Returns fallback on any parse failure or
@@ -15628,6 +15669,14 @@ function initSidebar() {
     return '<div class="dp-label">All Tags</div><div class="dp-tags-cloud">' + pills + '</div>';
   }
 
+  /* Stage 40-B: legacy renderSettings. Kept in place but OVERRIDDEN at
+     module-init time by the Stage 39 renderSettingsTabbed (see the
+     EE_WORKSPACE_RENDER['settings'] = renderSettingsTabbed assignment
+     near the bottom of the file). The dead assignment a few hundred
+     lines below (window.EE_WORKSPACE_RENDER['settings'] = renderSettings)
+     runs first; the Stage 39 override runs later and wins. Both stay
+     in place because a destructive removal during a stability stage is
+     not worth the risk; tag for Stage 41 cleanup. */
   function renderSettings() {
     return '<div class="dp-label">Graph</div>'
       + '<div class="dp-setting-row"><div><div class="dp-setting-label">Auto Spin</div>'
@@ -15809,6 +15858,8 @@ function initSidebar() {
   window.EE_WORKSPACE_RENDER['daily']      = renderDailyLog;
   window.EE_WORKSPACE_RENDER['tasks']      = renderTasks;
   window.EE_WORKSPACE_RENDER['templates']  = renderTemplates;
+  /* Stage 40-B: dead assignment — overridden later in the file by
+     the Stage 39 hub. Kept for now; see renderSettings() comment above. */
   window.EE_WORKSPACE_RENDER['settings']   = renderSettings;
   window.EE_WORKSPACE_RENDER['dataview']   = renderDataview;
 
