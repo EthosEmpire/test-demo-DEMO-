@@ -10731,3 +10731,170 @@ body.global-search-open .tb-srch-wrap { border-color: rgba(212,175,55,0.50); bac
   font-size: 0.66rem;
   padding: 9px 16px;
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Stage 39 — Settings hub
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Gear icon next to "Settings" in the top-bar dropdown trigger. */
+.tb-nav-btn-icon {
+  width: 12px; height: 12px;
+  margin-right: 2px;
+  opacity: 0.75;
+  transition: opacity 0.18s ease, transform 0.25s ease;
+}
+.tb-nav-btn:hover .tb-nav-btn-icon,
+.tb-nav-btn.is-open .tb-nav-btn-icon {
+  opacity: 1;
+  transform: rotate(20deg);
+}
+
+/* Settings tabs — slightly bigger / brighter labels. */
+#workspaceContent .ee-settings-tabs {
+  gap: 6px; padding-bottom: 8px; flex-wrap: wrap;
+}
+#workspaceContent .ee-stab {
+  font-size: 0.74rem; font-weight: 700;
+  padding: 8px 14px;
+}
+
+/* Section labels — gold uppercase kickers. */
+#workspaceContent .dp-label {
+  font-size: 0.54rem; font-weight: 800; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.80);
+  margin: 18px 0 8px;
+}
+
+/* Setting row hierarchy — brighter title, readable sub. */
+#workspaceContent .dp-setting-row {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 8px;
+}
+#workspaceContent .dp-setting-label {
+  font-size: 0.86rem; font-weight: 700;
+  color: rgba(255,255,255,0.92);
+}
+#workspaceContent .dp-setting-sub {
+  font-size: 0.66rem;
+  color: rgba(255,255,255,0.60);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+/* Settings buttons — Apple-style capsule, clearly clickable. */
+#workspaceContent .dp-setting-btn {
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(212,175,55,0.18);
+  border: 1px solid rgba(212,175,55,0.42);
+  color: #f5c542;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+#workspaceContent .dp-setting-btn:hover,
+#workspaceContent .dp-setting-btn:focus-visible {
+  background: rgba(212,175,55,0.30);
+  border-color: rgba(212,175,55,0.65);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(212,175,55,0.28);
+  outline: none;
+}
+#workspaceContent .dp-setting-btn:active { transform: scale(0.97); }
+#workspaceContent .dp-setting-btn-danger {
+  background: rgba(244,63,94,0.16);
+  border-color: rgba(244,63,94,0.42);
+  color: #fb7185;
+}
+#workspaceContent .dp-setting-btn-danger:hover,
+#workspaceContent .dp-setting-btn-danger:focus-visible {
+  background: rgba(244,63,94,0.28);
+  border-color: rgba(244,63,94,0.70);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(244,63,94,0.28);
+}
+
+/* Apple-style picker rows (theme / accent / text-size). */
+#workspaceContent .dp-setting-row.dp-setting-row-stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+#workspaceContent .dp-setting-row.dp-setting-row-stacked .dp-setting-head {
+  display: flex; flex-direction: column; gap: 2px;
+}
+#workspaceContent .ee-picker-group {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+#workspaceContent .ee-picker-opt {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.84);
+  font-size: 0.74rem; font-weight: 600; letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+#workspaceContent .ee-picker-opt:hover,
+#workspaceContent .ee-picker-opt:focus-visible {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.22);
+  color: #fff;
+  outline: none;
+}
+#workspaceContent .ee-picker-opt:active { transform: scale(0.97); }
+#workspaceContent .ee-picker-opt.is-selected {
+  background: rgba(212,175,55,0.18);
+  border-color: rgba(212,175,55,0.55);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(212,175,55,0.20), inset 0 1px 0 rgba(255,255,255,0.10);
+}
+#workspaceContent .ee-picker-swatch {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 0 8px rgba(0,0,0,0.40);
+}
+
+/* ── Body classes set by _eeApplyAppearance() ───────────────────────── */
+
+/* Themes: deep-black darkens the base; soft-glow lifts it. dark = default. */
+body.ee-theme-deep-black { background: #000; }
+body.ee-theme-soft-glow  { background: radial-gradient(circle at 50% 0%, #18142a 0%, #0a0a14 60%); }
+
+/* Accent recolor: swap the global gold accent variables. */
+body.ee-accent-purple { --gold: #a855f7; --gold-hi: #c084fc; --border-g: rgba(168,85,247,0.10); }
+body.ee-accent-blue   { --gold: #3b82f6; --gold-hi: #60a5fa; --border-g: rgba(59,130,246,0.10); }
+body.ee-accent-green  { --gold: #22c55e; --gold-hi: #4ade80; --border-g: rgba(34,197,94,0.10); }
+
+/* Text size: nudge body and reading text larger without breaking layout. */
+body.ee-text-large { font-size: 17px; }
+body.ee-text-large #workspaceContent .pp-reading,
+body.ee-text-large #workspaceContent .pp-action-block-body,
+body.ee-text-large #workspaceContent .pp-dv-reflection,
+body.ee-text-large #workspaceContent .pp-callout-body,
+body.ee-text-large #workspaceContent .pp-overview-long {
+  font-size: 1.02rem;
+  line-height: 1.85;
+}
+body.ee-text-large #workspaceContent .pp-dh-title,
+body.ee-text-large #workspaceContent .pp-dv-title {
+  font-size: 1.70rem;
+}
+body.ee-text-large #workspaceContent .dp-setting-label { font-size: 0.94rem; }
+body.ee-text-large #workspaceContent .dp-setting-sub   { font-size: 0.72rem; }
+
+/* Reduce motion: collapse CSS transitions/animations across the dashboard.
+   The graph stage's own RAF loops are not touched — only CSS. */
+body.ee-reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

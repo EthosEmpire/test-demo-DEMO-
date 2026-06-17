@@ -15922,9 +15922,13 @@ function _bindWorkflowSwitcherEvents() {
    switchDashboardView() path as the existing sidebar. The sidebar
    stays mounted so both surfaces work in parallel; Stage 34-D will
    hide the side rail once these are verified. */
+/* Stage 39: the legacy Tools dropdown is now the Settings dropdown.
+   Internal key 'tools' kept to avoid risk to the Stage 34-C handlers;
+   the array shrinks to ['settings'] because every menu item now routes
+   to the Settings view (different tabs, single view). */
 var TOP_MENU_VIEWS = {
   explore: ['graph', 'plan-packs', 'active-plan', 'notes', 'daily', 'tasks', 'templates'],
-  tools:   ['dataview', 'calendar', 'tags', 'settings']
+  tools:   ['settings']
 };
 
 function closeTopMenuDropdowns() {
@@ -16087,6 +16091,12 @@ function bindTopMenuDropdowns() {
       e.stopPropagation();
       var item = e.target.closest('.tb-menu-item');
       if (!item) return;
+      /* Stage 39: Settings dropdown items carry data-settings-tab so the
+         click can open a specific tab (general / appearance / learning /
+         data / account). Set the tab before switching view so the
+         settings renderer reads the right one on mount. */
+      var settingsTab = item.getAttribute('data-settings-tab');
+      if (settingsTab) window._eeSettingsTab = settingsTab;
       handleTopMenuViewClick(item.getAttribute('data-view'));
     });
   });
@@ -23279,7 +23289,17 @@ function attachLockedPlanPacksEvents() {
   if (cmp) cmp.addEventListener('click', showPlanComparisonModal);
 }
 
-/* ── Settings tabs (General · Appearance · Billing · Data) ── */
+/* ══════════════════════════════════════════════════════════════════════
+   Stage 39 — Settings hub (General · Appearance · Learning · Data & Backup · Account)
+   ══════════════════════════════════════════════════════════════════════
+   Replaces the legacy 4-tab General/Appearance/Billing/Data layout with
+   a real working hub. Each control either performs a concrete local
+   action (toggle / save to localStorage / call an existing helper) or
+   is labeled "Coming at launch" and disabled — no decorative buttons.
+   Billing is intentionally NOT a top-level tab anymore: it folds into
+   the Account tab as read-only summary + a link to whatever billing
+   portal already exists. We do NOT add any new payment/Stripe wiring. */
+
 function _planLabel(level) {
   return ({
     'free':        'Free Preview',
@@ -23289,59 +23309,202 @@ function _planLabel(level) {
   })[level] || 'Free Preview';
 }
 
+/* Stage 39 — appearance preferences helpers. All saved under one
+   namespaced localStorage key so import/export round-trips cleanly. */
+var EE_APPEARANCE_KEY = 'ee_appearance_prefs';
+var EE_APPEARANCE_DEFAULTS = { theme: 'dark', accent: 'gold', textSize: 'normal', reduceMotion: false };
+function _eeGetAppearance() {
+  try {
+    var raw = localStorage.getItem(EE_APPEARANCE_KEY);
+    if (!raw) return Object.assign({}, EE_APPEARANCE_DEFAULTS);
+    var p = JSON.parse(raw);
+    return Object.assign({}, EE_APPEARANCE_DEFAULTS, p || {});
+  } catch (e) { return Object.assign({}, EE_APPEARANCE_DEFAULTS); }
+}
+function _eeSetAppearance(patch) {
+  var cur = _eeGetAppearance();
+  var next = Object.assign({}, cur, patch || {});
+  try { localStorage.setItem(EE_APPEARANCE_KEY, JSON.stringify(next)); } catch (e) {}
+  _eeApplyAppearance(next);
+  return next;
+}
+function _eeApplyAppearance(prefs) {
+  prefs = prefs || _eeGetAppearance();
+  var body = document.body;
+  if (!body) return;
+  /* Theme + accent + text-size classes on <body> so CSS rules can
+     respond. Reduce-motion is a separate class for CSS to honour. */
+  ['ee-theme-dark', 'ee-theme-deep-black', 'ee-theme-soft-glow'].forEach(function (c) { body.classList.remove(c); });
+  ['ee-accent-gold', 'ee-accent-purple', 'ee-accent-blue', 'ee-accent-green'].forEach(function (c) { body.classList.remove(c); });
+  ['ee-text-normal', 'ee-text-large'].forEach(function (c) { body.classList.remove(c); });
+  body.classList.add('ee-theme-' + prefs.theme);
+  body.classList.add('ee-accent-' + prefs.accent);
+  body.classList.add('ee-text-'  + prefs.textSize);
+  body.classList.toggle('ee-reduce-motion', !!prefs.reduceMotion);
+}
+window._eeGetAppearance   = _eeGetAppearance;
+window._eeSetAppearance   = _eeSetAppearance;
+window._eeApplyAppearance = _eeApplyAppearance;
+
+/* Stage 39 — apply at boot so the dashboard opens with the user's
+   saved preferences active. Safe to call multiple times. */
+(function _eeBootApplyAppearance() {
+  if (typeof document === 'undefined') return;
+  if (document.body) { _eeApplyAppearance(); return; }
+  document.addEventListener('DOMContentLoaded', function () { _eeApplyAppearance(); });
+})();
+
+/* Stage 39 — namespaced list of localStorage keys we treat as the
+   dashboard's local state. Used by export, import, and clear-data so
+   we never touch other apps' storage. */
+function _eeListLocalDashboardKeys() {
+  var out = [];
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (!k) continue;
+      if (
+        k === 'ee_notes' || k === 'ee_tasks' || k === 'ee_pack_progress' ||
+        k === 'ee_plan_pack_access' || k === 'ee_appearance_prefs' ||
+        k.indexOf('ee_') === 0 || k.indexOf('ethos_') === 0
+      ) out.push(k);
+    }
+  } catch (e) {}
+  return out;
+}
+
 function renderSettingsTabbed() {
   var level   = getUserPlanLevel();
   var tab     = (window._eeSettingsTab) || 'general';
+  var prefs   = _eeGetAppearance();
 
-  /* General tab content — preserves existing IDs the legacy event handler binds to */
+  /* ── General tab ─────────────────────────────────────────────── */
   var generalHtml = ''
     + '<div class="dp-label">Graph</div>'
     + '<div class="dp-setting-row"><div><div class="dp-setting-label">Auto Spin</div>'
     +   '<div class="dp-setting-sub">Rotate the sphere automatically</div></div>'
-    +   '<button class="dp-toggle on" id="dpToggleSpin"></button></div>'
+    +   '<button class="dp-toggle on" id="dpToggleSpin" type="button" aria-pressed="true"></button></div>'
     + '<div class="dp-setting-row"><div><div class="dp-setting-label">Node Labels</div>'
     +   '<div class="dp-setting-sub">Show world names below nodes</div></div>'
-    +   '<button class="dp-toggle on" id="dpToggleLabels"></button></div>'
+    +   '<button class="dp-toggle on" id="dpToggleLabels" type="button" aria-pressed="true"></button></div>'
     + '<div class="dp-setting-row"><div><div class="dp-setting-label">Connection Lines</div>'
     +   '<div class="dp-setting-sub">Show wave energy lines</div></div>'
-    +   '<button class="dp-toggle on" id="dpToggleLines"></button></div>'
+    +   '<button class="dp-toggle on" id="dpToggleLines" type="button" aria-pressed="true"></button></div>'
     + '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset View</div>'
     +   '<div class="dp-setting-sub">Center and restore default zoom</div></div>'
-    +   '<button class="dp-setting-btn" id="dpBtnReset">Reset</button></div>'
-    + '<div class="dp-label">Account</div>'
-    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Sign Out</div></div>'
-    +   '<button class="dp-setting-btn" id="dpBtnSignOut">Sign Out</button></div>';
+    +   '<button class="dp-setting-btn" id="dpBtnReset" type="button">Reset</button></div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Restore Default Layout</div>'
+    +   '<div class="dp-setting-sub">Bring back the top-menu primary layout if it was disabled for debug</div></div>'
+    +   '<button class="dp-setting-btn" id="eeBtnRestoreLayout" type="button">Restore</button></div>';
 
+  /* ── Appearance tab ──────────────────────────────────────────── */
+  function pickerRow(label, sub, name, values) {
+    var btns = values.map(function (v) {
+      var sel = (prefs[name] === v.id);
+      return '<button class="ee-picker-opt' + (sel ? ' is-selected' : '') + '" '
+        + 'type="button" data-appearance="' + name + '" data-value="' + v.id + '" '
+        + 'aria-pressed="' + (sel ? 'true' : 'false') + '">'
+        + (v.swatch ? '<span class="ee-picker-swatch" style="background:' + v.swatch + ';"></span>' : '')
+        + '<span class="ee-picker-label">' + v.label + '</span>'
+        + '</button>';
+    }).join('');
+    return '<div class="dp-setting-row dp-setting-row-stacked">'
+      +    '<div class="dp-setting-head">'
+      +      '<div class="dp-setting-label">' + label + '</div>'
+      +      '<div class="dp-setting-sub">' + sub + '</div>'
+      +    '</div>'
+      +    '<div class="ee-picker-group">' + btns + '</div>'
+      +  '</div>';
+  }
   var appearanceHtml = ''
     + '<div class="dp-label">Appearance</div>'
-    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Sidebar</div>'
-    +   '<div class="dp-setting-sub">Collapse the left menu to icons only</div></div>'
-    +   '<button class="dp-setting-btn" id="eeAppearanceCollapse">Toggle Collapse</button></div>'
-    + '<div class="ee-settings-note">More appearance options arrive in a future update.</div>';
+    + pickerRow('Theme', 'Dashboard background tone', 'theme', [
+        { id: 'dark',       label: 'Dark' },
+        { id: 'deep-black', label: 'Deep Black' },
+        { id: 'soft-glow',  label: 'Soft Glow' }
+      ])
+    + pickerRow('Accent color', 'Highlights, links, and active states', 'accent', [
+        { id: 'gold',   label: 'Gold',   swatch: '#f5c542' },
+        { id: 'purple', label: 'Purple', swatch: '#a855f7' },
+        { id: 'blue',   label: 'Blue',   swatch: '#3b82f6' },
+        { id: 'green',  label: 'Green',  swatch: '#22c55e' }
+      ])
+    + pickerRow('Text size', 'Body text across panels and lessons', 'textSize', [
+        { id: 'normal', label: 'Normal' },
+        { id: 'large',  label: 'Large' }
+      ])
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Reduce Motion</div>'
+    +   '<div class="dp-setting-sub">Soften transitions and animations</div></div>'
+    +   '<button class="dp-toggle' + (prefs.reduceMotion ? ' on' : '') + '" '
+    +     'id="eeAppearanceReduceMotion" type="button" '
+    +     'aria-pressed="' + (prefs.reduceMotion ? 'true' : 'false') + '"></button></div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset Appearance</div>'
+    +   '<div class="dp-setting-sub">Return to dark / gold / normal / motion on</div></div>'
+    +   '<button class="dp-setting-btn" id="eeAppearanceReset" type="button">Reset</button></div>';
 
-  /* Billing actions per plan */
-  var billingActions;
-  if (level === 'free') {
-    billingActions = ''
-      + '<button class="ee-bill-cta" data-plan="empire-core">Upgrade to Empire Core</button>'
-      + '<button class="ee-bill-cta ee-bill-cta-pro" data-plan="empire-pro">Upgrade to Empire Pro</button>';
-  } else if (level === 'empire-core') {
-    billingActions = ''
-      + '<button class="ee-bill-cta ee-bill-cta-pro" data-plan="empire-pro">Upgrade to Empire Pro</button>'
-      + '<button class="ee-bill-cta" id="eeBillManage">Manage Billing</button>'
-      + '<button class="ee-bill-cta ee-bill-cta-danger" id="eeBillCancel">Cancel Plan</button>';
-  } else if (level === 'empire-pro') {
-    billingActions = ''
-      + '<button class="ee-bill-cta" data-plan="empire-core">Downgrade to Empire Core</button>'
-      + '<button class="ee-bill-cta" id="eeBillManage">Manage Billing</button>'
-      + '<button class="ee-bill-cta ee-bill-cta-danger" id="eeBillCancel">Cancel Plan</button>';
-  } else {
-    billingActions = '<div class="ee-settings-note">Developer mode — billing actions are disabled.</div>';
+  /* ── Learning tab — real Plan Pack actions ──────────────────── */
+  var lastTouchedPackId = '';
+  try { lastTouchedPackId = localStorage.getItem('ethos_last_touched_pack') || ''; } catch (e) {}
+  var lastPackName = '';
+  if (lastTouchedPackId && typeof PLAN_PACKS_DATA !== 'undefined') {
+    for (var lpi = 0; lpi < PLAN_PACKS_DATA.length; lpi++) {
+      if (PLAN_PACKS_DATA[lpi].id === lastTouchedPackId) { lastPackName = PLAN_PACKS_DATA[lpi].title; break; }
+    }
   }
+  var learningHtml = ''
+    + '<div class="dp-label">Plan Packs</div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Open Plan Packs</div>'
+    +   '<div class="dp-setting-sub">Jump to the marketplace of learning sections</div></div>'
+    +   '<button class="dp-setting-btn" id="eeLearningOpen" type="button">Open</button></div>'
+    + (lastPackName
+        ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Continue ' + dpEsc(lastPackName) + '</div>'
+          +   '<div class="dp-setting-sub">Resume the last pack you touched</div></div>'
+          +   '<button class="dp-setting-btn" id="eeLearningContinue" type="button" data-pack="' + dpEsc(lastTouchedPackId) + '">Continue</button></div>'
+        : '')
+    + '<div class="dp-label">Progress</div>'
+    + (lastPackName
+        ? '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset progress for ' + dpEsc(lastPackName) + '</div>'
+          +   '<div class="dp-setting-sub">Clears completion marks for that pack only</div></div>'
+          +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningResetCurrent" type="button" data-pack="' + dpEsc(lastTouchedPackId) + '">Reset Pack</button></div>'
+        : '')
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Reset all Plan Pack progress</div>'
+    +   '<div class="dp-setting-sub">Clears completion marks for every pack on this device</div></div>'
+    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningResetAll" type="button">Reset All</button></div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Clear completed sections list</div>'
+    +   '<div class="dp-setting-sub">Removes the completion-date log without un-marking sections</div></div>'
+    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeLearningClearCompleted" type="button">Clear</button></div>';
 
-  /* Mock-tier switcher (only visible to dev token; lets you flip levels for testing)
-     Stage 33-B-6: also gated behind EE_DEV_FLAGS_ALLOWED so production users
-     never see the switcher even if the localStorage flag is somehow set. */
+  /* ── Data & Backup tab ──────────────────────────────────────── */
+  var dataHtml = ''
+    + '<div class="dp-label">Backup</div>'
+    + '<div class="ee-settings-note">Notes, tasks, daily logs, Plan Pack progress, and your appearance preferences are stored only in this browser. Export them so you can restore on another device.</div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Export Dashboard Data</div>'
+    +   '<div class="dp-setting-sub">Download a JSON backup of every Ethos Empire key on this device</div></div>'
+    +   '<button class="dp-setting-btn" id="eeDataExport" type="button">Export</button></div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Import Dashboard Data</div>'
+    +   '<div class="dp-setting-sub">Restore from a backup file. Existing data is overwritten where keys match.</div></div>'
+    +   '<button class="dp-setting-btn" id="eeDataImport" type="button">Choose File</button>'
+    +   '<input type="file" id="eeDataImportFile" accept="application/json,.json" hidden></div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Copy Diagnostics</div>'
+    +   '<div class="dp-setting-sub">Useful info for support: cache versions, view, pack, storage key count</div></div>'
+    +   '<button class="dp-setting-btn" id="eeDataDiagnostics" type="button">Copy</button></div>'
+    + '<div class="dp-label">Reset</div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Clear Local Dashboard Data</div>'
+    +   '<div class="dp-setting-sub">Removes every Ethos Empire key on this device. Does not sign you out.</div></div>'
+    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="eeDataReset" type="button">Clear</button></div>';
+
+  /* ── Account tab — sign out + navigation + read-only plan summary */
+  var billingSummary = ''
+    + '<div class="dp-label">Subscription</div>'
+    + '<div class="ee-bill-card">'
+    +   '<div class="ee-bill-plan-name">' + _planLabel(level) + '</div>'
+    +   '<div class="ee-bill-plan-status">'
+    +     (level === 'free' ? 'Preview access · no charge'
+                            : 'Managed at launch — billing portal arrives with the paid release.')
+    +   '</div>'
+    + '</div>';
+
+  /* Stage 33-B dev-mock switcher — gated behind EE_DEV_FLAGS_ALLOWED. */
   var devSwitcher = '';
   var _devSwitcherAllowed = typeof window !== 'undefined' && window.EE_DEV_FLAGS_ALLOWED === true;
   if (_devSwitcherAllowed && (level === 'dev' || (function(){ try { return !!localStorage.getItem('ethos_plan_level'); } catch(e){ return false; } })())) {
@@ -23349,48 +23512,50 @@ function renderSettingsTabbed() {
       + '<div class="ee-settings-note ee-settings-dev">'
       +   '<div class="ee-settings-dev-label">Test plan tier (local mock)</div>'
       +   '<div class="ee-settings-dev-row">'
-      +     '<button class="ee-bill-cta" data-mock="free">Free</button>'
-      +     '<button class="ee-bill-cta" data-mock="empire-core">Core</button>'
-      +     '<button class="ee-bill-cta" data-mock="empire-pro">Pro</button>'
-      +     '<button class="ee-bill-cta" data-mock="__clear">Use real</button>'
+      +     '<button class="ee-bill-cta" data-mock="free" type="button">Free</button>'
+      +     '<button class="ee-bill-cta" data-mock="empire-core" type="button">Core</button>'
+      +     '<button class="ee-bill-cta" data-mock="empire-pro" type="button">Pro</button>'
+      +     '<button class="ee-bill-cta" data-mock="__clear" type="button">Use real</button>'
       +   '</div>'
       + '</div>';
   }
 
-  var billingHtml = ''
-    + '<div class="dp-label">Current Plan</div>'
-    + '<div class="ee-bill-card">'
-    +   '<div class="ee-bill-plan-name">' + _planLabel(level) + '</div>'
-    +   '<div class="ee-bill-plan-status">' + (level === 'free' ? 'Preview access · no charge' : 'Status placeholder · renewal info from billing portal') + '</div>'
-    + '</div>'
-    + '<div class="dp-label">Actions</div>'
-    + '<div class="ee-bill-actions">' + billingActions + '</div>'
-    + devSwitcher;
-
-  var dataHtml = ''
-    + '<div class="dp-label">Local Data</div>'
-    + '<div class="ee-settings-note">Notes, tasks, daily logs, and pack progress are stored in your browser. Clearing data resets only this device.</div>'
-    + '<div class="ee-bill-actions">'
-    +   '<button class="ee-bill-cta ee-bill-cta-danger" id="eeDataReset">Clear local dashboard data</button>'
-    + '</div>';
+  var accountHtml = ''
+    + '<div class="dp-label">Navigation</div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Open Dashboard Home</div>'
+    +   '<div class="dp-setting-sub">Return to the Graph View</div></div>'
+    +   '<button class="dp-setting-btn" id="eeAccountHome" type="button">Open</button></div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Open Plan Packs</div>'
+    +   '<div class="dp-setting-sub">Jump to your learning sections</div></div>'
+    +   '<button class="dp-setting-btn" id="eeAccountPacks" type="button">Open</button></div>'
+    + billingSummary
+    + devSwitcher
+    + '<div class="dp-label">Session</div>'
+    + '<div class="dp-setting-row"><div><div class="dp-setting-label">Sign Out</div>'
+    +   '<div class="dp-setting-sub">End the session on this device</div></div>'
+    +   '<button class="dp-setting-btn dp-setting-btn-danger" id="dpBtnSignOut" type="button">Sign Out</button></div>';
 
   function tabBtn(id, label) {
-    return '<button class="ee-stab' + (tab === id ? ' ee-stab-on' : '') + '" data-stab="' + id + '">' + label + '</button>';
+    return '<button class="ee-stab' + (tab === id ? ' ee-stab-on' : '') + '" type="button" data-stab="' + id + '">' + label + '</button>';
   }
 
+  var panel;
+  switch (tab) {
+    case 'appearance': panel = appearanceHtml; break;
+    case 'learning':   panel = learningHtml;   break;
+    case 'data':       panel = dataHtml;       break;
+    case 'account':    panel = accountHtml;    break;
+    default:           panel = generalHtml;
+  }
   return ''
     + '<div class="ee-settings-tabs" role="tablist">'
     +   tabBtn('general',    'General')
     +   tabBtn('appearance', 'Appearance')
-    +   tabBtn('billing',    'Billing')
-    +   tabBtn('data',       'Data')
+    +   tabBtn('learning',   'Learning')
+    +   tabBtn('data',       'Data & Backup')
+    +   tabBtn('account',    'Account')
     + '</div>'
-    + '<div class="ee-stab-panel">'
-    + (tab === 'general'    ? generalHtml    :
-       tab === 'appearance' ? appearanceHtml :
-       tab === 'billing'    ? billingHtml    :
-       dataHtml)
-    + '</div>';
+    + '<div class="ee-stab-panel">' + panel + '</div>';
 }
 
 function attachSettingsTabsEvents() {
@@ -23403,66 +23568,214 @@ function attachSettingsTabsEvents() {
     });
   });
 
-  /* Billing buttons */
-  Array.prototype.forEach.call(root.querySelectorAll('.ee-bill-actions [data-plan]'), function (btn) {
-    btn.addEventListener('click', function () { startPlanCheckout(btn.getAttribute('data-plan')); });
+  /* General tab — graph toggles + restore layout */
+  var tSpin   = root.querySelector('#dpToggleSpin');
+  var tLabels = root.querySelector('#dpToggleLabels');
+  var tLines  = root.querySelector('#dpToggleLines');
+  var btnReset      = root.querySelector('#dpBtnReset');
+  var btnRestoreLay = root.querySelector('#eeBtnRestoreLayout');
+  if (tSpin)   tSpin.addEventListener('click', function () {
+    tSpin.classList.toggle('on');
+    tSpin.setAttribute('aria-pressed', tSpin.classList.contains('on') ? 'true' : 'false');
+    if (window.EE_GRAPH_API) window.EE_GRAPH_API.setAutoSpin(tSpin.classList.contains('on'));
   });
-  var manage = root.querySelector('#eeBillManage');
-  if (manage) manage.addEventListener('click', function () { openBillingPortal(manage); });
-  var cancel = root.querySelector('#eeBillCancel');
-  if (cancel) cancel.addEventListener('click', function () { openBillingPortal(cancel); });
+  if (tLabels) tLabels.addEventListener('click', function () {
+    tLabels.classList.toggle('on');
+    tLabels.setAttribute('aria-pressed', tLabels.classList.contains('on') ? 'true' : 'false');
+    if (window.EE_GRAPH_API) window.EE_GRAPH_API.setLabels(tLabels.classList.contains('on'));
+  });
+  if (tLines)  tLines.addEventListener('click', function () {
+    tLines.classList.toggle('on');
+    tLines.setAttribute('aria-pressed', tLines.classList.contains('on') ? 'true' : 'false');
+    if (window.EE_GRAPH_API) window.EE_GRAPH_API.setLines(tLines.classList.contains('on'));
+  });
+  if (btnReset)   btnReset.addEventListener('click', function () { if (window.EE_GRAPH_API) window.EE_GRAPH_API.resetView(); });
+  if (btnRestoreLay) btnRestoreLay.addEventListener('click', function () {
+    if (typeof window.enableTopMenuLayoutForDebug === 'function') {
+      window.enableTopMenuLayoutForDebug();
+      if (window.showToast) window.showToast('Top-menu layout restored.', 'success', 1600);
+    }
+  });
 
-  /* Appearance: toggle sidebar collapse */
-  var collapseBtn = root.querySelector('#eeAppearanceCollapse');
-  if (collapseBtn && window.toggleSidebarCollapsed) {
-    collapseBtn.addEventListener('click', window.toggleSidebarCollapsed);
+  /* Appearance tab — pickers + reduce-motion toggle + reset */
+  Array.prototype.forEach.call(root.querySelectorAll('[data-appearance]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var name = btn.getAttribute('data-appearance');
+      var value = btn.getAttribute('data-value');
+      if (!name || !value) return;
+      var patch = {}; patch[name] = value;
+      _eeSetAppearance(patch);
+      Array.prototype.forEach.call(root.querySelectorAll('[data-appearance="' + name + '"]'), function (sib) {
+        var on = (sib.getAttribute('data-value') === value);
+        sib.classList.toggle('is-selected', on);
+        sib.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    });
+  });
+  var rm = root.querySelector('#eeAppearanceReduceMotion');
+  if (rm) rm.addEventListener('click', function () {
+    var next = !rm.classList.contains('on');
+    rm.classList.toggle('on', next);
+    rm.setAttribute('aria-pressed', next ? 'true' : 'false');
+    _eeSetAppearance({ reduceMotion: next });
+  });
+  var ar = root.querySelector('#eeAppearanceReset');
+  if (ar) ar.addEventListener('click', function () {
+    _eeSetAppearance(EE_APPEARANCE_DEFAULTS);
+    refreshCurrentView();
+    if (window.showToast) window.showToast('Appearance reset.', 'info', 1500);
+  });
+
+  /* Learning tab — open / continue / reset pack progress */
+  var lo = root.querySelector('#eeLearningOpen');
+  if (lo) lo.addEventListener('click', function () {
+    if (window.switchDashboardView) window.switchDashboardView('plan-packs');
+  });
+  var lc = root.querySelector('#eeLearningContinue');
+  if (lc) lc.addEventListener('click', function () {
+    var pid = lc.getAttribute('data-pack');
+    if (pid && window.EE_PACK_NAV) window.EE_PACK_NAV.setPackTarget(pid, null);
+    if (window.switchDashboardView) window.switchDashboardView('plan-packs');
+  });
+  var lrc = root.querySelector('#eeLearningResetCurrent');
+  if (lrc) lrc.addEventListener('click', function () {
+    var pid = lrc.getAttribute('data-pack');
+    if (!pid) return;
+    if (!confirm('Reset progress for this pack? All completed sections will be cleared.')) return;
+    try {
+      var raw = localStorage.getItem('ee_pack_progress');
+      var pp = raw ? JSON.parse(raw) : {};
+      if (pp[pid]) { delete pp[pid]; localStorage.setItem('ee_pack_progress', JSON.stringify(pp)); }
+      if (window.EE_PACK_NAV && window.EE_PACK_NAV.reloadProgress) window.EE_PACK_NAV.reloadProgress();
+      if (window.EE_PACK_NAV && window.EE_PACK_NAV.refreshPanel)  window.EE_PACK_NAV.refreshPanel();
+      if (window.showToast) window.showToast('Pack progress reset.', 'success', 1800);
+    } catch (e) { if (window.showToast) window.showToast('Could not reset pack progress.', 'error'); }
+  });
+  var lra = root.querySelector('#eeLearningResetAll');
+  if (lra) lra.addEventListener('click', function () {
+    if (!confirm('Reset progress for EVERY Plan Pack on this device? This cannot be undone.')) return;
+    try {
+      localStorage.removeItem('ee_pack_progress');
+      if (window.EE_PACK_NAV && window.EE_PACK_NAV.reloadProgress) window.EE_PACK_NAV.reloadProgress();
+      if (window.EE_PACK_NAV && window.EE_PACK_NAV.refreshPanel)  window.EE_PACK_NAV.refreshPanel();
+      if (window.showToast) window.showToast('All Plan Pack progress reset.', 'success', 1800);
+    } catch (e) { if (window.showToast) window.showToast('Could not reset pack progress.', 'error'); }
+  });
+  var lcc = root.querySelector('#eeLearningClearCompleted');
+  if (lcc) lcc.addEventListener('click', function () {
+    if (!confirm('Clear the completed-sections log? This does not un-mark sections, only the date log.')) return;
+    try {
+      Object.keys(localStorage).filter(function (k) { return k.indexOf('ee_pack_day_ts_') === 0 || k.indexOf('ee_daily_completion_') === 0; })
+        .forEach(function (k) { localStorage.removeItem(k); });
+      if (window.showToast) window.showToast('Completion log cleared.', 'info', 1500);
+    } catch (e) { if (window.showToast) window.showToast('Could not clear log.', 'error'); }
+  });
+
+  /* Data & Backup tab — export / import / diagnostics / clear */
+  var ex = root.querySelector('#eeDataExport');
+  if (ex) ex.addEventListener('click', function () {
+    try {
+      var keys = _eeListLocalDashboardKeys();
+      var payload = { _format: 'ethos-empire-dashboard-backup', _version: 1, _exportedAt: new Date().toISOString(), data: {} };
+      keys.forEach(function (k) { payload.data[k] = localStorage.getItem(k); });
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      var d = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      a.href = url;
+      a.download = 'ethos-dashboard-backup-' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '.json';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+      if (window.showToast) window.showToast('Exported ' + keys.length + ' keys.', 'success', 1800);
+    } catch (e) {
+      if (window.showToast) window.showToast('Export failed.', 'error', 1800);
+    }
+  });
+  var im = root.querySelector('#eeDataImport');
+  var imFile = root.querySelector('#eeDataImportFile');
+  if (im && imFile) {
+    im.addEventListener('click', function () { imFile.click(); });
+    imFile.addEventListener('change', function () {
+      var f = imFile.files && imFile.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var parsed = JSON.parse(reader.result);
+          if (!parsed || parsed._format !== 'ethos-empire-dashboard-backup' || !parsed.data) {
+            throw new Error('Not an Ethos Empire backup file.');
+          }
+          Object.keys(parsed.data).forEach(function (k) {
+            if (k.indexOf('ee_') !== 0 && k.indexOf('ethos_') !== 0) return; /* defensive — never write outside our namespace */
+            try { localStorage.setItem(k, parsed.data[k]); } catch (e2) {}
+          });
+          _eeApplyAppearance();
+          if (window.EE_PACK_NAV && window.EE_PACK_NAV.reloadProgress) window.EE_PACK_NAV.reloadProgress();
+          refreshCurrentView();
+          if (window.showToast) window.showToast('Backup restored.', 'success', 1800);
+        } catch (e) {
+          if (window.showToast) window.showToast('Invalid backup file.', 'error', 2200);
+        }
+        imFile.value = '';
+      };
+      reader.readAsText(f);
+    });
   }
+  var dg = root.querySelector('#eeDataDiagnostics');
+  if (dg) dg.addEventListener('click', function () {
+    var state = (window.dashboardState || {});
+    var diag = [
+      'Ethos Empire Dashboard diagnostics',
+      'Timestamp: ' + new Date().toISOString(),
+      'Current view: ' + (state.currentView || 'graph'),
+      'Active pack: ' + (function () { try { return localStorage.getItem('ethos_last_touched_pack') || '(none)'; } catch (e) { return '(unavailable)'; } })(),
+      'Local keys (ee_/ethos_*): ' + _eeListLocalDashboardKeys().length,
+      'CSS cache: ' + (function () { var el = document.querySelector('link[rel=stylesheet]'); return el ? (el.getAttribute('href') || '') : ''; })(),
+      'JS cache: '  + (function () { var s = document.querySelectorAll('script[src]'); return s.length ? (s[s.length-1].getAttribute('src') || '') : ''; })(),
+      'User agent: ' + (navigator.userAgent || '')
+    ].join('\n');
+    var done = function () { if (window.showToast) window.showToast('Diagnostics copied.', 'success', 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(diag).then(done, function () { window.prompt('Copy diagnostics:', diag); });
+    } else {
+      window.prompt('Copy diagnostics:', diag);
+    }
+  });
+  var rs = root.querySelector('#eeDataReset');
+  if (rs) rs.addEventListener('click', function () {
+    if (!confirm('Clear EVERY Ethos Empire key on this device? Notes, tasks, daily logs, pack progress, and appearance prefs will all be removed.')) return;
+    try {
+      _eeListLocalDashboardKeys().forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+      _eeApplyAppearance();
+      if (window.EE_PACK_NAV && window.EE_PACK_NAV.reloadProgress) window.EE_PACK_NAV.reloadProgress();
+      refreshCurrentView();
+      if (window.showToast) window.showToast('Local dashboard data cleared.', 'info', 1800);
+    } catch (e) {
+      if (window.showToast) window.showToast('Could not clear data.', 'error', 1800);
+    }
+  });
 
-  /* Mock tier switcher */
+  /* Account tab — navigation + sign out */
+  var ah = root.querySelector('#eeAccountHome');
+  if (ah) ah.addEventListener('click', function () {
+    if (window.switchDashboardView) window.switchDashboardView('graph');
+  });
+  var ap = root.querySelector('#eeAccountPacks');
+  if (ap) ap.addEventListener('click', function () {
+    if (window.switchDashboardView) window.switchDashboardView('plan-packs');
+  });
+  var btnSignOut = root.querySelector('#dpBtnSignOut');
+  if (btnSignOut) btnSignOut.addEventListener('click', function () { if (window.EE_SIGN_OUT) window.EE_SIGN_OUT(); });
+
+  /* Dev mock-tier switcher (Stage 33-B) — kept for testing parity. */
   Array.prototype.forEach.call(root.querySelectorAll('[data-mock]'), function (btn) {
     btn.addEventListener('click', function () {
       var v = btn.getAttribute('data-mock');
       setMockPlanLevel(v === '__clear' ? null : v);
-      showToast('Plan tier: ' + getUserPlanLevel(), 'info', 1800);
+      if (window.showToast) window.showToast('Plan tier: ' + getUserPlanLevel(), 'info', 1800);
     });
   });
-
-  /* Data clear */
-  var reset = root.querySelector('#eeDataReset');
-  if (reset) reset.addEventListener('click', function () {
-    if (!confirm('Clear local dashboard data on this device? (Notes, tasks, daily logs, pack progress, UI prefs)')) return;
-    var keys = ['ee_notes','ee_tasks','ee_pack_progress','ee_plan_pack_access','ethos_sidebar_collapsed','ethos_dashboard_view','ethos_active_pack'];
-    try {
-      keys.forEach(function (k) { localStorage.removeItem(k); });
-      Object.keys(localStorage).filter(function (k) { return k.indexOf('ee_daily_') === 0 || k.indexOf('ethos_upgrade_popup_seen_') === 0; })
-        .forEach(function (k) { localStorage.removeItem(k); });
-    } catch (e) {}
-    showToast('Local dashboard data cleared.', 'info');
-  });
-
-  /* General tab: re-bind legacy graph/account handlers (same IDs as legacy renderSettings) */
-  var tab = window._eeSettingsTab || 'general';
-  if (tab === 'general' && typeof window !== 'undefined') {
-    var tSpin   = root.querySelector('#dpToggleSpin');
-    var tLabels = root.querySelector('#dpToggleLabels');
-    var tLines  = root.querySelector('#dpToggleLines');
-    var btnReset   = root.querySelector('#dpBtnReset');
-    var btnSignOut = root.querySelector('#dpBtnSignOut');
-    if (tSpin)   tSpin.addEventListener('click', function () {
-      tSpin.classList.toggle('on');
-      if (window.EE_GRAPH_API) window.EE_GRAPH_API.setAutoSpin(tSpin.classList.contains('on'));
-    });
-    if (tLabels) tLabels.addEventListener('click', function () {
-      tLabels.classList.toggle('on');
-      if (window.EE_GRAPH_API) window.EE_GRAPH_API.setLabels(tLabels.classList.contains('on'));
-    });
-    if (tLines)  tLines.addEventListener('click', function () {
-      tLines.classList.toggle('on');
-      if (window.EE_GRAPH_API) window.EE_GRAPH_API.setLines(tLines.classList.contains('on'));
-    });
-    if (btnReset)   btnReset.addEventListener('click',   function () { if (window.EE_GRAPH_API) window.EE_GRAPH_API.resetView(); });
-    if (btnSignOut) btnSignOut.addEventListener('click', function () { if (window.EE_SIGN_OUT) window.EE_SIGN_OUT(); });
-  }
 }
 
 /* ── Refresh whichever workspace is currently visible ── */

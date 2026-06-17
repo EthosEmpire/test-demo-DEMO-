@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="../images/favicon-48x48.png">
   <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
   <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
-  <link rel="stylesheet" href="dashboard.css?v=p36">
+  <link rel="stylesheet" href="dashboard.css?v=p37">
 
   <!-- ══ Stage 33-B-6: dev-environment detection ══
        Runs before every other script (head, non-deferred) so window.EE_ENV
@@ -143,19 +143,29 @@
               <button class="tb-menu-item" type="button" role="menuitem" data-view="templates">Templates</button>
             </div>
           </div>
+          <!-- Stage 39: the legacy Tools dropdown is replaced with a real
+               Settings hub. Internal IDs (tbToolsBtn / tbToolsDrop) are kept
+               so the Stage 34-C dropdown handlers continue working; the
+               visible label, items, and routing all go to the Settings
+               view + its tab. Each item carries data-settings-tab so the
+               click handler can open the right section directly. -->
           <div class="tb-nav-slot" data-tb-menu="tools">
             <button class="tb-nav-btn" id="tbToolsBtn" type="button"
                     aria-haspopup="menu" aria-expanded="false" aria-controls="tbToolsDrop">
-              <span class="tb-nav-btn-label">Tools</span>
+              <svg class="tb-nav-btn-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M8 4.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8zm0-3.6c.42 0 .76.34.76.76v1.04a5.04 5.04 0 0 1 1.65.68l.74-.74a.76.76 0 1 1 1.08 1.08l-.74.74c.32.5.55 1.05.68 1.65h1.04a.76.76 0 1 1 0 1.52h-1.04a5.04 5.04 0 0 1-.68 1.65l.74.74a.76.76 0 1 1-1.08 1.08l-.74-.74a5.04 5.04 0 0 1-1.65.68v1.04a.76.76 0 1 1-1.52 0v-1.04a5.04 5.04 0 0 1-1.65-.68l-.74.74a.76.76 0 1 1-1.08-1.08l.74-.74a5.04 5.04 0 0 1-.68-1.65H2.6a.76.76 0 1 1 0-1.52h1.04a5.04 5.04 0 0 1 .68-1.65l-.74-.74a.76.76 0 1 1 1.08-1.08l.74.74a5.04 5.04 0 0 1 1.65-.68V1.76C7.05 1.34 7.39 1 7.81 1H8z" fill="currentColor"/>
+              </svg>
+              <span class="tb-nav-btn-label">Settings</span>
               <svg class="tb-nav-btn-caret" viewBox="0 0 10 6" aria-hidden="true">
                 <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
               </svg>
             </button>
             <div class="tb-menu-drop" id="tbToolsDrop" role="menu" aria-hidden="true">
-              <button class="tb-menu-item" type="button" role="menuitem" data-view="dataview">Dataview</button>
-              <button class="tb-menu-item" type="button" role="menuitem" data-view="calendar">Calendar</button>
-              <button class="tb-menu-item" type="button" role="menuitem" data-view="tags">Tags</button>
-              <button class="tb-menu-item" type="button" role="menuitem" data-view="settings">Settings</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="settings" data-settings-tab="general">General</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="settings" data-settings-tab="appearance">Appearance</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="settings" data-settings-tab="learning">Learning</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="settings" data-settings-tab="data">Data &amp; Backup</button>
+              <button class="tb-menu-item" type="button" role="menuitem" data-view="settings" data-settings-tab="account">Account</button>
             </div>
           </div>
         </div>
@@ -196,7 +206,11 @@
         <li class="sb-item" data-view="tasks" data-tip="Tasks"><span class="sb-icon">✓</span><span class="sb-label">Tasks</span></li>
         <li class="sb-item" data-view="templates" data-tip="Templates"><span class="sb-icon">⊞</span><span class="sb-label">Templates</span></li>
       </ul>
-      <div class="sb-section-label">Tools</div>
+      <!-- Stage 39: sidebar group label renamed from "Tools" to "More". The
+           legacy sidebar is hidden by default via Stage 34-D's
+           layout-top-menus class; this rename only matters for debug
+           rollback (disableTopMenuLayoutForDebug). -->
+      <div class="sb-section-label">More</div>
       <ul class="sb-nav">
         <li class="sb-item" data-view="dataview" data-tip="Dataview"><span class="sb-icon">⋮⋮</span><span class="sb-label">Dataview</span></li>
         <li class="sb-item" data-view="calendar" data-tip="Calendar"><span class="sb-icon">◻</span><span class="sb-label">Calendar</span></li>
@@ -1173,7 +1187,7 @@
   <!-- <script src="empire-map.js"></script> -->
 
   <!-- ══ Dashboard Logic ══ -->
-  <script src="dashboard.js?v=p44"></script>
+  <script src="dashboard.js?v=p45"></script>
 
 </body>
 </html>
